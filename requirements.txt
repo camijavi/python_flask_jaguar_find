@@ -1,0 +1,24 @@
+# ================================================================================
+# DEPENDENCIAS DEL PROYECTO JAGUARFIND & JAGUARMAPS (PYTHON FLASK)
+# ================================================================================
+# 
+# Dependencias principales de producción:
+# ---------------------------------------
+# - Flask (>=3.0.0):
+#   Microframework web WSGI para la arquitectura modular con Blueprints,
+#   inyección de contexto multilingüe Jinja2 y enrutamiento de controladores.
+#
+# - Werkzeug (>=3.0.0):
+#   Utilidades WSGI subyacentes de Flask para hashing seguro de contraseñas
+#   (generate_password_hash / check_password_hash con scrypt/pbkdf2).
+#
+# Nota sobre librerías nativas estándar de Python utilizadas sin instalación adicional:
+# --------------------------------------------------------------------------------------
+# - sqlite3: Base de datos relacional nativa embebida (sin necesidad de servidor externo).
+# - heapq: Implementación nativa de colas de prioridad con montículo binario para Dijkstra O((V+E)log V).
+# - math: Funciones trigonométricas (radians, sin, cos, atan2, sqrt) para fórmula Haversine.
+# - re: Expresiones regulares para validación de CIF (8 dígitos) y correo @uamv.edu.ni.
+# - json: Serialización y carga de diccionarios de internacionalización (languages/spa.json y eng.json).
+#
+Flask>=3.0.0
+Werkzeug>=3.0.0

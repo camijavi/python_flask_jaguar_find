@@ -1,0 +1,50 @@
+<!--
+================================================================================
+PLANTILLA DE ADMINISTRACIÓN DE USUARIOS, ROLES Y RETENCIÓN (ADMIN_USUARIOS.HTML)
+================================================================================
+
+Propósito del Archivo:
+----------------------
+Permite a los administradores del Edificio A gestionar las cuentas registradas
+en JaguarFind, promover y delegar el rol de ADMINISTRADOR a otros colaboradores,
+crear cuentas institucionales directamente y ejecutar la política de retención
+y depuración de cuentas temporales de visitantes inactivas por más de 6 meses.
+
+Componentes que van en esta plantilla:
+--------------------------------------
+1. Cabecera y Navegación:
+   - Enlace '← Volver al cuaderno de objetos' (/lost-found/admin).
+   - Título: 'Panel de Administración de Usuarios y Roles'.
+   - Descripción sobre la gestión de cuentas institucionales y visitantes.
+
+2. Botón de Ejecución de la Política de Retención (Purga de 6 Meses):
+   - Formulario POST hacia /lost-found/admin/usuarios/depurar-visitantes con confirmación:
+     * Botón: '🧹 Depurar Visitantes Inactivos (>6 meses)'.
+     * Ejecuta el procedimiento que elimina las cuentas de rol VISITANTE con más de
+       180 días sin actividad en el sistema, protegiendo la privacidad y optimizando SQLite.
+
+3. Formulario para Crear Nuevos Usuarios Administrativos:
+   - Permite al Administrador dar de alta directamente cuentas sin pasar por el registro público:
+     * Nombre Completo.
+     * Correo Institucional (@uamv.edu.ni).
+     * Contraseña inicial.
+     * Rol a Asignar: ADMINISTRADOR, COLABORADOR, ESTUDIANTE o VISITANTE.
+     * CIF o Cédula opcional.
+     * Botón 'Crear y Habilitar Usuario'.
+
+4. Tabla de Cuentas Registradas en el Sistema:
+   - Resumen del total de usuarios registrados.
+   - Columnas de la tabla:
+     * Usuario: Nombre completo, correo y carreras (soporte de doble titulación).
+     * Identificación: Número CIF (estudiantes) o Cédula de Identidad (colaboradores/visitantes).
+     * Rol Actual: Distintivo con código de color:
+       - ADMINISTRADOR (púrpura)
+       - COLABORADOR (azul)
+       - ESTUDIANTE (gris/plata)
+       - VISITANTE (verde esmeralda)
+     * Último Acceso: Fecha y hora de la última interacción registrada (para control de inactividad).
+     * Delegación / Cambio de Rol:
+       - Menú desplegable con los roles disponibles.
+       - Botón 'Guardar' que envía POST a /lost-found/admin/usuarios/rol.
+       - Validación para impedir que el administrador se revoque su propio rol en sesión activa.
+-->

@@ -1,0 +1,77 @@
+{
+  "_description": "English internationalization dictionary (eng) for JaguarFind and JaguarMaps. Contains all user-facing interface strings organized by modules (app, nav, map, auth, lost_found).",
+  "app": {
+    "name": "JaguarFind",
+    "subtitle": "Campus Orientation & Lost and Found Management System",
+    "institution": "Universidad Americana (UAM)"
+  },
+  "nav": {
+    "home": "Home",
+    "map": "Campus Map",
+    "lost_found": "Lost & Found",
+    "report": "Report Found Item",
+    "login": "Sign In",
+    "signup": "Sign Up",
+    "admin": "Admin Panel",
+    "logout": "Sign Out",
+    "language": "Language"
+  },
+  "map": {
+    "title": "UAM Campus Navigator",
+    "where_am_i": "Where are you?",
+    "where_am_i_placeholder": "Use GPS, scan a QR code, or pick a location...",
+    "use_gps": "Use my current location",
+    "where_to_go": "Where do you want to go?",
+    "where_to_go_placeholder": "Type a classroom, restroom, lab, faculty, or service...",
+    "calculate_route": "Find Optimal Route",
+    "swap": "Swap locations",
+    "accessible_route": "Wheelchair accessible route",
+    "distance": "Distance",
+    "estimated_time": "Estimated walking time",
+    "minutes": "minutes",
+    "meters": "meters",
+    "steps": "Step-by-step directions",
+    "listen_directions": "Listen to voice directions",
+    "categories": {
+      "all": "All",
+      "classrooms": "Classrooms",
+      "restrooms": "Restrooms",
+      "food": "Food & Cafeterias",
+      "clinics": "Clinics & Health",
+      "sports": "Sports & Gym",
+      "admin": "Services & Faculties"
+    }
+  },
+  "auth": {
+    "sign_in_title": "Institutional Sign-In",
+    "sign_up_title": "New User Registration",
+    "email": "Institutional Email (@uamv.edu.ni)",
+    "password": "Password (6 characters)",
+    "full_name": "Full Name",
+    "cif": "CIF Number (8 digits)",
+    "national_id": "National ID (Cédula)",
+    "role": "User Role",
+    "role_student": "Student",
+    "role_collaborator": "Staff / Collaborator",
+    "role_admin": "Administrator",
+    "faculty": "Primary Faculty",
+    "secondary_faculty": "Secondary Faculty (Optional)",
+    "career": "Primary Major",
+    "secondary_career": "Secondary Major (Double Degree - Optional)",
+    "login_button": "Log In",
+    "signup_button": "Complete Registration",
+    "role_visitor": "Visitor (Parents, Patients, External)",
+    "visitor_login_tab": "Visitor Access (Passwordless)",
+    "visitor_login_desc": "Access directly with your Email and National ID",
+    "visitor_retention_note": "Temporary accounts automatically purged after 6 months of inactivity"
+  },
+  "lost_found": {
+    "title": "Lost & Found Management — Building A",
+    "search_placeholder": "Search by category, color, or building...",
+    "reconstruct_route": "Reconstruct my daily path",
+    "status_reported": "Reported (En route to Building A)",
+    "status_custody": "In Custody (Verified at Building A)",
+    "status_returned": "Returned to Owner (Archived)",
+    "hidden_validator_hint": "Private detail visible only for verification at claim"
+  }
+}

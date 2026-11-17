@@ -1,0 +1,77 @@
+{
+  "_descripcion": "Diccionario de internacionalización en Español (spa) para JaguarFind y JaguarMaps. Contiene todas las cadenas de texto mostradas en la interfaz organizadas por módulos (app, nav, map, auth, lost_found).",
+  "app": {
+    "name": "JaguarFind",
+    "subtitle": "Sistema de Orientación en Campus y Gestión de Objetos Perdidos",
+    "institution": "Universidad Americana (UAM)"
+  },
+  "nav": {
+    "home": "Inicio",
+    "map": "Mapa del Campus",
+    "lost_found": "Objetos Perdidos",
+    "report": "Reportar Hallazgo",
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "admin": "Panel Administrativo",
+    "logout": "Cerrar Sesión",
+    "language": "Idioma"
+  },
+  "map": {
+    "title": "Navegador del Campus UAM",
+    "where_am_i": "¿Dónde te encuentras?",
+    "where_am_i_placeholder": "Usa GPS, escanea un QR o selecciona un punto...",
+    "use_gps": "Usar mi ubicación actual",
+    "where_to_go": "¿A dónde quieres ir?",
+    "where_to_go_placeholder": "Escribe un aula, baño, laboratorio, facultad o servicio...",
+    "calculate_route": "Calcular Ruta Óptima",
+    "swap": "Invertir puntos",
+    "accessible_route": "Ruta accesible para personas en silla de ruedas",
+    "distance": "Distancia",
+    "estimated_time": "Tiempo estimado a pie",
+    "minutes": "minutos",
+    "meters": "metros",
+    "steps": "Indicaciones paso a paso",
+    "listen_directions": "Escuchar indicaciones por voz",
+    "categories": {
+      "all": "Todos",
+      "classrooms": "Aulas",
+      "restrooms": "Servicios Higiénicos",
+      "food": "Comida y Cafeterías",
+      "clinics": "Clínicas y Salud",
+      "sports": "Deportes y Gimnasio",
+      "admin": "Trámites y Facultades"
+    }
+  },
+  "auth": {
+    "sign_in_title": "Acceso Institucional",
+    "sign_up_title": "Registro de Nuevo Usuario",
+    "email": "Correo Institucional (@uamv.edu.ni)",
+    "password": "Contraseña (6 caracteres)",
+    "full_name": "Nombre Completo",
+    "cif": "Número CIF (8 dígitos)",
+    "national_id": "Cédula de Identidad",
+    "role": "Tipo de Usuario",
+    "role_student": "Estudiante",
+    "role_collaborator": "Colaborador",
+    "role_admin": "Administrador",
+    "faculty": "Facultad Principal",
+    "secondary_faculty": "Segunda Facultad (Opcional)",
+    "career": "Carrera Principal",
+    "secondary_career": "Segunda Carrera (Doble Titulación - Opcional)",
+    "login_button": "Ingresar al Sistema",
+    "signup_button": "Completar Registro",
+    "role_visitor": "Visitante (Padres, Pacientes, Externos)",
+    "visitor_login_tab": "Acceso Visitante (Sin Contraseña)",
+    "visitor_login_desc": "Accede directamente con tu Correo y Cédula de Identidad",
+    "visitor_retention_note": "Cuentas temporales con purga automática tras 6 meses de inactividad"
+  },
+  "lost_found": {
+    "title": "Gestión de Objetos Perdidos — Edificio A",
+    "search_placeholder": "Buscar por categoría, color o edificio...",
+    "reconstruct_route": "Reconstruir mi Ruta de Búsqueda del día",
+    "status_reported": "Reportado (En camino al Edificio A)",
+    "status_custody": "En Custodia (Verificado en Edificio A)",
+    "status_returned": "Entregado a su Dueño (Archivado)",
+    "hidden_validator_hint": "Detalle privado visible solo para validación en entrega"
+  }
+}

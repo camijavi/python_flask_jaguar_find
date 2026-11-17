@@ -1,0 +1,44 @@
+<!--
+================================================================================
+PLANTILLA DE CATÁLOGO PÚBLICO DE OBJETOS PERDIDOS (CATALOGO.HTML)
+================================================================================
+
+Propósito del Archivo:
+----------------------
+Presenta la cuadrícula (grid) pública de pertenencias extraviadas que se encuentran
+activas (en estado REPORTADO o VERIFICADO) en la Universidad Americana (UAM).
+Permite a los usuarios buscar pertenencias mediante el modelo validado de LUGAR Y FECHA.
+
+Componentes que van en esta plantilla:
+--------------------------------------
+1. Cabecera y Barra de Acciones:
+   - Título del catálogo de objetos perdidos y encontrados.
+   - Botón destacado 'Reportar un Objeto Encontrado' (+), que redirige a /lost-found/reportar.
+
+2. Barra de Búsqueda y Filtros Relacionales por Lugar y Fecha:
+   - Formulario de búsqueda rápida (GET):
+     * Filtro por Lugar / Ubicación (desplegable con los nodos del campus: B-103, Cafetería Edificio A, etc.).
+     * Filtro por Fecha de Extravío (selector de fecha calendario YYYY-MM-DD).
+     * Filtro opcional por Franja Horaria (Mañana, Tarde, Noche) para desempate orientativo.
+     * Filtro por Categoría (Electrónicos, Documentos, Mochilas/Ropa, Otros).
+     * Botón 'Buscar Pertenencia' y botón 'Limpiar Filtros'.
+
+3. Cuadrícula de Tarjetas de Objetos (Grid Responsivo):
+   - Cada tarjeta representa un artículo y muestra:
+     * Fotografía del bien o icono representativo de categoría.
+     * Título o nombre del artículo.
+     * Categoría con distintivo de color (tag).
+     * Distintivo de Estado:
+       - 'REPORTADO' (amarillo): Hallado por un estudiante/colaborador, en camino al Edificio A.
+       - 'VERIFICADO' (azul): Bajo custodia física oficial en la recepción del Edificio A (con Pin en mapa).
+     * Lugar específico del hallazgo (nodo físico).
+     * Fecha en que fue reportado (DD/Mes/AAAA).
+     * Botón 'Ver Detalles y Reclamar' que dirige a /lost-found/detalle/<id>.
+
+4. Alerta de Seguridad Antifraude:
+   - Aviso visible indicando que los detalles íntimos de validación permanecen ocultos
+     y serán solicitados verbalmente por el personal del Edificio A al momento del reclamo físico.
+
+5. Estado Vacío (Empty State):
+   - Mensaje amigable con ilustración cuando no existan coincidencias para los filtros aplicados.
+-->

@@ -264,35 +264,49 @@ graph TD
 ### 5.1. Esquema de Base de Datos SQLite3 (`database.py`) en camelCase
 ```sql
 CREATE TABLE IF NOT EXISTS usuarios (
-    cif TEXT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    correo TEXT UNIQUE NOT NULL,
     nombreCompleto TEXT NOT NULL,
-    correoInstitucional TEXT UNIQUE NOT NULL,
-    carrera TEXT NOT NULL,
-    cedula TEXT NOT NULL,
-    passwordHash TEXT NOT NULL,
-    rolUsuario TEXT NOT NULL CHECK(rolUsuario IN ('estudiante', 'admin')),
-    fechaRegistro TEXT NOT NULL
+    passwordHash TEXT NULL,
+    rol TEXT NOT NULL CHECK(rol IN ('ESTUDIANTE', 'COLABORADOR', 'ADMINISTRADOR', 'VISITANTE')),
+    cif TEXT NULL,
+    cedula TEXT NULL,
+    facultadPrincipal TEXT NULL,
+    facultadSecundaria TEXT NULL,
+    carreraPrincipal TEXT NULL,
+    carreraSecundaria TEXT NULL,
+    fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ultimoAcceso DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS objetosPerdidos (
-    idTicket INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT NOT NULL,
     categoria TEXT NOT NULL,
-    color TEXT NOT NULL,
-    descripcion TEXT NOT NULL,
-    detalleOcultoValidador TEXT,
-    idNodoHallazgo TEXT NOT NULL,
-    fechaHoraHallazgo TEXT NOT NULL,
-    estadoTicket INTEGER NOT NULL CHECK(estadoTicket IN (1, 2, 3)),
-    cifEncontro TEXT NOT NULL,
-    cedulaEncontro TEXT,
-    cifDueno TEXT,
-    nombreDueno TEXT,
-    carreraDueno TEXT,
-    cedulaDueno TEXT,
-    fechaEntrega TEXT,
-    FOREIGN KEY (cifEncontro) REFERENCES usuarios(cif)
+    descripcionPublica TEXT NOT NULL,
+    detalleSecretoValidacion TEXT NOT NULL,
+    ubicacionHallazgo TEXT NOT NULL,
+    estado TEXT NOT NULL DEFAULT 'REPORTADO' CHECK(estado IN ('REPORTADO', 'VERIFICADO', 'ENTREGADO')),
+    usuarioReportaId INTEGER NOT NULL,
+    usuarioReclamaId INTEGER NULL,
+    fechaReporte DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fechaVerificacion DATETIME NULL,
+    fechaEntrega DATETIME NULL,
+    notaEntrega TEXT NULL,
+    FOREIGN KEY (usuarioReportaId) REFERENCES usuarios(id),
+    FOREIGN KEY (usuarioReclamaId) REFERENCES usuarios(id)
 );
 ```
+
+#### Política de Retención y Depuración de Visitantes (6 Meses):
+* Las cuentas con rol `VISITANTE` son de naturaleza efímera para visitantes externos (padres, pacientes de clínicas odontológicas, eventos).
+* No requieren contraseña (`passwordHash IS NULL`), autenticándose mediante la coincidencia de `correo` y `cedula`.
+* Se ejecuta la depuración automática de cuentas tras 180 días (~6 meses) continuos de inactividad:
+  ```sql
+  DELETE FROM usuarios
+  WHERE rol = 'VISITANTE'
+    AND julianday('now') - julianday(ultimoAcceso) >= 180;
+  ```
 
 ### 5.2. Ciclo de Vida del Objeto y Regla Antifraude
 1. **Estado 1: Reportado (En camino al Edificio A):** El estudiante que encuentra el objeto lo registra en `/reportar`. La fecha y hora se toman con `datetime.now()`, el nodo se sugiere vía GPS y sus datos institucionales quedan asociados.
@@ -470,25 +484,25 @@ class GrafoUam:
 
 ---
 
-## 8. Cronograma de Desarrollo Día a Día
+## 8. Cronograma de Desarrollo Día a Día (12 Días)
+
+### 8.1. Flujo Temporal de Fases
 
 ```mermaid
-gantt
-    title Cronograma de Implementación JaguarFind & JaguarMaps (12 Días)
-    dateFormat  YYYY-MM-DD
-    section Fase 1: Arquitectura Base
-    Modelado Grafo, Nodos UAM y Dijkstra       :a1, 2026-11-13, 3d
-    Diseño DB SQLite, Roles y Validaciones     :a2, 2026-11-13, 3d
-    section Fase 2: Experiencia Google Maps UAM
-    Buscador de Dependencias e Indicaciones    :b1, 2026-11-16, 3d
-    Interfaz Mapa Interactivo y Trazado Ruta   :b2, 2026-11-16, 3d
-    section Fase 3: Objetos Perdidos y QRs
-    Módulo Reportar con GPS y QRs en Casetas   :c1, 2026-11-19, 3d
-    Tablero Cards Edificio A y Flujo 3 Estados :c2, 2026-11-19, 3d
-    section Fase 4: Pruebas y Cierre
-    Pruebas Integrales de Usuario y Carga      :d1, 2026-11-22, 2d
-    Defensa Académica y Demostración Final     :d2, 2026-11-24, 1d
+flowchart LR
+    F1["<b>Fase 1: Arquitectura Base</b><br>• Días 1-3 (13-15 Nov)<br>• TDA Grafo, Nodos y DB"] --> F2["<b>Fase 2: JaguarMaps</b><br>• Días 4-6 (16-18 Nov)<br>• Buscador y Dijkstra"]
+    F2 --> F3["<b>Fase 3: JaguarFind y QRs</b><br>• Días 7-9 (19-21 Nov)<br>• GPS, Tickets Edif A y QRs"]
+    F3 --> F4["<b>Fase 4: Cierre y Defensa</b><br>• Días 10-12 (22-24 Nov)<br>• Pruebas y Presentación"]
 ```
+
+### 8.2. Tabla de Planificación Detallada
+
+| Fase | Días y Fechas | Módulo Principal | Tareas Específicas | Responsable | Entregable Clave |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Fase 1: Cimientos y Arquitectura** | **Días 1 a 3**<br>*(13 - 15 Nov)* | **GrafoUam y Persistencia** | • Implementar clases `Nodo`, `Arista` y `GrafoUam` en `grafoUam.py`.<br>• Mapear los 20 nodos y conexiones del campus UAM con distancias en metros.<br>• Crear esquema SQLite3 en `database.py` (tablas `usuarios` y `objetosPerdidos`).<br>• Validaciones regex para CIF (8 dígitos), clave (6 alfanuméricos) y correo `@uamv.edu.ni`. | **Camila Navarro** (Estructuras)<br>**Francis Solórzano** (Backend) | • `grafoUam.py` funcional con Dijkstra inicial.<br>• `database.py` con tablas creadas y semillas de prueba. |
+| **Fase 2: Motor Google Maps UAM** | **Días 4 a 6**<br>*(16 - 18 Nov)* | **JaguarMaps (Rutas Públicas)** | • Programar diccionario de dependencias (40+ lugares mapeados a nodos).<br>• Implementar generador de indicaciones textuales paso a paso y tiempo a pie.<br>• Maquetar vista dividida con Tailwind CSS en `index.html`.<br>• Implementar selector "¿Dónde estoy?" y "¿A dónde quieres ir?" con trazado sobre `mapaUam.png`. | **James Fernandez** (Frontend)<br>**Camila Navarro** (Estructuras) | • Endpoint `/api/ruta` respondiendo en JSON.<br>• Interfaz web pública navegable y responsive. |
+| **Fase 3: Objetos Perdidos y QRs** | **Días 7 a 9**<br>*(19 - 21 Nov)* | **JaguarFind y Caseta de Entrada** | • Integrar geolocalización HTML5 en `reportar.html` con sugerencia de nodo por Haversine.<br>• Construir tablero Kanban/Cards en `admin.html` para la oficina del Edificio A.<br>• Programar transiciones de los 3 estados y validación antifraude (`detalleOcultoValidador`).<br>• Diseñar plantillas de Códigos QR para imprimir en la Caseta Principal y postes (`?origen=...`). | **Elias Solis** (Admin e Integración)<br>**Francis Solórzano** (Backend) | • Flujo completo de reporte y entrega.<br>• Códigos QR funcionales para acceso directo. |
+| **Fase 4: Pruebas, Refinamiento y Cierre** | **Días 10 a 12**<br>*(22 - 24 Nov)* | **QA, Documentación y Presentación** | • Batería de pruebas unitarias (`pytest`) para caminos mínimos y límites de grafos.<br>• Pruebas de usabilidad en móviles (simulación en campus UAM).<br>• Preparación de diapositivas de defensa con demostración en vivo.<br>• Revisión final del repositorio y `README.md`. | **Todo el Equipo** (Camila, Francis, James, Elias) | • Sistema 100% operativo y probado.<br>• Presentación de defensa lista para el jurado. |
 
 ---
 

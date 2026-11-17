@@ -1,0 +1,34 @@
+/**
+ * ================================================================================
+ * ESTILOS PERSONALIZADOS Y ANIMACIONES VECTORIALES (STYLES.CSS)
+ * ================================================================================
+ * 
+ * Propósito del Archivo:
+ * ----------------------
+ * Complementa los estilos de utilidad de Tailwind CSS con reglas personalizadas
+ * para la interacción cartográfica SVG, animaciones de rutas peatonales,
+ * marcadores de pines de objetos extraviados y estados visuales del mapa de la UAM.
+ * 
+ * Clases y Reglas que van en este archivo:
+ * ---------------------------------------
+ * 1. Animación de Trazado de Rutas SVG (.ruta-animada):
+ *    - Utiliza las propiedades 'stroke-dasharray' y 'stroke-dashoffset'.
+ *    - Define la animación @keyframes trazarCamino para que la polilínea de Dijkstra
+ *      se dibuje de forma continua y fluida desde el origen hasta el destino.
+ * 
+ * 2. Marcadores y Pines Georreferenciados (.pin-objeto):
+ *    - Estilos para los pines de objetos perdidos en el mapa (color rojo institucional #dc2626).
+ *    - Animación @keyframes pulsoPin para generar un efecto de onda expansiva o latido
+ *      que llame la atención del usuario hacia la ubicación donde se encuentra el objeto.
+ * 
+ * 3. Nodos del Grafo y Efectos Hover:
+ *    - Estilos de cursor pointer y transición de escala para los vértices interactivos
+ *      (aulas B-101 a B-106, casetas QR, baños y clínicas).
+ * 
+ * 4. Tarjetas Flotantes y Tooltips del Mapa (.mapa-tooltip):
+ *    - Ventanas emergentes (popovers) posicionadas dinámicamente sobre los pines
+ *      para mostrar el resumen del objeto, la foto y el enlace de reclamo.
+ * 
+ * 5. Adaptabilidad e Impresión (@media print):
+ *    - Reglas para optimizar la visualización de la ficha de reclamo o mapa al imprimirse.
+ */

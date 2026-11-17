@@ -1,0 +1,53 @@
+<!--
+================================================================================
+PLANTILLA DE INICIO DE SESIÓN DUAL (LOGIN.HTML)
+================================================================================
+
+Propósito del Archivo:
+----------------------
+Presenta la interfaz de acceso para todos los miembros de la comunidad universitaria
+y visitantes externos. Extiende de 'base.html' e implementa un diseño de pestañas
+para diferenciar claramente el acceso con contraseña del acceso passwordless.
+
+Componentes que van en esta plantilla:
+--------------------------------------
+1. Cabecera Visual:
+   - Isotipo del Jaguar UAM (🐆) y título internacionalizado: {{ t('auth.sign_in_title') }}.
+   - Descripción sobre el acceso seguro para la comunidad universitaria y visitantes.
+
+2. Selector de Pestañas de Acceso (Tab Switcher):
+   - Pestaña 1: '🏛️ Comunidad UAM' (Estudiantes, Colaboradores y Administradores).
+   - Pestaña 2: '👤 Visitante (Sin Clave)' (Acceso directo para público externo).
+
+3. Formulario 1: Acceso Institucional (Comunidad UAM):
+   - Campo 'correo':
+     * Entrada tipo email.
+     * Restricción por patrón pattern="^[a-zA-Z0-9_.+-]+@uamv\\.edu\\.ni$".
+     * Etiqueta y texto de ayuda recordando el dominio obligatorio @uamv.edu.ni.
+   - Campo 'password':
+     * Entrada tipo password, mínimo 6 caracteres.
+   - Botón 'Ingresar al Sistema':
+     * Envía POST hacia /auth/login con tipoAcceso = 'institucional'.
+
+4. Formulario 2: Acceso Visitante (Passwordless):
+   - Recuadro explicativo informando que los visitantes no requieren contraseña
+     y pueden consultar el estado de sus pertenencias solo con su correo y cédula.
+   - Campo 'correo_visitante':
+     * Entrada tipo email para correos personales (Gmail, Outlook, Yahoo, etc.).
+   - Campo 'cedula_visitante':
+     * Entrada de texto para número de cédula o documento de identidad oficial.
+   - Botón 'Ingresar como Visitante':
+     * Envía POST hacia /auth/login con tipoAcceso = 'visitante'.
+
+5. Sección de Enlaces y Cuentas Semilla de Prueba:
+   - Enlace directo a la página de registro: {{ url_for('auth.signup') }}.
+   - Bloque informativo con credenciales de prueba para evaluadores de la asignatura:
+     * Administrador: admin@uamv.edu.ni / uam2026
+     * Estudiante: estudiante@uamv.edu.ni / uam2026
+     * Colaborador: colaborador@uamv.edu.ni / uam2026
+     * Visitante: carlos.mendoza@gmail.com / Cédula: 001-180775-0023V (sin contraseña)
+
+6. Bloque de Scripts JavaScript:
+   - Script para alternar visibilidad entre el formulario institucional y el de visitante
+     al hacer clic en las pestañas, ajustando dinámicamente los atributos 'required'.
+-->
