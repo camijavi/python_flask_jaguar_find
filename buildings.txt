@@ -1,0 +1,374 @@
+Building_A:
+    first floor:
+    contabilidad: 
+    centro de atención al estudiante (cae) / zona común: 
+    dirección de mercadeo y admisión: 
+    registro académico: 
+    cartera y cobro: 
+    dirección académica: 
+    cartera y cobro: 
+    dirección financiera:
+    objetos perdidos: 
+
+fuera del edificio
+    cajeros automáticos (bac y lafise): 
+
+second floor: 
+    dirección administrativa
+    logística académica
+    dirección tecnología de la información y comunicación
+    mercadeo y publicidad
+    dirección de gestión del talento
+    recursos humanos.
+
+third floor:
+    dirección de producción audiovisual (DPA): 
+    Set de grabación ciclograma: 
+    estudio de sonido: 
+    oficinas auxiliares DPA: 
+    control máster: 
+    set de radio: 
+
+
+Building_B:
+
+first floor:
+    módulo comercial 1 (farmacia): 
+    B101: 
+    B102: 
+    B 103: 
+    B104: 
+    B105: 
+    B 106: 
+    B107: 
+    B108: 
+    B109: 
+    Servicios sanitarios hombres:
+    Bebedero de agua: 
+    Servicios sanitarios mujeres: 
+    Fotocopias: 
+
+Second floor: 
+    B201: 
+    B202: 
+    B203: 
+    B204: 
+    B205: 
+    B206: 
+    B207: 
+    B208: 
+    B209: 
+    B210: 
+
+Entre edifico C y B:
+ Bebedero de agua: 
+
+
+
+Building_C:
+    first floor:
+    auditorio C101: 
+    C102: 
+    C103: 
+    C104: 
+    C105: 
+
+    Bebedero de agua: 
+
+    Caja Uam / tesorería: 
+    C106: 
+    laboratorio MAC 107: 
+    Laboratorio de computación Acai-Erasmus + (C-108): 
+    Auditorio 109: 
+
+Second floor:
+    laboratorio de computación:
+        C201: 
+        C202: 
+        C204: 
+        C205: 
+    laboratorio MAC C203: 
+    Sanitarios hombres: 
+    Sanitarios mujeres: 
+    Aulas:
+        C209: 
+        C210: 
+        C211: 
+
+Third floor:
+    C301: 
+    C302: 
+    C303: 
+    C304: 
+    C305: 
+    Coordinación de Compras: 
+    C307: 
+    C308: 
+    C309: 
+    C310: 
+
+
+Building_D: Just one floor
+    Aula D102:
+    Laboratorio de odontología digital CAM-CAM: 
+    Oficina de Servicio al cliente: 
+    Sala de Reunión: 
+
+Building E:
+    Clínicas Médicas: 
+    Servicios Sanitarios Hombres: 
+    Servicios Sanitarios Mujeres: 
+    Servicios Sanitarios personas con discapacidades mixtos: 
+    Centro de Cardiología: 
+    Facultad de Ciencias Médicas: 
+    dirección de vida estudiantil (anexo oeste):  
+    Dirección de Innovación y Emprendimientos (DIE) (Anexo Norte):
+    Bancas: 
+
+Second floor:
+    Laboratorio simuladores de habilidades medicina: 
+    Laboratorio simuladores de medicina: 
+    Oficina Psicología: 
+    Laboratorio Clínico de Medicina: 
+
+Building F: Just one floor
+    salón de profesores: 
+    dirección de posgrados y educación continua: 
+    Facultad de Ciencias Administrativas y Económicas (FCAE): 
+    Facultad de Marketing, Diseño y Ciencias de la comunicación (FMDCC): 
+
+Building G:
+Facultad de ciencias jurídicas, humanidades y relaciones internacionales ( FCJHRI):  
+    auditorio FCJHRI: 
+    Centro de Mediación y Arbitraje: 
+    Language Center: 
+    Uam College: 
+    Dirección de relaciones internacionales e internacionalización:  
+    Baños Mixtos:
+    Baños para personas con discapacidades mixtos: 
+
+Second Floor:
+    auditorio central / auditorio rubén darío: 
+
+Building H:
+    Baños hombres:   
+    Baños mujeres: 
+    Lab med H101: 
+    Lab med H102: 
+    Lab med H103: 
+    Coordinación de gestión de calidad: 
+    Oficina de supervisión de laboratorios de medicina: 
+    Lab med H105: 
+    Lab med H106: 
+    Lab med H107: 
+
+second building:
+    Lab med H201: 
+    Lab med H202: 
+    Lab med H203:  
+    Lab med H204: 
+    Lab med H205: 
+    Lab med H206: 
+    Lab med H207: 
+
+Building I:
+    vicepresidencia
+    sala de reunión directores: 
+    dirección académica: 
+    rectoria: 
+    gerencia general: 
+    secretaría general: 
+    oficina / sala de reunión: 
+    biblioteca pablo antonio cuadra:
+    baños biblioteca hombre: 
+    baños biblioteca mujer: 
+    dirección de relaciones públicas: 
+
+Building J:
+    Lab odonto J101: 
+    Lab odonto J102:
+    Baños hombres: 
+    baños mujeres: 
+
+Building K:
+    Baños hombres:  
+    baños mujeres: 
+    área de mesas: 
+    terrazas: 
+    jaguar shop: 
+    módulos comerciales (food court):
+    Kiosko 1: 
+
+Second floor:
+    Kiosko 1: 
+    Kiosko 2: 
+    área de mesas:  
+
+
+Building L:
+    duchas visitantes:
+    duchas home: 
+    salón de cultura: 
+    aula de música: 
+    baños hombres: 
+    baños mujeres: 
+
+Building M:
+    auditorio M101: 
+    auditorio M102: 
+    dirección de gestión ambiental y energética: 
+    Dirección Investigación y Extensión Universitaria: 
+    Aula: 
+    Baños hombres: 
+    Baños mujeres: 
+    servicios mixtos discapacitados: 
+    Bebedero de agua: 
+
+Second floor:
+    M201: 
+    M202: 
+    M203: 
+    M204: 
+
+Third floor:
+    M301: 
+    M302: 
+    M303: 
+    M304: 
+
+Building N:
+    quirófano 1:
+    quirófano 2: 
+    recepción:
+    archivo - caja: 
+    clínica médica A: 
+    clínica médica B: 
+    clínica médica E: 
+    oficina archivo y expedientes: 
+    coordinación de clínicas: 
+    Radiología 1:
+    Radiología 2: 
+    Radiología 3: 
+    Proveeduría: 
+    Interpretación Radiográfica: 
+    Tomografía: 
+    Lavado de Instrumentos: 
+    Preparación y empaque: 
+    esterilización 
+    Clínicas post grado C-D
+    Laboratorio de fabricación digital (anexo)
+    Bodega Archivo (anexo sur):
+    oficina IDEA (Anexo sur): 
+    oficina de supervisión clínicas odontológicas
+
+    servicios sanitarios hombres: 
+    servicios sanitarios mujeres: 
+    Archivo
+
+Segundo Piso: 
+    Facultad de odontología (FODO): 
+    técnicos odontologicos:
+    lab simuladores
+    lab de grado
+    proveeduria
+    lab post-grado
+    radiologia no1 - no 2
+    revelado digital
+
+Building O:
+    Facultad de Ingeniería y Arquitectura: 
+    Lab mecánica de suelos: 
+    área de exhibición:
+    Lab resistencia de materiales: 
+    área de mezclado: 
+    área de curado: 
+    técnicos de lab: 
+    lab mecánica de fluidos: 
+    Baños hombres: 
+    baños mujeres:
+    sala de maestros fia (anexo norte):  
+
+Second floor: 
+    Lab redes O201: 
+    Aula O202: 
+    Sala de tutoría: 
+    centro de inteligencia artificial y robotica (CIAR): 
+    Centro de Redes: 
+
+
+Building P:
+    Estación de Meteorología: 
+    Aulas P101: 
+    Bebedero de agua: 
+    Aulas P102: 
+    Aulas P103: 
+    Aulas P104: 
+    Aulas P105: 
+    Aulas P106: 
+    Aulas P107: 
+    Aulas P108: 
+    Bebedero de agua: 
+    Baños hombres: 
+    baños mujeres: 
+
+Second floor:
+    Aulas P201: 
+    Bebedero de agua: 
+    Aulas P202: 
+    Aulas P203: 
+    Aulas P204: 
+    Aulas P205: 
+    Aulas P206: 
+    Aulas P207: 
+    Aulas P208: 
+    Bebedero de agua: 
+    Baños hombres: 
+    baños mujeres: 
+Third floor:
+    Aulas P301: 
+    Bebedero de agua: 
+    Aulas P302: 
+    Aulas P303: 
+    Aulas P304: 
+    Aulas P305: 
+    Aulas P306: 
+    Aulas P307: 
+    Aulas P308: 
+    Bebedero de agua: 
+    Baños hombres: 
+    baños mujeres: 
+
+Fourth Floor:
+    Aula 401:   
+
+Fifth Floor:
+    Observatorio copérnico: 
+Campos deportivos:
+    estadio de baseball (Jaguar stadium): 
+    cancha de futbol: 
+    baños hombres: 
+    baños mujeres: 
+    kiosko jaguarcito: 
+    oficinas de deportes: 
+    bodega de deportes: 
+
+Complejo deportivo Jaguar Center:
+    salón de artes marciales: 
+    salón de usos multiples - DVE:
+    cancha multi-usos: 
+    cancha de volleyball arena:
+    kiosko jaguar sport: 
+    clinica fisioterapia: 
+    Gimnasio JAGUR GYM: 
+    Oficina Psicologia deportiva: 
+    Plaza chilamates:
+    módulo comercial 1, 2 y 3
+    área de mesas
+    Fast point
+    area de mesas
+
+Bodega general y contenedores: 
+    bodega general: 
+    oficinas deportivas 1-3: 
+    comedor de colaboradores: 
+

@@ -29,6 +29,10 @@ Each file has its title in **English** and contains the full information in both
    * **ES:** Organización del equipo (Camila, Francis, James y Elias), paquetes de trabajo, matriz RACI y cronograma de desarrollo día a día de 12 días en formato tabular y diagrama de flujo.
    * **EN:** Team role allocation, WBS work packages, RACI matrix, and 12-day day-by-day development roadmap.
 
+5. **[GRAPH_MAPPING_RULES.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/GRAPH_MAPPING_RULES.md)**
+   * **ES:** Reglas y criterios oficiales de modelado topológico: abstracción de perímetro en áreas restringidas (Gateway Pattern para Edificio N Odontología y laboratorios), política de 1 sola puerta en aulas vs. accesos múltiples en auditorios, modelo híbrido (GPS exterior vs. plano cartesiano/pisos interior) y argumentos de defensa ante el jurado.
+   * **EN:** Official topological modeling rules: perimeter abstraction in restricted zones (Gateway Pattern for Building N Dental Clinics & labs), single-door vs. multi-door policy, hybrid navigation model (outdoor GPS vs. indoor Cartesian canvas/floors), and defense talking points.
+
 ---
 
 ### 🏛️ Modular Codebase Architecture / Estructura Modular del Proyecto
