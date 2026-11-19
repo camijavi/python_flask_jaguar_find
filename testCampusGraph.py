@@ -2,32 +2,45 @@
 testCampusGraph.py
 ================================================================================
 Interactive & Automated verification script for the UAM Campus Graph Engine.
-Demonstrates Dijkstra route calculation, accessibility pruning (♿), 
-category filtering, and smart keyword resolution.
+Demonstrates Dijkstra route calculation in English and Spanish (i18n),
+accessibility pruning (♿), category filtering, and smart keyword resolution.
 ================================================================================
 """
 
-from grafoUam import globalNavigationService
-from data.campusCategories import CampusCategory, CATEGORY_METADATA
+from grafoUam import globalNavigationService, CampusCategory, CATEGORY_METADATA, t
 
 def runGraphTestSuite():
     print("=" * 80)
     print("  JAGUARFIND & JAGUARMAPS - UAM CAMPUS GRAPH VERIFICATION SUITE")
     print("=" * 80)
 
-    # 1. Standard Walking Route Test
-    print("\n[TEST 1] Calculating Standard Pedestrian Route:")
-    print("  Origin: mainParking (Parqueo Principal)")
+    # 1a. Standard Pedestrian Route in English (Default Internal Representation)
+    print("\n[TEST 1A] Calculating Pedestrian Route in English (lang='eng'):")
+    print("  Origin: mainParking (Main Parking)")
     print("  Destination: 'B103' (Classroom B-103)")
-    res1 = globalNavigationService.calculateRoute("mainParking", "B103")
-    if res1["success"]:
-        print(f"  ✓ Success! Path: {' -> '.join(res1['pathNodeIds'])}")
-        print(f"  ✓ Total Walking Distance: {res1['totalDistanceMeters']} meters (~{res1['estimatedWalkingMinutes']} min)")
-        print("  ✓ Step Instructions:")
-        for idx, step in enumerate(res1["stepInstructions"], 1):
+    resEng = globalNavigationService.calculateRoute("mainParking", "B103", lang="eng")
+    if resEng["success"]:
+        print(f"  ✓ Success! Path: {' -> '.join(resEng['pathNodeIds'])}")
+        print(f"  ✓ Total Walking Distance: {resEng['totalDistanceMeters']} meters (~{resEng['estimatedWalkingMinutes']} min)")
+        print("  ✓ Step Instructions (English):")
+        for idx, step in enumerate(resEng["stepInstructions"], 1):
             print(f"     {idx}. {step}")
     else:
-        print(f"  ✗ Failed: {res1['error']}")
+        print(f"  ✗ Failed: {resEng['error']}")
+
+    # 1b. Standard Pedestrian Route in Spanish (via languages/spa.json)
+    print("\n[TEST 1B] Calculating Pedestrian Route in Spanish (lang='spa'):")
+    print("  Origin: mainParking (Parqueo Principal)")
+    print("  Destination: 'B103' (Aula B-103)")
+    resSpa = globalNavigationService.calculateRoute("mainParking", "B103", lang="spa")
+    if resSpa["success"]:
+        print(f"  ✓ Success! Path: {' -> '.join(resSpa['pathNodeIds'])}")
+        print(f"  ✓ Total Walking Distance: {resSpa['totalDistanceMeters']} meters (~{resSpa['estimatedWalkingMinutes']} min)")
+        print("  ✓ Step Instructions (Spanish from spa.json):")
+        for idx, step in enumerate(resSpa["stepInstructions"], 1):
+            print(f"     {idx}. {step}")
+    else:
+        print(f"  ✗ Failed: {resSpa['error']}")
 
     # 2. Universal Accessibility (♿) Test
     print("\n[TEST 2] Accessibility (Wheelchair ♿) Pruning Test:")
@@ -35,9 +48,9 @@ def runGraphTestSuite():
     print("  Destination: buildingP (Copernicus Observatory)")
     
     # 2a. Without accessibility filter (allows stairs)
-    resNormal = globalNavigationService.calculateRoute("buildingN", "buildingP", accessibleOnly=False)
+    resNormal = globalNavigationService.calculateRoute("buildingN", "buildingP", accessibleOnly=False, lang="eng")
     # 2b. With accessibility filter (must avoid stairs and take Building O ramp)
-    resAccessible = globalNavigationService.calculateRoute("buildingN", "buildingP", accessibleOnly=True)
+    resAccessible = globalNavigationService.calculateRoute("buildingN", "buildingP", accessibleOnly=True, lang="eng")
 
     print(f"  • Standard Route (includes stairs): {' -> '.join(resNormal['pathNodeIds'])} ({resNormal['totalDistanceMeters']}m)")
     print(f"  • Accessible Route (ramps only):    {' -> '.join(resAccessible['pathNodeIds'])} ({resAccessible['totalDistanceMeters']}m)")
@@ -59,7 +72,7 @@ def runGraphTestSuite():
     for cat in categoriesToTest:
         meta = CATEGORY_METADATA.get(cat, {})
         places = globalNavigationService.getPlacesByCategory(cat)
-        print(f"  • {meta.get('labelSpanish', cat)} ({len(places)} locations registered):")
+        print(f"  • {meta.get('labelEnglish', cat)} / {meta.get('labelSpanish', cat)} ({len(places)} locations registered):")
         for p in places[:3]: # Show first 3
             print(f"     - {p['name']} in {p['parentBuildingId']} (Floor {p['floorLevel']})")
         if len(places) > 3:
@@ -69,9 +82,11 @@ def runGraphTestSuite():
     print("\n[TEST 4] GPS Nearest Node Detection (Haversine):")
     # Coordinates near Building B
     userLat, userLng = 12.12460, -86.27090
-    nearest = globalNavigationService.findNearestGpsNode(userLat, userLng)
+    nearestEng = globalNavigationService.findNearestGpsNode(userLat, userLng, lang="eng")
+    nearestSpa = globalNavigationService.findNearestGpsNode(userLat, userLng, lang="spa")
     print(f"  User GPS: ({userLat}, {userLng})")
-    print(f"  ✓ Nearest Campus Node: {nearest['nearestNodeId']} ({nearest['nodeName']}) - {nearest['distanceMeters']}m away")
+    print(f"  ✓ Nearest Node (English): {nearestEng['nearestNodeId']} ({nearestEng['nodeName']}) - {nearestEng['distanceMeters']}m away")
+    print(f"  ✓ Nearest Node (Spanish): {nearestSpa['nearestNodeId']} ({nearestSpa['nodeName']}) - {nearestSpa['distanceMeters']}m away")
 
     print("\n" + "=" * 80)
     print("  ALL GRAPH TESTS COMPLETED SUCCESSFULLY! READY FOR FLASK / UI CONSUMPTION.")
