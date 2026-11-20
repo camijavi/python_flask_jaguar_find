@@ -7,6 +7,10 @@ accessibility pruning (♿), category filtering, and smart keyword resolution.
 ================================================================================
 """
 
+import sys
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 from grafoUam import globalNavigationService, CampusCategory, CATEGORY_METADATA, t
 
 def runGraphTestSuite():

@@ -19,7 +19,7 @@ Componentes y Lógica que van en este archivo:
 2. Registro de Blueprints Modulares:
    - auth_bp (/auth): Módulo de login institucional/visitante, signup y logout.
    - map_bp (/ y /map): Navegador peatonal interactivo del campus y escaneo QR en casetas.
-   - lost_found_bp (/lost-found): Catálogo de objetos, reporte y panel de custodia del Edificio A.
+   - lost_found_object_bp (/lost-found-object): Catálogo de objetos, reporte y panel de custodia del Edificio A.
    - api_bp (/api): Servicios web RESTful (rutas Dijkstra, puntos de interés, catálogo JSON y pines).
 
 3. Sistema de Internacionalización (i18n):
