@@ -1,0 +1,112 @@
+<!-- INSTITUTIONAL NAVBAR -->
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-md pb-0 shrink-0">
+    <div class="w-full px-4 sm:px-6 lg:px-8 pb-0">
+        <div class="flex items-center justify-between h-14 pb-0">
+            
+            <!-- Logo & Brand + Sidebar Hamburger Toggle -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Hamburger Button to show/hide navigateMap as a sidebar menu -->
+                <button id="navSidebarToggle" 
+                        type="button" 
+                        class="p-2 -ml-2 rounded-xl text-slate-600 hover:text-brand-700 hover:bg-slate-100 active:scale-95 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20 transition-all cursor-pointer" 
+                        aria-label="{{ t('nav.toggle_menu', default='Alternar menú de navegación') }}" 
+                        aria-expanded="false" 
+                        title="{{ t('nav.toggle_menu', default='Alternar menú de navegación') }}">
+                    <svg id="navSidebarHamburgerIcon" class="w-6 h-6 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <a href="{{ url_for('renderMapScreen') }}" class="flex items-center gap-2.5 group">
+                    <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-brand-900 to-brand-600 bg-clip-text text-transparent">
+                        JaguarFind
+                    </span>
+                </a>
+            </div>
+
+            <!-- Navigation Links (Desktop - Report Item removed) -->
+            <nav class="hidden md:flex items-center gap-1 lg:gap-2">
+                <a href="{{ url_for('renderMapScreen') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors {% if request.path in ['/', '/map', '/mapa'] %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:text-brand-700 hover:bg-slate-50{% endif %}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                    <span>{{ t('nav.map', default='Campus Map') }}</span>
+                </a>
+                <a href="/lost-found-object/catalogo" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-slate-600 hover:text-brand-700 hover:bg-slate-50 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    <span>{{ t('nav.lost_found', default='Lost & Found') }}</span>
+                </a>
+            </nav>
+
+            <!-- Right Controls: Language Selector (Sign in button removed) -->
+            <div class="flex items-center gap-2.5">
+                
+                <!-- Language Switcher Toggle -->
+                <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200">
+                    <a href="{{ url_for('setLanguage', lang='spa') }}" 
+                       class="px-2.5 py-1 text-xs font-bold rounded-md transition-all {% if current_language == 'spa' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}"
+                       title="Cambiar a Español">
+                        ES
+                    </a>
+                    <a href="{{ url_for('setLanguage', lang='eng') }}" 
+                       class="px-2.5 py-1 text-xs font-bold rounded-md transition-all {% if current_language == 'eng' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}"
+                       title="Switch to English">
+                        EN
+                    </a>
+                </div>
+
+                <!-- User Session (when authenticated) -->
+                {% if session.get('user') %}
+                    <div class="hidden sm:flex items-center gap-2 pl-2 border-l border-slate-200">
+                        <div class="flex flex-col text-right">
+                            <span class="text-xs font-bold text-slate-800 leading-tight">
+                                {{ session['user'].get('FullName', 'User') }}
+                            </span>
+                            <span class="text-[10px] font-medium text-amber-600">
+                                {{ session['user'].get('UserTypeName', 'Student') }}
+                            </span>
+                        </div>
+                        <form action="/api/auth/logout" method="POST" class="inline">
+                            <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition-colors" title="{{ t('nav.logout', default='Logout') }}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- NAVBAR SIDEBAR CONTROLLER SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const toggleBtn = document.getElementById("navSidebarToggle");
+    if (!toggleBtn) return;
+
+    toggleBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        if (typeof window.toggleNavigateMapSidebar === "function") {
+            window.toggleNavigateMapSidebar();
+        } else {
+            // If on a screen without the map navigator, navigate to the map screen
+            window.location.href = "{{ url_for('renderMapScreen') }}";
+        }
+    });
+
+    // Synchronize button styling & aria-expanded when sidebar opens or closes
+    window.addEventListener("navigateMapSidebarStateChanged", function(e) {
+        const isOpen = e.detail && e.detail.open;
+        toggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        const icon = document.getElementById("navSidebarHamburgerIcon");
+        if (isOpen) {
+            toggleBtn.classList.add("bg-brand-50", "text-brand-700");
+            toggleBtn.classList.remove("text-slate-600");
+            if (icon) icon.classList.add("rotate-90");
+        } else {
+            toggleBtn.classList.remove("bg-brand-50", "text-brand-700");
+            toggleBtn.classList.add("text-slate-600");
+            if (icon) icon.classList.remove("rotate-90");
+        }
+    });
+});
+</script>

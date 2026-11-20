@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}JaguarFind{% endblock %}
+
+{% block head %}
+<!-- Official 2D Campus Map Stylesheet -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/campus2dMap.css') }}">
+<style>
+    /* Prevent outer window scrolling on map screen to provide full-viewport app feel */
+    body {
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Full-viewport map layout container -->
+<div class="w-full h-full flex-1 flex overflow-hidden relative">
+    
+    <!-- Mobile Backdrop for offcanvas sidebar drawer -->
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 backdrop-inactive lg:hidden" aria-hidden="true"></div>
+
+    <!-- MAIN TWO-COLUMN RESPONSIVE LAYOUT (FLUID FLEX TRANSITION) -->
+    <div id="mapLayoutWrapper" class="flex flex-row w-full h-full overflow-hidden relative">
+        
+        <!-- LEFT COLUMN: Navigation & Directory Sidebar (Switchable Tabs on Desktop; Directory Sidebar Menu on Mobile) -->
+        <div id="mapSidebarColumn" class="fixed inset-y-0 left-0 z-50 w-full max-w-sm sm:max-w-md bg-white p-3 shadow-2xl overflow-y-auto sidebar-mobile-closed lg:static lg:z-20 lg:p-3 lg:bg-white lg:shadow-md lg:overflow-y-auto lg:shrink-0 lg:border-r lg:border-slate-200/80 sidebar-desktop-open space-y-2">
+            
+            <div class="w-full min-w-[300px] max-w-full space-y-2 pb-4">
+                <!-- Sleek Segmented Switcher (Visible on desktop; on mobile the sidebar is dedicated to Directorio UAM) -->
+                <div id="sidebarSwitcher" class="hidden lg:flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200 text-xs font-semibold">
+                    <button id="sidebarTabNav" type="button" class="flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all">
+                        <!-- Directions Waypoint SVG -->
+                        <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                        <span>{{ t('map.tabs.navigation', default='Navegación') }}</span>
+                    </button>
+                    <button id="sidebarTabDir" type="button" class="flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all">
+                        <!-- Directory Office SVG -->
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        <span>{{ t('map.tabs.directory', default='Directorio UAM') }}</span>
+                    </button>
+                </div>
+
+                <!-- Desktop Slot: Tab Panel 1: navigateMap Component -->
+                <div id="desktopNavSlot" class="w-full">
+                    <div id="sidebarPanelNav" class="w-full">
+                        {% include "components/map/navigateMap.html" %}
+                    </div>
+                </div>
+
+                <!-- Tab Panel 2: buildingDirectory Component (Official Signage Directory) -->
+                <div id="sidebarPanelDir" class="w-full hidden">
+                    {% include "components/map/buildingDirectory.html" %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Official 2D Vector Campus Map -->
+        <div id="mapContainerColumn" class="flex-1 h-full w-full min-w-0 relative flex flex-col overflow-hidden">
+            <!-- Mobile Navigation Overlay Slot (overlaid on top of map on small screens) -->
+            <div id="mobileNavSlot" class="w-full pointer-events-none lg:hidden"></div>
+
+            {% include "components/map/campus2dMap.html" %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Official 2D Vector Map and Directory Logic -->
+<script src="{{ url_for('static', filename='js/campus2dMap.js') }}"></script>
+
+<script>
+// Sidebar Tab Switching
+document.addEventListener("DOMContentLoaded", function() {
+    const tabNav = document.getElementById("sidebarTabNav");
+    const tabDir = document.getElementById("sidebarTabDir");
+    const panelNav = document.getElementById("sidebarPanelNav");
+    const panelDir = document.getElementById("sidebarPanelDir");
+    const btnCloseDir = document.getElementById("btnCloseDirectorySidebar");
+    const desktopSlot = document.getElementById("desktopNavSlot");
+    const mobileSlot = document.getElementById("mobileNavSlot");
+    const sidebarSwitcher = document.getElementById("sidebarSwitcher");
+
+    if (btnCloseDir) {
+        btnCloseDir.addEventListener("click", () => {
+            if (typeof window.toggleNavigateMapSidebar === "function") {
+                window.toggleNavigateMapSidebar(false);
+            }
+        });
+    }
+
+    // Responsive navigation slot manager (Google Maps layout on mobile, sidebar panel on desktop)
+    function adaptNavPlacement() {
+        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+        const currentPanelNav = document.getElementById("sidebarPanelNav");
+        if (!currentPanelNav || !desktopSlot || !mobileSlot) return;
+
+        if (!isDesktop) {
+            // Move navigation to mobile overlay slot on top of 2D map
+            if (!mobileSlot.contains(currentPanelNav)) {
+                mobileSlot.appendChild(currentPanelNav);
+            }
+            currentPanelNav.classList.remove("hidden");
+            // Mobile sidebar drawer is dedicated to Directorio UAM
+            if (panelDir) panelDir.classList.remove("hidden");
+            if (sidebarSwitcher) sidebarSwitcher.classList.add("hidden");
+        } else {
+            // Restore navigation to desktop left sidebar slot
+            if (!desktopSlot.contains(currentPanelNav)) {
+                desktopSlot.appendChild(currentPanelNav);
+            }
+            if (sidebarSwitcher) sidebarSwitcher.classList.remove("hidden");
+            
+            // Respect active desktop tab (persisted via sessionStorage or default to nav)
+            const savedTab = sessionStorage.getItem("jaguar_map_active_tab") || "nav";
+            const isNavActive = (savedTab === "nav");
+            
+            if (tabNav && tabDir) {
+                if (isNavActive) {
+                    tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
+                    tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
+                } else {
+                    tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
+                    tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
+                }
+            }
+            
+            if (panelDir) panelDir.classList.toggle("hidden", isNavActive);
+            currentPanelNav.classList.toggle("hidden", !isNavActive);
+        }
+    }
+
+    window.addEventListener("resize", adaptNavPlacement);
+    adaptNavPlacement();
+
+    if (tabNav && tabDir && panelDir) {
+        tabNav.addEventListener("click", () => {
+            const currentPanelNav = document.getElementById("sidebarPanelNav");
+            sessionStorage.setItem("jaguar_map_active_tab", "nav");
+            tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
+            tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
+            if (currentPanelNav) currentPanelNav.classList.remove("hidden");
+            panelDir.classList.add("hidden");
+        });
+
+        tabDir.addEventListener("click", () => {
+            const currentPanelNav = document.getElementById("sidebarPanelNav");
+            sessionStorage.setItem("jaguar_map_active_tab", "dir");
+            tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
+            tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
+            panelDir.classList.remove("hidden");
+            if (currentPanelNav) currentPanelNav.classList.add("hidden");
+        });
+    }
+});
+</script>
+{% endblock %}

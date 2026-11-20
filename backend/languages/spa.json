@@ -14,7 +14,9 @@
     "signup": "Registrarse",
     "admin": "Panel Administrativo",
     "logout": "Cerrar Sesión",
-    "language": "Idioma"
+    "language": "Idioma",
+    "toggle_menu": "Alternar Menú de Navegación",
+    "close_menu": "Cerrar Menú de Navegación"
   },
   "map": {
     "title": "Navegador del Campus UAM",
@@ -39,7 +41,32 @@
       "food": "Comida y Cafeterías",
       "clinics": "Clínicas y Salud",
       "sports": "Deportes y Gimnasio",
-      "admin": "Trámites y Facultades"
+      "admin": "Trámites y Facultades",
+      "drinking_fountains": "Bebederos",
+      "dental": "Odontología",
+      "ramps": "Rampas"
+    },
+    "get_gps": "Obtener vía GPS",
+    "select_category": "Selecciona categoría o busca directamente",
+    "search_matches": "Coincidencias encontradas",
+    "no_matches": "No se encontraron ubicaciones coincidentes",
+    "searching": "Buscando en el campus...",
+    "clear_route": "Limpiar Ruta",
+    "voice_start": "Iniciar Guía por Voz",
+    "voice_stop": "Detener Voz",
+    "floor": "Piso",
+    "direct_search": "Buscar ubicación o aula...",
+    "subtitle": "Encuentra rutas peatonales óptimas en el campus",
+    "plan_route": "Planificar Ruta",
+    "directions": "Cómo llegar",
+    "mode_walking": "A pie",
+    "mode_accessible": "Accesible",
+    "standard_route": "Ruta Peatonal Estándar",
+    "steps_count": "pasos",
+    "close": "Cerrar",
+    "tabs": {
+      "navigation": "Navegación",
+      "directory": "Directorio UAM"
     }
   },
   "auth": {

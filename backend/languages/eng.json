@@ -14,7 +14,9 @@
     "signup": "Sign Up",
     "admin": "Admin Panel",
     "logout": "Sign Out",
-    "language": "Language"
+    "language": "Language",
+    "toggle_menu": "Toggle Navigation Menu",
+    "close_menu": "Close Navigation Menu"
   },
   "map": {
     "title": "UAM Campus Navigator",
@@ -39,7 +41,32 @@
       "food": "Food & Cafeterias",
       "clinics": "Clinics & Health",
       "sports": "Sports & Gym",
-      "admin": "Services & Faculties"
+      "admin": "Services & Faculties",
+      "drinking_fountains": "Drinking Fountains",
+      "dental": "Dentistry",
+      "ramps": "Ramps"
+    },
+    "get_gps": "Get via GPS",
+    "select_category": "Select category or search directly",
+    "search_matches": "Possible matches",
+    "no_matches": "No matching locations found",
+    "searching": "Searching campus locations...",
+    "clear_route": "Clear Route",
+    "voice_start": "Start Voice Guidance",
+    "voice_stop": "Stop Voice",
+    "floor": "Floor",
+    "direct_search": "Search location or classroom...",
+    "subtitle": "Find optimal pedestrian walking routes",
+    "plan_route": "Plan Route",
+    "directions": "Directions",
+    "mode_walking": "Walking",
+    "mode_accessible": "Accessible",
+    "standard_route": "Standard Pedestrian Route",
+    "steps_count": "steps",
+    "close": "Close",
+    "tabs": {
+      "navigation": "Navigation",
+      "directory": "UAM Directory"
     }
   },
   "auth": {
