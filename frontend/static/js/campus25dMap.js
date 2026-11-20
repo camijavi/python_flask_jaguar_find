@@ -1,33 +1,31 @@
 /**
  * ================================================================================
- * CAMPUS 2.5D PERSPECTIVE VIEW CONTROLLER (CAMPUS25DMAP.JS)
+ * CAMPUS25DMAP.JS - WAZE-STYLE 2.5D PERSPECTIVE NAVIGATION ENGINE
  * ================================================================================
- * Implements GPU-accelerated Waze-like 2.5D perspective navigation view:
- * 1. Gentle camera pitch (45°–52°, default 48°) to avoid excessive compression.
- * 2. Close zoom (scale 2.2) so map edges bleed off-screen (no "flying carpet").
- * 3. Lower-Third camera anchor: Locks user position at 50% X, 72% Y.
- * 4. Billboarding: Labels, building badges, and destination pins counter-rotate
- *    and un-squash so they remain upright, readable, and face the camera.
- * 5. Elevated 3D navigation elements (puck with ground shadow & raised chevron,
- *    route line extrusion, standing 3D flag pins).
+ * Transforms the flat 2D UAM campus map into an authentic Waze-style navigation view:
+ * 1. Infinite Ground Bleed: Ground color #f3f5f8 and atmospheric fog eliminate horizon seams.
+ * 2. Decoupled Upright HTML Overlays: 3D blue navigation puck, building badges, and pins
+ *    float flat and upright in screen space—never distorted into trapezoids.
+ * 3. Layered 3D Building Extrusions: Zero-blur drop shadows create 6px physical depth walls.
+ * 4. Waze Cockpit Framing: Top turn-by-turn banner, bottom trip summary bar (ETA, meters,
+ *    re-center, overview), and camera locked at 70% lower-third user anchor.
  * ================================================================================
  */
 
 (function () {
-    "use strict";
-
     class Campus25dController {
         constructor() {
-            // Waze-Style Navigation Defaults
+            // Waze-Style Navigation State
             this.is25dActive = false;
-            this.pitch = 48; // Gentle tilt (48°), avoids vertical squashing
+            this.pitch = 48; // Gentle 48° pitch, authentic Waze perspective
             this.heading = 0; // Rotation around Z axis (degrees)
             this.isHeadingUp = true;
-            this.zoomScale = 2.2; // Zoomed in mathematically so canvas edges bleed completely off-screen
+            this.zoomScale = 2.2; // Mathematical close zoom so canvas edges bleed off-screen
             this.currentRoute = null;
             this.currentStepIndex = 0;
             this.isSimulating = false;
             this.simInterval = null;
+            this.isOverview = false;
 
             // Camera Vector Animation State
             this.cameraGroup = document.getElementById("mapCameraGroup");
@@ -46,6 +44,15 @@
             this.horizon = document.getElementById("campusHorizonAtmosphere");
             this.compassRose = document.getElementById("compassRose");
 
+            // Decoupled HTML Overlays Layer
+            this.overlayLayer = document.getElementById("campus25dOverlayLayer");
+            this.puckContainer = document.getElementById("wazeNavigationPuck");
+            this.puckArrow = document.getElementById("wazePuckArrow");
+            this.puckCone = document.getElementById("wazePuckCone");
+            this.badgesContainer = document.getElementById("wazeBadgesContainer");
+            this.wazeOriginPin = document.getElementById("wazeOriginPin");
+            this.wazeDestPin = document.getElementById("wazeDestPin");
+
             // 2.5D HUD Elements
             this.btnMode2d = document.getElementById("btnMode2d");
             this.btnMode25d = document.getElementById("btnMode25d");
@@ -56,17 +63,24 @@
             this.btnToggleHeadingUp = document.getElementById("btnToggleHeadingUp");
             this.iconHeadingMode = document.getElementById("iconHeadingMode");
 
-            // Turn-by-Turn Banner Elements
+            // Waze Top Banner Elements
             this.tbtBanner = document.getElementById("turnByTurnBanner");
             this.tbtStepCounter = document.getElementById("tbtStepCounter");
             this.tbtStepDistance = document.getElementById("tbtStepDistance");
             this.tbtStepInstruction = document.getElementById("tbtStepInstruction");
+            this.tbtNextPreview = document.getElementById("tbtNextPreview");
             this.tbtManeuverIcon = document.getElementById("tbtManeuverIcon");
-            this.btnTbtPrev = document.getElementById("btnTbtPrevStep");
-            this.btnTbtNext = document.getElementById("btnTbtNextStep");
+            this.btnCloseTbt = document.getElementById("btnCloseTbtBanner");
+
+            // Waze Bottom Trip Summary Elements
+            this.wazeBottomBar = document.getElementById("wazeBottomBar");
+            this.wazeEtaTime = document.getElementById("wazeEtaTime");
+            this.wazeTripMeta = document.getElementById("wazeTripMeta");
+            this.wazeProgressBar = document.getElementById("wazeProgressBar");
+            this.btnWazeRecenter = document.getElementById("btnWazeRecenter");
+            this.btnWazeOverview = document.getElementById("btnWazeOverview");
             this.btnTbtPlay = document.getElementById("btnTbtPlaySimulation");
             this.labelSimPlay = document.getElementById("labelSimPlay");
-            this.btnCloseTbt = document.getElementById("btnCloseTbtBanner");
 
             // Map building coordinates lookup (matches campus2dMap.js)
             this.buildingAnchors = {
@@ -104,18 +118,113 @@
             }
 
             this.bindEvents();
-            this.setupUserBeaconLayer();
+            this.initOverlayBadges();
 
             // Handle window resize dynamically to preserve lower-third user anchor
             window.addEventListener("resize", () => {
                 if (this.is25dActive) {
-                    if (this.currentRoute) {
-                        this.goToStep(this.currentStepIndex);
-                    } else {
-                        this.centerOnCampusLowerThird();
-                    }
+                    this.applyTransform();
+                    this.updateOverlays();
                 }
             });
+        }
+
+        getBuildingData(nodeId) {
+            if (window.CAMPUS_BUILDINGS && window.CAMPUS_BUILDINGS[nodeId]) {
+                return window.CAMPUS_BUILDINGS[nodeId];
+            }
+            if (window.campus2dController && window.campus2dController.buildings && window.campus2dController.buildings[nodeId]) {
+                return window.campus2dController.buildings[nodeId];
+            }
+            const letterMap = {
+                "buildingA": "A", "buildingB": "B", "buildingC": "C", "buildingD": "D",
+                "buildingE": "E", "buildingF": "F", "buildingG": "G", "buildingH": "H",
+                "buildingI": "I", "buildingJ": "J", "buildingK": "K", "buildingL": "L",
+                "buildingM": "M", "buildingN": "N", "buildingO": "O", "buildingP": "P",
+                "sportsZone": "⚽", "jaguarCenter": "JC"
+            };
+            const nameMap = {
+                "buildingA": "Edificio A", "buildingB": "Edificio B", "buildingC": "Edificio C",
+                "buildingD": "Edificio D", "buildingE": "Edificio E", "buildingF": "Edificio F",
+                "buildingG": "Edificio G", "buildingH": "Edificio H", "buildingI": "Edificio I",
+                "buildingJ": "Edificio J", "buildingK": "Edificio K", "buildingL": "Edificio L",
+                "buildingM": "Edificio M", "buildingN": "Edificio N", "buildingO": "Edificio O",
+                "buildingP": "Edificio P", "sportsZone": "Campos Deportivos", "jaguarCenter": "Jaguar Center"
+            };
+            const colorMap = {
+                "buildingA": "#6b21a8", "buildingB": "#1e3a8a", "buildingC": "#1e3a8a",
+                "buildingD": "#15803d", "buildingE": "#0284c7", "buildingF": "#be185d",
+                "buildingG": "#0284c7", "buildingH": "#15803d", "buildingI": "#1e3a8a",
+                "buildingJ": "#0284c7", "buildingK": "#b45309", "buildingL": "#0284c7",
+                "buildingM": "#b45309", "buildingN": "#6b21a8", "buildingO": "#b45309",
+                "buildingP": "#be185d", "sportsZone": "#15803d", "jaguarCenter": "#0f766e"
+            };
+            return {
+                id: nodeId,
+                letter: letterMap[nodeId] || nodeId.charAt(0).toUpperCase(),
+                name: nameMap[nodeId] || nodeId,
+                badgeBg: colorMap[nodeId] || "#1e3a8a"
+            };
+        }
+
+        /**
+         * Creates decoupled upright HTML badges in the overlay layer
+         */
+        initOverlayBadges() {
+            if (!this.badgesContainer) return;
+            this.badgesContainer.innerHTML = "";
+
+            const fragment = document.createDocumentFragment();
+            for (const [nodeId, anchor] of Object.entries(this.buildingAnchors)) {
+                const bldgData = this.getBuildingData(nodeId);
+                const badgeEl = document.createElement("div");
+                badgeEl.className = "waze-bldg-badge";
+                badgeEl.id = `wazeBadge_${nodeId}`;
+                badgeEl.style.display = "none";
+
+                const badgeBg = bldgData.badgeBg || "#1e3a8a";
+                const letter = bldgData.letter || nodeId.replace("building", "").toUpperCase();
+                const rawName = bldgData.name || nodeId;
+                const cleanName = rawName.includes("•") ? rawName.split("•")[0].trim() : rawName;
+
+                badgeEl.innerHTML = `
+                    <span class="waze-bldg-letter" style="background-color: ${badgeBg}">${letter}</span>
+                    <span class="waze-bldg-name">${cleanName}</span>
+                `;
+
+                badgeEl.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    if (typeof window.showBuildingPopover === "function") {
+                        window.showBuildingPopover(bldgData, anchor);
+                    }
+                });
+
+                fragment.appendChild(badgeEl);
+            }
+            this.badgesContainer.appendChild(fragment);
+
+            // Populate Origin & Destination pins
+            if (this.wazeOriginPin) {
+                this.wazeOriginPin.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-emerald-500/30 flex items-center justify-center animate-ping"></div>
+                    <div class="absolute inset-0 m-auto w-5 h-5 rounded-full bg-emerald-500 border-2 border-white shadow-lg flex items-center justify-center">
+                        <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                    </div>
+                `;
+            }
+
+            if (this.wazeDestPin) {
+                this.wazeDestPin.innerHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="px-2 py-0.5 rounded-md bg-red-600 text-white font-extrabold text-[10px] shadow-md flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
+                            <span>Meta</span>
+                        </div>
+                        <div class="w-1 h-3 bg-red-700 shadow-sm"></div>
+                        <div class="w-2.5 h-1 rounded-full bg-slate-900/40"></div>
+                    </div>
+                `;
+            }
         }
 
         bindEvents() {
@@ -149,20 +258,52 @@
                     } else {
                         this.heading = 0;
                         this.applyTransform();
+                        this.updateOverlays();
+                        this.updateCompass(true);
                     }
                 });
             }
 
-            // Turn-by-turn banner controls
-            if (this.btnTbtPrev) {
-                this.btnTbtPrev.addEventListener("click", () => this.prevStep());
+            // Waze Re-center button (anchors camera back to user lower third)
+            if (this.btnWazeRecenter) {
+                this.btnWazeRecenter.addEventListener("click", () => {
+                    this.isOverview = false;
+                    this.pitch = 48;
+                    this.zoomScale = 2.2;
+                    if (this.currentRoute) {
+                        this.goToStep(this.currentStepIndex);
+                    } else {
+                        this.centerOnCampusLowerThird();
+                    }
+                });
             }
-            if (this.btnTbtNext) {
-                this.btnTbtNext.addEventListener("click", () => this.nextStep());
+
+            // Waze Overview button (toggles follow mode vs full campus overview)
+            if (this.btnWazeOverview) {
+                this.btnWazeOverview.addEventListener("click", () => {
+                    this.isOverview = !this.isOverview;
+                    if (this.isOverview) {
+                        this.pitch = 35;
+                        this.zoomScale = 1.15;
+                        this.anchorToLowerThird(500, 430, 0, true);
+                    } else {
+                        this.pitch = 48;
+                        this.zoomScale = 2.2;
+                        if (this.currentRoute) {
+                            this.goToStep(this.currentStepIndex);
+                        } else {
+                            this.centerOnCampusLowerThird();
+                        }
+                    }
+                });
             }
+
+            // Simulation player button
             if (this.btnTbtPlay) {
                 this.btnTbtPlay.addEventListener("click", () => this.toggleSimulation());
             }
+
+            // Close banner button
             if (this.btnCloseTbt) {
                 this.btnCloseTbt.addEventListener("click", () => this.hideNavigationBanner());
             }
@@ -187,63 +328,10 @@
                     this.isHeadingUp = !this.isHeadingUp;
                     this.updateHeadingControls();
                     this.goToStep(this.currentStepIndex);
+                } else if (e.key.toLowerCase() === "c" && this.is25dActive) {
+                    if (this.btnWazeRecenter) this.btnWazeRecenter.click();
                 }
             });
-        }
-
-        /**
-         * Elevated 3D Navigation Puck (Waze-Style)
-         * - Ground contact shadow ellipse
-         * - Pulsing radar accuracy ring
-         * - Forward illumination cone
-         * - Raised puck disk with drop shadow and sharp forward navigation chevron
-         */
-        setupUserBeaconLayer() {
-            if (!this.svg) return;
-            let beaconGroup = document.getElementById("userNavigationBeacon");
-            if (!beaconGroup) {
-                beaconGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-                beaconGroup.setAttribute("id", "userNavigationBeacon");
-                beaconGroup.classList.add("hidden");
-                beaconGroup.innerHTML = `
-                    <!-- 1. Ground Contact Shadow (Soft dark ellipse on asphalt) -->
-                    <ellipse cx="0" cy="4" rx="18" ry="9" fill="#0f172a" opacity="0.4" />
-                    <!-- 2. Radar Accuracy Pulse Ring on Ground -->
-                    <circle cx="0" cy="0" r="14" fill="#0284c7" opacity="0.3" class="beacon-pulse" />
-                    <!-- 3. Forward Directional Illumination Beam -->
-                    <path id="beaconCone" class="heading-cone" d="M 0 0 L -30 -90 L 30 -90 Z" fill="url(#beaconConeGradient)" />
-                    <!-- 4. Elevated 3D Navigation Puck (Counter-tilted & Raised above Ground) -->
-                    <g id="puckElevatedBody" class="billboard-puck">
-                        <!-- Drop Shadow under raised puck disk -->
-                        <circle cx="0" cy="-2" r="13" fill="#0369a1" opacity="0.35" filter="url(#bldgShadow)" />
-                        <!-- Beveled Outer White Rim -->
-                        <circle cx="0" cy="-5" r="13" fill="#ffffff" filter="url(#bldgShadow)" />
-                        <!-- Core Brand Blue Disk -->
-                        <circle cx="0" cy="-5" r="10.5" fill="#0284c7" />
-                        <!-- Forward Direction Navigation Chevron (White Arrow) -->
-                        <path d="M 0 -11 L 5 -2 L 0 -4 L -5 -2 Z" fill="#ffffff" />
-                    </g>
-                `;
-
-                // Add gradient definition for the forward beam
-                let defs = this.svg.querySelector("defs");
-                if (defs) {
-                    const gradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
-                    gradient.setAttribute("id", "beaconConeGradient");
-                    gradient.setAttribute("x1", "0%");
-                    gradient.setAttribute("y1", "100%");
-                    gradient.setAttribute("x2", "0%");
-                    gradient.setAttribute("y2", "0%");
-                    gradient.innerHTML = `
-                        <stop offset="0%" stop-color="#0284c7" stop-opacity="0.55"/>
-                        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
-                    `;
-                    defs.appendChild(gradient);
-                }
-
-                const target = document.getElementById("mapCameraGroup") || this.svg;
-                target.appendChild(beaconGroup);
-            }
         }
 
         /**
@@ -257,6 +345,10 @@
 
             if (enable25d) {
                 this.viewport.classList.add("campus-25d-active");
+                this.initOverlayBadges();
+                if (this.overlayLayer) this.overlayLayer.classList.remove("hidden");
+                if (this.wazeBottomBar) this.wazeBottomBar.classList.remove("hidden");
+
                 if (this.btnMode2d) {
                     this.btnMode2d.classList.remove("active", "text-slate-900");
                     this.btnMode2d.classList.add("text-slate-600");
@@ -276,9 +368,11 @@
                 this.zoomScale = 2.2; // Close zoom calculated mathematically inside SVG
 
                 if (this.currentRoute) {
+                    this.showNavigationBanner();
                     this.goToStep(this.currentStepIndex);
                 } else {
                     this.heading = 0;
+                    this.showExploreHud();
                     this.centerOnCampusLowerThird();
                 }
             } else {
@@ -287,6 +381,10 @@
                     this.tweenAnimId = null;
                 }
                 this.viewport.classList.remove("campus-25d-active");
+                if (this.overlayLayer) this.overlayLayer.classList.add("hidden");
+                if (this.wazeBottomBar) this.wazeBottomBar.classList.add("hidden");
+                if (this.tbtBanner) this.tbtBanner.classList.add("hidden");
+
                 if (this.btnMode2d) {
                     this.btnMode2d.classList.add("active");
                     this.btnMode2d.classList.remove("text-slate-600");
@@ -310,12 +408,8 @@
                     this.cameraGroup.removeAttribute("transform");
                 }
 
-                // Reset SVG custom properties
-                if (this.viewport) {
-                    this.viewport.style.removeProperty("--bearing");
-                    this.viewport.style.removeProperty("--counter-bearing");
-                    this.viewport.style.removeProperty("--pitch");
-                    this.viewport.style.removeProperty("--counter-pitch-scale");
+                if (typeof window.updateCampusCompass === "function") {
+                    window.updateCampusCompass(0, true);
                 }
             }
 
@@ -344,6 +438,7 @@
             }
 
             this.applyTransform();
+            this.updateOverlays();
         }
 
         updateHeadingControls() {
@@ -357,9 +452,6 @@
             }
         }
 
-        /**
-         * Resolves SVG pixel coordinates (0..1200, 0..850) for a given route coordinate object
-         */
         resolveSvgPoint(coord) {
             if (!coord) return { x: 600, y: 425 };
             const known = this.buildingAnchors[coord.nodeId];
@@ -370,22 +462,16 @@
             };
         }
 
-        /**
-         * Calculates walking direction angle (bearing) between two SVG coordinates.
-         * Returns rotation needed so vector (p1 -> p2) points straight UP on screen.
-         */
         calculateHeadingAngle(p1, p2) {
             const dx = p2.x - p1.x;
             const dy = p2.y - p1.y;
             const rad = Math.atan2(dy, dx);
             const deg = rad * (180 / Math.PI);
-            // Rotate stage so direction of travel faces upward (-90° in standard screen coords)
             return -(deg + 90);
         }
 
         /**
-         * Locks user position to the lower-third / bottom-center (50% X, 72% Y).
-         * Uses vector camera group transformation so shapes re-render mathematically.
+         * Locks user position to the lower-third / bottom-center (50% X, 70% Y).
          */
         anchorToLowerThird(xSvg, ySvg, headingDeg, animate = true) {
             this.targetUserX = xSvg;
@@ -401,8 +487,8 @@
                 this.currentUserY = this.targetUserY;
                 this.currentHeading = this.targetHeading;
                 this.applyTransform();
+                this.updateOverlays();
                 this.updateCompass();
-                this.updateUserBeacon(this.currentUserX, this.currentUserY, this.currentHeading);
             } else {
                 this.startCameraTween();
             }
@@ -432,16 +518,15 @@
             const step = (now) => {
                 const elapsed = now - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                // Smooth cubic ease-out
-                const ease = 1 - Math.pow(1 - progress, 3);
+                const ease = 1 - Math.pow(1 - progress, 3); // Smooth cubic ease-out
 
                 this.currentUserX = startX + (targetX - startX) * ease;
                 this.currentUserY = startY + (targetY - startY) * ease;
                 this.currentHeading = startH + diffH * ease;
 
                 this.applyTransform();
-                this.updateCompass();
-                this.updateUserBeacon(this.currentUserX, this.currentUserY, this.currentHeading);
+                this.updateOverlays();
+                this.updateCompass(false);
 
                 if (progress < 1) {
                     this.tweenAnimId = requestAnimationFrame(step);
@@ -459,10 +544,140 @@
         }
 
         /**
+         * Mathematical 3D Screen Projection:
+         * Projects an SVG coordinate (0..1200, 0..850) into un-tilted viewport screen pixels.
+         * Decouples badges and puck from the tilted SVG plane to eliminate trapezoid stretching.
+         */
+        projectToScreen(x, y) {
+            if (!this.viewport) return null;
+            const vw = this.viewport.clientWidth || 1000;
+            const vh = this.viewport.clientHeight || 700;
+
+            const s = Math.min(vw / 1200, vh / 850);
+            const offX = (vw - 1200 * s) / 2;
+            const offY = (vh - 850 * s) / 2;
+            const anchorX = (vw * 0.50 - offX) / s;
+            const anchorY = (vh * 0.70 - offY) / s;
+
+            const uX = this.currentUserX !== undefined ? this.currentUserX : 400;
+            const uY = this.currentUserY !== undefined ? this.currentUserY : 500;
+            const bearing = this.isHeadingUp ? (this.currentHeading || 0) : 0;
+            const zoom = this.zoomScale || 2.2;
+            const pitch = this.pitch || 48;
+
+            // 1. Camera transform in SVG vector space
+            const dx = x - uX;
+            const dy = y - uY;
+            const theta = (bearing * Math.PI) / 180;
+            const rx = dx * Math.cos(theta) - dy * Math.sin(theta);
+            const ry = dx * Math.sin(theta) + dy * Math.cos(theta);
+
+            const pSvgX = anchorX + rx * zoom;
+            const pSvgY = anchorY + ry * zoom;
+
+            // 2. SVG to Viewport mapping
+            const x0 = offX + pSvgX * s;
+            const y0 = offY + pSvgY * s;
+
+            // 3. 3D perspective projection with pivot at (vw*0.5, vh*0.70)
+            const Cx = vw * 0.5;
+            const Cy = vh * 0.70;
+
+            const X = x0 - Cx;
+            const Y = y0 - Cy;
+
+            const phi = (pitch * Math.PI) / 180;
+            const X_prime = X;
+            const Y_prime = Y * Math.cos(phi);
+            const Z_prime = Y * Math.sin(phi); // negative into screen for Y < 0
+
+            const d = 1000.0;
+            const denom = d - Z_prime;
+            if (denom <= 60) return null; // Horizon culling
+
+            const k = d / denom;
+            const screenX = Cx + X_prime * k;
+            const screenY = Cy + Y_prime * k;
+
+            return { x: screenX, y: screenY, k: k };
+        }
+
+        /**
+         * Updates all decoupled HTML overlay elements (Puck, Badges, Pins)
+         */
+        updateOverlays() {
+            if (!this.is25dActive || !this.overlayLayer) return;
+
+            const vh = this.viewport.clientHeight || 700;
+            const vw = this.viewport.clientWidth || 1000;
+
+            // 1. Position Upright Building Badges
+            for (const [nodeId, anchor] of Object.entries(this.buildingAnchors)) {
+                const badgeEl = document.getElementById(`wazeBadge_${nodeId}`);
+                if (!badgeEl) continue;
+
+                const pos = this.projectToScreen(anchor.x, anchor.y);
+                if (pos && pos.y >= 30 && pos.y <= vh - 20 && pos.x >= -60 && pos.x <= vw + 60) {
+                    badgeEl.style.display = "inline-flex";
+                    badgeEl.style.left = `${pos.x.toFixed(1)}px`;
+                    badgeEl.style.top = `${pos.y.toFixed(1)}px`;
+                    const scaleFactor = Math.min(1.05, Math.max(0.68, pos.k * 0.95));
+                    badgeEl.style.transform = `translate(-50%, -50%) scale(${scaleFactor.toFixed(3)})`;
+                    const horizonFade = Math.min(1.0, Math.max(0.0, (pos.y - 25) / 50));
+                    badgeEl.style.opacity = horizonFade.toFixed(2);
+                } else {
+                    badgeEl.style.display = "none";
+                }
+            }
+
+            // 2. Rotate Navigation Puck Arrow
+            if (this.puckArrow) {
+                // In Heading-Up mode, arrow points straight UP (0°). In North-Up, arrow points along bearing.
+                const arrowRot = this.isHeadingUp ? 0 : -(this.currentHeading || 0);
+                this.puckArrow.style.transform = `rotate(${arrowRot.toFixed(2)}deg)`;
+                if (this.puckCone) {
+                    this.puckCone.style.transform = `rotate(${arrowRot.toFixed(2)}deg)`;
+                }
+            }
+
+            // 3. Position Destination & Origin Pins
+            if (this.currentRoute && this.currentRoute.pathCoordinates && this.currentRoute.pathCoordinates.length >= 2) {
+                const coords = this.currentRoute.pathCoordinates;
+                const endPt = this.resolveSvgPoint(coords[coords.length - 1]);
+                const endPos = this.projectToScreen(endPt.x, endPt.y);
+
+                if (this.wazeDestPin) {
+                    if (endPos && endPos.y >= 20 && endPos.y <= vh) {
+                        this.wazeDestPin.style.display = "block";
+                        this.wazeDestPin.style.left = `${endPos.x.toFixed(1)}px`;
+                        this.wazeDestPin.style.top = `${endPos.y.toFixed(1)}px`;
+                        this.wazeDestPin.style.transform = `translate(-50%, -100%) scale(${Math.min(1.2, Math.max(0.7, endPos.k)).toFixed(2)})`;
+                    } else {
+                        this.wazeDestPin.style.display = "none";
+                    }
+                }
+
+                const startPt = this.resolveSvgPoint(coords[0]);
+                const startPos = this.projectToScreen(startPt.x, startPt.y);
+                if (this.wazeOriginPin) {
+                    if (startPos && startPos.y >= 20 && startPos.y <= vh) {
+                        this.wazeOriginPin.style.display = "block";
+                        this.wazeOriginPin.style.left = `${startPos.x.toFixed(1)}px`;
+                        this.wazeOriginPin.style.top = `${startPos.y.toFixed(1)}px`;
+                    } else {
+                        this.wazeOriginPin.style.display = "none";
+                    }
+                }
+            } else {
+                if (this.wazeDestPin) this.wazeDestPin.style.display = "none";
+                if (this.wazeOriginPin) this.wazeOriginPin.style.display = "none";
+            }
+        }
+
+        /**
          * Crisp Vector 2.5D Transform Pipeline:
          * 1. rotateX(pitch) strictly on outer wrapper (CSS 3D perspective plane)
          * 2. translate + scale(2.2) + rotate strictly inside SVG <g id="mapCameraGroup">
-         *    -> Vector math renders without GPU texture downsampling or blurriness
          */
         applyTransform() {
             if (!this.stage) return;
@@ -473,48 +688,24 @@
             if (!this.is25dActive) {
                 this.stage.style.transform = "";
                 if (this.cameraGroup) this.cameraGroup.removeAttribute("transform");
-                if (this.viewport) {
-                    this.viewport.style.removeProperty("--bearing");
-                    this.viewport.style.removeProperty("--counter-bearing");
-                    this.viewport.style.removeProperty("--pitch");
-                    this.viewport.style.removeProperty("--counter-pitch-scale");
-                }
                 return;
             }
 
-            const pitch = this.pitch || 48; // Gentle tilt (45°–52°)
+            const pitch = this.pitch || 48;
             const bearing = this.isHeadingUp ? (this.currentHeading || 0) : 0;
-            const zoom = this.zoomScale || 2.2; // Waze-style close zoom in SVG vector space
+            const zoom = this.zoomScale || 2.2;
             const uX = this.currentUserX !== undefined ? this.currentUserX : 400;
             const uY = this.currentUserY !== undefined ? this.currentUserY : 500;
 
-            // Viewport dimensions for lower-third anchor
-            const vw = this.viewport.clientWidth || 1000;
-            const vh = this.viewport.clientHeight || 700;
-            const svgAspect = 1200 / 850;
-            const containerAspect = vw / vh;
+            const vw = this.viewport ? (this.viewport.clientWidth || 1000) : 1000;
+            const vh = this.viewport ? (this.viewport.clientHeight || 700) : 700;
+            const s = Math.min(vw / 1200, vh / 850);
+            const offX = (vw - 1200 * s) / 2;
+            const offY = (vh - 850 * s) / 2;
+            const anchorX = (vw * 0.50 - offX) / s;
+            const anchorY = (vh * 0.70 - offY) / s;
 
-            let anchorX = 600;
-            let anchorY = 612; // 850 * 0.72 = 612 (Lower Third of 1200x850 SVG)
-
-            if (containerAspect < svgAspect) {
-                // Narrow / mobile portrait screen: vertical letterbox mapping
-                const visibleHeightSvg = 1200 / containerAspect;
-                anchorY = 425 + visibleHeightSvg * 0.22;
-            }
-
-            // Set CSS custom properties on viewport for billboarding labels & badges
-            if (this.viewport) {
-                this.viewport.style.setProperty("--bearing", `${bearing.toFixed(2)}deg`);
-                this.viewport.style.setProperty("--counter-bearing", `${(-bearing).toFixed(2)}deg`);
-                this.viewport.style.setProperty("--pitch", `${pitch}deg`);
-                const pitchRad = (pitch * Math.PI) / 180;
-                // Un-squash factor = 1 / cos(pitch)
-                const counterPitchScale = (1 / Math.cos(pitchRad)).toFixed(3);
-                this.viewport.style.setProperty("--counter-pitch-scale", counterPitchScale);
-            }
-
-            // 1. Tilt STRICTLY via CSS rotateX on the outer stage (no scale, no translate!)
+            // 1. Tilt STRICTLY via CSS rotateX on the outer stage
             this.stage.style.transform = `rotateX(${pitch}deg)`;
 
             // 2. Vector pan, zoom & bearing rotation directly inside SVG <g id="mapCameraGroup">
@@ -533,11 +724,13 @@
         zoomIn() {
             this.zoomScale = Math.min((this.zoomScale || 2.2) + 0.25, 3.5);
             this.applyTransform();
+            this.updateOverlays();
         }
 
         zoomOut() {
-            this.zoomScale = Math.max((this.zoomScale || 2.2) - 0.25, 1.5);
+            this.zoomScale = Math.max((this.zoomScale || 2.2) - 0.25, 1.15);
             this.applyTransform();
+            this.updateOverlays();
         }
 
         /**
@@ -549,31 +742,8 @@
             if (dial) {
                 dial.style.transition = animate ? "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
                 dial.style.transform = `rotate(${compassRot.toFixed(2)}deg)`;
-            } else {
-                if (!this.compassRose) {
-                    this.compassRose = document.getElementById("compassRose");
-                }
-                if (this.compassRose) {
-                    this.compassRose.style.transition = animate ? "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
-                    this.compassRose.style.transform = `rotate(${compassRot.toFixed(2)}deg)`;
-                }
-            }
-        }
-
-        /**
-         * Positions user navigation puck and aligns the directional cone
-         */
-        updateUserBeacon(x, y, headingDeg) {
-            const beacon = document.getElementById("userNavigationBeacon");
-            const cone = document.getElementById("beaconCone");
-            if (!beacon) return;
-
-            beacon.setAttribute("transform", `translate(${x.toFixed(2)}, ${y.toFixed(2)})`);
-            beacon.classList.remove("hidden");
-
-            const beaconRot = this.isHeadingUp ? -headingDeg : 0;
-            if (cone) {
-                cone.setAttribute("transform", `rotate(${beaconRot.toFixed(2)})`);
+            } else if (typeof window.updateCampusCompass === "function") {
+                window.updateCampusCompass(compassRot, animate);
             }
         }
 
@@ -586,6 +756,9 @@
 
             if (!routeData || !routeData.pathCoordinates || routeData.pathCoordinates.length < 2) return;
 
+            // Ensure route polyline points are populated in SVG
+            this.drawRoutePolylines(routeData);
+
             // Automatically switch to Waze-style 2.5D navigation view
             if (!this.is25dActive) {
                 this.setMode(true);
@@ -595,17 +768,33 @@
             this.goToStep(0);
         }
 
+        drawRoutePolylines(routeData) {
+            if (!routeData || !routeData.pathCoordinates) return;
+            const points = routeData.pathCoordinates.map(coord => {
+                const pt = this.resolveSvgPoint(coord);
+                return `${pt.x},${pt.y}`;
+            }).join(" ");
+
+            const glow = document.getElementById("route2dGlowPolyline");
+            const main = document.getElementById("route2dPolyline");
+            if (glow) glow.setAttribute("points", points);
+            if (main) main.setAttribute("points", points);
+        }
+
         onRouteCleared() {
             this.currentRoute = null;
             this.currentStepIndex = 0;
             this.stopSimulation();
             this.hideNavigationBanner();
 
-            const beacon = document.getElementById("userNavigationBeacon");
-            if (beacon) beacon.classList.add("hidden");
+            const glow = document.getElementById("route2dGlowPolyline");
+            const main = document.getElementById("route2dPolyline");
+            if (glow) glow.setAttribute("points", "");
+            if (main) main.setAttribute("points", "");
 
             if (this.is25dActive) {
                 this.heading = 0;
+                this.showExploreHud();
                 this.centerOnCampusLowerThird();
             }
         }
@@ -613,6 +802,28 @@
         showNavigationBanner() {
             if (this.tbtBanner) {
                 this.tbtBanner.classList.remove("hidden");
+            }
+            if (this.wazeBottomBar) {
+                this.wazeBottomBar.classList.remove("hidden");
+            }
+        }
+
+        showExploreHud() {
+            if (this.tbtBanner) {
+                this.tbtBanner.classList.remove("hidden");
+                if (this.tbtStepCounter) this.tbtStepCounter.textContent = "Modo 2.5D";
+                if (this.tbtStepDistance) this.tbtStepDistance.textContent = "Waze";
+                if (this.tbtStepInstruction) this.tbtStepInstruction.textContent = "Explorando Campus UAM • Rumbo al frente";
+                if (this.tbtNextPreview) this.tbtNextPreview.classList.add("hidden");
+                if (this.tbtManeuverIcon) {
+                    this.tbtManeuverIcon.innerHTML = `<polygon points="12 2 19 21 12 17 5 21 12 2" stroke-width="2" stroke-linejoin="round"/>`;
+                }
+            }
+            if (this.wazeBottomBar) {
+                this.wazeBottomBar.classList.remove("hidden");
+                if (this.wazeEtaTime) this.wazeEtaTime.textContent = "Campus UAM";
+                if (this.wazeTripMeta) this.wazeTripMeta.textContent = "Selecciona un edificio para trazar ruta";
+                if (this.wazeProgressBar) this.wazeProgressBar.style.width = "0%";
             }
         }
 
@@ -649,16 +860,13 @@
                 headingDeg = this.calculateHeadingAngle(prevPt, currentPt);
             }
 
-            // Anchor current step in lower third
+            // Anchor current step in lower third (70% down)
             this.anchorToLowerThird(currentPt.x, currentPt.y, headingDeg);
 
-            // Update Turn-by-Turn Banner UI
+            // Update Turn-by-Turn Banner & Bottom Trip Summary
             const instructionText = instructions[stepIndex] || `Avanza hacia ${coords[stepIndex].name || "el punto de ruta"}`;
-            this.updateBannerUI(stepIndex, coords.length, instructionText);
-
-            // Update prev/next button states
-            if (this.btnTbtPrev) this.btnTbtPrev.disabled = stepIndex === 0;
-            if (this.btnTbtNext) this.btnTbtNext.disabled = stepIndex >= coords.length - 1;
+            const nextInstruction = stepIndex < instructions.length - 1 ? instructions[stepIndex + 1] : null;
+            this.updateBannerUI(stepIndex, coords.length, instructionText, nextInstruction);
         }
 
         nextStep() {
@@ -677,7 +885,7 @@
             }
         }
 
-        updateBannerUI(stepIdx, totalSteps, instruction) {
+        updateBannerUI(stepIdx, totalSteps, instruction, nextInstruction) {
             if (this.tbtStepCounter) {
                 this.tbtStepCounter.textContent = `Paso ${stepIdx + 1} de ${totalSteps}`;
             }
@@ -685,10 +893,22 @@
                 this.tbtStepInstruction.textContent = instruction;
             }
 
-            if (this.tbtStepDistance && this.currentRoute) {
-                const totalMeters = this.currentRoute.totalDistanceMeters || 100;
+            const totalMeters = this.currentRoute ? (this.currentRoute.totalDistanceMeters || 140) : 140;
+            const stepsRemaining = Math.max(0, totalSteps - 1 - stepIdx);
+            const remainingMeters = Math.round((stepsRemaining / Math.max(1, totalSteps - 1)) * totalMeters);
+
+            if (this.tbtStepDistance) {
                 const approxStepM = Math.max(15, Math.round(totalMeters / Math.max(1, totalSteps - 1)));
-                this.tbtStepDistance.textContent = stepIdx === totalSteps - 1 ? "Destino" : `~${approxStepM} m`;
+                this.tbtStepDistance.textContent = stepIdx === totalSteps - 1 ? "Meta" : `${approxStepM} m`;
+            }
+
+            if (this.tbtNextPreview) {
+                if (nextInstruction) {
+                    this.tbtNextPreview.textContent = `Luego: ${nextInstruction.replace(/^(\d+\.\s*)/, '').slice(0, 42)}...`;
+                    this.tbtNextPreview.classList.remove("hidden");
+                } else {
+                    this.tbtNextPreview.classList.add("hidden");
+                }
             }
 
             // Determine Turn Maneuver Icon
@@ -706,6 +926,24 @@
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-5 5m5-5l5 5"/>`;
                 }
             }
+
+            // Update Waze Bottom Trip Summary Bar
+            if (this.wazeEtaTime) {
+                const estMinutes = Math.max(1, Math.ceil(remainingMeters / 50));
+                this.wazeEtaTime.textContent = stepIdx === totalSteps - 1 ? "Llegaste" : `${estMinutes} min`;
+            }
+
+            if (this.wazeTripMeta) {
+                const now = new Date();
+                const arrivalDate = new Date(now.getTime() + Math.max(1, Math.ceil(remainingMeters / 50)) * 60000);
+                const timeStr = arrivalDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                this.wazeTripMeta.textContent = `${remainingMeters} m • Llegada aprox. ${timeStr}`;
+            }
+
+            if (this.wazeProgressBar) {
+                const progressPct = totalSteps > 1 ? Math.round((stepIdx / (totalSteps - 1)) * 100) : 100;
+                this.wazeProgressBar.style.width = `${progressPct}%`;
+            }
         }
 
         toggleSimulation() {
@@ -719,19 +957,25 @@
         startSimulation() {
             if (!this.currentRoute) return;
             this.isSimulating = true;
-            if (this.labelSimPlay) this.labelSimPlay.textContent = "Pausar";
+            if (this.labelSimPlay) this.labelSimPlay.textContent = "Pausa";
 
             if (this.currentStepIndex >= this.currentRoute.pathCoordinates.length - 1) {
                 this.goToStep(0);
             }
 
+            if (this.simInterval) clearInterval(this.simInterval);
             this.simInterval = setInterval(() => {
+                if (!this.currentRoute) {
+                    this.stopSimulation();
+                    return;
+                }
+
                 if (this.currentStepIndex < this.currentRoute.pathCoordinates.length - 1) {
                     this.nextStep();
                 } else {
                     this.stopSimulation();
                 }
-            }, 2600);
+            }, 3000);
         }
 
         stopSimulation() {
@@ -744,8 +988,6 @@
         }
     }
 
-    // Export singleton on window
-    window.Campus25dController = Campus25dController;
+    // Initialize Global Controller Singleton
     window.campus25dController = new Campus25dController();
-
 })();

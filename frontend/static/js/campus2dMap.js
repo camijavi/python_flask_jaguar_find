@@ -633,7 +633,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Position popover relative to wrapper container
         const wRect = wrapper.getBoundingClientRect();
         let clientX, clientY;
-        const bldgEl = document.querySelector(`.bldg-shape[data-node="${bldgData.id}"]`);
         if (bldgEl) {
             const bRect = bldgEl.getBoundingClientRect();
             clientX = bRect.left - wRect.left + (bRect.width / 2);
@@ -651,6 +650,10 @@ document.addEventListener("DOMContentLoaded", function () {
         bldgPopover.style.top = `${Math.max(12, Math.min(clientY - 160, maxTop))}px`;
         bldgPopover.classList.remove("hidden");
     }
+
+    // Expose globally for decoupled 2.5D HTML overlays
+    window.showBuildingPopover = showBuildingPopover;
+    window.CAMPUS_BUILDINGS = CAMPUS_BUILDINGS;
 
     if (btnClosePopover) {
         btnClosePopover.addEventListener("click", () => {
