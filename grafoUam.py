@@ -1,10 +1,10 @@
 """
 grafoUam.py
-Backward-compatibility facade for the modular 'graph' package.
-All graph logic and data structures are maintained in 'graph/'.
+Backward-compatibility facade for the modular 'backend.graph' package.
+All graph logic and data structures are maintained in 'backend/graph/'.
 """
 
-from graph import (
+from backend.graph import (
     DirectedEdge,
     Node,
     DirectedGraph,

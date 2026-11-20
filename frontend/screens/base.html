@@ -1,0 +1,55 @@
+<!--
+================================================================================
+PLANTILLA MAESTRA Y ESTRUCTURA BASE HTML5 (BASE.HTML)
+================================================================================
+
+Propósito del Archivo:
+----------------------
+Es el layout principal que define el esqueleto común de todas las páginas de
+JaguarFind y JaguarMaps. Centraliza la cabecera, la barra de navegación superior,
+el selector interactivo de idioma (Español / Inglés), el contenedor de mensajes
+flash para retroalimentación al usuario, y el pie de página institucional UAM.
+
+Estructura y Componentes que van en esta plantilla:
+--------------------------------------------------
+1. Sección <head>:
+   - Metaetiquetas de viewport responsivo para dispositivos móviles y escritorio.
+   - Enlace al CDN de Tailwind CSS para estilización rápida y limpia.
+   - Enlace a la hoja de estilos personalizada '/static/css/styles.css' (animaciones de ruta y pines).
+   - Bloque de Jinja2 {% block head %}{% endblock %} para inyección de scripts o estilos específicos.
+
+2. Barra de Navegación Institucional (Navbar):
+   - Logotipo institucional y marca: '🐆 JaguarFind & JaguarMaps UAM'.
+   - Enlaces de navegación principales:
+     * Mapa del Campus (/mapa)
+     * Objetos Extraviados (/lost-found/catalogo)
+     * Reportar Hallazgo (/lost-found/reportar)
+   - Selector Dinámico de Idioma (i18n):
+     * Botones o menú desplegable para alternar entre 🇪🇸 Español (spa) y 🇺🇸 Inglés (eng),
+       invocando la función de traducción t(clave).
+   - Menú de Usuario / Sesión:
+     * Si no hay sesión: Enlaces a Iniciar Sesión (/auth/login) y Registrarse (/auth/signup).
+     * Si hay sesión activa:
+       - Nombre del usuario y distintivo de rol (Estudiante, Colaborador, Visitante o Administrador).
+       - Acceso exclusivo al 'Panel de Custodia del Edificio A' si el rol es ADMINISTRADOR.
+       - Botón para Cerrar Sesión (/auth/logout).
+
+3. Contenedor de Mensajes Flash (Jinja2 get_flashed_messages):
+   - Muestra alertas emergentes clasificadas por categoría:
+     * 'success' (verde): Notificaciones de éxito en registros o autenticaciones.
+     * 'danger' (rojo): Errores de credenciales o validación.
+     * 'warning' (amarillo): Advertencias de control de acceso.
+     * 'info' (azul): Avisos informativos generales.
+
+4. Bloque Principal de Contenido:
+   - Bloque Jinja2 {% block content %}{% endblock %} donde cada plantilla hija
+     (mapa, catálogo, login, etc.) renderiza su contenido específico.
+
+5. Pie de Página (Footer):
+   - Información institucional de la Universidad Americana (UAM, Managua, Nicaragua).
+   - Enlaces a facultades (FIA, FODO, FCE, etc.) y políticas de retención y privacidad.
+
+6. Bloque de Scripts:
+   - Bloque Jinja2 {% block scripts %}{% endblock %} para cargar scripts modulares
+     como 'mapaInteractivo.js' o 'ttsHelper.js'.
+-->
