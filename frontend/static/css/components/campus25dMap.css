@@ -1,0 +1,124 @@
+/**
+ * ================================================================================
+ * CAMPUS25DMAP.CSS - 2.5D PERSPECTIVE VIEWPORT & 3D CSS TRANSFORMS
+ * ================================================================================
+ * Lightweight, GPU-accelerated CSS 3D perspective transformation for the UAM
+ * vector campus map. Implements:
+ * - 3D Perspective viewport (900px - 1000px perspective)
+ * - Lower-third camera anchoring (transform-origin & perspective-origin: 50% 70%)
+ * - Tilted camera / Pitch angles (0° flat, 45° bird's-eye, 55°-60° turn-by-turn)
+ * - Heading-Up rotation around the Z axis
+ * - Horizon depth atmosphere gradient
+ * - Fixed 2D Turn-by-Turn navigation HUD and controls
+ * ================================================================================
+ */
+
+/* 1. Perspective Viewport Wrapper */
+.campus-25d-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #e2e8f0;
+    perspective: 1000px;
+    perspective-origin: 50% 70%; /* Anchors viewpoint in the lower third */
+}
+
+/* 2. 3D Map Transformable Stage (Wraps the flat SVG canvas) */
+.campus-3d-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform-origin: 50% 70%; /* Pivot anchored at lower third of screen */
+    will-change: transform;
+    transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+/* Instant transform class when user is actively dragging */
+.campus-3d-stage.no-transition {
+    transition: none !important;
+}
+
+/* 3. Horizon Atmosphere Depth Gradient (Appears when tilted) */
+.campus-horizon-atmosphere {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 28%;
+    background: linear-gradient(
+        to bottom,
+        rgba(148, 163, 184, 0.85) 0%,
+        rgba(203, 213, 225, 0.5) 40%,
+        rgba(232, 236, 241, 0) 100%
+    );
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.campus-25d-active .campus-horizon-atmosphere {
+    opacity: 1;
+}
+
+/* 4. Enhanced 3D Shadows for Buildings in 2.5D Mode */
+.campus-25d-active .bldg-shape {
+    filter: drop-shadow(0 6px 12px rgba(15, 23, 42, 0.3));
+}
+
+.campus-25d-active .bldg-shape:hover {
+    filter: drop-shadow(0 14px 22px rgba(15, 23, 42, 0.45)) brightness(1.12);
+}
+
+/* 5. User Position Beacon & Directional Cone */
+.beacon-pulse {
+    animation: beaconPulse 1.8s ease-out infinite;
+}
+
+@keyframes beaconPulse {
+    0% {
+        r: 10;
+        opacity: 0.8;
+    }
+    70% {
+        r: 32;
+        opacity: 0;
+    }
+    100% {
+        r: 32;
+        opacity: 0;
+    }
+}
+
+.heading-cone {
+    opacity: 0.4;
+    transition: transform 0.3s ease-out;
+}
+
+/* 6. 2.5D Floating Control Pill */
+.mode-pill-btn {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mode-pill-btn.active {
+    background-color: #0284c7;
+    color: #ffffff;
+    box-shadow: 0 2px 6px -1px rgba(2, 132, 199, 0.4);
+}
+
+/* 7. Turn-by-Turn Top Navigation Banner */
+.turn-by-turn-banner {
+    animation: slideDownBanner 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDownBanner {
+    from {
+        transform: translate(-50%, -24px);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}

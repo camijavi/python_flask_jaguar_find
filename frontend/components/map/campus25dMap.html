@@ -1,0 +1,96 @@
+<!--
+================================================================================
+CAMPUS 2.5D PERSPECTIVE VIEW COMPONENT (CAMPUS25DMAP.HTML)
+================================================================================
+Controls, HUD overlays, and horizon effects for the 2.5D Perspective Map view:
+- Tilted camera / Pitch selector (45° oblique bird's eye and 60° immersive horizon)
+- Turn-by-turn Heading-Up mode (anchors user at lower third, rotates map to face forward)
+- Floating View Mode Pill (2D Flat vs 2.5D Perspective)
+- Turn-by-Turn step navigation banner with route simulation player
+================================================================================
+-->
+
+<!-- 1. Floating 2.5D Mode & Perspective Control Pill (Top Center / Left) -->
+<div id="campus25dModeControls" class="absolute top-4 left-4 z-20 flex items-center gap-1.5 bg-white/90 backdrop-blur-md p-1 rounded-xl border border-slate-200/90 shadow-md">
+    
+    <!-- 2D / 2.5D Segmented Switcher -->
+    <div class="flex items-center bg-slate-100 p-0.5 rounded-lg text-xs font-bold text-slate-700">
+        <button id="btnMode2d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-md active transition-all" title="Vista estándar 2D (Plano Cenital)">
+            2D
+        </button>
+        <button id="btnMode25d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900 transition-all" title="Vista 2.5D Perspectiva (Inclinación 3D)">
+            2.5D
+        </button>
+    </div>
+
+    <!-- Pitch / Tilt Angle Selector (Visible in 2.5D Mode) -->
+    <div id="pitchControlGroup" class="hidden items-center border-l border-slate-200 pl-1.5 pr-0.5 gap-1">
+        <button id="btnPitch45" type="button" class="px-2 py-1 rounded-md text-[11px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors" title="Inclinación 45° (Vista aérea oblicua / Bird's-eye)">
+            45°
+        </button>
+        <button id="btnPitch60" type="button" class="px-2 py-1 rounded-md text-[11px] font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors" title="Inclinación 60° (Perspectiva inmersiva hacia el horizonte)">
+            60°
+        </button>
+    </div>
+
+    <!-- Heading Mode Toggle (Heading-Up vs North-Up) -->
+    <div id="headingControlGroup" class="hidden items-center border-l border-slate-200 pl-1.5">
+        <button id="btnToggleHeadingUp" type="button" class="p-1 rounded-md text-slate-600 hover:bg-slate-100 hover:text-brand-600 transition-colors flex items-center gap-1 text-[11px] font-bold" title="Alternar modo de orientación: Orientar hacia el frente (Heading-Up) o Norte fijo (North-Up)">
+            <svg id="iconHeadingMode" class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Compass navigation pointer -->
+                <polygon points="12 2 19 21 12 17 5 21 12 2" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            <span id="labelHeadingMode" class="hidden sm:inline">Rumbo</span>
+        </button>
+    </div>
+
+</div>
+
+<!-- 2. Turn-by-Turn Navigation Banner (Anchors Top Center when route is calculated) -->
+<div id="turnByTurnBanner" class="turn-by-turn-banner hidden absolute top-4 left-1/2 -translate-x-1/2 z-30 w-[92%] max-w-md bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-xl p-3.5 pointer-events-auto">
+    <div class="flex items-start gap-3">
+        <!-- Turn Direction Icon Badge -->
+        <div id="tbtManeuverBadge" class="w-11 h-11 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-brand-600/25">
+            <svg id="tbtManeuverIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-5 5m5-5l5 5"/>
+            </svg>
+        </div>
+
+        <!-- Step Instructions & Counter -->
+        <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-1 text-[11px] text-slate-500 font-semibold mb-0.5">
+                <span id="tbtStepCounter">Paso 1 de 1</span>
+                <span id="tbtStepDistance" class="font-bold text-brand-700">65 m</span>
+            </div>
+            <p id="tbtStepInstruction" class="text-xs sm:text-sm font-bold text-slate-900 leading-snug line-clamp-2">
+                Inicia tu recorrido hacia el destino.
+            </p>
+        </div>
+
+        <!-- Close / Exit 2.5D Turn-by-Turn -->
+        <button id="btnCloseTbtBanner" type="button" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors" title="Cerrar vista guiada">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Step Controls & Auto-Simulation Player -->
+    <div class="flex items-center justify-between gap-2 mt-3 pt-2.5 border-t border-slate-100 text-xs">
+        <button id="btnTbtPrevStep" type="button" class="py-1 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors flex items-center gap-1 disabled:opacity-40 disabled:pointer-events-none" title="Paso anterior">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <span>Anterior</span>
+        </button>
+
+        <!-- Simulation Player (Play / Pause animated travel) -->
+        <button id="btnTbtPlaySimulation" type="button" class="py-1 px-3 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold transition-colors inline-flex items-center gap-1.5 shadow-2xs" title="Reproducir simulación paso a paso">
+            <svg id="iconSimPlay" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span id="labelSimPlay">Simular</span>
+        </button>
+
+        <button id="btnTbtNextStep" type="button" class="py-1 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-colors flex items-center gap-1 disabled:opacity-40 disabled:pointer-events-none" title="Paso siguiente">
+            <span>Siguiente</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+    </div>
+</div>

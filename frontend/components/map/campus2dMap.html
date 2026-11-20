@@ -12,9 +12,16 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
 ================================================================================
 -->
 
-<div class="campus-map-wrapper" id="campusMapWrapper">
+<!-- 2.5D PERSPECTIVE VIEWPORT (CAMERA PERSPECTIVE & HORIZON ATMOSPHERE) -->
+<div class="campus-25d-viewport" id="campus25dViewport">
 
-    <!-- Map Toolbar (Zoom, Center, Toggle Labels) -->
+    <!-- Atmosphere Horizon Gradient (Visible in 2.5D Mode) -->
+    <div id="campusHorizonAtmosphere" class="campus-horizon-atmosphere pointer-events-none"></div>
+
+    <!-- 2.5D Perspective Controls & Turn-by-Turn HUD -->
+    {% include "components/map/campus25dMap.html" %}
+
+    <!-- Map Toolbar (Zoom, Center, 2.5D Perspective Toggle) -->
     <div class="absolute top-4 right-4 z-20 flex flex-col gap-1.5 bg-white/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/90 shadow-md">
         <button id="btnMapZoomIn" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center font-bold text-sm transition-colors" title="Acercar">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -24,6 +31,9 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
         </button>
         <button id="btnMapResetView" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center text-xs transition-colors" title="Centrar Mapa">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"></circle><circle cx="12" cy="12" r="3" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3m10-10h-3M5 12H2"></path></svg>
+        </button>
+        <button id="btnToggle25dQuick" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-700 flex items-center justify-center font-black text-[11px] transition-colors" title="Alternar Vista 2.5D Perspectiva">
+            3D
         </button>
     </div>
 
@@ -54,8 +64,11 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
     <!-- Official Campus Orientation Compass (Bottom-Left Viewport Overlay) -->
     {% include "components/map/compass.html" %}
 
-    <!-- Official SVG 2D Vector Map Canvas (1200 x 850) -->
-    <svg id="officialCampus2dSvg" viewBox="0 0 1200 850" class="campus-svg-canvas">
+    <!-- 3D Transformable Stage (CSS 3D perspective plane with lower-third anchor) -->
+    <div class="campus-map-wrapper campus-3d-stage" id="campusMapWrapper">
+
+        <!-- Official SVG 2D Vector Map Canvas (1200 x 850) -->
+        <svg id="officialCampus2dSvg" viewBox="0 0 1200 850" class="campus-svg-canvas">
         <defs>
             <!-- Clean Elevation Shadow Filter for Buildings -->
             <filter id="bldgShadow" x="-10%" y="-10%" width="120%" height="120%">
@@ -633,5 +646,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
         <!-- ================================================================== -->
 
     </svg>
+
+    </div>
 
 </div>

@@ -5,6 +5,8 @@
 {% block head %}
 <!-- Official 2D Campus Map Stylesheet -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/campus2dMap.css') }}">
+<!-- 2.5D Perspective View & 3D Transforms Stylesheet -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/campus25dMap.css') }}">
 <style>
     /* Prevent outer window scrolling on map screen to provide full-viewport app feel */
     body {
@@ -72,6 +74,8 @@
 {% block scripts %}
 <!-- Official 2D Vector Map and Directory Logic -->
 <script src="{{ url_for('static', filename='js/campus2dMap.js') }}"></script>
+<!-- 2.5D Perspective View and Turn-by-Turn Controller -->
+<script src="{{ url_for('static', filename='js/campus25dMap.js') }}"></script>
 
 <script>
 // Sidebar Tab Switching
