@@ -3,55 +3,61 @@
 CAMPUS ORIENTATION COMPASS COMPONENT (COMPASS.HTML)
 ================================================================================
 Official UAM Campus Orientation Compass Rose:
-- Positioned on the bottom-left of the 2D Vector Campus Map (campus2dMap)
-- Includes a subtle elevation shadow and clean frosted-glass backdrop
-- Faithfully represents official campus signage orientation (South facing top)
-- Interactive: clicking the compass centers and resets the map orientation
+- Positioned on the bottom-left of the 2D / 2.5D Vector Campus Map
+- Features clean rounded frosted card housing with subtle elevation shadow
+- Matches official campus reference: South-facing primary axis (blue pointer & 's' badge)
+- True responsive compass behavior: dynamically adjusts in real time when user rotates,
+  pans, pinches, or changes perspective in 2D / 2.5D mode
+- Fully interactive: clicking reorients & centers map; dragging allows manual rotation
 ================================================================================
 -->
 
 <div id="campusCompass"
-     class="campus-compass absolute bottom-4 left-4 z-20 flex items-center justify-center p-2 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-md shadow-slate-900/10 transition-transform duration-200 hover:scale-105 pointer-events-auto select-none cursor-pointer"
-     title="{{ t('map.compass_orientation', default='Orientación oficial del campus (Sur arriba) • Clic para centrar') }}"
-     aria-label="{{ t('map.compass_orientation', default='Orientación oficial del campus (Sur arriba)') }}">
-    <svg id="compassRose" class="w-14 h-14 sm:w-16 sm:h-16 compass-rose" viewBox="-48 -48 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+     class="campus-compass absolute bottom-4 left-4 z-20 flex items-center justify-center p-2 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-md shadow-slate-900/10 transition-transform duration-200 hover:scale-105 pointer-events-auto select-none cursor-pointer"
+     title="{{ t('map.compass_orientation', default='Orientación del campus • Clic para centrar y reorientar') }}"
+     aria-label="{{ t('map.compass_orientation', default='Orientación del campus') }}"
+     role="button"
+     tabindex="0">
+    <svg id="compassRose" class="w-14 h-14 sm:w-16 sm:h-16 compass-rose overflow-visible" viewBox="-36 -36 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
-            <!-- Subtle Elevation Shadow Filter for Compass Dial -->
-            <filter id="compassSubtleShadow" x="-25%" y="-25%" width="150%" height="150%">
-                <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.10" />
+            <!-- Elevation drop shadow filter for circular compass dial -->
+            <filter id="compassSubtleShadow" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.08" />
             </filter>
         </defs>
 
-        <!-- Base Compass Dial with Subtle Shadow -->
-        <circle cx="0" cy="0" r="32" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#compassSubtleShadow)" />
-        
-        <!-- Subtle Inner Decorative Ring -->
-        <circle cx="0" cy="0" r="28" fill="none" stroke="#f1f5f9" stroke-width="1" />
+        <!-- Base Fixed Circular Housing Rings -->
+        <circle cx="0" cy="0" r="31" fill="#ffffff" filter="url(#compassSubtleShadow)" />
+        <circle cx="0" cy="0" r="28" fill="none" stroke="#e2e8f0" stroke-width="1.2" />
+        <circle cx="0" cy="0" r="23" fill="none" stroke="#f1f5f9" stroke-width="1" />
 
-        <!-- Compass Cardinal Pointers (S, N, E, W) -->
-        <!-- Top Pointer (South S - Official Primary Axis) -->
-        <polygon points="0,-28 -5,-5 0,0" fill="#0284c7" />
-        <polygon points="0,-28 5,-5 0,0" fill="#075985" />
+        <!-- Rotating Compass Dial Assembly (Needle + Cardinal Labels rotate together like a real compass card) -->
+        <g id="compassDial" style="transform-origin: 0px 0px; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+            <!-- South Pointer (Official UAM Primary Axis - Vibrant Sky/Ocean Blue) -->
+            <polygon points="0,-19 -3.5,-3.5 0,0" fill="#0284c7" />
+            <polygon points="0,-19 3.5,-3.5 0,0" fill="#0369a1" />
 
-        <!-- Bottom Pointer (North N) -->
-        <polygon points="0,28 -5,5 0,0" fill="#cbd5e1" />
-        <polygon points="0,28 5,5 0,0" fill="#94a3b8" />
+            <!-- North Pointer (Muted Silver / Slate) -->
+            <polygon points="0,19 -3.5,3.5 0,0" fill="#e2e8f0" />
+            <polygon points="0,19 3.5,3.5 0,0" fill="#94a3b8" />
 
-        <!-- Left Pointer (East E) -->
-        <polygon points="-28,0 -5,-5 0,0" fill="#cbd5e1" />
-        <polygon points="-28,0 -5,5 0,0" fill="#94a3b8" />
+            <!-- East Pointer (Muted Silver / Slate) -->
+            <polygon points="-19,0 -3.5,-3.5 0,0" fill="#e2e8f0" />
+            <polygon points="-19,0 -3.5,3.5 0,0" fill="#94a3b8" />
 
-        <!-- Right Pointer (West W) -->
-        <polygon points="28,0 5,-5 0,0" fill="#cbd5e1" />
-        <polygon points="28,0 5,5 0,0" fill="#94a3b8" />
+            <!-- West Pointer (Muted Silver / Slate) -->
+            <polygon points="19,0 3.5,-3.5 0,0" fill="#e2e8f0" />
+            <polygon points="19,0 3.5,3.5 0,0" fill="#94a3b8" />
 
-        <!-- Center Pivot Dot -->
-        <circle cx="0" cy="0" r="3.5" fill="#075985" stroke="#ffffff" stroke-width="1" />
+            <!-- Center Pivot Hub -->
+            <circle cx="0" cy="0" r="3.2" fill="#0284c7" stroke="#ffffff" stroke-width="1.2" />
+            <circle cx="0" cy="0" r="1.2" fill="#ffffff" />
 
-        <!-- Cardinal Direction Letter Labels -->
-        <text x="0" y="-36" fill="#0284c7" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" text-anchor="middle">S</text>
-        <text x="0" y="44" fill="#64748b" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" text-anchor="middle">N</text>
-        <text x="-42" y="4" fill="#64748b" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" text-anchor="middle">E</text>
-        <text x="42" y="4" fill="#64748b" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" text-anchor="middle">W</text>
+            <!-- Cardinal Direction Letter Labels (Lowercase, rotating in sync with needle) -->
+            <text x="0" y="-23.5" fill="#0284c7" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="800" text-anchor="middle" dominant-baseline="central">s</text>
+            <text x="0" y="24" fill="#64748b" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="800" text-anchor="middle" dominant-baseline="central">n</text>
+            <text x="-24" y="0" fill="#64748b" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="800" text-anchor="middle" dominant-baseline="central">e</text>
+            <text x="24" y="0" fill="#64748b" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="800" text-anchor="middle" dominant-baseline="central">w</text>
+        </g>
     </svg>
 </div>

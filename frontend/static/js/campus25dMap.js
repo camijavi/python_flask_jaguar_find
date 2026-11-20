@@ -2,15 +2,14 @@
  * ================================================================================
  * CAMPUS 2.5D PERSPECTIVE VIEW CONTROLLER (CAMPUS25DMAP.JS)
  * ================================================================================
- * Implements GPU-accelerated 2.5D perspective, tilted camera (pitch 45°/60°),
- * lower-third camera anchoring, and turn-by-turn heading-up navigation.
- *
- * Core Features:
- * 1. 2.5D Perspective Mode: Tilts 2D vector canvas (rotateX) for depth.
- * 2. Lower-Third Camera Anchor: Locks user position at 50% X, 70% Y.
- * 3. Turn-by-Turn Heading-Up: Rotates map (rotateZ) so travel direction faces UP.
- * 4. Step-by-Step Navigation & Simulation Player.
- * 5. Compass Rose orientation synchronization.
+ * Implements GPU-accelerated Waze-like 2.5D perspective navigation view:
+ * 1. Gentle camera pitch (45°–52°, default 48°) to avoid excessive compression.
+ * 2. Close zoom (scale 2.2) so map edges bleed off-screen (no "flying carpet").
+ * 3. Lower-Third camera anchor: Locks user position at 50% X, 72% Y.
+ * 4. Billboarding: Labels, building badges, and destination pins counter-rotate
+ *    and un-squash so they remain upright, readable, and face the camera.
+ * 5. Elevated 3D navigation elements (puck with ground shadow & raised chevron,
+ *    route line extrusion, standing 3D flag pins).
  * ================================================================================
  */
 
@@ -19,16 +18,26 @@
 
     class Campus25dController {
         constructor() {
-            // State
+            // Waze-Style Navigation Defaults
             this.is25dActive = false;
-            this.pitch = 55; // Default 2.5D pitch in degrees (45° or 60°)
-            this.heading = 0; // Rotation around Z axis (in degrees)
+            this.pitch = 48; // Gentle tilt (48°), avoids vertical squashing
+            this.heading = 0; // Rotation around Z axis (degrees)
             this.isHeadingUp = true;
-            this.zoomScale = 1.25;
+            this.zoomScale = 2.2; // Zoomed in mathematically so canvas edges bleed completely off-screen
             this.currentRoute = null;
             this.currentStepIndex = 0;
             this.isSimulating = false;
             this.simInterval = null;
+
+            // Camera Vector Animation State
+            this.cameraGroup = document.getElementById("mapCameraGroup");
+            this.currentUserX = undefined;
+            this.currentUserY = undefined;
+            this.currentHeading = 0;
+            this.targetUserX = 400;
+            this.targetUserY = 500;
+            this.targetHeading = 0;
+            this.tweenAnimId = null;
 
             // DOM References
             this.viewport = document.getElementById("campus25dViewport");
@@ -42,7 +51,7 @@
             this.btnMode25d = document.getElementById("btnMode25d");
             this.pitchGroup = document.getElementById("pitchControlGroup");
             this.btnPitch45 = document.getElementById("btnPitch45");
-            this.btnPitch60 = document.getElementById("btnPitch60");
+            this.btnPitch52 = document.getElementById("btnPitch52") || document.getElementById("btnPitch60");
             this.headingGroup = document.getElementById("headingControlGroup");
             this.btnToggleHeadingUp = document.getElementById("btnToggleHeadingUp");
             this.iconHeadingMode = document.getElementById("iconHeadingMode");
@@ -61,28 +70,28 @@
 
             // Map building coordinates lookup (matches campus2dMap.js)
             this.buildingAnchors = {
-                "buildingA": { x: 255, y: 545 },
-                "buildingB": { x: 365, y: 585 },
-                "buildingC": { x: 395, y: 520 },
-                "buildingD": { x: 355, y: 445 },
-                "buildingE": { x: 450, y: 635 },
-                "buildingF": { x: 510, y: 605 },
-                "buildingG": { x: 510, y: 545 },
-                "buildingH": { x: 560, y: 460 },
-                "buildingI": { x: 645, y: 675 },
-                "buildingJ": { x: 300, y: 445 },
-                "buildingK": { x: 275, y: 570 },
-                "buildingL": { x: 800, y: 585 },
-                "buildingM": { x: 565, y: 455 },
-                "buildingN": { x: 345, y: 300 },
-                "buildingO": { x: 500, y: 245 },
-                "buildingP": { x: 355, y: 170 },
-                "mainParking": { x: 340, y: 720 },
-                "chilamatesPlaza": { x: 240, y: 375 },
-                "sportsZone": { x: 725, y: 310 },
-                "jaguarCenter": { x: 710, y: 615 },
-                "northGate": { x: 400, y: 90 },
-                "northeastGate": { x: 740, y: 140 }
+                "buildingA": { x: 252, y: 459 },
+                "buildingB": { x: 390, y: 490 },
+                "buildingC": { x: 390, y: 427 },
+                "buildingD": { x: 351, y: 335 },
+                "buildingE": { x: 458, y: 620 },
+                "buildingF": { x: 517, y: 628 },
+                "buildingG": { x: 517, y: 558 },
+                "buildingH": { x: 572, y: 383 },
+                "buildingI": { x: 635, y: 715 },
+                "buildingJ": { x: 297, y: 332 },
+                "buildingK": { x: 285, y: 582 },
+                "buildingL": { x: 842, y: 502 },
+                "buildingM": { x: 567, y: 460 },
+                "buildingN": { x: 350, y: 262 },
+                "buildingO": { x: 510, y: 200 },
+                "buildingP": { x: 360, y: 104 },
+                "mainParking": { x: 340, y: 800 },
+                "chilamatesPlaza": { x: 225, y: 332 },
+                "sportsZone": { x: 762, y: 357 },
+                "jaguarCenter": { x: 735, y: 510 },
+                "northGate": { x: 340, y: 60 },
+                "northeastGate": { x: 720, y: 60 }
             };
 
             this.init();
@@ -90,13 +99,23 @@
 
         init() {
             if (!this.viewport || !this.stage) {
-                // Retry once DOM is fully parsed
                 document.addEventListener("DOMContentLoaded", () => this.init());
                 return;
             }
 
             this.bindEvents();
             this.setupUserBeaconLayer();
+
+            // Handle window resize dynamically to preserve lower-third user anchor
+            window.addEventListener("resize", () => {
+                if (this.is25dActive) {
+                    if (this.currentRoute) {
+                        this.goToStep(this.currentStepIndex);
+                    } else {
+                        this.centerOnCampusLowerThird();
+                    }
+                }
+            });
         }
 
         bindEvents() {
@@ -112,12 +131,12 @@
                 btnQuick.addEventListener("click", () => this.setMode(!this.is25dActive));
             }
 
-            // Pitch buttons (45° vs 60°)
+            // Pitch buttons (45° vs 52°)
             if (this.btnPitch45) {
                 this.btnPitch45.addEventListener("click", () => this.setPitch(45));
             }
-            if (this.btnPitch60) {
-                this.btnPitch60.addEventListener("click", () => this.setPitch(60));
+            if (this.btnPitch52) {
+                this.btnPitch52.addEventListener("click", () => this.setPitch(52));
             }
 
             // Heading-Up toggle
@@ -163,7 +182,7 @@
                 if (e.key === "3" || e.key.toLowerCase() === "v") {
                     this.setMode(!this.is25dActive);
                 } else if (e.key.toLowerCase() === "p" && this.is25dActive) {
-                    this.setPitch(this.pitch === 45 ? 60 : 45);
+                    this.setPitch(this.pitch === 45 ? 52 : 45);
                 } else if (e.key.toLowerCase() === "h" && this.is25dActive) {
                     this.isHeadingUp = !this.isHeadingUp;
                     this.updateHeadingControls();
@@ -172,6 +191,13 @@
             });
         }
 
+        /**
+         * Elevated 3D Navigation Puck (Waze-Style)
+         * - Ground contact shadow ellipse
+         * - Pulsing radar accuracy ring
+         * - Forward illumination cone
+         * - Raised puck disk with drop shadow and sharp forward navigation chevron
+         */
         setupUserBeaconLayer() {
             if (!this.svg) return;
             let beaconGroup = document.getElementById("userNavigationBeacon");
@@ -180,17 +206,26 @@
                 beaconGroup.setAttribute("id", "userNavigationBeacon");
                 beaconGroup.classList.add("hidden");
                 beaconGroup.innerHTML = `
-                    <!-- Directional Illumination Cone -->
+                    <!-- 1. Ground Contact Shadow (Soft dark ellipse on asphalt) -->
+                    <ellipse cx="0" cy="4" rx="18" ry="9" fill="#0f172a" opacity="0.4" />
+                    <!-- 2. Radar Accuracy Pulse Ring on Ground -->
+                    <circle cx="0" cy="0" r="14" fill="#0284c7" opacity="0.3" class="beacon-pulse" />
+                    <!-- 3. Forward Directional Illumination Beam -->
                     <path id="beaconCone" class="heading-cone" d="M 0 0 L -30 -90 L 30 -90 Z" fill="url(#beaconConeGradient)" />
-                    <!-- Outer Pulsing Radar Ring -->
-                    <circle id="beaconPulseRing" cx="0" cy="0" r="14" fill="#0284c7" class="beacon-pulse" />
-                    <!-- Middle Disc -->
-                    <circle cx="0" cy="0" r="10" fill="#0284c7" stroke="#ffffff" stroke-width="2.5" />
-                    <!-- Center Core Dot -->
-                    <circle cx="0" cy="0" r="4" fill="#ffffff" />
+                    <!-- 4. Elevated 3D Navigation Puck (Counter-tilted & Raised above Ground) -->
+                    <g id="puckElevatedBody" class="billboard-puck">
+                        <!-- Drop Shadow under raised puck disk -->
+                        <circle cx="0" cy="-2" r="13" fill="#0369a1" opacity="0.35" filter="url(#bldgShadow)" />
+                        <!-- Beveled Outer White Rim -->
+                        <circle cx="0" cy="-5" r="13" fill="#ffffff" filter="url(#bldgShadow)" />
+                        <!-- Core Brand Blue Disk -->
+                        <circle cx="0" cy="-5" r="10.5" fill="#0284c7" />
+                        <!-- Forward Direction Navigation Chevron (White Arrow) -->
+                        <path d="M 0 -11 L 5 -2 L 0 -4 L -5 -2 Z" fill="#ffffff" />
+                    </g>
                 `;
 
-                // Add gradient definition for the cone
+                // Add gradient definition for the forward beam
                 let defs = this.svg.querySelector("defs");
                 if (defs) {
                     const gradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
@@ -200,13 +235,14 @@
                     gradient.setAttribute("x2", "0%");
                     gradient.setAttribute("y2", "0%");
                     gradient.innerHTML = `
-                        <stop offset="0%" stop-color="#0284c7" stop-opacity="0.6"/>
+                        <stop offset="0%" stop-color="#0284c7" stop-opacity="0.55"/>
                         <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
                     `;
                     defs.appendChild(gradient);
                 }
 
-                this.svg.appendChild(beaconGroup);
+                const target = document.getElementById("mapCameraGroup") || this.svg;
+                target.appendChild(beaconGroup);
             }
         }
 
@@ -215,6 +251,9 @@
          */
         setMode(enable25d) {
             this.is25dActive = enable25d;
+            if (!this.cameraGroup) {
+                this.cameraGroup = document.getElementById("mapCameraGroup");
+            }
 
             if (enable25d) {
                 this.viewport.classList.add("campus-25d-active");
@@ -229,17 +268,24 @@
                 if (this.pitchGroup) this.pitchGroup.classList.remove("hidden");
                 if (this.headingGroup) this.headingGroup.classList.remove("hidden");
 
-                // If a route exists, center on the current step with heading-up
+                // Clear 2D transform on SVG element so #mapCameraGroup controls the viewport
+                if (this.svg) this.svg.style.transform = "none";
+
+                // Waze defaults
+                this.pitch = 48; // Gentle 48° pitch
+                this.zoomScale = 2.2; // Close zoom calculated mathematically inside SVG
+
                 if (this.currentRoute) {
                     this.goToStep(this.currentStepIndex);
                 } else {
-                    // Default bird's-eye oblique view
-                    this.pitch = 55;
                     this.heading = 0;
-                    this.zoomScale = 1.15;
                     this.centerOnCampusLowerThird();
                 }
             } else {
+                if (this.tweenAnimId) {
+                    cancelAnimationFrame(this.tweenAnimId);
+                    this.tweenAnimId = null;
+                }
                 this.viewport.classList.remove("campus-25d-active");
                 if (this.btnMode2d) {
                     this.btnMode2d.classList.add("active");
@@ -255,29 +301,43 @@
                 this.pitch = 0;
                 this.heading = 0;
                 this.zoomScale = 1;
-                this.stage.style.transform = "none";
-                this.applyTransform();
+                this.currentUserX = undefined;
+                this.currentUserY = undefined;
+                this.currentHeading = 0;
+                this.stage.style.transform = "";
+
+                if (this.cameraGroup) {
+                    this.cameraGroup.removeAttribute("transform");
+                }
+
+                // Reset SVG custom properties
+                if (this.viewport) {
+                    this.viewport.style.removeProperty("--bearing");
+                    this.viewport.style.removeProperty("--counter-bearing");
+                    this.viewport.style.removeProperty("--pitch");
+                    this.viewport.style.removeProperty("--counter-pitch-scale");
+                }
             }
 
             this.updateCompass();
         }
 
         /**
-         * Sets camera pitch angle (45° or 60°)
+         * Sets camera pitch angle (45° or 52°)
          */
         setPitch(degrees) {
             if (!this.is25dActive) this.setMode(true);
             this.pitch = degrees;
 
-            if (this.btnPitch45 && this.btnPitch60) {
+            if (this.btnPitch45 && this.btnPitch52) {
                 if (degrees === 45) {
                     this.btnPitch45.classList.add("bg-brand-50", "text-brand-600");
                     this.btnPitch45.classList.remove("text-slate-600");
-                    this.btnPitch60.classList.remove("bg-brand-50", "text-brand-600");
-                    this.btnPitch60.classList.add("text-slate-600");
+                    this.btnPitch52.classList.remove("bg-brand-50", "text-brand-600");
+                    this.btnPitch52.classList.add("text-slate-600");
                 } else {
-                    this.btnPitch60.classList.add("bg-brand-50", "text-brand-600");
-                    this.btnPitch60.classList.remove("text-slate-600");
+                    this.btnPitch52.classList.add("bg-brand-50", "text-brand-600");
+                    this.btnPitch52.classList.remove("text-slate-600");
                     this.btnPitch45.classList.remove("bg-brand-50", "text-brand-600");
                     this.btnPitch45.classList.add("text-slate-600");
                 }
@@ -317,98 +377,203 @@
         calculateHeadingAngle(p1, p2) {
             const dx = p2.x - p1.x;
             const dy = p2.y - p1.y;
-            // Screen coordinates have Y positive downwards
             const rad = Math.atan2(dy, dx);
             const deg = rad * (180 / Math.PI);
-            // Angle to rotate stage so direction of travel faces upward (-90° screen vector)
-            const headingUpRotation = -(deg + 90);
-            return headingUpRotation;
+            // Rotate stage so direction of travel faces upward (-90° in standard screen coords)
+            return -(deg + 90);
         }
 
         /**
-         * Anchors the camera on an SVG coordinate point, placing it in the lower third (50% X, 70% Y)
+         * Locks user position to the lower-third / bottom-center (50% X, 72% Y).
+         * Uses vector camera group transformation so shapes re-render mathematically.
          */
-        anchorToLowerThird(xSvg, ySvg, headingDeg) {
-            const vw = this.viewport.clientWidth || 1000;
-            const vh = this.viewport.clientHeight || 700;
+        anchorToLowerThird(xSvg, ySvg, headingDeg, animate = true) {
+            this.targetUserX = xSvg;
+            this.targetUserY = ySvg;
+            this.targetHeading = headingDeg || 0;
 
-            // Target anchor location on the screen: 50% X, 70% Y (Lower Third)
-            const anchorScreenX = vw * 0.5;
-            const anchorScreenY = vh * 0.7;
+            if (!animate || this.currentUserX === undefined) {
+                if (this.tweenAnimId) {
+                    cancelAnimationFrame(this.tweenAnimId);
+                    this.tweenAnimId = null;
+                }
+                this.currentUserX = this.targetUserX;
+                this.currentUserY = this.targetUserY;
+                this.currentHeading = this.targetHeading;
+                this.applyTransform();
+                this.updateCompass();
+                this.updateUserBeacon(this.currentUserX, this.currentUserY, this.currentHeading);
+            } else {
+                this.startCameraTween();
+            }
+        }
 
-            // Map SVG coordinates to pixels
-            const svgPixelX = (xSvg / 1200) * vw;
-            const svgPixelY = (ySvg / 850) * vh;
+        startCameraTween() {
+            if (this.tweenAnimId) {
+                cancelAnimationFrame(this.tweenAnimId);
+                this.tweenAnimId = null;
+            }
 
-            const dx = anchorScreenX - svgPixelX;
-            const dy = anchorScreenY - svgPixelY;
+            const startX = this.currentUserX;
+            const startY = this.currentUserY;
+            const startH = this.currentHeading;
+            const targetX = this.targetUserX;
+            const targetY = this.targetUserY;
+            const targetH = this.targetHeading;
 
-            this.cameraX = dx;
-            this.cameraY = dy;
-            this.heading = headingDeg || 0;
+            // Shortest turn interpolation
+            let diffH = (targetH - startH) % 360;
+            if (diffH < -180) diffH += 360;
+            if (diffH > 180) diffH -= 360;
 
-            this.applyTransform();
-            this.updateCompass();
-            this.updateUserBeacon(xSvg, ySvg, headingDeg);
+            const startTime = performance.now();
+            const duration = 400; // ms
+
+            const step = (now) => {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Smooth cubic ease-out
+                const ease = 1 - Math.pow(1 - progress, 3);
+
+                this.currentUserX = startX + (targetX - startX) * ease;
+                this.currentUserY = startY + (targetY - startY) * ease;
+                this.currentHeading = startH + diffH * ease;
+
+                this.applyTransform();
+                this.updateCompass();
+                this.updateUserBeacon(this.currentUserX, this.currentUserY, this.currentHeading);
+
+                if (progress < 1) {
+                    this.tweenAnimId = requestAnimationFrame(step);
+                } else {
+                    this.tweenAnimId = null;
+                }
+            };
+
+            this.tweenAnimId = requestAnimationFrame(step);
         }
 
         centerOnCampusLowerThird() {
             // Default center point near Plaza Central / Edificio B (x: 400, y: 500)
-            this.anchorToLowerThird(400, 500, 0);
+            this.anchorToLowerThird(400, 500, 0, false);
         }
 
         /**
-         * Applies the CSS 3D transformation combining:
-         * 1. 3D perspective
-         * 2. Tilted camera pitch (rotateX)
-         * 3. Heading-up direction (rotateZ)
-         * 4. Camera translation & scale
+         * Crisp Vector 2.5D Transform Pipeline:
+         * 1. rotateX(pitch) strictly on outer wrapper (CSS 3D perspective plane)
+         * 2. translate + scale(2.2) + rotate strictly inside SVG <g id="mapCameraGroup">
+         *    -> Vector math renders without GPU texture downsampling or blurriness
          */
         applyTransform() {
             if (!this.stage) return;
+            if (!this.cameraGroup) {
+                this.cameraGroup = document.getElementById("mapCameraGroup");
+            }
 
             if (!this.is25dActive) {
                 this.stage.style.transform = "";
+                if (this.cameraGroup) this.cameraGroup.removeAttribute("transform");
+                if (this.viewport) {
+                    this.viewport.style.removeProperty("--bearing");
+                    this.viewport.style.removeProperty("--counter-bearing");
+                    this.viewport.style.removeProperty("--pitch");
+                    this.viewport.style.removeProperty("--counter-pitch-scale");
+                }
                 return;
             }
 
-            const pitchVal = this.pitch;
-            const rotVal = this.isHeadingUp ? this.heading : 0;
-            const tx = this.cameraX || 0;
-            const ty = this.cameraY || 0;
-            const s = this.zoomScale || 1.25;
+            const pitch = this.pitch || 48; // Gentle tilt (45°–52°)
+            const bearing = this.isHeadingUp ? (this.currentHeading || 0) : 0;
+            const zoom = this.zoomScale || 2.2; // Waze-style close zoom in SVG vector space
+            const uX = this.currentUserX !== undefined ? this.currentUserX : 400;
+            const uY = this.currentUserY !== undefined ? this.currentUserY : 500;
 
-            // CSS 3D Transform Pipeline
-            this.stage.style.transform = `
-                perspective(1000px)
-                rotateX(${pitchVal}deg)
-                rotateZ(${rotVal}deg)
-                translate3d(${tx}px, ${ty}px, 0px)
-                scale(${s})
-            `;
+            // Viewport dimensions for lower-third anchor
+            const vw = this.viewport.clientWidth || 1000;
+            const vh = this.viewport.clientHeight || 700;
+            const svgAspect = 1200 / 850;
+            const containerAspect = vw / vh;
+
+            let anchorX = 600;
+            let anchorY = 612; // 850 * 0.72 = 612 (Lower Third of 1200x850 SVG)
+
+            if (containerAspect < svgAspect) {
+                // Narrow / mobile portrait screen: vertical letterbox mapping
+                const visibleHeightSvg = 1200 / containerAspect;
+                anchorY = 425 + visibleHeightSvg * 0.22;
+            }
+
+            // Set CSS custom properties on viewport for billboarding labels & badges
+            if (this.viewport) {
+                this.viewport.style.setProperty("--bearing", `${bearing.toFixed(2)}deg`);
+                this.viewport.style.setProperty("--counter-bearing", `${(-bearing).toFixed(2)}deg`);
+                this.viewport.style.setProperty("--pitch", `${pitch}deg`);
+                const pitchRad = (pitch * Math.PI) / 180;
+                // Un-squash factor = 1 / cos(pitch)
+                const counterPitchScale = (1 / Math.cos(pitchRad)).toFixed(3);
+                this.viewport.style.setProperty("--counter-pitch-scale", counterPitchScale);
+            }
+
+            // 1. Tilt STRICTLY via CSS rotateX on the outer stage (no scale, no translate!)
+            this.stage.style.transform = `rotateX(${pitch}deg)`;
+
+            // 2. Vector pan, zoom & bearing rotation directly inside SVG <g id="mapCameraGroup">
+            if (this.cameraGroup) {
+                const svgTransform = `translate(${anchorX.toFixed(2)}, ${anchorY.toFixed(2)}) ` +
+                                     `scale(${zoom.toFixed(3)}) ` +
+                                     `rotate(${bearing.toFixed(2)}) ` +
+                                     `translate(${(-uX).toFixed(2)}, ${(-uY).toFixed(2)})`;
+                this.cameraGroup.setAttribute("transform", svgTransform);
+            }
+
+            // Sync compass with view rotation in real time
+            this.updateCompass(false);
+        }
+
+        zoomIn() {
+            this.zoomScale = Math.min((this.zoomScale || 2.2) + 0.25, 3.5);
+            this.applyTransform();
+        }
+
+        zoomOut() {
+            this.zoomScale = Math.max((this.zoomScale || 2.2) - 0.25, 1.5);
+            this.applyTransform();
         }
 
         /**
-         * Keeps the Compass Rose synchronized with current map rotation
+         * Keeps the Compass Rose synchronized with map rotation
          */
-        updateCompass() {
-            if (!this.compassRose) return;
-            const compassRot = this.is25dActive && this.isHeadingUp ? -this.heading : 0;
-            this.compassRose.style.transform = `rotate(${compassRot}deg)`;
-            this.compassRose.style.transition = "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)";
+        updateCompass(animate = true) {
+            const dial = document.getElementById("compassDial");
+            const compassRot = this.is25dActive && this.isHeadingUp ? -(this.currentHeading || 0) : 0;
+            if (dial) {
+                dial.style.transition = animate ? "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
+                dial.style.transform = `rotate(${compassRot.toFixed(2)}deg)`;
+            } else {
+                if (!this.compassRose) {
+                    this.compassRose = document.getElementById("compassRose");
+                }
+                if (this.compassRose) {
+                    this.compassRose.style.transition = animate ? "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
+                    this.compassRose.style.transform = `rotate(${compassRot.toFixed(2)}deg)`;
+                }
+            }
         }
 
+        /**
+         * Positions user navigation puck and aligns the directional cone
+         */
         updateUserBeacon(x, y, headingDeg) {
             const beacon = document.getElementById("userNavigationBeacon");
             const cone = document.getElementById("beaconCone");
             if (!beacon) return;
 
-            beacon.setAttribute("transform", `translate(${x}, ${y})`);
+            beacon.setAttribute("transform", `translate(${x.toFixed(2)}, ${y.toFixed(2)})`);
             beacon.classList.remove("hidden");
 
+            const beaconRot = this.isHeadingUp ? -headingDeg : 0;
             if (cone) {
-                // Point cone in direction of movement
-                cone.setAttribute("transform", `rotate(${-headingDeg})`);
+                cone.setAttribute("transform", `rotate(${beaconRot.toFixed(2)})`);
             }
         }
 
@@ -421,7 +586,7 @@
 
             if (!routeData || !routeData.pathCoordinates || routeData.pathCoordinates.length < 2) return;
 
-            // Automatically switch to 2.5D Perspective Mode for immersive turn-by-turn guidance
+            // Automatically switch to Waze-style 2.5D navigation view
             if (!this.is25dActive) {
                 this.setMode(true);
             }
@@ -480,7 +645,6 @@
             if (stepIndex < coords.length - 1) {
                 headingDeg = this.calculateHeadingAngle(currentPt, nextPt);
             } else if (coords.length > 1) {
-                // At destination, maintain previous segment's bearing
                 const prevPt = this.resolveSvgPoint(coords[coords.length - 2]);
                 headingDeg = this.calculateHeadingAngle(prevPt, currentPt);
             }
@@ -521,7 +685,6 @@
                 this.tbtStepInstruction.textContent = instruction;
             }
 
-            // Approximate distance for current segment
             if (this.tbtStepDistance && this.currentRoute) {
                 const totalMeters = this.currentRoute.totalDistanceMeters || 100;
                 const approxStepM = Math.max(15, Math.round(totalMeters / Math.max(1, totalSteps - 1)));
@@ -532,19 +695,14 @@
             if (this.tbtManeuverIcon) {
                 const lower = instruction.toLowerCase();
                 if (stepIdx === totalSteps - 1 || lower.includes("llegado") || lower.includes("destino") || lower.includes("arrived")) {
-                    // Destination Flag
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>`;
                 } else if (lower.includes("derecha") || lower.includes("right") || lower.includes("este") || lower.includes("east")) {
-                    // Turn Right
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>`;
                 } else if (lower.includes("izquierda") || lower.includes("left") || lower.includes("oeste") || lower.includes("west")) {
-                    // Turn Left
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>`;
                 } else if (lower.includes("escalera") || lower.includes("stairs")) {
-                    // Stairs
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19h4v-4h4v-4h4V7h5"/>`;
                 } else {
-                    // Straight ahead
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-5 5m5-5l5 5"/>`;
                 }
             }
@@ -563,7 +721,6 @@
             this.isSimulating = true;
             if (this.labelSimPlay) this.labelSimPlay.textContent = "Pausar";
 
-            // If at end, loop to beginning
             if (this.currentStepIndex >= this.currentRoute.pathCoordinates.length - 1) {
                 this.goToStep(0);
             }

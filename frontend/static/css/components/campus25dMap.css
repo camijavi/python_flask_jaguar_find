@@ -1,15 +1,15 @@
 /**
  * ================================================================================
- * CAMPUS25DMAP.CSS - 2.5D PERSPECTIVE VIEWPORT & 3D CSS TRANSFORMS
+ * CAMPUS25DMAP.CSS - WAZE-STYLE 2.5D PERSPECTIVE & 3D CSS TRANSFORMS
  * ================================================================================
- * Lightweight, GPU-accelerated CSS 3D perspective transformation for the UAM
- * vector campus map. Implements:
- * - 3D Perspective viewport (900px - 1000px perspective)
- * - Lower-third camera anchoring (transform-origin & perspective-origin: 50% 70%)
- * - Tilted camera / Pitch angles (0° flat, 45° bird's-eye, 55°-60° turn-by-turn)
- * - Heading-Up rotation around the Z axis
- * - Horizon depth atmosphere gradient
- * - Fixed 2D Turn-by-Turn navigation HUD and controls
+ * Implements GPU-accelerated 2.5D perspective with:
+ * 1. Gentle camera pitch (45°–52°, default 48°) to avoid excessive compression.
+ * 2. Close zoom (scale 2.0–2.4, default 2.2) so map edges bleed off-screen.
+ * 3. Camera pivot / lower-third anchoring (transform-origin: 50% 72%).
+ * 4. Billboarding: Labels, building badges, and destination pins counter-rotate
+ *    and un-squash so they remain upright, readable, and face the camera.
+ * 5. Elevated 3D navigation elements (puck with ground shadow & raised chevron,
+ *    route line extrusion, standing 3D flag pins).
  * ================================================================================
  */
 
@@ -21,37 +21,47 @@
     overflow: hidden;
     background-color: #e2e8f0;
     perspective: 1000px;
-    perspective-origin: 50% 70%; /* Anchors viewpoint in the lower third */
+    perspective-origin: 50% 72%; /* Anchors viewpoint in the lower third / bottom-center */
 }
 
-/* 2. 3D Map Transformable Stage (Wraps the flat SVG canvas) */
+/* 2. 3D Map Transformable Stage (Wraps the SVG map plane - tilt strictly via rotateX) */
 .campus-3d-stage {
     position: relative;
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    transform-origin: 50% 70%; /* Pivot anchored at lower third of screen */
-    will-change: transform;
+    transform-origin: 50% 72%; /* Pivot anchored at user position in lower third */
     transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1);
 }
 
-/* Instant transform class when user is actively dragging */
+/* SVG Vector Canvas: Mathematical precision anti-aliasing */
+.campus-svg-canvas {
+    shape-rendering: geometricPrecision;
+    text-rendering: geometricPrecision;
+}
+
+/* SVG Camera Group: Mathematical vector transformations */
+#mapCameraGroup {
+    transform-origin: 0 0;
+}
+
+/* Instant transform class when user is dragging or simulation advances */
 .campus-3d-stage.no-transition {
     transition: none !important;
 }
 
-/* 3. Horizon Atmosphere Depth Gradient (Appears when tilted) */
+/* 3. Subtle Horizon Depth Vignette (Replaces empty sky curtain) */
 .campus-horizon-atmosphere {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 28%;
+    height: 16%;
     background: linear-gradient(
         to bottom,
-        rgba(148, 163, 184, 0.85) 0%,
-        rgba(203, 213, 225, 0.5) 40%,
-        rgba(232, 236, 241, 0) 100%
+        rgba(15, 23, 42, 0.22) 0%,
+        rgba(15, 23, 42, 0.08) 45%,
+        rgba(15, 23, 42, 0) 100%
     );
     pointer-events: none;
     z-index: 15;
@@ -63,41 +73,67 @@
     opacity: 1;
 }
 
-/* 4. Enhanced 3D Shadows for Buildings in 2.5D Mode */
+/* 4. Enhanced 3D Building Shadows in 2.5D Mode */
 .campus-25d-active .bldg-shape {
-    filter: drop-shadow(0 6px 12px rgba(15, 23, 42, 0.3));
+    filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.28));
 }
 
 .campus-25d-active .bldg-shape:hover {
-    filter: drop-shadow(0 14px 22px rgba(15, 23, 42, 0.45)) brightness(1.12);
+    filter: drop-shadow(0 14px 22px rgba(15, 23, 42, 0.42)) brightness(1.1);
 }
 
-/* 5. User Position Beacon & Directional Cone */
+/* ================================================================================
+ * 5. WAZE-STYLE BILLBOARDING: Upright, Facing-Camera Labels, Badges & Pins
+ * ================================================================================
+ * Counter-rotates by -bearing so text is NEVER upside down.
+ * Stretches vertically by 1/cos(pitch) so text is NEVER squashed flat.
+ */
+.campus-25d-active .billboard-badge,
+.campus-25d-active .billboard-label,
+.campus-25d-active .billboard-pin,
+.campus-25d-active .map-label,
+.campus-25d-active .map-sublabel,
+.campus-25d-active .badge-text {
+    transform-box: fill-box;
+    transform-origin: center center;
+    transform: rotateZ(var(--counter-bearing, 0deg)) scaleY(var(--counter-pitch-scale, 1.49));
+    transform-style: preserve-3d;
+    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+/* 6. Elevated 3D Navigation Puck (Counter-tilted and raised above asphalt) */
+.campus-25d-active .billboard-puck {
+    transform-box: fill-box;
+    transform-origin: center center;
+    transform: scaleY(var(--counter-pitch-scale, 1.49));
+    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
 .beacon-pulse {
     animation: beaconPulse 1.8s ease-out infinite;
 }
 
 @keyframes beaconPulse {
     0% {
-        r: 10;
+        r: 12;
         opacity: 0.8;
     }
     70% {
-        r: 32;
+        r: 34;
         opacity: 0;
     }
     100% {
-        r: 32;
+        r: 34;
         opacity: 0;
     }
 }
 
 .heading-cone {
-    opacity: 0.4;
+    opacity: 0.45;
     transition: transform 0.3s ease-out;
 }
 
-/* 6. 2.5D Floating Control Pill */
+/* 7. 2.5D Floating Control Pill */
 .mode-pill-btn {
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -107,7 +143,7 @@
     box-shadow: 0 2px 6px -1px rgba(2, 132, 199, 0.4);
 }
 
-/* 7. Turn-by-Turn Top Navigation Banner */
+/* 8. Turn-by-Turn Top Navigation Banner */
 .turn-by-turn-banner {
     animation: slideDownBanner 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }

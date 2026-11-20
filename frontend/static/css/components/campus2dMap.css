@@ -110,12 +110,22 @@
     }
 }
 
-/* Compass Rose */
+/* Compass Rose Widget */
 .campus-compass {
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.10);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.campus-compass:active {
+    cursor: grabbing;
 }
 .compass-rose {
     pointer-events: none;
+}
+#compassDial {
+    will-change: transform;
+    transform-origin: 0px 0px;
 }
 
 /* Directory Sidebar Cards */
