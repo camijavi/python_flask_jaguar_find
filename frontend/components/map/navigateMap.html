@@ -206,11 +206,11 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
 <!-- Replaces text bar with the iconic Directions Arrow button               -->
 <!-- ====================================================================== -->
 <button id="btnToggleDirections" type="button" 
-        class="fixed bottom-4 right-4 z-40 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 active:scale-95 text-white w-13 h-13 sm:w-14 sm:h-14 rounded-2xl shadow-xl shadow-brand-900/25 border border-white/25 flex items-center justify-center transition-all cursor-pointer pointer-events-auto lg:hidden directions-btn-animated group" 
+        class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 active:scale-95 text-white w-16 h-16 sm:w-18 sm:h-18 rounded-full shadow-2xl shadow-brand-900/35 border-2 border-white/30 flex items-center justify-center transition-all cursor-pointer pointer-events-auto lg:hidden directions-btn-animated group" 
         title="{{ t('map.directions', default='Cómo llegar / Indicaciones') }}" 
         aria-label="{{ t('map.directions', default='Cómo llegar / Indicaciones') }}">
     <!-- Directions Diamond Turn Arrow SVG (Universal Google Maps / Navigation icon) -->
-    <svg class="w-7 h-7 transition-transform group-hover:scale-105" fill="currentColor" viewBox="0 0 24 24">
+    <svg class="w-9 h-9 sm:w-10 sm:h-10 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
         <path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/>
     </svg>
 </button>
