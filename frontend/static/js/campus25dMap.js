@@ -118,6 +118,7 @@
             }
 
             this.bindEvents();
+            this.setupInteractions();
             this.initOverlayBadges();
 
             // Handle window resize dynamically to preserve lower-third user anchor
@@ -187,9 +188,11 @@
                 const rawName = bldgData.name || nodeId;
                 const cleanName = rawName.includes("•") ? rawName.split("•")[0].trim() : rawName;
 
+                badgeEl.title = cleanName;
+                badgeEl.setAttribute("aria-label", cleanName);
+
                 badgeEl.innerHTML = `
                     <span class="waze-bldg-letter" style="background-color: ${badgeBg}">${letter}</span>
-                    <span class="waze-bldg-name">${cleanName}</span>
                 `;
 
                 badgeEl.addEventListener("click", (e) => {
@@ -332,6 +335,221 @@
                     if (this.btnWazeRecenter) this.btnWazeRecenter.click();
                 }
             });
+        }
+
+        /**
+         * Google Maps-style Free 2.5D Gesture Navigation:
+         * 1. Left-click/1-finger drag: pan freely with mathematical 1:1 ground tracking under cursor
+         * 2. Mouse wheel scroll / 2-finger pinch: smooth zoom in and out
+         * 3. Shift/Alt/Right-click drag / 2-finger twist: free 360° heading rotation
+         */
+        setupInteractions() {
+            if (!this.viewport) return;
+
+            let isPointerDown = false;
+            let isRotating = false;
+            let lastX = 0;
+            let lastY = 0;
+            let startRotX = 0;
+            let startHeading = 0;
+
+            // Touch gesture state
+            let isPinching = false;
+            let initialDist = 0;
+            let initialAngle = 0;
+            let initialZoom = 2.2;
+            let initialHeading = 0;
+
+            const onPointerDown = (clientX, clientY, isRotateAction, target) => {
+                if (!this.is25dActive) return false;
+                if (target && (target.closest("button") || target.closest("#bldgPopover") || target.closest(".waze-bldg-badge") || target.closest("#campusCompass"))) {
+                    return false;
+                }
+
+                if (this.tweenAnimId) {
+                    cancelAnimationFrame(this.tweenAnimId);
+                    this.tweenAnimId = null;
+                }
+
+                if (isRotateAction) {
+                    isRotating = true;
+                    startRotX = clientX;
+                    startHeading = this.currentHeading || 0;
+                } else {
+                    isPointerDown = true;
+                    lastX = clientX;
+                    lastY = clientY;
+                }
+
+                if (this.stage) this.stage.classList.add("no-transition");
+                this.viewport.classList.add("cursor-grabbing");
+                return true;
+            };
+
+            const onPointerMove = (clientX, clientY) => {
+                if (!this.is25dActive) return;
+
+                if (isRotating) {
+                    const deltaX = clientX - startRotX;
+                    this.currentHeading = (startHeading - deltaX * 0.45) % 360;
+                    this.applyTransform();
+                    this.updateOverlays();
+                    this.updateCompass(false);
+                    return;
+                }
+
+                if (!isPointerDown) return;
+
+                const deltaX = clientX - lastX;
+                const deltaY = clientY - lastY;
+                lastX = clientX;
+                lastY = clientY;
+
+                if (deltaX === 0 && deltaY === 0) return;
+
+                // Mathematical inverse 2.5D perspective projection
+                const vw = this.viewport.clientWidth || 1000;
+                const vh = this.viewport.clientHeight || 700;
+                const s = Math.min(vw / 1200, vh / 850);
+                const zoom = this.zoomScale || 2.2;
+                const pitchRad = ((this.pitch || 48) * Math.PI) / 180;
+                const cosPitch = Math.cos(pitchRad);
+
+                const deltaRx = deltaX / (zoom * s);
+                const deltaRy = deltaY / (zoom * s * cosPitch);
+
+                const bearing = this.isHeadingUp ? (this.currentHeading || 0) : 0;
+                const psi = (bearing * Math.PI) / 180;
+                const cosPsi = Math.cos(psi);
+                const sinPsi = Math.sin(psi);
+
+                const dUserX = -(deltaRx * cosPsi + deltaRy * sinPsi);
+                const dUserY = -(-deltaRx * sinPsi + deltaRy * cosPsi);
+
+                if (this.currentUserX === undefined) this.currentUserX = 400;
+                if (this.currentUserY === undefined) this.currentUserY = 500;
+
+                this.currentUserX += dUserX;
+                this.currentUserY += dUserY;
+
+                this.applyTransform();
+                this.updateOverlays();
+            };
+
+            const onPointerUp = () => {
+                if (!this.is25dActive) return;
+                isPointerDown = false;
+                isRotating = false;
+                if (this.stage) this.stage.classList.remove("no-transition");
+                this.viewport.classList.remove("cursor-grabbing");
+            };
+
+            // 1. Mouse Drag Handlers
+            this.viewport.addEventListener("mousedown", (e) => {
+                const isRotate = e.shiftKey || e.altKey || e.button === 2;
+                if (onPointerDown(e.clientX, e.clientY, isRotate, e.target)) {
+                    if (e.button === 0 || e.button === 2) {
+                        e.preventDefault();
+                    }
+                }
+            });
+
+            this.viewport.addEventListener("contextmenu", (e) => {
+                if (this.is25dActive) {
+                    e.preventDefault();
+                }
+            });
+
+            window.addEventListener("mousemove", (e) => {
+                onPointerMove(e.clientX, e.clientY);
+            });
+
+            window.addEventListener("mouseup", () => {
+                onPointerUp();
+            });
+
+            // 2. Mouse Wheel Zoom (Scroll to zoom smoothly)
+            this.viewport.addEventListener("wheel", (e) => {
+                if (!this.is25dActive) return;
+                e.preventDefault();
+
+                const delta = e.deltaY < 0 ? 0.2 : -0.2;
+                this.zoomScale = Math.max(1.1, Math.min(4.0, (this.zoomScale || 2.2) + delta));
+                this.applyTransform();
+                this.updateOverlays();
+            }, { passive: false });
+
+            // 3. Touch Gesture Handlers (Mobile / Tablet: 1 finger pan, 2 fingers pinch & rotate)
+            this.viewport.addEventListener("touchstart", (e) => {
+                if (!this.is25dActive) return;
+                if (e.target.closest("button") || e.target.closest("#bldgPopover") || e.target.closest(".waze-bldg-badge") || e.target.closest("#campusCompass")) {
+                    return;
+                }
+
+                if (this.tweenAnimId) {
+                    cancelAnimationFrame(this.tweenAnimId);
+                    this.tweenAnimId = null;
+                }
+
+                if (e.touches.length === 1) {
+                    isPinching = false;
+                    isPointerDown = true;
+                    lastX = e.touches[0].clientX;
+                    lastY = e.touches[0].clientY;
+                    if (this.stage) this.stage.classList.add("no-transition");
+                } else if (e.touches.length === 2) {
+                    isPointerDown = false;
+                    isPinching = true;
+                    const t1 = e.touches[0];
+                    const t2 = e.touches[1];
+                    initialDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+                    initialAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180 / Math.PI;
+                    initialZoom = this.zoomScale || 2.2;
+                    initialHeading = this.currentHeading || 0;
+                    if (this.stage) this.stage.classList.add("no-transition");
+                }
+            }, { passive: false });
+
+            this.viewport.addEventListener("touchmove", (e) => {
+                if (!this.is25dActive) return;
+
+                if (isPointerDown && e.touches.length === 1) {
+                    e.preventDefault();
+                    onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+                } else if (isPinching && e.touches.length === 2) {
+                    e.preventDefault();
+                    const t1 = e.touches[0];
+                    const t2 = e.touches[1];
+                    const currentDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+                    const currentAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180 / Math.PI;
+
+                    if (initialDist > 0) {
+                        const scaleRatio = currentDist / initialDist;
+                        this.zoomScale = Math.max(1.1, Math.min(4.0, initialZoom * scaleRatio));
+                    }
+
+                    const angleDiff = currentAngle - initialAngle;
+                    this.currentHeading = (initialHeading - angleDiff) % 360;
+
+                    this.applyTransform();
+                    this.updateOverlays();
+                    this.updateCompass(false);
+                }
+            }, { passive: false });
+
+            this.viewport.addEventListener("touchend", (e) => {
+                if (!this.is25dActive) return;
+                if (e.touches.length === 0) {
+                    isPointerDown = false;
+                    isPinching = false;
+                    if (this.stage) this.stage.classList.remove("no-transition");
+                } else if (e.touches.length === 1) {
+                    isPinching = false;
+                    isPointerDown = true;
+                    lastX = e.touches[0].clientX;
+                    lastY = e.touches[0].clientY;
+                }
+            }, { passive: false });
         }
 
         /**

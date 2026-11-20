@@ -476,19 +476,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Mouse wheel zoom
     wrapper.addEventListener("wheel", (e) => {
+        if (window.campus25dController && window.campus25dController.is25dActive) return;
         e.preventDefault();
         const delta = e.deltaY < 0 ? 0.15 : -0.15;
-        if (window.campus25dController && window.campus25dController.is25dActive) {
-            window.campus25dController.zoomScale = Math.max(1.5, Math.min((window.campus25dController.zoomScale || 2.2) + delta, 3.5));
-            window.campus25dController.applyTransform();
-            return;
-        }
         scale = Math.max(0.75, Math.min(scale + delta, 2.8));
         applyTransform(false);
     }, { passive: false });
 
     // Desktop Mouse Drag handlers: Pan (left drag) and Rotate (Shift/Alt/Right drag)
     wrapper.addEventListener("mousedown", (e) => {
+        if (window.campus25dController && window.campus25dController.is25dActive) return;
         if (e.target.closest("#bldgPopover") || e.target.closest("button") || e.target.closest("#campusCompass")) return;
 
         if (e.shiftKey || e.altKey || e.button === 2) {
@@ -537,6 +534,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let touchStartY = 0;
 
     wrapper.addEventListener("touchstart", (e) => {
+        if (window.campus25dController && window.campus25dController.is25dActive) return;
         if (e.target.closest("#bldgPopover") || e.target.closest("button") || e.target.closest("#campusCompass")) return;
 
         if (e.touches.length === 1) {
