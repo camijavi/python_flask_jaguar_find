@@ -32,12 +32,12 @@
                     <button id="sidebarTabNav" type="button" class="flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all">
                         <!-- Directions Waypoint SVG -->
                         <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                        <span>Navegación</span>
+                        <span>{{ t('map.tabs.navigation', default='Navegación') }}</span>
                     </button>
                     <button id="sidebarTabDir" type="button" class="flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all">
                         <!-- Directory Office SVG -->
                         <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        <span>Directorio UAM</span>
+                        <span>{{ t('map.tabs.directory', default='Directorio UAM') }}</span>
                     </button>
                 </div>
 
@@ -95,11 +95,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Responsive navigation slot manager (Google Maps layout on mobile, sidebar panel on desktop)
     function adaptNavPlacement() {
-        const isMobile = window.innerWidth < 1024;
+        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
         const currentPanelNav = document.getElementById("sidebarPanelNav");
         if (!currentPanelNav || !desktopSlot || !mobileSlot) return;
 
-        if (isMobile) {
+        if (!isDesktop) {
             // Move navigation to mobile overlay slot on top of 2D map
             if (!mobileSlot.contains(currentPanelNav)) {
                 mobileSlot.appendChild(currentPanelNav);
@@ -115,8 +115,20 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             if (sidebarSwitcher) sidebarSwitcher.classList.remove("hidden");
             
-            // Respect active desktop tab
-            const isNavActive = tabNav && tabNav.classList.contains("bg-white");
+            // Respect active desktop tab (persisted via sessionStorage or default to nav)
+            const savedTab = sessionStorage.getItem("jaguar_map_active_tab") || "nav";
+            const isNavActive = (savedTab === "nav");
+            
+            if (tabNav && tabDir) {
+                if (isNavActive) {
+                    tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
+                    tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
+                } else {
+                    tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
+                    tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
+                }
+            }
+            
             if (panelDir) panelDir.classList.toggle("hidden", isNavActive);
             currentPanelNav.classList.toggle("hidden", !isNavActive);
         }
@@ -128,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (tabNav && tabDir && panelDir) {
         tabNav.addEventListener("click", () => {
             const currentPanelNav = document.getElementById("sidebarPanelNav");
+            sessionStorage.setItem("jaguar_map_active_tab", "nav");
             tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
             tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
             if (currentPanelNav) currentPanelNav.classList.remove("hidden");
@@ -136,6 +149,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         tabDir.addEventListener("click", () => {
             const currentPanelNav = document.getElementById("sidebarPanelNav");
+            sessionStorage.setItem("jaguar_map_active_tab", "dir");
             tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
             tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
             panelDir.classList.remove("hidden");

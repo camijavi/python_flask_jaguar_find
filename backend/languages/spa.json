@@ -41,7 +41,10 @@
       "food": "Comida y Cafeterías",
       "clinics": "Clínicas y Salud",
       "sports": "Deportes y Gimnasio",
-      "admin": "Trámites y Facultades"
+      "admin": "Trámites y Facultades",
+      "drinking_fountains": "Bebederos",
+      "dental": "Odontología",
+      "ramps": "Rampas"
     },
     "get_gps": "Obtener vía GPS",
     "select_category": "Selecciona categoría o busca directamente",
@@ -52,7 +55,19 @@
     "voice_start": "Iniciar Guía por Voz",
     "voice_stop": "Detener Voz",
     "floor": "Piso",
-    "direct_search": "Buscar ubicación o aula..."
+    "direct_search": "Buscar ubicación o aula...",
+    "subtitle": "Encuentra rutas peatonales óptimas en el campus",
+    "plan_route": "Planificar Ruta",
+    "directions": "Cómo llegar",
+    "mode_walking": "A pie",
+    "mode_accessible": "Accesible",
+    "standard_route": "Ruta Peatonal Estándar",
+    "steps_count": "pasos",
+    "close": "Cerrar",
+    "tabs": {
+      "navigation": "Navegación",
+      "directory": "Directorio UAM"
+    }
   },
   "auth": {
     "sign_in_title": "Acceso Institucional",

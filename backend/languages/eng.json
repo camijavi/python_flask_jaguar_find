@@ -41,7 +41,10 @@
       "food": "Food & Cafeterias",
       "clinics": "Clinics & Health",
       "sports": "Sports & Gym",
-      "admin": "Services & Faculties"
+      "admin": "Services & Faculties",
+      "drinking_fountains": "Drinking Fountains",
+      "dental": "Dentistry",
+      "ramps": "Ramps"
     },
     "get_gps": "Get via GPS",
     "select_category": "Select category or search directly",
@@ -52,7 +55,19 @@
     "voice_start": "Start Voice Guidance",
     "voice_stop": "Stop Voice",
     "floor": "Floor",
-    "direct_search": "Search location or classroom..."
+    "direct_search": "Search location or classroom...",
+    "subtitle": "Find optimal pedestrian walking routes",
+    "plan_route": "Plan Route",
+    "directions": "Directions",
+    "mode_walking": "Walking",
+    "mode_accessible": "Accessible",
+    "standard_route": "Standard Pedestrian Route",
+    "steps_count": "steps",
+    "close": "Close",
+    "tabs": {
+      "navigation": "Navigation",
+      "directory": "UAM Directory"
+    }
   },
   "auth": {
     "sign_in_title": "Institutional Sign-In",
