@@ -1,0 +1,66 @@
+<!-- INSTITUTIONAL NAVBAR -->
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            
+            <!-- Logo & Brand (Icon and subtitle removed) -->
+            <div class="flex items-center gap-3">
+                <a href="{{ url_for('renderMapScreen') }}" class="flex items-center gap-2.5 group">
+                    <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-brand-900 to-brand-600 bg-clip-text text-transparent">
+                        JaguarFind
+                    </span>
+                </a>
+            </div>
+
+            <!-- Navigation Links (Desktop - Report Item removed) -->
+            <nav class="hidden md:flex items-center gap-1 lg:gap-2">
+                <a href="{{ url_for('renderMapScreen') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors {% if request.path in ['/', '/map', '/mapa'] %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:text-brand-700 hover:bg-slate-50{% endif %}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                    <span>{{ t('nav.map', default='Campus Map') }}</span>
+                </a>
+                <a href="/lost-found-object/catalogo" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-slate-600 hover:text-brand-700 hover:bg-slate-50 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    <span>{{ t('nav.lost_found', default='Lost & Found') }}</span>
+                </a>
+            </nav>
+
+            <!-- Right Controls: Language Selector (Sign in button removed) -->
+            <div class="flex items-center gap-2.5">
+                
+                <!-- Language Switcher Toggle -->
+                <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200">
+                    <a href="{{ url_for('setLanguage', lang='spa') }}" 
+                       class="px-2.5 py-1 text-xs font-bold rounded-md transition-all {% if current_language == 'spa' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}"
+                       title="Cambiar a Español">
+                        ES
+                    </a>
+                    <a href="{{ url_for('setLanguage', lang='eng') }}" 
+                       class="px-2.5 py-1 text-xs font-bold rounded-md transition-all {% if current_language == 'eng' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}"
+                       title="Switch to English">
+                        EN
+                    </a>
+                </div>
+
+                <!-- User Session (when authenticated) -->
+                {% if session.get('user') %}
+                    <div class="hidden sm:flex items-center gap-2 pl-2 border-l border-slate-200">
+                        <div class="flex flex-col text-right">
+                            <span class="text-xs font-bold text-slate-800 leading-tight">
+                                {{ session['user'].get('FullName', 'User') }}
+                            </span>
+                            <span class="text-[10px] font-medium text-amber-600">
+                                {{ session['user'].get('UserTypeName', 'Student') }}
+                            </span>
+                        </div>
+                        <form action="/api/auth/logout" method="POST" class="inline">
+                            <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition-colors" title="{{ t('nav.logout', default='Logout') }}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</header>
