@@ -443,3 +443,63 @@ def updateLostObjectState(
         return cursor.rowcount > 0
     finally:
         conn.close()
+
+
+def getAllUsers(dbPath: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Retrieves all registered users without sensitive password hashes."""
+    conn = getDbConnection(dbPath)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT u.Id, u.UserTypeId, ut.Name AS UserTypeName, u.UserName,
+                   u.FullName, u.CIF, u.GovermentId, u.PhoneNumber, u.Email,
+                   u.CreatedAt, u.IsActive
+            FROM UserTbl u
+            JOIN UserTypeTbl ut ON u.UserTypeId = ut.Id
+            ORDER BY u.Id ASC;
+        """)
+        return [dict(row) for row in cursor.fetchall()]
+    finally:
+        conn.close()
+
+
+def getCustodyStates(dbPath: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Retrieves lookup table of custody states."""
+    conn = getDbConnection(dbPath)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT Id, Name FROM LostObjectStateTbl ORDER BY Id ASC;")
+        return [dict(row) for row in cursor.fetchall()]
+    finally:
+        conn.close()
+
+
+def getSystemStats(dbPath: Optional[str] = None) -> Dict[str, Any]:
+    """Retrieves system-wide summary metrics for reports and users."""
+    conn = getDbConnection(dbPath)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM LostObjectReportTbl;")
+        totalItems = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM LostObjectReportTbl WHERE LostObjectStateId = 1;")
+        reportedItems = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM LostObjectReportTbl WHERE LostObjectStateId = 2;")
+        inCustodyItems = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM LostObjectReportTbl WHERE LostObjectStateId = 3;")
+        claimedItems = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM UserTbl;")
+        totalUsers = cursor.fetchone()[0]
+
+        return {
+            "totalItems": totalItems,
+            "reportedItems": reportedItems,
+            "inCustodyItems": inCustodyItems,
+            "claimedItems": claimedItems,
+            "totalUsers": totalUsers,
+        }
+    finally:
+        conn.close()
