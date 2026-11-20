@@ -33,10 +33,10 @@
         }
     </script>
 
-    <!-- Custom Animated Styles (Vector Routes & Pins) -->
+    <!-- Custom Animated Styles (Vector Routes) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-    <!-- Google Fonts: Inter -->
+    <!-- Google Fonts: Plus Jakarta Sans / Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -55,16 +55,6 @@
                 stroke-dashoffset: -12;
             }
         }
-        /* Pulse pin for active destination / lost items */
-        .pin-pulse {
-            animation: pulsePin 1.8s infinite ease-in-out;
-            transform-origin: center;
-        }
-        @keyframes pulsePin {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.25); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
     </style>
 
     {% block head %}{% endblock %}
@@ -79,8 +69,9 @@
                 <!-- Logo & Brand -->
                 <div class="flex items-center gap-3">
                     <a href="{{ url_for('renderMapScreen') }}" class="flex items-center gap-2.5 group">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-900 via-brand-700 to-amber-500 flex items-center justify-center shadow-md shadow-brand-900/20 group-hover:scale-105 transition-transform">
-                            <span class="text-xl">🐆</span>
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-900 via-brand-700 to-amber-500 flex items-center justify-center text-white shadow-md shadow-brand-900/20 group-hover:scale-105 transition-transform">
+                            <!-- Geometric compass / path mark icon -->
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
                         </div>
                         <div class="flex flex-col">
                             <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-brand-900 to-brand-600 bg-clip-text text-transparent">
@@ -95,14 +86,17 @@
 
                 <!-- Navigation Links (Desktop) -->
                 <nav class="hidden md:flex items-center gap-1 lg:gap-2">
-                    <a href="{{ url_for('renderMapScreen') }}" class="px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors {% if request.path in ['/', '/map', '/mapa'] %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:text-brand-700 hover:bg-slate-50{% endif %}">
-                        📍 {{ t('nav.map', default='Campus Map') }}
+                    <a href="{{ url_for('renderMapScreen') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors {% if request.path in ['/', '/map', '/mapa'] %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:text-brand-700 hover:bg-slate-50{% endif %}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                        <span>{{ t('nav.map', default='Campus Map') }}</span>
                     </a>
-                    <a href="/lost-found-object/catalogo" class="px-3.5 py-2 text-sm font-semibold text-slate-600 hover:text-brand-700 hover:bg-slate-50 rounded-lg transition-colors">
-                        📦 {{ t('nav.lost_found', default='Lost & Found') }}
+                    <a href="/lost-found-object/catalogo" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-slate-600 hover:text-brand-700 hover:bg-slate-50 rounded-lg transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                        <span>{{ t('nav.lost_found', default='Lost & Found') }}</span>
                     </a>
-                    <a href="/lost-found-object/reportar" class="px-3.5 py-2 text-sm font-semibold text-slate-600 hover:text-brand-700 hover:bg-slate-50 rounded-lg transition-colors">
-                        📝 {{ t('nav.report', default='Report Item') }}
+                    <a href="/lost-found-object/reportar" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold text-slate-600 hover:text-brand-700 hover:bg-slate-50 rounded-lg transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        <span>{{ t('nav.report', default='Report Item') }}</span>
                     </a>
                 </nav>
 
@@ -114,12 +108,12 @@
                         <a href="{{ url_for('setLanguage', lang='spa') }}" 
                            class="px-2.5 py-1 text-xs font-bold rounded-md transition-all {% if current_language == 'spa' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}"
                            title="Cambiar a Español">
-                            🇪🇸 ES
+                            ES
                         </a>
                         <a href="{{ url_for('setLanguage', lang='eng') }}" 
                            class="px-2.5 py-1 text-xs font-bold rounded-md transition-all {% if current_language == 'eng' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}"
                            title="Switch to English">
-                            🇺🇸 EN
+                            EN
                         </a>
                     </div>
 
@@ -158,21 +152,6 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-            <div class="flex items-center gap-2">
-                <span class="text-base">🐆</span>
-                <span>Universidad Americana (UAM) - Campus Managua, Nicaragua.</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <span>Building A (CAE) - Lost & Found Custody</span>
-                <span>•</span>
-                <span>JaguarMaps v2.0</span>
-            </div>
-        </div>
-    </footer>
-
     <!-- CLIENT-SIDE i18n & APP CONFIG SCRIPT -->
     <script>
         // Global client-side translation registry from backend/i18n.py
@@ -183,8 +162,7 @@
                 mapCategories: "/api/map/categories",
                 mapPlaces: "/api/map/places",
                 mapRoute: "/api/map/route",
-                nearestGps: "/api/map/nearest-gps",
-                mapPins: "/api/lost-found-object/map-pins"
+                nearestGps: "/api/map/nearest-gps"
             }
         };
 

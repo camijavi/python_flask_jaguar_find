@@ -3,8 +3,8 @@
 INTERACTIVEMAP COMPONENT (INTERACTIVEMAP.HTML)
 ================================================================================
 Vector SVG Campus Map rendering UAM buildings, pedestrian walkways,
-Dijkstra animated route paths (.ruta-animada), wheelchair accessible ramps,
-and georeferenced Lost & Found object pins (📍).
+Dijkstra animated route paths (.ruta-animada), and wheelchair accessible ramps.
+Clean iconography (SVG only, zero emojis), pure campus navigation.
 ================================================================================
 -->
 
@@ -13,45 +13,50 @@ and georeferenced Lost & Found object pins (📍).
     <!-- Map Toolbar (Zoom & Controls) -->
     <div class="absolute top-4 right-4 z-20 flex flex-col gap-1.5 bg-slate-800/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-700/80 shadow-lg">
         <button id="btnZoomIn" type="button" class="w-8 h-8 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-sm transition-colors" title="Zoom In">
-            +
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
         </button>
         <button id="btnZoomOut" type="button" class="w-8 h-8 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-white flex items-center justify-center font-bold text-sm transition-colors" title="Zoom Out">
-            −
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
         </button>
-        <button id="btnResetView" type="button" class="w-8 h-8 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-white flex items-center justify-center text-xs transition-colors" title="Centrar Mapa">
-            🎯
+        <button id="btnResetView" type="button" class="w-8 h-8 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-white flex items-center justify-center text-xs transition-colors" title="Centrar Vista">
+            <!-- Center Target Crosshair Icon -->
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"></circle><circle cx="12" cy="12" r="3" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3m10-10h-3M5 12H2"></path></svg>
         </button>
     </div>
 
-    <!-- Map Legend Badge -->
+    <!-- Map Legend Badge (Clean SVG, No Emojis, No Fake Lost Objects) -->
     <div class="absolute bottom-4 left-4 z-20 bg-slate-800/90 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-700/80 text-[11px] text-slate-300 flex items-center gap-4 shadow-lg">
         <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-brand-500 inline-block"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span>
             <span>Edificios UAM</span>
         </div>
         <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-            <span>Rutas / Rampas ♿</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+            <span>Casetas & Parqueo</span>
         </div>
         <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
-            <span>Objetos Perdidos 📍</span>
+            <svg class="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
+            <span>Rutas / Rampas Accesibles</span>
         </div>
     </div>
 
-    <!-- Active Pin / Building Popover (Hidden by default) -->
+    <!-- Active Building Popover -->
     <div id="mapPopover" class="absolute z-30 bg-white rounded-xl shadow-2xl border border-slate-200 p-3.5 max-w-xs text-xs text-slate-800 hidden transition-all pointer-events-auto">
         <div class="flex items-start justify-between gap-2 mb-1.5">
             <div id="popoverTitle" class="font-bold text-slate-900 text-sm"></div>
-            <button id="btnClosePopover" type="button" class="text-slate-400 hover:text-slate-600 text-sm">✕</button>
+            <button id="btnClosePopover" type="button" class="text-slate-400 hover:text-slate-600">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
         <div id="popoverDetails" class="text-slate-600 space-y-1 mb-2.5"></div>
         <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
-            <button id="btnSetAsOrigin" type="button" class="flex-1 py-1 px-2 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-[10px] text-center transition-colors">
-                🟢 {{ t('map.where_am_i', default='Establecer Origen') }}
+            <button id="btnSetAsOrigin" type="button" class="flex-1 py-1.5 px-2 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-[10px] text-center transition-colors inline-flex items-center justify-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                <span>{{ t('map.where_am_i', default='Establecer Origen') }}</span>
             </button>
-            <button id="btnSetAsDestination" type="button" class="flex-1 py-1 px-2 rounded-md bg-brand-50 hover:bg-brand-100 text-brand-800 font-bold text-[10px] text-center transition-colors">
-                🏁 {{ t('map.where_to_go', default='Establecer Destino') }}
+            <button id="btnSetAsDestination" type="button" class="flex-1 py-1.5 px-2 rounded-md bg-brand-50 hover:bg-brand-100 text-brand-800 font-bold text-[10px] text-center transition-colors inline-flex items-center justify-center gap-1">
+                <svg class="w-3 h-3 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
+                <span>{{ t('map.where_to_go', default='Establecer Destino') }}</span>
             </button>
         </div>
     </div>
@@ -63,12 +68,6 @@ and georeferenced Lost & Found object pins (📍).
             <pattern id="campusGrid" width="40" height="40" patternUnits="userSpaceOnUse">
                 <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.8" opacity="0.6"/>
             </pattern>
-
-            <!-- Radial glow for nodes -->
-            <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8"/>
-                <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
-            </radialGradient>
         </defs>
 
         <!-- Background Campus Grounds -->
@@ -96,14 +95,11 @@ and georeferenced Lost & Found object pins (📍).
         <!-- Macro Campus Building Nodes Layer -->
         <g id="nodesLayer"></g>
 
-        <!-- Origin (🟢) & Destination (🏁) Pin Markers -->
+        <!-- Origin & Destination Pin Markers -->
         <g id="routePinsLayer">
             <g id="originPinGroup" class="hidden"></g>
             <g id="destinationPinGroup" class="hidden"></g>
         </g>
-
-        <!-- Georeferenced Lost & Found Object Pins Layer (📍) -->
-        <g id="lostFoundPinsLayer"></g>
     </svg>
 
 </div>
@@ -116,7 +112,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const nodesLayer = document.getElementById("nodesLayer");
     const routePolyline = document.getElementById("routePolyline");
     const routeGlowPolyline = document.getElementById("routeGlowPolyline");
-    const lostFoundPinsLayer = document.getElementById("lostFoundPinsLayer");
     const originPinGroup = document.getElementById("originPinGroup");
     const destinationPinGroup = document.getElementById("destinationPinGroup");
 
@@ -138,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
         };
     }
 
-    // 1. Fetch & Render All Campus Nodes and Edges
+    // 1. Fetch & Render Campus Nodes and Walkways
     async function initMap() {
         try {
             const lang = window.APP_CONFIG.currentLang || "spa";
@@ -151,7 +146,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
             renderWalkways(data.nodes);
             renderNodes(data.nodes);
-            loadLostFoundMapPins();
         } catch (err) {
             console.error("Failed to load map data:", err);
         }
@@ -281,63 +275,7 @@ document.addEventListener("DOMContentLoaded", function() {
         popover.classList.add("hidden");
     });
 
-    // 5. Load Lost & Found Pins on Campus Map
-    async function loadLostFoundMapPins() {
-        try {
-            const res = await fetch("/api/lost-found-object/map-pins");
-            const data = await res.json();
-            if (!data.success || !data.pins) return;
-
-            lostFoundPinsLayer.innerHTML = "";
-            data.pins.forEach(pin => {
-                const node = nodesById[pin.locationNodeId];
-                if (!node) return;
-
-                const pos = toSvgCoords(node.xPercent, node.yPercent);
-                const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-                g.setAttribute("class", "cursor-pointer group pin-pulse");
-
-                // Amber pin circle
-                const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                c.setAttribute("cx", pos.x);
-                c.setAttribute("cy", pos.y - 12);
-                c.setAttribute("r", "10");
-                c.setAttribute("fill", "#ea580c");
-                c.setAttribute("stroke", "#ffffff");
-                c.setAttribute("stroke-width", "2");
-
-                // Badge count inside pin
-                const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                t.setAttribute("x", pos.x);
-                t.setAttribute("y", pos.y - 8);
-                t.setAttribute("text-anchor", "middle");
-                t.setAttribute("fill", "#ffffff");
-                t.setAttribute("font-size", "10");
-                t.setAttribute("font-weight", "bold");
-                t.textContent = pin.itemsCount;
-
-                g.appendChild(c);
-                g.appendChild(t);
-
-                g.addEventListener("click", () => {
-                    const itemsDesc = pin.items.map(i => `• ${i.itemName} (${i.stateName})`).join("<br>");
-                    activeSelectedNode = node;
-                    popoverTitle.textContent = `📦 ${pin.locationName}`;
-                    popoverDetails.innerHTML = `
-                        <div class="font-bold text-amber-800 text-[11px] mb-1">${pin.itemsCount} Objetos Reportados Aquí:</div>
-                        <div class="text-[10px] text-slate-700 max-h-24 overflow-y-auto">${itemsDesc}</div>
-                    `;
-                    showNodePopover(node, pos);
-                });
-
-                lostFoundPinsLayer.appendChild(g);
-            });
-        } catch (e) {
-            console.warn("Could not load lost found map pins:", e);
-        }
-    }
-
-    // 6. Global Event: Draw Polyline when Route is Calculated
+    // 5. Global Event: Draw Polyline when Route is Calculated
     window.addEventListener("jaguarMapRouteCalculated", function(e) {
         const route = e.detail;
         if (!route || !route.pathCoordinates || route.pathCoordinates.length < 2) return;
@@ -350,7 +288,7 @@ document.addEventListener("DOMContentLoaded", function() {
         routePolyline.setAttribute("points", points);
         routeGlowPolyline.setAttribute("points", points);
 
-        // Draw Origin Pin (🟢)
+        // Draw Origin Pin (Green Ring)
         const start = route.pathCoordinates[0];
         const startPos = toSvgCoords(start.xPercent, start.yPercent);
         originPinGroup.innerHTML = `
@@ -359,18 +297,19 @@ document.addEventListener("DOMContentLoaded", function() {
         `;
         originPinGroup.classList.remove("hidden");
 
-        // Draw Destination Pin (🏁)
+        // Draw Destination Pin (Flag Path, No Emoji)
         const end = route.pathCoordinates[route.pathCoordinates.length - 1];
         const endPos = toSvgCoords(end.xPercent, end.yPercent);
         destinationPinGroup.innerHTML = `
             <circle cx="${endPos.x}" cy="${endPos.y}" r="14" fill="#ef4444" opacity="0.3" class="animate-ping" />
             <circle cx="${endPos.x}" cy="${endPos.y}" r="8" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" />
-            <text x="${endPos.x}" y="${endPos.y - 14}" text-anchor="middle" font-size="14">🏁</text>
+            <!-- Flag SVG Icon -->
+            <path d="M ${endPos.x - 4} ${endPos.y - 24} v 12 M ${endPos.x - 4} ${endPos.y - 24} l 8 4 l -8 4 z" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/>
         `;
         destinationPinGroup.classList.remove("hidden");
     });
 
-    // 7. Global Event: Clear Route
+    // 6. Global Event: Clear Route
     window.addEventListener("jaguarMapRouteCleared", function() {
         routePolyline.setAttribute("points", "");
         routeGlowPolyline.setAttribute("points", "");
