@@ -40,7 +40,17 @@
       "clinics": "Clínicas y Salud",
       "sports": "Deportes y Gimnasio",
       "admin": "Trámites y Facultades"
-    }
+    },
+    "get_gps": "Obtener vía GPS",
+    "select_category": "Selecciona categoría o busca directamente",
+    "search_matches": "Coincidencias encontradas",
+    "no_matches": "No se encontraron ubicaciones coincidentes",
+    "searching": "Buscando en el campus...",
+    "clear_route": "Limpiar Ruta",
+    "voice_start": "Iniciar Guía por Voz",
+    "voice_stop": "Detener Voz",
+    "floor": "Piso",
+    "direct_search": "Buscar ubicación o aula..."
   },
   "auth": {
     "sign_in_title": "Acceso Institucional",

@@ -1,0 +1,730 @@
+<!--
+================================================================================
+NAVIGATEMAP COMPONENT (NAVIGATEMAP.HTML)
+================================================================================
+Two simple input fields for campus pedestrian routing:
+1. "Where are you?" (Current Location) with instant "Get via GPS" detection.
+2. "Where to?" with direct category pill selection and live autocomplete search.
+Fully internationalized with backend/i18n.py via Jinja2 t(...) and client window.t(...).
+================================================================================
+-->
+
+<div id="navigateMapComponent" class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-5 md:p-6 transition-all">
+    
+    <!-- Component Header -->
+    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+        <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-brand-50 border border-brand-200 text-brand-600 flex items-center justify-center font-bold text-sm">
+                🧭
+            </div>
+            <div>
+                <h2 class="text-base font-bold text-slate-900 leading-tight">
+                    {{ t('map.title', default='UAM Campus Navigator') }}
+                </h2>
+                <p class="text-xs text-slate-500">
+                    {{ t('map.subtitle', default='Find optimal pedestrian walking routes') }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Reset Button -->
+        <button id="btnResetNavigation" type="button" class="text-xs text-slate-400 hover:text-rose-600 font-medium px-2 py-1 rounded transition-colors hidden" title="{{ t('map.clear_route', default='Clear Route') }}">
+            ✕ {{ t('map.clear_route', default='Clear') }}
+        </button>
+    </div>
+
+    <!-- FORM INPUTS CONTAINER -->
+    <div class="space-y-4">
+
+        <!-- ================================================================== -->
+        <!-- 1. ORIGIN: "WHERE ARE YOU? (CURRENT LOCATION) (GET VIA GPS)"       -->
+        <!-- ================================================================== -->
+        <div class="relative">
+            <div class="flex items-center justify-between mb-1.5">
+                <label for="originInput" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100 inline-block"></span>
+                    {{ t('map.where_am_i', default='Where are you?') }}
+                </label>
+                
+                <!-- "GET VIA GPS" ACTION BUTTON -->
+                <button id="btnGetGps" type="button" 
+                        class="inline-flex items-center gap-1 text-[11px] font-bold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100/80 px-2.5 py-1 rounded-md transition-all active:scale-95"
+                        title="{{ t('map.use_gps', default='Use my current location') }}">
+                    <span id="gpsIcon" class="text-xs">📍</span>
+                    <span id="gpsBtnText">{{ t('map.get_gps', default='Get via GPS') }}</span>
+                    <span id="gpsSpinner" class="hidden animate-spin text-xs">⏳</span>
+                </button>
+            </div>
+
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+                
+                <input type="text" 
+                       id="originInput" 
+                       autocomplete="off"
+                       placeholder="{{ t('map.where_am_i_placeholder', default='Type origin or use GPS...') }}" 
+                       class="w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-white focus:bg-white text-sm font-medium text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all outline-hidden">
+                
+                <!-- Clear origin input button -->
+                <button id="btnClearOrigin" type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 hidden">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Autocomplete Suggestions for Origin -->
+            <div id="originSuggestions" class="absolute z-30 left-0 right-0 mt-1.5 bg-white rounded-xl shadow-xl border border-slate-200 max-h-56 overflow-y-auto hidden divide-y divide-slate-100"></div>
+        </div>
+
+        <!-- SWAP & ACCESSIBILITY CONTROLS ROW -->
+        <div class="flex items-center justify-between py-1">
+            <!-- Swap Origin / Destination -->
+            <button id="btnSwapLocations" type="button" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-600 hover:bg-slate-100 px-2.5 py-1 rounded-lg transition-colors" title="{{ t('map.swap', default='Swap locations') }}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                <span>{{ t('map.swap', default='Swap') }}</span>
+            </button>
+
+            <!-- Wheelchair Accessibility Toggle (♿) -->
+            <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-600 select-none hover:text-slate-900">
+                <input type="checkbox" id="accessibleToggle" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
+                <span class="flex items-center gap-1">
+                    <span>♿</span>
+                    <span>{{ t('map.accessible_route', default='Wheelchair accessible') }}</span>
+                </span>
+            </label>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- 2. DESTINATION: "WHERE TO? SELECT CATEGORY SEARCH DIRECTLY"         -->
+        <!-- ================================================================== -->
+        <div class="relative">
+            <div class="flex items-center justify-between mb-1.5">
+                <label for="destinationInput" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 ring-4 ring-rose-100 inline-block"></span>
+                    {{ t('map.where_to_go', default='Where to?') }}
+                </label>
+                <span class="text-[11px] text-slate-400">
+                    {{ t('map.direct_search', default='Search directly or pick category') }}
+                </span>
+            </div>
+
+            <!-- DIRECT CATEGORY SELECTOR PILLS -->
+            <div class="mb-2.5">
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-thin text-xs" id="categoryChipsContainer">
+                    <button type="button" data-category="" class="category-chip active whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-brand-900 text-white shadow-xs">
+                        ✨ {{ t('map.categories.all', default='All') }}
+                    </button>
+                    <button type="button" data-category="drinkingFountain" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200">
+                        💧 {{ t('map.categories.restrooms', default='Bebederos') }}
+                    </button>
+                    <button type="button" data-category="restroom" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200">
+                        🚻 {{ t('map.categories.restrooms', default='Baños') }}
+                    </button>
+                    <button type="button" data-category="foodArea" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-700 border border-slate-200">
+                        🍽️ {{ t('map.categories.food', default='Comida') }}
+                    </button>
+                    <button type="button" data-category="medicalLab" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200">
+                        🏥 {{ t('map.categories.clinics', default='Medicina') }}
+                    </button>
+                    <button type="button" data-category="dentalLab" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200">
+                        🦷 Odontología
+                    </button>
+                    <button type="button" data-category="faculty" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-purple-50 text-slate-700 hover:text-purple-700 border border-slate-200">
+                        🎓 {{ t('map.categories.admin', default='Facultades') }}
+                    </button>
+                    <button type="button" data-category="accessibleRamp" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200">
+                        ♿ Rampas
+                    </button>
+                </div>
+            </div>
+
+            <!-- "WHERE TO?" INPUT FIELD -->
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                
+                <input type="text" 
+                       id="destinationInput" 
+                       autocomplete="off"
+                       placeholder="{{ t('map.where_to_go_placeholder', default='Type a classroom, restroom, lab, or service...') }}" 
+                       class="w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-white focus:bg-white text-sm font-medium text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all outline-hidden">
+                
+                <!-- Clear destination input button -->
+                <button id="btnClearDestination" type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 hidden">
+                    ✕
+                </button>
+            </div>
+
+            <!-- LIVE AUTOCOMPLETE / POSSIBLE MATCHES DROPDOWN -->
+            <div id="destinationSuggestions" class="absolute z-30 left-0 right-0 mt-1.5 bg-white rounded-xl shadow-xl border border-slate-200 max-h-64 overflow-y-auto hidden divide-y divide-slate-100"></div>
+        </div>
+
+        <!-- CALCULATE ROUTE ACTION BUTTON -->
+        <div class="pt-2">
+            <button id="btnCalculateRoute" type="button" 
+                    class="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-brand-900 via-brand-700 to-brand-600 hover:from-brand-800 hover:to-brand-700 text-white font-bold text-sm shadow-md shadow-brand-900/20 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer">
+                <span>🚀</span>
+                <span>{{ t('map.calculate_route', default='Find Optimal Route') }}</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- ROUTE RESULTS CARD (APPEARS WHEN ROUTE IS CALCULATED)                  -->
+    <!-- ====================================================================== -->
+    <div id="routeResultsCard" class="mt-6 pt-5 border-t border-slate-100 hidden">
+        
+        <!-- Summary Metrics Banner -->
+        <div class="p-3.5 bg-brand-50/70 border border-brand-100 rounded-xl flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+                    🚶
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span id="routeDistanceText" class="text-base font-extrabold text-brand-900 leading-tight">0 m</span>
+                        <span class="text-slate-400">•</span>
+                        <span id="routeMinutesText" class="text-xs font-bold text-brand-700">~0 min</span>
+                    </div>
+                    <span id="routeAccessibilityBadge" class="text-[10px] font-semibold text-emerald-700 flex items-center gap-1 mt-0.5">
+                        ♿ {{ t('map.accessible_route', default='Accessible Route') }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Voice TTS Button -->
+            <button id="btnVoiceDirections" type="button" 
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-brand-200 hover:bg-brand-50 text-brand-700 font-bold text-xs transition-colors shadow-2xs"
+                    title="{{ t('map.listen_directions', default='Listen to voice directions') }}">
+                <span id="voiceIcon">🔊</span>
+                <span id="voiceBtnText">{{ t('map.listen_directions', default='Listen') }}</span>
+            </button>
+        </div>
+
+        <!-- Step-by-Step Directions List -->
+        <div>
+            <div class="flex items-center justify-between mb-2">
+                <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-500">
+                    {{ t('map.steps', default='Step-by-step directions') }}
+                </h4>
+                <span id="stepsCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                    0 pasos
+                </span>
+            </div>
+            
+            <ol id="routeStepsList" class="space-y-2 max-h-60 overflow-y-auto pr-1 text-xs text-slate-700 scrollbar-thin"></ol>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- JAVASCRIPT LOGIC FOR NAVIGATEMAP -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // State Store
+    const state = {
+        originQuery: "",
+        originNodeId: null,
+        destinationQuery: "",
+        destinationNodeId: null,
+        selectedCategory: "",
+        accessibleOnly: false,
+        allNodes: [],
+        allPlaces: [],
+        categories: [],
+        currentRoute: null,
+        isSpeaking: false,
+        activeSpeechIndex: 0
+    };
+
+    // DOM Elements
+    const originInput = document.getElementById("originInput");
+    const originSuggestions = document.getElementById("originSuggestions");
+    const btnClearOrigin = document.getElementById("btnClearOrigin");
+    const btnGetGps = document.getElementById("btnGetGps");
+    const gpsSpinner = document.getElementById("gpsSpinner");
+    const gpsIcon = document.getElementById("gpsIcon");
+
+    const destinationInput = document.getElementById("destinationInput");
+    const destinationSuggestions = document.getElementById("destinationSuggestions");
+    const btnClearDestination = document.getElementById("btnClearDestination");
+
+    const categoryChips = document.querySelectorAll(".category-chip");
+    const btnSwap = document.getElementById("btnSwapLocations");
+    const accessibleToggle = document.getElementById("accessibleToggle");
+    const btnCalculate = document.getElementById("btnCalculateRoute");
+    const btnReset = document.getElementById("btnResetNavigation");
+
+    const routeResultsCard = document.getElementById("routeResultsCard");
+    const routeDistanceText = document.getElementById("routeDistanceText");
+    const routeMinutesText = document.getElementById("routeMinutesText");
+    const routeAccessibilityBadge = document.getElementById("routeAccessibilityBadge");
+    const routeStepsList = document.getElementById("routeStepsList");
+    const stepsCountBadge = document.getElementById("stepsCountBadge");
+    const btnVoice = document.getElementById("btnVoiceDirections");
+    const voiceIcon = document.getElementById("voiceIcon");
+    const voiceBtnText = document.getElementById("voiceBtnText");
+
+    // 1. Initial Data Fetching (Nodes & Places Catalog)
+    async function loadCampusCatalog() {
+        try {
+            const lang = window.APP_CONFIG.currentLang || "spa";
+            const [nodesRes, placesRes] = await Promise.all([
+                fetch(`/api/map/nodes?lang=${lang}`).then(r => r.json()),
+                fetch(`/api/map/places`).then(r => r.json())
+            ]);
+
+            if (nodesRes.success) {
+                state.allNodes = nodesRes.nodes || [];
+            }
+            if (placesRes.success) {
+                state.allPlaces = placesRes.places || [];
+            }
+        } catch (err) {
+            console.warn("Failed to prefetch map nodes/places:", err);
+        }
+    }
+    loadCampusCatalog();
+
+    // 2. Filter & Render Autocomplete Matches
+    function getMatches(queryText, categoryFilter = "") {
+        const clean = (queryText || "").trim().toLowerCase();
+        const results = [];
+
+        // 1. Match sub-places (classrooms, labs, fountains)
+        for (const place of state.allPlaces) {
+            if (categoryFilter && place.category !== categoryFilter) continue;
+            
+            const matchName = place.name.toLowerCase().includes(clean);
+            const matchNotes = (place.locationNotes || "").toLowerCase().includes(clean);
+            const matchKw = (place.keywords || []).some(k => k.toLowerCase().includes(clean));
+
+            if (!clean || matchName || matchNotes || matchKw) {
+                results.push({
+                    type: "place",
+                    id: place.placeId,
+                    targetNodeId: place.parentBuildingId,
+                    title: place.name,
+                    subtitle: `${place.parentBuildingId} • Piso ${place.floorLevel} • ${place.locationNotes || ''}`,
+                    category: place.category,
+                    icon: getCategoryIcon(place.category)
+                });
+            }
+        }
+
+        // 2. Match macro nodes (buildings, gates, parking)
+        if (!categoryFilter) {
+            for (const node of state.allNodes) {
+                const matchNodeName = (node.name || "").toLowerCase().includes(clean);
+                const matchNodeId = (node.nodeId || "").toLowerCase().includes(clean);
+                if (!clean || matchNodeName || matchNodeId) {
+                    results.push({
+                        type: "node",
+                        id: node.nodeId,
+                        targetNodeId: node.nodeId,
+                        title: node.name,
+                        subtitle: `${window.t('map.title', 'Edificio / Entrada')} (Piso ${node.floorLevel})`,
+                        category: node.category,
+                        icon: "🏛️"
+                    });
+                }
+            }
+        }
+
+        return results.slice(0, 8); // Top 8 matches
+    }
+
+    function getCategoryIcon(cat) {
+        const icons = {
+            drinkingFountain: "💧",
+            restroom: "🚻",
+            foodArea: "🍽️",
+            medicalLab: "🏥",
+            dentalLab: "🦷",
+            faculty: "🎓",
+            accessibleRamp: "♿",
+            auditorium: "🎭",
+            parkingGate: "🅿️",
+            greenArea: "🌳",
+            classroom: "📖"
+        };
+        return icons[cat] || "📍";
+    }
+
+    function renderSuggestionsList(container, items, onSelectCallback) {
+        container.innerHTML = "";
+        if (!items || items.length === 0) {
+            container.innerHTML = `
+                <div class="p-3 text-center text-xs text-slate-400">
+                    ${window.t('map.no_matches', 'No se encontraron ubicaciones')}
+                </div>
+            `;
+            container.classList.remove("hidden");
+            return;
+        }
+
+        items.forEach(item => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "w-full text-left px-3.5 py-2.5 hover:bg-slate-50 flex items-start gap-2.5 transition-colors cursor-pointer group";
+            btn.innerHTML = `
+                <span class="text-base mt-0.5">${item.icon}</span>
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-slate-800 group-hover:text-brand-700 truncate">
+                        ${item.title}
+                    </div>
+                    <div class="text-[11px] text-slate-400 truncate">
+                        ${item.subtitle}
+                    </div>
+                </div>
+            `;
+            btn.addEventListener("click", () => {
+                onSelectCallback(item);
+                container.classList.add("hidden");
+            });
+            container.appendChild(btn);
+        });
+
+        container.classList.remove("hidden");
+    }
+
+    // 3. Autocomplete Events for Origin
+    originInput.addEventListener("input", function() {
+        const val = this.value;
+        btnClearOrigin.classList.toggle("hidden", !val);
+        state.originQuery = val;
+        state.originNodeId = null;
+
+        if (val.trim().length > 0) {
+            const matches = getMatches(val);
+            renderSuggestionsList(originSuggestions, matches, (selected) => {
+                originInput.value = selected.title;
+                state.originQuery = selected.title;
+                state.originNodeId = selected.targetNodeId;
+                btnClearOrigin.classList.remove("hidden");
+            });
+        } else {
+            originSuggestions.classList.add("hidden");
+        }
+    });
+
+    btnClearOrigin.addEventListener("click", () => {
+        originInput.value = "";
+        state.originQuery = "";
+        state.originNodeId = null;
+        btnClearOrigin.classList.add("hidden");
+        originSuggestions.classList.add("hidden");
+    });
+
+    // 4. GPS "Get via GPS" Integration
+    btnGetGps.addEventListener("click", function() {
+        if (!navigator.geolocation) {
+            alert(window.t('map.gps_unsupported', 'Tu navegador no soporta geolocalización GPS.'));
+            return;
+        }
+
+        gpsIcon.classList.add("hidden");
+        gpsSpinner.classList.remove("hidden");
+
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const { latitude, longitude } = pos.coords;
+                const lang = window.APP_CONFIG.currentLang || "spa";
+                try {
+                    const res = await fetch(`/api/map/nearest-gps?lat=${latitude}&lng=${longitude}&lang=${lang}`);
+                    const data = await res.json();
+                    if (data.success && data.nearest && data.nearest.nodeName) {
+                        originInput.value = data.nearest.nodeName;
+                        state.originQuery = data.nearest.nodeName;
+                        state.originNodeId = data.nearest.nearestNodeId;
+                        btnClearOrigin.classList.remove("hidden");
+                    } else {
+                        // Fallback default: main parking
+                        originInput.value = "Parqueo Principal";
+                        state.originNodeId = "mainParking";
+                    }
+                } catch (e) {
+                    originInput.value = "Parqueo Principal";
+                    state.originNodeId = "mainParking";
+                } finally {
+                    gpsIcon.classList.remove("hidden");
+                    gpsSpinner.classList.add("hidden");
+                }
+            },
+            (err) => {
+                console.warn("GPS error, defaulting to main entrance:", err.message);
+                originInput.value = "Parqueo Principal (Caseta Sur)";
+                state.originNodeId = "mainParking";
+                gpsIcon.classList.remove("hidden");
+                gpsSpinner.classList.add("hidden");
+                btnClearOrigin.classList.remove("hidden");
+            },
+            { enableHighAccuracy: true, timeout: 6000 }
+        );
+    });
+
+    // 5. Category Pills Direct Selection
+    categoryChips.forEach(chip => {
+        chip.addEventListener("click", function() {
+            categoryChips.forEach(c => {
+                c.classList.remove("bg-brand-900", "text-white");
+                c.classList.add("bg-slate-100", "text-slate-700");
+            });
+            this.classList.remove("bg-slate-100", "text-slate-700");
+            this.classList.add("bg-brand-900", "text-white");
+
+            const category = this.getAttribute("data-category");
+            state.selectedCategory = category;
+
+            // Direct search: immediately show matches for this category in the dropdown!
+            const matches = getMatches(destinationInput.value, category);
+            renderSuggestionsList(destinationSuggestions, matches, (selected) => {
+                destinationInput.value = selected.title;
+                state.destinationQuery = selected.title;
+                state.destinationNodeId = selected.targetNodeId;
+                btnClearDestination.classList.remove("hidden");
+            });
+        });
+    });
+
+    // 6. Autocomplete Events for Destination ("Where to?")
+    destinationInput.addEventListener("input", function() {
+        const val = this.value;
+        btnClearDestination.classList.toggle("hidden", !val);
+        state.destinationQuery = val;
+        state.destinationNodeId = null;
+
+        const matches = getMatches(val, state.selectedCategory);
+        renderSuggestionsList(destinationSuggestions, matches, (selected) => {
+            destinationInput.value = selected.title;
+            state.destinationQuery = selected.title;
+            state.destinationNodeId = selected.targetNodeId;
+            btnClearDestination.classList.remove("hidden");
+        });
+    });
+
+    destinationInput.addEventListener("focus", function() {
+        const matches = getMatches(this.value, state.selectedCategory);
+        renderSuggestionsList(destinationSuggestions, matches, (selected) => {
+            destinationInput.value = selected.title;
+            state.destinationQuery = selected.title;
+            state.destinationNodeId = selected.targetNodeId;
+            btnClearDestination.classList.remove("hidden");
+        });
+    });
+
+    btnClearDestination.addEventListener("click", () => {
+        destinationInput.value = "";
+        state.destinationQuery = "";
+        state.destinationNodeId = null;
+        btnClearDestination.classList.add("hidden");
+        destinationSuggestions.classList.add("hidden");
+    });
+
+    // Close dropdowns on outside click
+    document.addEventListener("click", (e) => {
+        if (!originInput.contains(e.target) && !originSuggestions.contains(e.target)) {
+            originSuggestions.classList.add("hidden");
+        }
+        if (!destinationInput.contains(e.target) && !destinationSuggestions.contains(e.target) && !e.target.closest(".category-chip")) {
+            destinationSuggestions.classList.add("hidden");
+        }
+    });
+
+    // 7. Swap Locations
+    btnSwap.addEventListener("click", () => {
+        const tempVal = originInput.value;
+        const tempId = state.originNodeId;
+
+        originInput.value = destinationInput.value;
+        state.originQuery = destinationInput.value;
+        state.originNodeId = state.destinationNodeId;
+
+        destinationInput.value = tempVal;
+        state.destinationQuery = tempVal;
+        state.destinationNodeId = tempId;
+
+        btnClearOrigin.classList.toggle("hidden", !originInput.value);
+        btnClearDestination.classList.toggle("hidden", !destinationInput.value);
+
+        if (originInput.value && destinationInput.value) {
+            calculateRoute();
+        }
+    });
+
+    // 8. Calculate Route via /api/map/route
+    async function calculateRoute() {
+        const origin = state.originNodeId || originInput.value.trim();
+        const dest = state.destinationNodeId || destinationInput.value.trim();
+
+        if (!origin || !dest) {
+            alert(window.t('map.missing_inputs', 'Por favor ingresa tu origen y destino.'));
+            return;
+        }
+
+        const accessibleOnly = accessibleToggle.checked;
+        const lang = window.APP_CONFIG.currentLang || "spa";
+
+        btnCalculate.disabled = true;
+        btnCalculate.classList.add("opacity-75");
+
+        try {
+            const res = await fetch("/api/map/route", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    origin: origin,
+                    destination: dest,
+                    accessibleOnly: accessibleOnly,
+                    lang: lang
+                })
+            });
+
+            const routeData = await res.json();
+            if (routeData.success) {
+                state.currentRoute = routeData;
+                displayRouteResults(routeData);
+
+                // Dispatch global event so the interactive SVG map draws the polyline!
+                window.dispatchEvent(new CustomEvent("jaguarMapRouteCalculated", { detail: routeData }));
+            } else {
+                alert(routeData.error || window.t('navigation.no_route_found', 'No se encontró una ruta transitable.'));
+            }
+        } catch (err) {
+            console.error("Route calculation error:", err);
+            alert(window.t('map.error', 'Ocurrió un error al calcular la ruta.'));
+        } finally {
+            btnCalculate.disabled = false;
+            btnCalculate.classList.remove("opacity-75");
+        }
+    }
+
+    btnCalculate.addEventListener("click", calculateRoute);
+
+    // 9. Display Route Results & Turn-by-Turn Steps
+    function displayRouteResults(route) {
+        routeDistanceText.textContent = `${route.totalDistanceMeters} ${window.t('map.meters', 'm')}`;
+        routeMinutesText.textContent = `~${route.estimatedWalkingMinutes} ${window.t('map.minutes', 'min')}`;
+        
+        if (route.isAccessibleRoute) {
+            routeAccessibilityBadge.innerHTML = `♿ ${window.t('map.accessible_route', 'Ruta 100% Accesible (Rampas)')}`;
+            routeAccessibilityBadge.className = "text-[10px] font-semibold text-emerald-700 flex items-center gap-1 mt-0.5";
+        } else {
+            routeAccessibilityBadge.innerHTML = `🚶 ${window.t('map.standard_route', 'Ruta Peatonal Estándar')}`;
+            routeAccessibilityBadge.className = "text-[10px] font-semibold text-slate-500 flex items-center gap-1 mt-0.5";
+        }
+
+        stepsCountBadge.textContent = `${route.stepInstructions.length} ${window.t('map.steps_count', 'pasos')}`;
+
+        routeStepsList.innerHTML = "";
+        route.stepInstructions.forEach((step, idx) => {
+            const li = document.createElement("li");
+            li.id = `routeStep_${idx}`;
+            li.className = "p-2 rounded-lg bg-slate-50 hover:bg-slate-100/80 transition-colors flex items-start gap-2 border border-slate-100";
+            li.innerHTML = `
+                <span class="w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                    ${idx + 1}
+                </span>
+                <span class="step-text leading-tight text-slate-800">${step}</span>
+            `;
+            routeStepsList.appendChild(li);
+        });
+
+        routeResultsCard.classList.remove("hidden");
+        btnReset.classList.remove("hidden");
+    }
+
+    // 10. Voice TTS Synthesis (Web Speech API)
+    btnVoice.addEventListener("click", function() {
+        if (!("speechSynthesis" in window)) {
+            alert("Tu navegador no soporta síntesis de voz (Web Speech API).");
+            return;
+        }
+
+        if (state.isSpeaking) {
+            window.speechSynthesis.cancel();
+            state.isSpeaking = false;
+            voiceIcon.textContent = "🔊";
+            voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
+            return;
+        }
+
+        if (!state.currentRoute || !state.currentRoute.stepInstructions.length) return;
+
+        state.isSpeaking = true;
+        voiceIcon.textContent = "⏹️";
+        voiceBtnText.textContent = window.t('map.voice_stop', 'Detener');
+
+        const lang = window.APP_CONFIG.currentLang === "spa" ? "es-ES" : "en-US";
+        const steps = state.currentRoute.stepInstructions;
+        let stepIdx = 0;
+
+        function speakNextStep() {
+            if (!state.isSpeaking || stepIdx >= steps.length) {
+                state.isSpeaking = false;
+                voiceIcon.textContent = "🔊";
+                voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
+                return;
+            }
+
+            // Highlight active step in DOM
+            document.querySelectorAll("#routeStepsList li").forEach(li => li.classList.remove("ring-2", "ring-brand-500", "bg-brand-50"));
+            const activeLi = document.getElementById(`routeStep_${stepIdx}`);
+            if (activeLi) {
+                activeLi.classList.add("ring-2", "ring-brand-500", "bg-brand-50");
+                activeLi.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+
+            const utterance = new SpeechSynthesisUtterance(steps[stepIdx]);
+            utterance.lang = lang;
+            utterance.rate = 1.0;
+
+            utterance.onend = () => {
+                stepIdx++;
+                speakNextStep();
+            };
+
+            utterance.onerror = () => {
+                state.isSpeaking = false;
+                voiceIcon.textContent = "🔊";
+                voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        speakNextStep();
+    });
+
+    // 11. Reset Navigation
+    btnReset.addEventListener("click", function() {
+        originInput.value = "";
+        destinationInput.value = "";
+        state.originQuery = "";
+        state.originNodeId = null;
+        state.destinationQuery = "";
+        state.destinationNodeId = null;
+        state.currentRoute = null;
+
+        btnClearOrigin.classList.add("hidden");
+        btnClearDestination.classList.add("hidden");
+        routeResultsCard.classList.add("hidden");
+        btnReset.classList.add("hidden");
+
+        if (state.isSpeaking) {
+            window.speechSynthesis.cancel();
+            state.isSpeaking = false;
+            voiceIcon.textContent = "🔊";
+            voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
+        }
+
+        window.dispatchEvent(new CustomEvent("jaguarMapRouteCleared"));
+    });
+
+});
+</script>
