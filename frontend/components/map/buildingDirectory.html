@@ -1,0 +1,259 @@
+<!--
+================================================================================
+BUILDINGDIRECTORY COMPONENT (BUILDINGDIRECTORY.HTML)
+================================================================================
+Official UAM Campus Directory faithfully replicating the directory listing
+from the official signage (Pisos, Facultades, Aulas, Oficinas y Servicios).
+Interactive search filter & click-to-focus on 2D map.
+================================================================================
+-->
+
+<div id="buildingDirectoryComponent" class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-5 md:p-6 transition-all flex flex-col h-[650px]">
+    
+    <!-- Header & Search Filter -->
+    <div class="pb-3 border-b border-slate-100 mb-3">
+        <div class="flex items-center justify-between mb-2.5">
+            <h3 class="text-sm font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+                <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                <span>Directorio Oficial de Edificios</span>
+            </h3>
+            <span id="directoryCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                16 Edificios
+            </span>
+        </div>
+
+        <!-- Directory Search Bar -->
+        <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <input type="text" 
+                   id="directorySearchInput" 
+                   placeholder="Filtrar edificio, aula, oficina o piso..." 
+                   class="w-full pl-9 pr-3 py-1.5 bg-slate-50 hover:bg-white focus:bg-white text-xs font-medium text-slate-800 placeholder-slate-400 rounded-lg border border-slate-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-all outline-hidden">
+        </div>
+    </div>
+
+    <!-- Directory Scrollable Cards List -->
+    <div id="directoryList" class="flex-1 overflow-y-auto pr-1 space-y-2.5 text-xs scrollbar-thin">
+
+        <!-- EDIFICIO A -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingA" data-letter="A">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-purple-700 text-white font-extrabold text-xs flex items-center justify-center">A</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio A • Atención al Estudiante</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">3 Pisos</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> CAE, Admisiones, Registro Académico, Cartera y Cobro, Finanzas, Cajeros.</div>
+                <div><strong class="text-slate-800">Piso 2:</strong> Dirección Administrativa, Logística, TIC, Mercadeo, RRHH.</div>
+                <div><strong class="text-slate-800">Piso 3:</strong> Dirección de Producción Audiovisual (DPA), Set de Grabación, Estudio de Sonido.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO B -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingB" data-letter="B">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-purple-700 text-white font-extrabold text-xs flex items-center justify-center">B</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio B • Aulas & Farmacia</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">2 Pisos</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Módulo Comercial 1, Aulas B101 - B109, SS Hombres / Mujeres, Jaguar Shop.</div>
+                <div><strong class="text-slate-800">Piso 2:</strong> Aulas B201 - B210.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO C -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingC" data-letter="C">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-purple-700 text-white font-extrabold text-xs flex items-center justify-center">C</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio C • Laboratorios & Tesorería</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">3 Pisos</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Auditorio C101, Aulas C102-C104, Caja UAM / Tesorería, Aula C106, Lab MAC C107, Auditorio C109.</div>
+                <div><strong class="text-slate-800">Piso 2:</strong> Labs Cómputo C201-C205, Lab MAC C203, Aulas C209-C211.</div>
+                <div><strong class="text-slate-800">Piso 3:</strong> Aulas C301-C305, Coordinación de Compras, Aulas C307-C310.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO D -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingD" data-letter="D">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center">D</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio D • Odontología Digital</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Aula D102, Laboratorio de Odontología Digital CAM-CAM, Servicio al Cliente, Sala de Reunión.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO E -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingE" data-letter="E">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-blue-900 text-white font-extrabold text-xs flex items-center justify-center">E</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio E • Facultad de Medicina</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">2 Pisos</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Clínicas Médicas UAM, Centro de Cardiología, Decanatura de Medicina.</div>
+                <div><strong class="text-slate-800">Piso 2:</strong> Laboratorio Simuladores de Habilidades Clínicas de Medicina.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO F -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingF" data-letter="F">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-pink-700 text-white font-extrabold text-xs flex items-center justify-center">F</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio F • Ciencias Económicas (FCAE)</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Decanatura FCAE, Decanatura FMDCC, Salón de Eventos y Conferencias.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO G -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingG" data-letter="G">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-sky-600 text-white font-extrabold text-xs flex items-center justify-center">G</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio G • Auditorio Central & Derecho</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Auditorio Central UAM, Facultad de Ciencias Jurídicas (FCJP), Rampa Accesible.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO H -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingH" data-letter="H">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center">H</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio H • Laboratorios de Medicina</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">2 Pisos</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Laboratorios de Ciencias Básicas H101 - H103, Coordinación de Laboratorios.</div>
+                <div><strong class="text-slate-800">Piso 2:</strong> Laboratorios de Investigación Médica H201 - H207.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO I -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingI" data-letter="I">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-blue-900 text-white font-extrabold text-xs flex items-center justify-center">I</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio I • Rectoría & Biblioteca</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Rectoría, Vicepresidencia, Gerencia General, Secretaría General, Biblioteca Central UAM.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO J -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingJ" data-letter="J">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-teal-600 text-white font-extrabold text-xs flex items-center justify-center">J</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio J • Laboratorios Odontología</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Laboratorios de Odontología J-101 y J-102, Simulación Dental.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO K -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingK" data-letter="K">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-amber-600 text-white font-extrabold text-xs flex items-center justify-center">K</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio K • Cafetería & Plaza Central</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Plaza Central:</strong> Plaza Rubén Darío, Cafetería Central, Jaguar Corner, Kioskos de Comida.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO N -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingN" data-letter="N">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-blue-900 text-white font-extrabold text-xs flex items-center justify-center">N</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio N • Clínicas Odontológicas</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Clínicas Dentales de Grado y Posgrado, Quirófanos Odontológicos, Recepción Clínicas.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO O -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingO" data-letter="O">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center">O</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio O • Ingeniería & Arquitectura</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Decanatura FIA, Laboratorio de Ingeniería y CIAR, Talleres de Maquetas y Dibujo.</div>
+            </div>
+        </div>
+
+        <!-- EDIFICIO P -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingP" data-letter="P">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-rose-900 text-white font-extrabold text-xs flex items-center justify-center">P</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio P • Copérnico & Observatorio</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Piso 1:</strong> Aulas de Clase P, Cúpula del Observatorio Astronómico Copérnico, Estación Meteorológica.</div>
+            </div>
+        </div>
+
+        <!-- SPORTS FACILITIES -->
+        <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="sportsZone" data-letter="S">
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center">⚽</span>
+                    <span class="font-bold text-slate-900 text-xs">Complejo Deportivo & Estadios</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-medium">Campus Este</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-600 pl-8">
+                <div><strong class="text-slate-800">Instalaciones:</strong> Estadio de Béisbol, Cancha de Fútbol, Jaguar Center, Jaguar Gym, Canchas de Tenis, Graderías.</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

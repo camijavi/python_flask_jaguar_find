@@ -4,25 +4,36 @@
 {{ t('map.title', default='Navegador del Campus UAM') }} - JaguarMaps
 {% endblock %}
 
+{% block head %}
+<!-- Official 2D Campus Map Stylesheet -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/campus2dMap.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
     
     <!-- Header Title Bar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                {{ t('map.title', default='Navegador del Campus UAM') }}
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
+                <!-- Official Campus Map Icon -->
+                <svg class="w-7 h-7 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                <span>{{ t('map.title', default='Mapa Oficial del Campus UAM') }}</span>
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                {{ t('app.subtitle', default='Campus Orientation & Lost and Found Management System') }}
+                {{ t('app.subtitle', default='Orientación Universitaria y Guía de Edificios 2D') }}
             </p>
         </div>
 
-        <!-- Campus Status Indicator -->
-        <div class="flex items-center gap-3">
+        <!-- Campus Facilities Status Badges (Zero Emojis) -->
+        <div class="flex items-center gap-2.5 flex-wrap">
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs text-xs">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                 <span class="font-semibold text-slate-700">Edificio A (CAE) Abierto</span>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-2xs text-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                <span class="font-semibold text-slate-700">16 Edificios Conectados</span>
             </div>
         </div>
     </div>
@@ -30,17 +41,72 @@
     <!-- MAIN TWO-COLUMN RESPONSIVE LAYOUT -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- LEFT COLUMN: navigateMap Component (Inputs, Autocomplete, Categories, Turn-by-Turn Steps) -->
-        <div class="lg:col-span-5 xl:col-span-4 w-full">
-            {% include "components/map/navigateMap.html" %}
+        <!-- LEFT COLUMN: Navigation & Directory Sidebar (Switchable Tabs) -->
+        <div class="lg:col-span-5 xl:col-span-4 w-full space-y-4">
+            
+            <!-- Sleek Segmented Switcher -->
+            <div class="flex items-center p-1 bg-slate-200/90 rounded-xl shadow-inner text-xs font-semibold">
+                <button id="sidebarTabNav" type="button" class="flex-1 py-2 px-3 rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-2 transition-all">
+                    <!-- Directions Waypoint SVG -->
+                    <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                    <span>Navegación</span>
+                </button>
+                <button id="sidebarTabDir" type="button" class="flex-1 py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition-all">
+                    <!-- Directory Office SVG -->
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    <span>Directorio UAM</span>
+                </button>
+            </div>
+
+            <!-- Tab Panel 1: navigateMap Component (Inputs, Autocomplete, Categories, Turn-by-Turn Steps) -->
+            <div id="sidebarPanelNav" class="w-full">
+                {% include "components/map/navigateMap.html" %}
+            </div>
+
+            <!-- Tab Panel 2: buildingDirectory Component (Official Signage Directory) -->
+            <div id="sidebarPanelDir" class="w-full hidden">
+                {% include "components/map/buildingDirectory.html" %}
+            </div>
+
         </div>
 
-        <!-- RIGHT COLUMN: interactiveMap Component (SVG Campus Canvas, Animated Polyline) -->
+        <!-- RIGHT COLUMN: Official 2D Vector Campus Map -->
         <div class="lg:col-span-7 xl:col-span-8 w-full sticky top-20">
-            {% include "components/map/interactiveMap.html" %}
+            {% include "components/map/campus2dMap.html" %}
         </div>
 
     </div>
 
 </div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Official 2D Vector Map and Directory Logic -->
+<script src="{{ url_for('static', filename='js/campus2dMap.js') }}"></script>
+
+<script>
+// Sidebar Tab Switching
+document.addEventListener("DOMContentLoaded", function() {
+    const tabNav = document.getElementById("sidebarTabNav");
+    const tabDir = document.getElementById("sidebarTabDir");
+    const panelNav = document.getElementById("sidebarPanelNav");
+    const panelDir = document.getElementById("sidebarPanelDir");
+
+    if (tabNav && tabDir && panelNav && panelDir) {
+        tabNav.addEventListener("click", () => {
+            tabNav.className = "flex-1 py-2 px-3 rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-2 transition-all";
+            tabDir.className = "flex-1 py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition-all";
+            panelNav.classList.remove("hidden");
+            panelDir.classList.add("hidden");
+        });
+
+        tabDir.addEventListener("click", () => {
+            tabDir.className = "flex-1 py-2 px-3 rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-2 transition-all";
+            tabNav.className = "flex-1 py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition-all";
+            panelDir.classList.remove("hidden");
+            panelNav.classList.add("hidden");
+        });
+    }
+});
+</script>
 {% endblock %}

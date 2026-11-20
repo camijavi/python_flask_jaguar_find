@@ -1,0 +1,114 @@
+/**
+ * ================================================================================
+ * CAMPUS2DMAP.CSS - OFFICIAL 2D UAM CAMPUS MAP STYLES
+ * ================================================================================
+ * Styling for the architectural 2D vector map replicating the official
+ * UAM campus signage: teal building roofs, sports fields, parking landscaping,
+ * compass rose, and animated pedestrian routes.
+ */
+
+/* Map Container */
+.campus-map-wrapper {
+    position: relative;
+    width: 100%;
+    height: 650px;
+    background-color: #e8ecf1;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #cbd5e1;
+    user-select: none;
+}
+
+/* SVG Canvas */
+.campus-svg-canvas {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    transition: transform 0.15s ease-out;
+}
+.campus-svg-canvas:active {
+    cursor: grabbing;
+}
+
+/* Building 2D Shapes */
+.bldg-shape {
+    transition: filter 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+.bldg-shape:hover {
+    filter: brightness(1.15) drop-shadow(0 4px 6px rgba(15, 118, 110, 0.4));
+}
+.bldg-shape.active-bldg {
+    filter: drop-shadow(0 0 10px #0284c7) brightness(1.2);
+}
+
+/* Official Building Letter Badges */
+.badge-purple { fill: #6b21a8; }
+.badge-navy   { fill: #1e3a8a; }
+.badge-green  { fill: #15803d; }
+.badge-magenta{ fill: #be185d; }
+.badge-cyan   { fill: #0284c7; }
+.badge-maroon { fill: #881337; }
+.badge-amber  { fill: #b45309; }
+.badge-teal   { fill: #0f766e; }
+
+/* Building Letter Text */
+.badge-text {
+    fill: #ffffff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+}
+
+/* Label Texts */
+.map-label {
+    fill: #1e293b;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+}
+.map-sublabel {
+    fill: #64748b;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 8px;
+    letter-spacing: 0.01em;
+    pointer-events: none;
+}
+
+/* Animated Dijkstra Route Path */
+.ruta-animada {
+    stroke-dasharray: 10, 6;
+    animation: rutaDash 1.2s linear infinite;
+}
+@keyframes rutaDash {
+    to {
+        stroke-dashoffset: -32;
+    }
+}
+
+/* Compass Rose */
+.compass-rose {
+    pointer-events: none;
+}
+
+/* Directory Sidebar Cards */
+.directory-card {
+    transition: all 0.2s ease;
+}
+.directory-card:hover {
+    background-color: #f8fafc;
+    border-color: #0284c7;
+    transform: translateY(-1px);
+}
+.directory-card.highlighted {
+    border-color: #0284c7;
+    background-color: #f0f9ff;
+    box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.15);
+}
