@@ -59,13 +59,13 @@
 
     {% block head %}{% endblock %}
 </head>
-<body class="min-h-full flex flex-col text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+<body class="h-full min-h-full flex flex-col text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
 
     <!-- INSTITUTIONAL NAVBAR -->
     {% include "components/common/navBar.html" %}
 
     <!-- MAIN CONTENT VIEW -->
-    <main class="flex-1 flex flex-col">
+    <main class="flex-1 flex flex-col min-h-0">
         {% block content %}{% endblock %}
     </main>
 

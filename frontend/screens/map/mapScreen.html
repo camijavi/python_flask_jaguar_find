@@ -5,48 +5,57 @@
 {% block head %}
 <!-- Official 2D Campus Map Stylesheet -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/campus2dMap.css') }}">
+<style>
+    /* Prevent outer window scrolling on map screen to provide full-viewport app feel */
+    body {
+        overflow: hidden;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+<!-- Full-viewport map layout container -->
+<div class="w-full h-full flex-1 flex overflow-hidden relative">
     
     <!-- Mobile Backdrop for offcanvas sidebar drawer -->
-    <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 hidden transition-opacity lg:hidden" aria-hidden="true"></div>
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 backdrop-inactive lg:hidden" aria-hidden="true"></div>
 
-    <!-- MAIN TWO-COLUMN RESPONSIVE LAYOUT -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <!-- MAIN TWO-COLUMN RESPONSIVE LAYOUT (FLUID FLEX TRANSITION) -->
+    <div id="mapLayoutWrapper" class="flex flex-row w-full h-full overflow-hidden relative">
         
         <!-- LEFT COLUMN: Navigation & Directory Sidebar (Switchable Tabs) -->
-        <div id="mapSidebarColumn" class="fixed inset-y-0 left-0 z-50 w-full max-w-sm sm:max-w-md bg-white p-4 shadow-2xl overflow-y-auto transform -translate-x-full transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:w-full lg:max-w-none lg:bg-transparent lg:shadow-none lg:p-0 lg:overflow-visible lg:transform-none lg:col-span-5 xl:col-span-4 space-y-4">
+        <div id="mapSidebarColumn" class="fixed inset-y-0 left-0 z-50 w-full max-w-sm sm:max-w-md bg-white p-4 shadow-2xl overflow-y-auto sidebar-mobile-closed lg:static lg:z-20 lg:p-4 lg:bg-white lg:shadow-md lg:overflow-y-auto lg:shrink-0 lg:border-r lg:border-slate-200/80 sidebar-desktop-open space-y-4">
             
-            <!-- Sleek Segmented Switcher -->
-            <div class="flex items-center p-1 bg-slate-200/90 rounded-xl shadow-inner text-xs font-semibold">
-                <button id="sidebarTabNav" type="button" class="flex-1 py-2 px-3 rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-2 transition-all">
-                    <!-- Directions Waypoint SVG -->
-                    <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    <span>Navegación</span>
-                </button>
-                <button id="sidebarTabDir" type="button" class="flex-1 py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition-all">
-                    <!-- Directory Office SVG -->
-                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                    <span>Directorio UAM</span>
-                </button>
-            </div>
+            <div class="w-full min-w-[320px] max-w-full space-y-4 pb-6">
+                <!-- Sleek Segmented Switcher -->
+                <div class="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold">
+                    <button id="sidebarTabNav" type="button" class="flex-1 py-2 px-3 rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-2 transition-all">
+                        <!-- Directions Waypoint SVG -->
+                        <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                        <span>Navegación</span>
+                    </button>
+                    <button id="sidebarTabDir" type="button" class="flex-1 py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition-all">
+                        <!-- Directory Office SVG -->
+                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        <span>Directorio UAM</span>
+                    </button>
+                </div>
 
-            <!-- Tab Panel 1: navigateMap Component (Inputs, Autocomplete, Categories, Turn-by-Turn Steps) -->
-            <div id="sidebarPanelNav" class="w-full">
-                {% include "components/map/navigateMap.html" %}
-            </div>
+                <!-- Tab Panel 1: navigateMap Component (Inputs, Autocomplete, Categories, Turn-by-Turn Steps) -->
+                <div id="sidebarPanelNav" class="w-full">
+                    {% include "components/map/navigateMap.html" %}
+                </div>
 
-            <!-- Tab Panel 2: buildingDirectory Component (Official Signage Directory) -->
-            <div id="sidebarPanelDir" class="w-full hidden">
-                {% include "components/map/buildingDirectory.html" %}
+                <!-- Tab Panel 2: buildingDirectory Component (Official Signage Directory) -->
+                <div id="sidebarPanelDir" class="w-full hidden">
+                    {% include "components/map/buildingDirectory.html" %}
+                </div>
             </div>
 
         </div>
 
         <!-- RIGHT COLUMN: Official 2D Vector Campus Map -->
-        <div id="mapContainerColumn" class="lg:col-span-7 xl:col-span-8 w-full sticky top-20 transition-all duration-300">
+        <div id="mapContainerColumn" class="flex-1 h-full w-full min-w-0 relative flex flex-col overflow-hidden">
             {% include "components/map/campus2dMap.html" %}
         </div>
 

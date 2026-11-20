@@ -9,7 +9,127 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
 ================================================================================
 -->
 
-<div id="navigateMapComponent" class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-5 md:p-6 transition-all">
+<style>
+/* ========================================================================== */
+/* NAVIGATEMAP SIDEBAR SMOOTH ANIMATIONS & FLUID TRANSITIONS                 */
+/* ========================================================================== */
+
+/* Desktop sidebar container smooth width & slide transitions */
+#mapSidebarColumn {
+    will-change: width, max-width, opacity, transform;
+    transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                max-width 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                padding 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Open state on desktop */
+.sidebar-desktop-open {
+    width: 420px !important;
+    max-width: 420px !important;
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+}
+
+@media (min-width: 1280px) {
+    .sidebar-desktop-open {
+        width: 460px !important;
+        max-width: 460px !important;
+    }
+}
+
+/* Closed state on desktop */
+.sidebar-desktop-closed {
+    width: 0 !important;
+    max-width: 0 !important;
+    opacity: 0 !important;
+    transform: translateX(-28px) !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-right-width: 0 !important;
+}
+
+/* Mobile drawer open / closed states */
+.sidebar-mobile-open {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25) !important;
+}
+
+.sidebar-mobile-closed {
+    transform: translateX(-100%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    box-shadow: none !important;
+}
+
+/* Backdrop smooth fade */
+#sidebarBackdrop {
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                visibility 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.backdrop-active {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+}
+.backdrop-inactive {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
+/* Map container smooth flex expansion */
+#mapContainerColumn {
+    transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: width, flex;
+}
+
+/* Inner component smooth fade & slide */
+@keyframes navMapSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(12px) scale(0.985);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes navMapSlideOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.985);
+    }
+}
+
+.navmap-animated-enter {
+    animation: navMapSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.navmap-animated-exit {
+    animation: navMapSlideOut 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+</style>
+
+<div id="navigateMapComponent" class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-5 md:p-6 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
     
     <!-- Component Header -->
     <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
@@ -781,43 +901,44 @@ document.addEventListener("DOMContentLoaded", function() {
 
     window.toggleNavigateMapSidebar = function(forceState) {
         const sidebarCol = document.getElementById("mapSidebarColumn");
-        const mapCol = document.getElementById("mapContainerColumn");
+        const mapWrapper = document.getElementById("mapLayoutWrapper");
         const backdrop = document.getElementById("sidebarBackdrop");
+        const navComponent = document.getElementById("navigateMapComponent");
         const isMobile = window.innerWidth < 1024; // Tailwind lg breakpoint
 
         // Check if currently visible
         let isVisible = false;
         if (sidebarCol) {
             if (isMobile) {
-                isVisible = !sidebarCol.classList.contains("-translate-x-full");
+                isVisible = sidebarCol.classList.contains("sidebar-mobile-open");
             } else {
-                isVisible = !sidebarCol.classList.contains("lg:hidden");
+                isVisible = sidebarCol.classList.contains("sidebar-desktop-open");
             }
         } else if (navComponent) {
-            isVisible = !navComponent.classList.contains("hidden");
+            isVisible = !navComponent.classList.contains("hidden") && !navComponent.classList.contains("navmap-animated-exit");
         }
 
         const shouldShow = (typeof forceState === "boolean") ? forceState : !isVisible;
 
         if (shouldShow) {
-            // SHOW SIDEBAR
+            // SHOW / EXPAND SIDEBAR (SMOOTH FLUID ANIMATION)
             if (sidebarCol) {
                 if (isMobile) {
-                    sidebarCol.classList.remove("-translate-x-full");
-                    sidebarCol.classList.add("translate-x-0");
+                    sidebarCol.classList.remove("sidebar-mobile-closed");
+                    sidebarCol.classList.add("sidebar-mobile-open");
+                    if (backdrop) {
+                        backdrop.classList.remove("backdrop-inactive");
+                        backdrop.classList.add("backdrop-active");
+                    }
                 } else {
-                    sidebarCol.classList.remove("lg:hidden");
+                    sidebarCol.classList.remove("sidebar-desktop-closed");
+                    sidebarCol.classList.add("sidebar-desktop-open");
                 }
             }
-            if (backdrop && isMobile) {
-                backdrop.classList.remove("hidden");
-            }
-            if (mapCol && !isMobile) {
-                mapCol.classList.remove("lg:col-span-12", "xl:col-span-12");
-                mapCol.classList.add("lg:col-span-7", "xl:col-span-8");
-            }
+
             if (navComponent) {
-                navComponent.classList.remove("hidden");
+                navComponent.classList.remove("hidden", "navmap-animated-exit");
+                navComponent.classList.add("navmap-animated-enter");
             }
 
             // Ensure navigation tab is active when opening from hamburger
@@ -832,27 +953,44 @@ document.addEventListener("DOMContentLoaded", function() {
                 tabDir.className = "flex-1 py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition-all";
             }
 
+            // Trigger window resize event after transition completes so SVG map canvas updates cleanly
+            setTimeout(() => {
+                window.dispatchEvent(new Event("resize"));
+            }, 330);
+
             window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: true } }));
         } else {
-            // HIDE SIDEBAR
+            // HIDE / COLLAPSE SIDEBAR (SMOOTH FLUID ANIMATION)
             if (sidebarCol) {
                 if (isMobile) {
-                    sidebarCol.classList.add("-translate-x-full");
-                    sidebarCol.classList.remove("translate-x-0");
+                    sidebarCol.classList.remove("sidebar-mobile-open");
+                    sidebarCol.classList.add("sidebar-mobile-closed");
+                    if (backdrop) {
+                        backdrop.classList.remove("backdrop-active");
+                        backdrop.classList.add("backdrop-inactive");
+                    }
                 } else {
-                    sidebarCol.classList.add("lg:hidden");
+                    sidebarCol.classList.remove("sidebar-desktop-open");
+                    sidebarCol.classList.add("sidebar-desktop-closed");
                 }
             }
-            if (backdrop) {
-                backdrop.classList.add("hidden");
+
+            if (navComponent) {
+                navComponent.classList.remove("navmap-animated-enter");
+                navComponent.classList.add("navmap-animated-exit");
+                if (!sidebarCol) {
+                    setTimeout(() => {
+                        if (navComponent.classList.contains("navmap-animated-exit")) {
+                            navComponent.classList.add("hidden");
+                        }
+                    }, 220);
+                }
             }
-            if (mapCol && !isMobile) {
-                mapCol.classList.remove("lg:col-span-7", "xl:col-span-8");
-                mapCol.classList.add("lg:col-span-12", "xl:col-span-12");
-            }
-            if (navComponent && !sidebarCol) {
-                navComponent.classList.add("hidden");
-            }
+
+            // Trigger window resize event after transition completes so SVG map canvas updates cleanly
+            setTimeout(() => {
+                window.dispatchEvent(new Event("resize"));
+            }, 330);
 
             window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: false } }));
         }
@@ -870,7 +1008,9 @@ document.addEventListener("DOMContentLoaded", function() {
             const sidebarCol = document.getElementById("mapSidebarColumn");
             const isMobile = window.innerWidth < 1024;
             if (sidebarCol) {
-                const isOpen = isMobile ? !sidebarCol.classList.contains("-translate-x-full") : !sidebarCol.classList.contains("lg:hidden");
+                const isOpen = isMobile 
+                    ? sidebarCol.classList.contains("sidebar-mobile-open")
+                    : sidebarCol.classList.contains("sidebar-desktop-open");
                 if (isOpen) {
                     window.toggleNavigateMapSidebar(false);
                 }
@@ -890,28 +1030,44 @@ document.addEventListener("DOMContentLoaded", function() {
     window.addEventListener("resize", () => {
         const isMobile = window.innerWidth < 1024;
         const sidebarCol = document.getElementById("mapSidebarColumn");
-        const mapCol = document.getElementById("mapContainerColumn");
+        const mapWrapper = document.getElementById("mapLayoutWrapper");
         const backdrop = document.getElementById("sidebarBackdrop");
         if (!sidebarCol) return;
 
         if (!isMobile) {
-            if (backdrop) backdrop.classList.add("hidden");
-            sidebarCol.classList.remove("-translate-x-full", "translate-x-0");
-            const isHidden = sidebarCol.classList.contains("lg:hidden");
-            if (mapCol) {
-                if (isHidden) {
-                    mapCol.classList.remove("lg:col-span-7", "xl:col-span-8");
-                    mapCol.classList.add("lg:col-span-12", "xl:col-span-12");
-                } else {
-                    mapCol.classList.remove("lg:col-span-12", "xl:col-span-12");
-                    mapCol.classList.add("lg:col-span-7", "xl:col-span-8");
+            // Switched to desktop: hide mobile backdrop
+            if (backdrop) {
+                backdrop.classList.remove("backdrop-active");
+                backdrop.classList.add("backdrop-inactive");
+            }
+            // Clear mobile drawer classes
+            sidebarCol.classList.remove("sidebar-mobile-open", "sidebar-mobile-closed");
+            // If it had desktop closed state, keep it closed, otherwise ensure open
+            const isClosed = sidebarCol.classList.contains("sidebar-desktop-closed");
+            if (isClosed) {
+                sidebarCol.classList.add("sidebar-desktop-closed");
+                sidebarCol.classList.remove("sidebar-desktop-open");
+            } else {
+                sidebarCol.classList.add("sidebar-desktop-open");
+                sidebarCol.classList.remove("sidebar-desktop-closed");
+            }
+            window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: !isClosed } }));
+        } else {
+            // Switched to mobile: clear desktop classes
+            sidebarCol.classList.remove("sidebar-desktop-open", "sidebar-desktop-closed");
+            const isOpen = sidebarCol.classList.contains("sidebar-mobile-open");
+            if (isOpen) {
+                if (backdrop) {
+                    backdrop.classList.remove("backdrop-inactive");
+                    backdrop.classList.add("backdrop-active");
+                }
+            } else {
+                sidebarCol.classList.add("sidebar-mobile-closed");
+                if (backdrop) {
+                    backdrop.classList.remove("backdrop-active");
+                    backdrop.classList.add("backdrop-inactive");
                 }
             }
-            window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: !isHidden } }));
-        } else {
-            const isOpen = sidebarCol.classList.contains("translate-x-0");
-            if (backdrop) backdrop.classList.toggle("hidden", !isOpen);
-            if (!isOpen) sidebarCol.classList.add("-translate-x-full");
             window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: isOpen } }));
         }
     });
@@ -920,7 +1076,7 @@ document.addEventListener("DOMContentLoaded", function() {
     setTimeout(() => {
         const initIsMobile = window.innerWidth < 1024;
         const sidebarCol = document.getElementById("mapSidebarColumn");
-        const initOpen = sidebarCol ? (!initIsMobile && !sidebarCol.classList.contains("lg:hidden")) : true;
+        const initOpen = sidebarCol ? (!initIsMobile && sidebarCol.classList.contains("sidebar-desktop-open")) : true;
         window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: initOpen } }));
     }, 50);
 
