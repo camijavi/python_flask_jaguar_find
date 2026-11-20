@@ -42,6 +42,7 @@ DDL_USER_TBL = """
 CREATE TABLE IF NOT EXISTS UserTbl (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     UserTypeId INTEGER NOT NULL,
+    UserName TEXT NULL,
     FullName TEXT NOT NULL,
     CIF TEXT NULL,
     GovermentId TEXT NULL,
@@ -63,6 +64,7 @@ CREATE TABLE IF NOT EXISTS UserTbl (
 """
 
 DDL_USER_INDEXES = """
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON UserTbl(UserName) WHERE UserName IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_cif ON UserTbl(CIF) WHERE CIF IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_gov_id ON UserTbl(GovermentId) WHERE GovermentId IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON UserTbl(Email) WHERE Email IS NOT NULL;
@@ -114,6 +116,12 @@ def initDb(dbPath: Optional[str] = None, seedSampleData: bool = True) -> None:
         # 1. Execute DDL Schema
         cursor.execute(DDL_USER_TYPE_TBL)
         cursor.execute(DDL_USER_TBL)
+        # Ensure UserName column exists if table pre-existed
+        cursor.execute("PRAGMA table_info(UserTbl);")
+        existingCols = [col[1] for col in cursor.fetchall()]
+        if "UserName" not in existingCols:
+            cursor.execute("ALTER TABLE UserTbl ADD COLUMN UserName TEXT NULL;")
+
         cursor.executescript(DDL_USER_INDEXES)
         cursor.execute(DDL_LOST_OBJECT_STATE_TBL)
         cursor.execute(DDL_LOST_OBJECT_REPORT_TBL)
@@ -157,32 +165,32 @@ def _seedInitialData(cursor: sqlite3.Cursor) -> None:
     if not cursor.fetchone():
         adminHash = generate_password_hash("admin123")
         cursor.execute("""
-            INSERT INTO UserTbl (UserTypeId, FullName, Email, PasswordHash)
-            VALUES (4, 'Administrador CAE Edificio A', 'admin@uamv.edu.ni', ?);
+            INSERT INTO UserTbl (UserTypeId, UserName, FullName, Email, PasswordHash)
+            VALUES (4, 'admin', 'Administrador CAE Edificio A', 'admin@uamv.edu.ni', ?);
         """, (adminHash,))
 
     # Seed 2: Student (CIF + FullName)
     cursor.execute("SELECT Id FROM UserTbl WHERE CIF = '22019845';")
     if not cursor.fetchone():
         cursor.execute("""
-            INSERT INTO UserTbl (UserTypeId, FullName, CIF, Email)
-            VALUES (1, 'Camila Navarro', '22019845', 'camila.navarro@uamv.edu.ni');
+            INSERT INTO UserTbl (UserTypeId, UserName, FullName, CIF, Email)
+            VALUES (1, 'camila.navarro', 'Camila Navarro', '22019845', 'camila.navarro@uamv.edu.ni');
         """)
 
     # Seed 3: Collaborator (GovernmentId + FullName)
     cursor.execute("SELECT Id FROM UserTbl WHERE GovermentId = '001-150485-0012A';")
     if not cursor.fetchone():
         cursor.execute("""
-            INSERT INTO UserTbl (UserTypeId, FullName, GovermentId, Email)
-            VALUES (2, 'Prof. Roberto Gómez', '001-150485-0012A', 'roberto.gomez@uamv.edu.ni');
+            INSERT INTO UserTbl (UserTypeId, UserName, FullName, GovermentId, Email)
+            VALUES (2, 'roberto.gomez', 'Prof. Roberto Gómez', '001-150485-0012A', 'roberto.gomez@uamv.edu.ni');
         """)
 
     # Seed 4: Visitor (GovernmentId + PhoneNumber)
     cursor.execute("SELECT Id FROM UserTbl WHERE GovermentId = '001-200392-0045B';")
     if not cursor.fetchone():
         cursor.execute("""
-            INSERT INTO UserTbl (UserTypeId, FullName, GovermentId, PhoneNumber)
-            VALUES (3, 'Carlos Mendoza', '001-200392-0045B', '+505 8888 1234');
+            INSERT INTO UserTbl (UserTypeId, UserName, FullName, GovermentId, PhoneNumber)
+            VALUES (3, 'carlos.mendoza', 'Carlos Mendoza', '001-200392-0045B', '+505 8888 1234');
         """)
 
     # Seed Sample Lost Objects Reports
@@ -213,6 +221,7 @@ def _seedInitialData(cursor: sqlite3.Cursor) -> None:
 def createUser(
     userTypeId: int,
     fullName: str,
+    userName: Optional[str] = None,
     cif: Optional[str] = None,
     govermentId: Optional[str] = None,
     phoneNumber: Optional[str] = None,
@@ -234,9 +243,9 @@ def createUser(
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO UserTbl (
-                UserTypeId, FullName, CIF, GovermentId, PhoneNumber, Email, PasswordHash
-            ) VALUES (?, ?, ?, ?, ?, ?, ?);
-        """, (userTypeId, fullName.strip(), cif, govermentId, phoneNumber, email, passwordHash))
+                UserTypeId, UserName, FullName, CIF, GovermentId, PhoneNumber, Email, PasswordHash
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+        """, (userTypeId, userName.strip() if userName else None, fullName.strip(), cif, govermentId, phoneNumber, email, passwordHash))
         conn.commit()
         return cursor.lastrowid
     finally:
@@ -291,10 +300,27 @@ def getUserByIdentifier(
                 SELECT u.*, ut.Name AS UserTypeName
                 FROM UserTbl u
                 JOIN UserTypeTbl ut ON u.UserTypeId = ut.Id
-                WHERE u.CIF = ? OR u.GovermentId = ? OR u.Email = ?;
+                WHERE u.CIF = ? OR u.GovermentId = ? OR u.Email = ? OR u.UserName = ?;
             """
-            cursor.execute(query, (cleanId, cleanId, cleanId.lower()))
+            cursor.execute(query, (cleanId, cleanId, cleanId.lower(), cleanId))
 
+        row = cursor.fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def getUserByUsername(userName: str, dbPath: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """Retrieves a user by their unique UserName handle."""
+    conn = getDbConnection(dbPath)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT u.*, ut.Name AS UserTypeName
+            FROM UserTbl u
+            JOIN UserTypeTbl ut ON u.UserTypeId = ut.Id
+            WHERE LOWER(u.UserName) = LOWER(?);
+        """, (userName.strip(),))
         row = cursor.fetchone()
         return dict(row) if row else None
     finally:
