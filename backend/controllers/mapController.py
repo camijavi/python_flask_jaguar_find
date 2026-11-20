@@ -13,6 +13,7 @@ from flask import Blueprint, request, jsonify, session
 from typing import Dict, Any, List
 
 from backend.graph.navigationService import globalNavigationService
+from backend.graph.geoUtils import CampusGeoUtils
 from backend.data.campusCategories import CampusCategory, CATEGORY_METADATA
 from backend.data.placesCatalog import PLACES_CATALOG
 
@@ -213,14 +214,29 @@ def calculateRoute():
     return jsonify(routeResult), statusCode
 
 
+@mapController.route("/perimeter", methods=["GET"])
+def getCampusPerimeter():
+    """
+    GET /api/map/perimeter
+    Returns the official UAM campus polygon perimeter coordinates and validation status.
+    """
+    perimeter = CampusGeoUtils.getCampusPerimeter()
+    return jsonify({
+        "success": True,
+        "count": len(perimeter),
+        "perimeter": perimeter,
+    }), 200
+
+
 @mapController.route("/nearest-gps", methods=["GET"])
 def findNearestGpsNode():
     """
     GET /api/map/nearest-gps
     Snaps a device GPS latitude/longitude coordinate to the nearest campus macro node.
+    Validates whether the user's location is within the official UAM campus perimeter.
     Query Params:
-      - lat: float latitude (e.g. 12.12460)
-      - lng: float longitude (e.g. -86.27090)
+      - lat: float latitude (e.g. 12.1077)
+      - lng: float longitude (e.g. -86.2579)
       - lang: 'eng' | 'spa'
     """
     latRaw = request.args.get("lat")
@@ -241,8 +257,21 @@ def findNearestGpsNode():
     lang = _getPreferredLanguage()
     result = globalNavigationService.findNearestGpsNode(userLat, userLng, lang=lang)
 
+    isInside = result.get("isWithinCampus", True)
+    if not isInside:
+        return jsonify({
+            "success": False,
+            "outsideCampus": True,
+            "message": "Te encuentras fuera del campus de la UAM." if lang == "spa" else "You are outside the UAM campus.",
+            "language": lang,
+            "userCoordinates": {"lat": userLat, "lng": userLng},
+            "suggestedFallbackNode": "mainParking",
+            "nearest": result,
+        }), 200
+
     return jsonify({
         "success": True,
+        "outsideCampus": False,
         "language": lang,
         "userCoordinates": {"lat": userLat, "lng": userLng},
         "nearest": result,

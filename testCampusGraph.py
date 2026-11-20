@@ -11,7 +11,7 @@ import sys
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-from grafoUam import globalNavigationService, CampusCategory, CATEGORY_METADATA, t
+from grafoUam import globalNavigationService, CampusCategory, CATEGORY_METADATA, CampusGeoUtils, t
 
 def runGraphTestSuite():
     print("=" * 80)
@@ -82,18 +82,62 @@ def runGraphTestSuite():
         if len(places) > 3:
             print(f"     ... and {len(places) - 3} more.")
 
-    # 4. GPS Nearest Node Test (Haversine)
+    # 4. GPS Nearest Node Test (Haversine & Real UAM Coordinates)
     print("\n[TEST 4] GPS Nearest Node Detection (Haversine):")
-    # Coordinates near Building B
-    userLat, userLng = 12.12460, -86.27090
+    # Coordinates near Building B (12.10773, -86.25793)
+    userLat, userLng = 12.10775, -86.25790
     nearestEng = globalNavigationService.findNearestGpsNode(userLat, userLng, lang="eng")
     nearestSpa = globalNavigationService.findNearestGpsNode(userLat, userLng, lang="spa")
     print(f"  User GPS: ({userLat}, {userLng})")
     print(f"  ✓ Nearest Node (English): {nearestEng['nearestNodeId']} ({nearestEng['nodeName']}) - {nearestEng['distanceMeters']}m away")
     print(f"  ✓ Nearest Node (Spanish): {nearestSpa['nearestNodeId']} ({nearestSpa['nodeName']}) - {nearestSpa['distanceMeters']}m away")
+    print(f"  ✓ Inside Campus: {nearestEng.get('isWithinCampus')}")
+    assert nearestEng["isWithinCampus"] is True, "Test 4 Failed: Expected coordinate to be inside campus."
+
+    # 5. UAM Campus Perimeter Polygon & Out-of-Bounds Verification (Ray-Casting)
+    print("\n[TEST 5] Campus Perimeter Polygon & Boundary Verification:")
+    perimeter = CampusGeoUtils.getCampusPerimeter()
+    print(f"  • Registered Perimeter Vertices ({len(perimeter)} points):")
+    for idx, pt in enumerate(perimeter, 1):
+        print(f"     {idx}. Lat: {pt['lat']:.6f}, Lng: {pt['lng']:.6f}")
+    assert len(perimeter) == 8, "Test 5 Failed: Expected 8 perimeter vertices."
+
+    # Point A: Inside campus (Building K / Central Cafeteria)
+    inLat, inLng = 12.10746, -86.25810
+    insideResult = CampusGeoUtils.isWithinCampusPerimeter(inLat, inLng)
+    print(f"  ✓ Test Point A (Inside Cafeteria {inLat}, {inLng}): isInside={insideResult}")
+    assert insideResult is True, "Test 5 Failed: Expected Building K to be inside perimeter."
+
+    # Point B: Outside campus (Downtown Managua / Rotonda Metrocentro)
+    outLat, outLng = 12.12700, -86.26500
+    outsideResult = CampusGeoUtils.isWithinCampusPerimeter(outLat, outLng)
+    print(f"  ✓ Test Point B (Outside Metrocentro {outLat}, {outLng}): isInside={outsideResult}")
+    assert outsideResult is False, "Test 5 Failed: Expected Metrocentro to be outside perimeter."
+
+    # Point C: Far outside campus (Tipitapa / Airport)
+    farLat, farLng = 12.14000, -86.17000
+    farResult = CampusGeoUtils.isWithinCampusPerimeter(farLat, farLng)
+    print(f"  ✓ Test Point C (Far Outside {farLat}, {farLng}): isInside={farResult}")
+    assert farResult is False, "Test 5 Failed: Expected far location to be outside perimeter."
+
+    # Point D: Buffer tolerance check (12 meters outside south entrance)
+    p8Lat, p8Lng = perimeter[7]["lat"], perimeter[7]["lng"]
+    nearEdgeLat, nearEdgeLng = p8Lat - 0.00010, p8Lng - 0.00005
+    distToEdge = min(
+        CampusGeoUtils.pointToSegmentDistanceMeters(
+            nearEdgeLat, nearEdgeLng,
+            perimeter[i]["lat"], perimeter[i]["lng"],
+            perimeter[(i + 1) % len(perimeter)]["lat"], perimeter[(i + 1) % len(perimeter)]["lng"]
+        )
+        for i in range(len(perimeter))
+    )
+    strictCheck = CampusGeoUtils.isWithinCampusPerimeter(nearEdgeLat, nearEdgeLng, bufferMeters=0.0)
+    bufferedCheck = CampusGeoUtils.isWithinCampusPerimeter(nearEdgeLat, nearEdgeLng, bufferMeters=25.0)
+    print(f"  ✓ Test Point D (Near South Boundary: {distToEdge:.1f}m off): strict={strictCheck}, with 25m buffer={bufferedCheck}")
+    assert strictCheck is False and bufferedCheck is True, "Test 5 Failed: Buffer tolerance logic discrepancy."
 
     print("\n" + "=" * 80)
-    print("  ALL GRAPH TESTS COMPLETED SUCCESSFULLY! READY FOR FLASK / UI CONSUMPTION.")
+    print("  ALL GRAPH & PERIMETER TESTS COMPLETED SUCCESSFULLY! READY FOR FLASK / UI CONSUMPTION.")
     print("=" * 80)
 
 if __name__ == "__main__":

@@ -23,6 +23,7 @@
     "where_am_i": "¿Dónde te encuentras?",
     "where_am_i_placeholder": "Usa GPS, escanea un QR o selecciona un punto...",
     "use_gps": "Usar mi ubicación actual",
+    "outside_campus": "Te encuentras fuera del campus de la UAM. Se ha establecido la entrada principal como punto de partida.",
     "where_to_go": "¿A dónde quieres ir?",
     "where_to_go_placeholder": "Escribe un aula, baño, laboratorio, facultad o servicio...",
     "calculate_route": "Calcular Ruta Óptima",

@@ -884,7 +884,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 try {
                     const res = await fetch(`/api/map/nearest-gps?lat=${latitude}&lng=${longitude}&lang=${lang}`);
                     const data = await res.json();
-                    if (data.success && data.nearest && data.nearest.nodeName) {
+                    if (data.outsideCampus) {
+                        alert(window.t('map.outside_campus', 'Te encuentras fuera del campus de la UAM. Se ha establecido la entrada principal como punto de partida.'));
+                        originInput.value = "Parqueo Principal (Caseta Sur)";
+                        state.originNodeId = "mainParking";
+                        state.originQuery = "Parqueo Principal (Caseta Sur)";
+                        btnClearOrigin.classList.remove("hidden");
+                    } else if (data.success && data.nearest && data.nearest.nodeName) {
                         originInput.value = data.nearest.nodeName;
                         state.originQuery = data.nearest.nodeName;
                         state.originNodeId = data.nearest.nearestNodeId;
@@ -894,6 +900,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         originInput.value = "Parqueo Principal";
                         state.originNodeId = "mainParking";
                         state.originQuery = "Parqueo Principal";
+                        btnClearOrigin.classList.remove("hidden");
                     }
                 } catch (e) {
                     originInput.value = "Parqueo Principal";
