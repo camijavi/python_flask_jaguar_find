@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio A • Atención al Estudiante",
             badgeClass: "badge-purple",
             badgeBg: "#6b21a8",
-            anchor: { x: 255, y: 545 },
+            anchor: { x: 252, y: 459 },
             floors: [
                 { floor: "Piso 1", rooms: "Contabilidad, CAE (Centro de Atención al Estudiante), Admisiones, Registro Académico, Cartera y Cobro, Finanzas, Cajeros Automáticos." },
                 { floor: "Piso 2", rooms: "Dirección Administrativa, Logística Académica, TIC (Tecnología de la Información), Mercadeo y Publicidad, Gestión del Talento y RRHH." },
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio B • Aulas & Farmacia",
             badgeClass: "badge-purple",
             badgeBg: "#6b21a8",
-            anchor: { x: 365, y: 585 },
+            anchor: { x: 390, y: 490 },
             floors: [
                 { floor: "Piso 1", rooms: "Módulo Comercial 1, Aulas B101 - B109, SS Hombres / Mujeres, Jaguar Shop." },
                 { floor: "Piso 2", rooms: "Aulas B201 - B210." }
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio C • Cómputo & Caja UAM",
             badgeClass: "badge-navy",
             badgeBg: "#1e3a8a",
-            anchor: { x: 365, y: 535 },
+            anchor: { x: 390, y: 427 },
             floors: [
                 { floor: "Piso 1", rooms: "Área de Lavado Uso Común, Auditorio C101, Aulas C102-C104, Caja UAM / Tesorería, Aula C106, Lab MAC C107, Lab Cómputo Acad-Erasmus, Auditorio C109." },
                 { floor: "Piso 2", rooms: "Laboratorios de Computación C201-C205, Laboratorio MAC C203, SS Hombres / Mujeres, Aulas C209-C211." },
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio D • Odontología Digital",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 320, y: 435 },
+            anchor: { x: 351, y: 335 },
             floors: [
                 { floor: "Piso 1", rooms: "Aula D102, Laboratorio de Odontología Digital CAM-CAM, Oficina de Servicio al Cliente, Sala de Reunión." }
             ]
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio E • Facultad de Medicina",
             badgeClass: "badge-navy",
             badgeBg: "#1e3a8a",
-            anchor: { x: 444, y: 665 },
+            anchor: { x: 458, y: 620 },
             floors: [
                 { floor: "Piso 1", rooms: "Clínica Médica & Atención al Adolescente, SS Hombres / Mujeres, Centro de Diagnóstico, Decanatura de Medicina, Oficinas de Médicos Especialistas." }
             ]
@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio F • FACEE (Ciencias Económicas)",
             badgeClass: "badge-magenta",
             badgeBg: "#be185d",
-            anchor: { x: 490, y: 685 },
+            anchor: { x: 517, y: 628 },
             floors: [
                 { floor: "Piso 1", rooms: "Salón de Profesores FACEE, Dirección de Postgrado y Formación Continua, Decanatura FACEE, Aulas F101-F104." }
             ]
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio G • Derecho & Auditorio",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 490, y: 630 },
+            anchor: { x: 517, y: 558 },
             floors: [
                 { floor: "Piso 1", rooms: "Decanatura FCJ, Centro de Mediación, Language Center, UAM College, Dirección de Relaciones Internacionales." },
                 { floor: "Piso 2", rooms: "Auditorio Central Rubén Darío, Sala de Juicios Orales Simulados." }
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio H • Laboratorios de Medicina",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 490, y: 475 },
+            anchor: { x: 572, y: 383 },
             floors: [
                 { floor: "Piso 1", rooms: "SS Hombres / Mujeres, Laboratorios Multidisciplinarios H101-H103, Coordinación de Laboratorios, Oficina de Sustancias Químicas, Laboratorios H105-H107." },
                 { floor: "Piso 2", rooms: "Laboratorio de Anatomía H201-H207, Quirófano de Práctica, Depósito de Reactivos." }
@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio I • Rectoría & Biblioteca Central",
             badgeClass: "badge-navy",
             badgeBg: "#1e3a8a",
-            anchor: { x: 645, y: 675 },
+            anchor: { x: 635, y: 715 },
             floors: [
                 { floor: "Piso 1", rooms: "SS Hombres / Mujeres, Vicepresidencia, Sala de Reunión de Consejo, Dirección Académica, Rectoría, Gerencia General, Secretaría General, Biblioteca Central UAM, Dirección de RR.PP." }
             ]
@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio J • Laboratorios Odontología",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 272, y: 435 },
+            anchor: { x: 297, y: 332 },
             floors: [
                 { floor: "Piso 1", rooms: "Laboratorio de Simulación y Práctica Preclínica Odontológica J101-J102, Depósito de Instrumental, SS Hombres / Mujeres." }
             ]
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio K • Cafetería Central & Terrazas",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 290, y: 635 },
+            anchor: { x: 285, y: 582 },
             floors: [
                 { floor: "Piso 1", rooms: "Comedor Estudiantil Central, Kioscos Gourmet, Terrazas Techadas, Cajeros Automáticos Banpro / BAC." }
             ]
@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio L • Cultura & Graderías",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 795, y: 680 },
+            anchor: { x: 842, y: 502 },
             floors: [
                 { floor: "Piso 1", rooms: "Sala de Ensayo Musical y Danza, Auditorio Jaguar, Acceso a Graderías del Complejo Deportivo, Oficinas de Deportes." }
             ]
@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio M • Aulas & Postgrados",
             badgeClass: "badge-teal",
             badgeBg: "#0f766e",
-            anchor: { x: 490, y: 535 },
+            anchor: { x: 567, y: 460 },
             floors: [
                 { floor: "Piso 1", rooms: "Aulas de Grado M101 - M108, Coordinación de Maestrías y Especialidades." },
                 { floor: "Piso 2", rooms: "Aulas Ejecutivas M201 - M208, Sala de Coworking para Investigadores." }
@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio N • Clínicas Odontológicas",
             badgeClass: "badge-magenta",
             badgeBg: "#be185d",
-            anchor: { x: 322, y: 375 },
+            anchor: { x: 350, y: 262 },
             floors: [
                 { floor: "Piso 1", rooms: "Recepción de Pacientes, Módulo de Triaje, Clínicas Odontológicas Integrales, Quirófano Ambulatorio, Central de Esterilización." }
             ]
@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio O • Facultad de Ingeniería (FIA)",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 490, y: 250 },
+            anchor: { x: 510, y: 200 },
             floors: [
                 { floor: "Piso 1", rooms: "Decanatura FIA, Laboratorio de Resistencia de Materiales y Suelos, Taller de Maquetería y Diseño Arquitectónico." },
                 { floor: "Piso 2", rooms: "Aulas de Ingeniería O201 - O208, Salas de Cómputo CAD / BIM." }
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio P • Copérnico & Observatorio",
             badgeClass: "badge-maroon",
             badgeBg: "#881337",
-            anchor: { x: 315, y: 220 },
+            anchor: { x: 360, y: 104 },
             floors: [
                 { floor: "Piso 1", rooms: "Aulas P101 - P106, Observatorio Meteorológico UAM, Laboratorio de Física Experimental y Astronomía." }
             ]
@@ -238,7 +238,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Entrada Principal & Parqueo Sur",
             badgeClass: "badge-navy",
             badgeBg: "#0f172a",
-            anchor: { x: 340, y: 770 },
+            anchor: { x: 340, y: 800 },
             floors: [
                 { floor: "Exterior", rooms: "Caseta de Seguridad Sur, Bahías de Parqueo Estudiantil y Docente, Rampa Peatonal Principal hacia Edificio K." }
             ]
@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Plaza Chilamates (Kioskos & Fast Food)",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 200, y: 465 },
+            anchor: { x: 225, y: 332 },
             floors: [
                 { floor: "Plaza", rooms: "Kioskos de Comida Rápida, Puntos de Café, Mesas al Aire Libre, Espacio de Recreación Estudiantil." }
             ]
@@ -260,7 +260,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Canchas Deportivas (Béisbol & Fútbol)",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 740, y: 370 },
+            anchor: { x: 762, y: 357 },
             floors: [
                 { floor: "Campo Abierto", rooms: "Estadio Oficial de Béisbol con Diamante de Tierra, Cancha de Fútbol Reglamentaria de Grama, Pista y Acceso a Camerinos." }
             ]
@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Jaguar Center (Gimnasio & Complejo Deportivo)",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 745, y: 755 },
+            anchor: { x: 735, y: 510 },
             floors: [
                 { floor: "Piso 1", rooms: "Gimnasio Universitario Jaguar Gym, Canchas Techadas de Baloncesto / Voleibol, Graderías Principales, Área de Fisioterapia." }
             ]
@@ -282,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Acceso Norte (Copérnico / FIA)",
             badgeClass: "badge-navy",
             badgeBg: "#64748b",
-            anchor: { x: 320, y: 160 },
+            anchor: { x: 340, y: 60 },
             floors: [
                 { floor: "Acceso", rooms: "Caseta de Vigilancia Norte, Acceso Vehicular Segundo Camino hacia Edificios P y O." }
             ]
@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Acceso Noreste (Deportes)",
             badgeClass: "badge-navy",
             badgeBg: "#64748b",
-            anchor: { x: 720, y: 150 },
+            anchor: { x: 720, y: 60 },
             floors: [
                 { floor: "Acceso", rooms: "Portón de Ingreso a Complejo Deportivo y Parqueo de Deportes." }
             ]
