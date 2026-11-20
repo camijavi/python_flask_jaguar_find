@@ -31,12 +31,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const routePolyline = document.getElementById("route2dPolyline");
     const routeGlowPolyline = document.getElementById("route2dGlowPolyline");
+    const routeShadowPolyline = document.getElementById("route2dShadowPolyline");
     const originPinGroup = document.getElementById("origin2dPin");
     const destPinGroup = document.getElementById("destination2dPin");
 
     const btnZoomIn = document.getElementById("btnMapZoomIn");
     const btnZoomOut = document.getElementById("btnMapZoomOut");
     const btnResetView = document.getElementById("btnMapResetView");
+    const compassWidget = document.getElementById("campusCompass");
 
     const dirSearchInput = document.getElementById("directorySearchInput");
     const dirList = document.getElementById("directoryList");
@@ -52,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio A • Atención al Estudiante",
             badgeClass: "badge-purple",
             badgeBg: "#6b21a8",
-            anchor: { x: 255, y: 545 },
+            anchor: { x: 252, y: 459 },
             floors: [
                 { floor: "Piso 1", rooms: "Contabilidad, CAE (Centro de Atención al Estudiante), Admisiones, Registro Académico, Cartera y Cobro, Finanzas, Cajeros Automáticos." },
                 { floor: "Piso 2", rooms: "Dirección Administrativa, Logística Académica, TIC (Tecnología de la Información), Mercadeo y Publicidad, Gestión del Talento y RRHH." },
@@ -65,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio B • Aulas & Farmacia",
             badgeClass: "badge-purple",
             badgeBg: "#6b21a8",
-            anchor: { x: 365, y: 585 },
+            anchor: { x: 390, y: 490 },
             floors: [
                 { floor: "Piso 1", rooms: "Módulo Comercial 1, Aulas B101 - B109, SS Hombres / Mujeres, Jaguar Shop." },
                 { floor: "Piso 2", rooms: "Aulas B201 - B210." }
@@ -77,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio C • Cómputo & Caja UAM",
             badgeClass: "badge-navy",
             badgeBg: "#1e3a8a",
-            anchor: { x: 365, y: 535 },
+            anchor: { x: 390, y: 427 },
             floors: [
                 { floor: "Piso 1", rooms: "Área de Lavado Uso Común, Auditorio C101, Aulas C102-C104, Caja UAM / Tesorería, Aula C106, Lab MAC C107, Lab Cómputo Acad-Erasmus, Auditorio C109." },
                 { floor: "Piso 2", rooms: "Laboratorios de Computación C201-C205, Laboratorio MAC C203, SS Hombres / Mujeres, Aulas C209-C211." },
@@ -90,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio D • Odontología Digital",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 320, y: 435 },
+            anchor: { x: 351, y: 335 },
             floors: [
                 { floor: "Piso 1", rooms: "Aula D102, Laboratorio de Odontología Digital CAM-CAM, Oficina de Servicio al Cliente, Sala de Reunión." }
             ]
@@ -101,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio E • Facultad de Medicina",
             badgeClass: "badge-navy",
             badgeBg: "#1e3a8a",
-            anchor: { x: 444, y: 665 },
+            anchor: { x: 458, y: 620 },
             floors: [
                 { floor: "Piso 1", rooms: "Clínica Médica & Atención al Adolescente, SS Hombres / Mujeres, Centro de Diagnóstico, Decanatura de Medicina, Oficinas de Médicos Especialistas." }
             ]
@@ -112,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio F • FACEE (Ciencias Económicas)",
             badgeClass: "badge-magenta",
             badgeBg: "#be185d",
-            anchor: { x: 490, y: 685 },
+            anchor: { x: 517, y: 628 },
             floors: [
                 { floor: "Piso 1", rooms: "Salón de Profesores FACEE, Dirección de Postgrado y Formación Continua, Decanatura FACEE, Aulas F101-F104." }
             ]
@@ -123,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio G • Derecho & Auditorio",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 490, y: 630 },
+            anchor: { x: 517, y: 558 },
             floors: [
                 { floor: "Piso 1", rooms: "Decanatura FCJ, Centro de Mediación, Language Center, UAM College, Dirección de Relaciones Internacionales." },
                 { floor: "Piso 2", rooms: "Auditorio Central Rubén Darío, Sala de Juicios Orales Simulados." }
@@ -135,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio H • Laboratorios de Medicina",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 490, y: 475 },
+            anchor: { x: 572, y: 383 },
             floors: [
                 { floor: "Piso 1", rooms: "SS Hombres / Mujeres, Laboratorios Multidisciplinarios H101-H103, Coordinación de Laboratorios, Oficina de Sustancias Químicas, Laboratorios H105-H107." },
                 { floor: "Piso 2", rooms: "Laboratorio de Anatomía H201-H207, Quirófano de Práctica, Depósito de Reactivos." }
@@ -147,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio I • Rectoría & Biblioteca Central",
             badgeClass: "badge-navy",
             badgeBg: "#1e3a8a",
-            anchor: { x: 645, y: 675 },
+            anchor: { x: 635, y: 715 },
             floors: [
                 { floor: "Piso 1", rooms: "SS Hombres / Mujeres, Vicepresidencia, Sala de Reunión de Consejo, Dirección Académica, Rectoría, Gerencia General, Secretaría General, Biblioteca Central UAM, Dirección de RR.PP." }
             ]
@@ -158,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio J • Laboratorios Odontología",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 272, y: 435 },
+            anchor: { x: 297, y: 332 },
             floors: [
                 { floor: "Piso 1", rooms: "Laboratorio de Simulación y Práctica Preclínica Odontológica J101-J102, Depósito de Instrumental, SS Hombres / Mujeres." }
             ]
@@ -169,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio K • Cafetería Central & Terrazas",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 290, y: 635 },
+            anchor: { x: 285, y: 582 },
             floors: [
                 { floor: "Piso 1", rooms: "Comedor Estudiantil Central, Kioscos Gourmet, Terrazas Techadas, Cajeros Automáticos Banpro / BAC." }
             ]
@@ -180,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio L • Cultura & Graderías",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 795, y: 680 },
+            anchor: { x: 842, y: 502 },
             floors: [
                 { floor: "Piso 1", rooms: "Sala de Ensayo Musical y Danza, Auditorio Jaguar, Acceso a Graderías del Complejo Deportivo, Oficinas de Deportes." }
             ]
@@ -191,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio M • Aulas & Postgrados",
             badgeClass: "badge-teal",
             badgeBg: "#0f766e",
-            anchor: { x: 490, y: 535 },
+            anchor: { x: 567, y: 460 },
             floors: [
                 { floor: "Piso 1", rooms: "Aulas de Grado M101 - M108, Coordinación de Maestrías y Especialidades." },
                 { floor: "Piso 2", rooms: "Aulas Ejecutivas M201 - M208, Sala de Coworking para Investigadores." }
@@ -203,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio N • Clínicas Odontológicas",
             badgeClass: "badge-magenta",
             badgeBg: "#be185d",
-            anchor: { x: 322, y: 375 },
+            anchor: { x: 350, y: 262 },
             floors: [
                 { floor: "Piso 1", rooms: "Recepción de Pacientes, Módulo de Triaje, Clínicas Odontológicas Integrales, Quirófano Ambulatorio, Central de Esterilización." }
             ]
@@ -214,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio O • Facultad de Ingeniería (FIA)",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 490, y: 250 },
+            anchor: { x: 510, y: 200 },
             floors: [
                 { floor: "Piso 1", rooms: "Decanatura FIA, Laboratorio de Resistencia de Materiales y Suelos, Taller de Maquetería y Diseño Arquitectónico." },
                 { floor: "Piso 2", rooms: "Aulas de Ingeniería O201 - O208, Salas de Cómputo CAD / BIM." }
@@ -226,7 +228,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio P • Copérnico & Observatorio",
             badgeClass: "badge-maroon",
             badgeBg: "#881337",
-            anchor: { x: 315, y: 220 },
+            anchor: { x: 360, y: 104 },
             floors: [
                 { floor: "Piso 1", rooms: "Aulas P101 - P106, Observatorio Meteorológico UAM, Laboratorio de Física Experimental y Astronomía." }
             ]
@@ -237,7 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Entrada Principal & Parqueo Sur",
             badgeClass: "badge-navy",
             badgeBg: "#0f172a",
-            anchor: { x: 340, y: 770 },
+            anchor: { x: 340, y: 800 },
             floors: [
                 { floor: "Exterior", rooms: "Caseta de Seguridad Sur, Bahías de Parqueo Estudiantil y Docente, Rampa Peatonal Principal hacia Edificio K." }
             ]
@@ -248,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Plaza Chilamates (Kioskos & Fast Food)",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 200, y: 465 },
+            anchor: { x: 225, y: 332 },
             floors: [
                 { floor: "Plaza", rooms: "Kioskos de Comida Rápida, Puntos de Café, Mesas al Aire Libre, Espacio de Recreación Estudiantil." }
             ]
@@ -259,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Canchas Deportivas (Béisbol & Fútbol)",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 740, y: 370 },
+            anchor: { x: 762, y: 357 },
             floors: [
                 { floor: "Campo Abierto", rooms: "Estadio Oficial de Béisbol con Diamante de Tierra, Cancha de Fútbol Reglamentaria de Grama, Pista y Acceso a Camerinos." }
             ]
@@ -270,7 +272,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Jaguar Center (Gimnasio & Complejo Deportivo)",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 745, y: 755 },
+            anchor: { x: 735, y: 510 },
             floors: [
                 { floor: "Piso 1", rooms: "Gimnasio Universitario Jaguar Gym, Canchas Techadas de Baloncesto / Voleibol, Graderías Principales, Área de Fisioterapia." }
             ]
@@ -281,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Acceso Norte (Copérnico / FIA)",
             badgeClass: "badge-navy",
             badgeBg: "#64748b",
-            anchor: { x: 320, y: 160 },
+            anchor: { x: 340, y: 60 },
             floors: [
                 { floor: "Acceso", rooms: "Caseta de Vigilancia Norte, Acceso Vehicular Segundo Camino hacia Edificios P y O." }
             ]
@@ -292,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Acceso Noreste (Deportes)",
             badgeClass: "badge-navy",
             badgeBg: "#64748b",
-            anchor: { x: 720, y: 150 },
+            anchor: { x: 720, y: 60 },
             floors: [
                 { floor: "Acceso", rooms: "Portón de Ingreso a Complejo Deportivo y Parqueo de Deportes." }
             ]
@@ -302,82 +304,253 @@ document.addEventListener("DOMContentLoaded", function () {
     let activeSelectedBuilding = null;
 
     // ----------------------------------------------------------------------------
-    // 3. Pan & Zoom Canvas Controller
+    // 3. Pan, Zoom & Real Responsive Compass Canvas Controller
     // ----------------------------------------------------------------------------
     let scale = 1;
     let translateX = 0;
     let translateY = 0;
+    let rotation = 0; // View rotation angle in degrees (0° = South Up)
     let isDragging = false;
+    let isRotating = false;
     let dragStartX = 0;
     let dragStartY = 0;
+    let rotateStartX = 0;
+    let rotateStartAngle = 0;
 
-    function applyTransform() {
-        svg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    // Multi-touch gestures (Pinch-to-zoom & Twist-to-rotate)
+    let isPinching = false;
+    let initialPinchDist = 0;
+    let initialPinchAngle = 0;
+    let initialPinchScale = 1;
+    let initialPinchRotation = 0;
+
+    /**
+     * Synchronizes compass needle & dial with current map orientation.
+     * Functions like a real physical magnetic compass: always keeps orientation
+     * pointing towards the map's South reference axis as user rotates view.
+     */
+    function updateCompass(deg, animate = false) {
+        const dial = document.getElementById("compassDial");
+        if (dial) {
+            dial.style.transition = animate ? "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
+            dial.style.transform = `rotate(${deg.toFixed(2)}deg)`;
+        } else if (compassWidget) {
+            const svgRose = compassWidget.querySelector("#compassRose");
+            if (svgRose) {
+                svgRose.style.transition = animate ? "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
+                svgRose.style.transform = `rotate(${deg.toFixed(2)}deg)`;
+            }
+        }
+    }
+
+    // Expose global helper so 2.5D perspective and route animations can also sync the compass
+    window.updateCampusCompass = updateCompass;
+
+    function applyTransform(animate = false) {
+        if (window.campus25dController && window.campus25dController.is25dActive) {
+            svg.style.transform = "none";
+            const c25d = window.campus25dController;
+            const headingDeg = c25d.isHeadingUp ? -(c25d.currentHeading || 0) : 0;
+            updateCompass(headingDeg, animate);
+            return;
+        }
+
+        svg.style.transition = animate ? "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
+        svg.style.transformOrigin = "600px 425px";
+        svg.style.transform = `translate(${translateX.toFixed(2)}px, ${translateY.toFixed(2)}px) scale(${scale.toFixed(3)}) rotate(${rotation.toFixed(2)}deg)`;
+        
+        // Compass rotates with the 2D view to remain locked onto map direction
+        updateCompass(rotation, animate);
     }
 
     if (btnZoomIn) {
         btnZoomIn.addEventListener("click", () => {
-            scale = Math.min(scale + 0.25, 2.5);
-            applyTransform();
+            if (window.campus25dController && window.campus25dController.is25dActive) {
+                window.campus25dController.zoomIn();
+                return;
+            }
+            scale = Math.min(scale + 0.25, 2.8);
+            applyTransform(true);
         });
     }
 
     if (btnZoomOut) {
         btnZoomOut.addEventListener("click", () => {
+            if (window.campus25dController && window.campus25dController.is25dActive) {
+                window.campus25dController.zoomOut();
+                return;
+            }
             scale = Math.max(scale - 0.25, 0.75);
-            applyTransform();
+            applyTransform(true);
         });
     }
 
     if (btnResetView) {
         btnResetView.addEventListener("click", () => {
+            if (window.campus25dController && window.campus25dController.is25dActive) {
+                window.campus25dController.zoomScale = 2.2;
+                window.campus25dController.heading = 0;
+                window.campus25dController.currentHeading = 0;
+                window.campus25dController.centerOnCampusLowerThird();
+                window.campus25dController.updateCompass(true);
+                return;
+            }
             scale = 1;
             translateX = 0;
             translateY = 0;
-            applyTransform();
+            rotation = 0;
+            applyTransform(true);
         });
+    }
+
+    // Interactive Compass Widget:
+    // - Click: Smoothly re-aligns view to default 0° (South-Up official orientation)
+    // - Drag: Allows dialing / twisting the compass directly to rotate the map
+    if (compassWidget) {
+        let isCompassDragging = false;
+        let compassCenter = { x: 0, y: 0 };
+        let hasCompassMoved = false;
+
+        compassWidget.addEventListener("pointerdown", (e) => {
+            e.stopPropagation();
+            const rect = compassWidget.getBoundingClientRect();
+            compassCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+            isCompassDragging = true;
+            hasCompassMoved = false;
+            try { compassWidget.setPointerCapture(e.pointerId); } catch (_) {}
+        });
+
+        compassWidget.addEventListener("pointermove", (e) => {
+            if (!isCompassDragging) return;
+            const dx = e.clientX - compassCenter.x;
+            const dy = e.clientY - compassCenter.y;
+            if (Math.hypot(dx, dy) > 6) {
+                hasCompassMoved = true;
+                // Compute angle relative to top (South = 0°)
+                let angleDeg = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+                while (angleDeg < 0) angleDeg += 360;
+                while (angleDeg >= 360) angleDeg -= 360;
+
+                if (window.campus25dController && window.campus25dController.is25dActive) {
+                    window.campus25dController.heading = -angleDeg;
+                    window.campus25dController.currentHeading = -angleDeg;
+                    window.campus25dController.applyTransform();
+                    window.campus25dController.updateCompass(false);
+                } else {
+                    rotation = angleDeg;
+                    applyTransform(false);
+                }
+            }
+        });
+
+        const handleCompassPointerUp = (e) => {
+            if (!isCompassDragging) return;
+            isCompassDragging = false;
+            try { compassWidget.releasePointerCapture(e.pointerId); } catch (_) {}
+
+            if (!hasCompassMoved) {
+                // User simply clicked the compass: smoothly reorient & center
+                if (window.campus25dController && window.campus25dController.is25dActive) {
+                    window.campus25dController.heading = 0;
+                    window.campus25dController.currentHeading = 0;
+                    window.campus25dController.applyTransform();
+                    window.campus25dController.updateCompass(true);
+                } else {
+                    if (Math.abs(rotation) > 0.5) {
+                        rotation = 0;
+                        applyTransform(true);
+                    } else {
+                        scale = 1;
+                        translateX = 0;
+                        translateY = 0;
+                        rotation = 0;
+                        applyTransform(true);
+                    }
+                }
+            }
+        };
+
+        compassWidget.addEventListener("pointerup", handleCompassPointerUp);
+        compassWidget.addEventListener("pointercancel", handleCompassPointerUp);
     }
 
     // Mouse wheel zoom
     wrapper.addEventListener("wheel", (e) => {
+        if (window.campus25dController && window.campus25dController.is25dActive) return;
         e.preventDefault();
         const delta = e.deltaY < 0 ? 0.15 : -0.15;
         scale = Math.max(0.75, Math.min(scale + delta, 2.8));
-        applyTransform();
+        applyTransform(false);
     }, { passive: false });
 
-    // Drag-to-pan handlers
+    // Desktop Mouse Drag handlers: Pan (left drag) and Rotate (Shift/Alt/Right drag)
     wrapper.addEventListener("mousedown", (e) => {
-        // Only start pan if clicking map background or empty space, not popover
-        if (e.target.closest("#bldgPopover") || e.target.closest("button")) return;
-        isDragging = true;
-        dragStartX = e.clientX - translateX;
-        dragStartY = e.clientY - translateY;
-        wrapper.classList.add("cursor-grabbing");
+        if (window.campus25dController && window.campus25dController.is25dActive) return;
+        if (e.target.closest("#bldgPopover") || e.target.closest("button") || e.target.closest("#campusCompass")) return;
+
+        if (e.shiftKey || e.altKey || e.button === 2) {
+            // View rotation mode
+            isRotating = true;
+            rotateStartX = e.clientX;
+            rotateStartAngle = rotation;
+            wrapper.classList.add("cursor-grabbing");
+        } else if (e.button === 0) {
+            // View pan mode
+            isDragging = true;
+            dragStartX = e.clientX - translateX;
+            dragStartY = e.clientY - translateY;
+            wrapper.classList.add("cursor-grabbing");
+        }
+    });
+
+    wrapper.addEventListener("contextmenu", (e) => {
+        if (isRotating || e.shiftKey || e.altKey) {
+            e.preventDefault();
+        }
     });
 
     window.addEventListener("mousemove", (e) => {
-        if (!isDragging) return;
-        translateX = e.clientX - dragStartX;
-        translateY = e.clientY - dragStartY;
-        applyTransform();
+        if (isRotating) {
+            const deltaX = e.clientX - rotateStartX;
+            rotation = (rotateStartAngle + deltaX * 0.45) % 360;
+            applyTransform(false);
+        } else if (isDragging) {
+            translateX = e.clientX - dragStartX;
+            translateY = e.clientY - dragStartY;
+            applyTransform(false);
+        }
     });
 
     window.addEventListener("mouseup", () => {
-        if (isDragging) {
+        if (isDragging || isRotating) {
             isDragging = false;
+            isRotating = false;
             wrapper.classList.remove("cursor-grabbing");
         }
     });
 
-    // Touch support for mobile pan
+    // Touch support for Mobile / Tablet (1 finger Pan, 2 fingers Pinch-Zoom + Twist-Rotate)
     let touchStartX = 0;
     let touchStartY = 0;
+
     wrapper.addEventListener("touchstart", (e) => {
-        if (e.touches.length === 1 && !e.target.closest("#bldgPopover")) {
+        if (window.campus25dController && window.campus25dController.is25dActive) return;
+        if (e.target.closest("#bldgPopover") || e.target.closest("button") || e.target.closest("#campusCompass")) return;
+
+        if (e.touches.length === 1) {
             isDragging = true;
+            isPinching = false;
             touchStartX = e.touches[0].clientX - translateX;
             touchStartY = e.touches[0].clientY - translateY;
+        } else if (e.touches.length === 2) {
+            isDragging = false;
+            isPinching = true;
+            const t1 = e.touches[0];
+            const t2 = e.touches[1];
+            initialPinchDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+            initialPinchAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180 / Math.PI;
+            initialPinchScale = scale;
+            initialPinchRotation = rotation;
         }
     }, { passive: true });
 
@@ -385,12 +558,33 @@ document.addEventListener("DOMContentLoaded", function () {
         if (isDragging && e.touches.length === 1) {
             translateX = e.touches[0].clientX - touchStartX;
             translateY = e.touches[0].clientY - touchStartY;
-            applyTransform();
+            applyTransform(false);
+        } else if (isPinching && e.touches.length === 2) {
+            const t1 = e.touches[0];
+            const t2 = e.touches[1];
+            const currentDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+            const currentAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180 / Math.PI;
+
+            if (initialPinchDist > 0) {
+                scale = Math.max(0.75, Math.min(initialPinchScale * (currentDist / initialPinchDist), 2.8));
+            }
+            const angleDiff = currentAngle - initialPinchAngle;
+            rotation = (initialPinchRotation + angleDiff) % 360;
+            applyTransform(false);
         }
     }, { passive: true });
 
-    wrapper.addEventListener("touchend", () => {
-        isDragging = false;
+    wrapper.addEventListener("touchend", (e) => {
+        if (e.touches.length === 0) {
+            isDragging = false;
+            isPinching = false;
+        } else if (e.touches.length === 1) {
+            // One finger lifted, smoothly transition back to panning
+            isPinching = false;
+            isDragging = true;
+            touchStartX = e.touches[0].clientX - translateX;
+            touchStartY = e.touches[0].clientY - translateY;
+        }
     });
 
     // ----------------------------------------------------------------------------
@@ -434,18 +628,30 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Position popover relative to SVG bounding box
-        const rect = svg.getBoundingClientRect();
-        const clientX = (anchorCoords.x / 1200) * rect.width;
-        const clientY = (anchorCoords.y / 850) * rect.height;
+        // Position popover relative to wrapper container
+        const wRect = wrapper.getBoundingClientRect();
+        let clientX, clientY;
+        if (bldgEl) {
+            const bRect = bldgEl.getBoundingClientRect();
+            clientX = bRect.left - wRect.left + (bRect.width / 2);
+            clientY = bRect.top - wRect.top;
+        } else {
+            const rect = svg.getBoundingClientRect();
+            clientX = (anchorCoords.x / 1200) * rect.width;
+            clientY = (anchorCoords.y / 850) * rect.height;
+        }
 
-        const maxLeft = rect.width - 290;
-        const maxTop = rect.height - 220;
+        const maxLeft = wRect.width - 290;
+        const maxTop = wRect.height - 220;
 
         bldgPopover.style.left = `${Math.max(12, Math.min(clientX - 100, maxLeft))}px`;
         bldgPopover.style.top = `${Math.max(12, Math.min(clientY - 160, maxTop))}px`;
         bldgPopover.classList.remove("hidden");
     }
+
+    // Expose globally for decoupled 2.5D HTML overlays
+    window.showBuildingPopover = showBuildingPopover;
+    window.CAMPUS_BUILDINGS = CAMPUS_BUILDINGS;
 
     if (btnClosePopover) {
         btnClosePopover.addEventListener("click", () => {
@@ -576,10 +782,11 @@ document.addEventListener("DOMContentLoaded", function () {
             return `${x},${y}`;
         }).join(" ");
 
+        if (routeShadowPolyline) routeShadowPolyline.setAttribute("points", points);
         if (routePolyline) routePolyline.setAttribute("points", points);
         if (routeGlowPolyline) routeGlowPolyline.setAttribute("points", points);
 
-        // Draw Origin Pin (Green Ring & Pulse)
+        // Draw Origin Pin (Ground Shadow + Upright 3D Billboard Pin)
         const startCoord = route.pathCoordinates[0];
         const startKnown = CAMPUS_BUILDINGS[startCoord.nodeId];
         const startX = startKnown ? startKnown.anchor.x : Math.round(((startCoord.xPercent || 50) / 100) * 1200);
@@ -587,14 +794,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (originPinGroup) {
             originPinGroup.innerHTML = `
-                <circle cx="${startX}" cy="${startY}" r="16" fill="#10b981" opacity="0.3" class="animate-ping" />
-                <circle cx="${startX}" cy="${startY}" r="9" fill="#10b981" stroke="#ffffff" stroke-width="2.5" filter="url(#bldgShadow)" />
-                <circle cx="${startX}" cy="${startY}" r="3" fill="#ffffff" />
+                <!-- Ground Contact Shadow -->
+                <ellipse cx="${startX}" cy="${startY + 2}" rx="13" ry="6" fill="#0f172a" opacity="0.4" />
+                <circle cx="${startX}" cy="${startY}" r="14" fill="#10b981" opacity="0.25" class="animate-ping" />
+                <!-- Upright 3D Origin Beacon (Billboarding) -->
+                <g class="billboard-pin">
+                    <line x1="${startX}" y1="${startY}" x2="${startX}" y2="${startY - 18}" stroke="#065f46" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="${startX}" cy="${startY - 18}" r="9" fill="#10b981" stroke="#ffffff" stroke-width="2.5" filter="url(#bldgShadow)" />
+                    <circle cx="${startX}" cy="${startY - 18}" r="3" fill="#ffffff" />
+                </g>
             `;
             originPinGroup.classList.remove("hidden");
         }
 
-        // Draw Destination Pin (Clean SVG Flag Pin, Zero Emoji)
+        // Draw Destination Pin (Ground Shadow + Upright 3D Billboard Flag)
         const endCoord = route.pathCoordinates[route.pathCoordinates.length - 1];
         const endKnown = CAMPUS_BUILDINGS[endCoord.nodeId];
         const endX = endKnown ? endKnown.anchor.x : Math.round(((endCoord.xPercent || 50) / 100) * 1200);
@@ -602,24 +815,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (destPinGroup) {
             destPinGroup.innerHTML = `
-                <circle cx="${endX}" cy="${endY}" r="18" fill="#ef4444" opacity="0.25" class="animate-ping" />
-                <circle cx="${endX}" cy="${endY}" r="9" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" filter="url(#bldgShadow)" />
-                <!-- Vector Flag (No Emoji) -->
-                <path d="M ${endX - 3} ${endY - 26} v 14 M ${endX - 3} ${endY - 26} l 10 5 l -10 5 z" fill="#ef4444" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round"/>
+                <!-- Ground Contact Shadow -->
+                <ellipse cx="${endX}" cy="${endY + 2}" rx="14" ry="7" fill="#0f172a" opacity="0.45" />
+                <circle cx="${endX}" cy="${endY}" r="16" fill="#ef4444" opacity="0.25" class="animate-ping" />
+                <!-- Upright 3D Destination Pin (Billboarding) -->
+                <g class="billboard-pin">
+                    <line x1="${endX}" y1="${endY}" x2="${endX}" y2="${endY - 24}" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="${endX}" cy="${endY - 24}" r="11" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" filter="url(#bldgShadow)"/>
+                    <circle cx="${endX}" cy="${endY - 24}" r="4" fill="#ffffff"/>
+                </g>
             `;
             destPinGroup.classList.remove("hidden");
         }
 
-        // Automatically center canvas between origin and destination
-        const midX = (startX + endX) / 2;
-        const midY = (startY + endY) / 2;
-        translateX = (600 - midX) * 0.5;
-        translateY = (425 - midY) * 0.5;
-        scale = 1.15;
-        applyTransform();
+        // Automatically center canvas between origin and destination (in 2D mode)
+        if (!window.campus25dController || !window.campus25dController.is25dActive) {
+            const midX = (startX + endX) / 2;
+            const midY = (startY + endY) / 2;
+            translateX = (600 - midX) * 0.5;
+            translateY = (425 - midY) * 0.5;
+            scale = 1.15;
+            applyTransform();
+        }
     });
 
     window.addEventListener("jaguarMapRouteCleared", function () {
+        if (routeShadowPolyline) routeShadowPolyline.setAttribute("points", "");
         if (routePolyline) routePolyline.setAttribute("points", "");
         if (routeGlowPolyline) routeGlowPolyline.setAttribute("points", "");
         if (originPinGroup) originPinGroup.classList.add("hidden");

@@ -1,0 +1,269 @@
+/**
+ * ================================================================================
+ * CAMPUS25DMAP.CSS - WAZE-STYLE 2.5D PERSPECTIVE & 3D NAVIGATION COCKPIT
+ * ================================================================================
+ * 1. Infinite Ground Bleed & Atmospheric Fog (Zero hard horizon edge)
+ * 2. Decoupled Upright HTML Overlays (Puck, Building Badges, Pins never skewed)
+ * 3. Layered 3D Building Extrusions (Zero-blur depth walls rise off walkways)
+ * 4. Waze Cockpit Framing (Top turn-by-turn banner, bottom trip summary bar,
+ *    user arrow locked at 70% lower-third)
+ * ================================================================================
+ */
+
+/* 1. Perspective Viewport Wrapper (Ground background #f3f5f8) */
+.campus-25d-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #f3f5f8;
+    perspective: 1000px;
+    perspective-origin: 50% 70%; /* Locked to user lower-third anchor (70% down) */
+}
+
+/* 2. 3D Map Transformable Stage (CSS 3D perspective plane strictly rotated around 50% 70%) */
+.campus-3d-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform-origin: 50% 70%; /* Exact pivot point of user navigation arrow */
+    transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.campus-3d-stage.no-transition {
+    transition: none !important;
+}
+
+/* In 2.5D mode, eliminate all clipping on wrapper, stage, and SVG canvas so vector ground bleeds infinitely */
+.campus-25d-active .campus-map-wrapper,
+.campus-25d-active .campus-3d-stage,
+.campus-25d-active .campus-svg-canvas {
+    overflow: visible !important;
+}
+
+/* 2.5D Interactive Cursor Styles (Google Maps-style free movement) */
+.campus-25d-active {
+    cursor: grab;
+}
+.campus-25d-active.cursor-grabbing,
+.campus-25d-active .campus-3d-stage.no-transition,
+.campus-25d-active .campus-svg-canvas:active {
+    cursor: grabbing !important;
+}
+
+/* 3. Subtle Horizon Sky/Fog Atmosphere (Disperses top perspective into seamless sky) */
+.campus-horizon-atmosphere {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48%;
+    background: linear-gradient(
+        to bottom,
+        #d6dfea 0%,
+        rgba(214, 223, 234, 0.96) 18%,
+        rgba(226, 233, 242, 0.82) 34%,
+        rgba(243, 245, 248, 0.45) 60%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.campus-25d-active .campus-horizon-atmosphere {
+    opacity: 1;
+}
+
+/* 4. Fake 3D Extrusion on Buildings (Layered Zero-Blur Drop Shadows create physical depth walls) */
+.campus-25d-active .bldg-shape {
+    filter: drop-shadow(0 3px 0 #183c48)
+            drop-shadow(0 6px 0 #122e38)
+            drop-shadow(0 10px 14px rgba(15, 23, 42, 0.45));
+    transition: filter 0.3s ease;
+}
+
+.campus-25d-active .bldg-shape:hover {
+    filter: drop-shadow(0 3px 0 #183c48)
+            drop-shadow(0 6px 0 #122e38)
+            drop-shadow(0 14px 22px rgba(15, 23, 42, 0.55)) brightness(1.08);
+}
+
+/* Hide SVG badges in 2.5D mode to prevent trapezoidal stretching (Decoupled HTML overlay takes over) */
+.campus-25d-active [class*="badge-"],
+.campus-25d-active .badge-text,
+.campus-25d-active #origin2dPin,
+.campus-25d-active #destination2dPin {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* ================================================================================
+ * 5. DECOUPLED UN-TILTED HTML OVERLAYS LAYER (PUCK, BADGES, PINS)
+ * ================================================================================
+ * Rendered in an un-tilted HTML layer above the canvas. Text and badges are
+ * 100% crisp, upright, retina-sharp, and never deformed into trapezoids.
+ */
+.campus-25d-overlay-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20;
+    overflow: hidden;
+}
+
+/* 5A. Waze-style 3D Elevated Navigation Arrow Puck */
+.waze-puck-container {
+    position: absolute;
+    left: 50%;
+    top: 70%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 25;
+}
+
+.waze-puck-shadow {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(2, 132, 199, 0.45) 0%, rgba(15, 23, 42, 0.25) 55%, transparent 75%);
+    transform: scaleY(0.45) translateY(20px);
+}
+
+.waze-puck-pulse {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #38bdf8;
+    animation: wazePulse 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+@keyframes wazePulse {
+    0% { transform: scale(0.6); opacity: 0.95; }
+    75% { transform: scale(2.4); opacity: 0; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+.waze-puck-cone {
+    position: absolute;
+    top: -32px;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(to top, rgba(2, 132, 199, 0.35) 0%, transparent 100%);
+    clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+    pointer-events: none;
+    transform-origin: 50% 100%;
+}
+
+.waze-puck-arrow {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(0 6px 12px rgba(2, 132, 199, 0.45));
+}
+
+/* 5B. Floating Upright Building Badges (Decoupled HTML Overlay - Letters Only) */
+.waze-bldg-badge {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), filter 0.15s ease;
+    user-select: none;
+    z-index: 10;
+}
+
+.waze-bldg-badge:hover {
+    transform: translate(-50%, -55%) scale(1.18);
+    z-index: 30;
+    filter: brightness(1.12);
+}
+
+.waze-bldg-letter {
+    min-width: 24px;
+    height: 24px;
+    padding: 0 4px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 11.5px;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(15, 23, 42, 0.28);
+}
+
+/* 5C. Floating 3D Pins */
+.waze-pin-dest {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    pointer-events: auto;
+    z-index: 20;
+    filter: drop-shadow(0 6px 12px rgba(239, 68, 68, 0.4));
+}
+
+.waze-pin-origin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    z-index: 20;
+}
+
+/* ================================================================================
+ * 6. WAZE NAVIGATION HUD: TOP TURN-BY-TURN & BOTTOM TRIP SUMMARY BARS
+ * ================================================================================
+ */
+.turn-by-turn-banner {
+    animation: slideDownBanner 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.waze-bottom-bar {
+    animation: slideUpBottomBar 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDownBanner {
+    from {
+        transform: translate(-50%, -36px);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpBottomBar {
+    from {
+        transform: translate(-50%, 48px);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+/* Mode pill button transitions */
+.mode-pill-btn {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mode-pill-btn.active {
+    background-color: #0284c7;
+    color: #ffffff;
+    box-shadow: 0 2px 6px -1px rgba(2, 132, 199, 0.4);
+}

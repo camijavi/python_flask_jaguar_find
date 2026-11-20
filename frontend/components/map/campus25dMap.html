@@ -1,0 +1,124 @@
+<!--
+===============================================================================
+CAMPUS 2.5D PERSPECTIVE VIEW COMPONENT (CAMPUS25DMAP.HTML)
+===============================================================================
+Waze-Style 3D Navigation HUD & Cockpit Controls:
+1. Top Turn-by-Turn Instruction Banner (Maneuver badge, distance, instruction)
+2. Bottom Trip Summary Bar (ETA, remaining distance, Re-center, Overview, Step controls)
+3. 2D / 2.5D Mode Pill with Pitch (45°/52°) & Heading-Up orientation toggles
+===============================================================================
+-->
+
+<!-- 1. Floating 2.5D Mode & Perspective Control Pill (Top-Left) -->
+<div id="campus25dModeControls" class="absolute top-4 left-4 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1 rounded-xl border border-slate-200/90 shadow-md">
+    
+    <!-- 2D / 2.5D Segmented Switcher -->
+    <div class="flex items-center bg-slate-100 p-0.5 rounded-lg text-xs font-bold text-slate-700">
+        <button id="btnMode2d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-md active transition-all" title="Vista estándar 2D (Plano Cenital)">
+            2D
+        </button>
+        <button id="btnMode25d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900 transition-all" title="Vista 2.5D Perspectiva (Inclinación 3D Waze)">
+            2.5D
+        </button>
+    </div>
+
+    <!-- Pitch / Tilt Angle Selector (Visible in 2.5D Mode) -->
+    <div id="pitchControlGroup" class="hidden items-center border-l border-slate-200 pl-1.5 pr-0.5 gap-1">
+        <button id="btnPitch45" type="button" class="px-2 py-1 rounded-md text-[11px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors" title="Inclinación 45° (Vista aérea oblicua)">
+            45°
+        </button>
+        <button id="btnPitch52" type="button" class="px-2 py-1 rounded-md text-[11px] font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors" title="Inclinación 52° (Perspectiva Waze inmersiva)">
+            52°
+        </button>
+    </div>
+
+    <!-- Heading Mode Toggle (Heading-Up vs North-Up) -->
+    <div id="headingControlGroup" class="hidden items-center border-l border-slate-200 pl-1.5">
+        <button id="btnToggleHeadingUp" type="button" class="p-1 rounded-md text-slate-600 hover:bg-slate-100 hover:text-brand-600 transition-colors flex items-center gap-1 text-[11px] font-bold" title="Alternar modo de orientación: Rumbo al frente (Heading-Up) o Norte fijo (North-Up)">
+            <svg id="iconHeadingMode" class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <polygon points="12 2 19 21 12 17 5 21 12 2" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            <span id="labelHeadingMode" class="hidden sm:inline">Rumbo</span>
+        </button>
+    </div>
+
+</div>
+
+<!-- 2. Waze Top Turn-by-Turn Instruction Banner (Anchors Top Center) -->
+<div id="turnByTurnBanner" class="turn-by-turn-banner waze-top-banner hidden absolute top-3 left-1/2 -translate-x-1/2 z-30 w-[94%] max-w-lg bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-xl p-3.5 pointer-events-auto">
+    <div class="flex items-start gap-3.5">
+        <!-- Turn Direction Maneuver Badge -->
+        <div id="tbtManeuverBadge" class="w-12 h-12 rounded-2xl bg-brand-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-brand-600/30">
+            <svg id="tbtManeuverIcon" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-5 5m5-5l5 5"/>
+            </svg>
+        </div>
+
+        <!-- Step Instructions & Counter -->
+        <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-1 text-[11px] text-slate-500 font-semibold mb-0.5">
+                <span id="tbtStepCounter">Paso 1 de 1</span>
+                <span id="tbtStepDistance" class="font-extrabold text-brand-700 text-sm">65 m</span>
+            </div>
+            <p id="tbtStepInstruction" class="text-xs sm:text-sm font-bold text-slate-900 leading-snug line-clamp-2">
+                Inicia tu recorrido hacia el destino.
+            </p>
+            <div id="tbtNextPreview" class="text-[11px] text-slate-500 font-medium truncate mt-0.5 hidden">
+                Luego continúa recto
+            </div>
+        </div>
+
+        <!-- Close / Exit 2.5D Turn-by-Turn Banner -->
+        <button id="btnCloseTbtBanner" type="button" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0" title="Cerrar banner de navegación">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<!-- 3. Waze Bottom Trip Summary Bar (Anchors Bottom Center in 2.5D Mode) -->
+<div id="wazeBottomBar" class="waze-bottom-bar hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 w-[94%] max-w-lg bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-2xl p-3 sm:p-3.5 pointer-events-auto">
+    <div class="flex items-center justify-between gap-3">
+        <!-- Trip ETA & Progress Info -->
+        <div class="flex-1 min-w-0">
+            <div class="flex items-baseline gap-2">
+                <span id="wazeEtaTime" class="text-xl sm:text-2xl font-black text-emerald-600 tracking-tight leading-none">3 min</span>
+                <span id="wazeTripMeta" class="text-xs text-slate-500 font-bold truncate">145 m • Llegada aprox. 12:48 PM</span>
+            </div>
+            <!-- Progress Line -->
+            <div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
+                <div id="wazeProgressBar" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 25%"></div>
+            </div>
+        </div>
+
+        <!-- Cockpit Quick Actions: Re-center, Overview & Simulation Controls -->
+        <div class="flex items-center gap-1.5 shrink-0">
+            <!-- Re-center Camera on User Puck -->
+            <button id="btnWazeRecenter" type="button" class="py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors" title="Re-centrar en el cursor de navegación">
+                <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="8" stroke-width="2"></circle>
+                    <line x1="12" y1="2" x2="12" y2="6" stroke-width="2"></line>
+                    <line x1="12" y1="18" x2="12" y2="22" stroke-width="2"></line>
+                    <line x1="2" y1="12" x2="6" y2="12" stroke-width="2"></line>
+                    <line x1="18" y1="12" x2="22" y2="12" stroke-width="2"></line>
+                </svg>
+                <span class="hidden sm:inline">Centrar</span>
+            </button>
+
+            <!-- Overview Toggle (Follow mode vs Full-route Overview) -->
+            <button id="btnWazeOverview" type="button" class="py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors" title="Vista General del Campus">
+                <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                </svg>
+                <span class="hidden sm:inline">General</span>
+            </button>
+
+            <!-- Simulation Step Control -->
+            <button id="btnTbtPlaySimulation" type="button" class="py-1.5 px-2.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold text-xs flex items-center gap-1 transition-colors" title="Reproducir simulación paso a paso">
+                <svg id="iconSimPlay" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span id="labelSimPlay" class="hidden sm:inline">Simular</span>
+            </button>
+        </div>
+    </div>
+</div>
