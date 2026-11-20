@@ -28,11 +28,24 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             </div>
         </div>
 
-        <!-- Reset Button -->
-        <button id="btnResetNavigation" type="button" class="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-rose-600 font-medium px-2 py-1 rounded transition-colors hidden" title="{{ t('map.clear_route', default='Clear Route') }}">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            <span>{{ t('map.clear_route', default='Clear') }}</span>
-        </button>
+        <!-- Action Buttons (Reset & Close Sidebar) -->
+        <div class="flex items-center gap-1.5">
+            <!-- Reset Button -->
+            <button id="btnResetNavigation" type="button" class="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-rose-600 font-medium px-2 py-1 rounded transition-colors hidden" title="{{ t('map.clear_route', default='Clear Route') }}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <span>{{ t('map.clear_route', default='Clear') }}</span>
+            </button>
+
+            <!-- Close Sidebar Menu Button -->
+            <button id="btnCloseNavigateSidebar" type="button" 
+                    class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" 
+                    title="{{ t('nav.close_menu', default='Cerrar menú lateral') }}" 
+                    aria-label="{{ t('nav.close_menu', default='Cerrar menú lateral') }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <!-- FORM INPUTS CONTAINER -->
@@ -759,6 +772,157 @@ document.addEventListener("DOMContentLoaded", function() {
 
         window.dispatchEvent(new CustomEvent("jaguarMapRouteCleared"));
     });
+
+    // ------------------------------------------------------------------------
+    // 12. SIDEBAR MENU CONTROLLER (Show / Hide navigateMap as a Sidebar Menu)
+    // ------------------------------------------------------------------------
+    const btnCloseSidebar = document.getElementById("btnCloseNavigateSidebar");
+    const navComponent = document.getElementById("navigateMapComponent");
+
+    window.toggleNavigateMapSidebar = function(forceState) {
+        const sidebarCol = document.getElementById("mapSidebarColumn");
+        const mapCol = document.getElementById("mapContainerColumn");
+        const backdrop = document.getElementById("sidebarBackdrop");
+        const isMobile = window.innerWidth < 1024; // Tailwind lg breakpoint
+
+        // Check if currently visible
+        let isVisible = false;
+        if (sidebarCol) {
+            if (isMobile) {
+                isVisible = !sidebarCol.classList.contains("-translate-x-full");
+            } else {
+                isVisible = !sidebarCol.classList.contains("lg:hidden");
+            }
+        } else if (navComponent) {
+            isVisible = !navComponent.classList.contains("hidden");
+        }
+
+        const shouldShow = (typeof forceState === "boolean") ? forceState : !isVisible;
+
+        if (shouldShow) {
+            // SHOW SIDEBAR
+            if (sidebarCol) {
+                if (isMobile) {
+                    sidebarCol.classList.remove("-translate-x-full");
+                    sidebarCol.classList.add("translate-x-0");
+                } else {
+                    sidebarCol.classList.remove("lg:hidden");
+                }
+            }
+            if (backdrop && isMobile) {
+                backdrop.classList.remove("hidden");
+            }
+            if (mapCol && !isMobile) {
+                mapCol.classList.remove("lg:col-span-12", "xl:col-span-12");
+                mapCol.classList.add("lg:col-span-7", "xl:col-span-8");
+            }
+            if (navComponent) {
+                navComponent.classList.remove("hidden");
+            }
+
+            // Ensure navigation tab is active when opening from hamburger
+            const tabNav = document.getElementById("sidebarTabNav");
+            const tabDir = document.getElementById("sidebarTabDir");
+            const panelNav = document.getElementById("sidebarPanelNav");
+            const panelDir = document.getElementById("sidebarPanelDir");
+            if (tabNav && tabDir && panelNav && panelDir) {
+                panelNav.classList.remove("hidden");
+                panelDir.classList.add("hidden");
+                tabNav.className = "flex-1 py-2 px-3 rounded-lg bg-white text-slate-900 shadow-xs flex items-center justify-center gap-2 transition-all";
+                tabDir.className = "flex-1 py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2 transition-all";
+            }
+
+            window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: true } }));
+        } else {
+            // HIDE SIDEBAR
+            if (sidebarCol) {
+                if (isMobile) {
+                    sidebarCol.classList.add("-translate-x-full");
+                    sidebarCol.classList.remove("translate-x-0");
+                } else {
+                    sidebarCol.classList.add("lg:hidden");
+                }
+            }
+            if (backdrop) {
+                backdrop.classList.add("hidden");
+            }
+            if (mapCol && !isMobile) {
+                mapCol.classList.remove("lg:col-span-7", "xl:col-span-8");
+                mapCol.classList.add("lg:col-span-12", "xl:col-span-12");
+            }
+            if (navComponent && !sidebarCol) {
+                navComponent.classList.add("hidden");
+            }
+
+            window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: false } }));
+        }
+    };
+
+    if (btnCloseSidebar) {
+        btnCloseSidebar.addEventListener("click", () => {
+            window.toggleNavigateMapSidebar(false);
+        });
+    }
+
+    // Close sidebar on Escape key
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            const sidebarCol = document.getElementById("mapSidebarColumn");
+            const isMobile = window.innerWidth < 1024;
+            if (sidebarCol) {
+                const isOpen = isMobile ? !sidebarCol.classList.contains("-translate-x-full") : !sidebarCol.classList.contains("lg:hidden");
+                if (isOpen) {
+                    window.toggleNavigateMapSidebar(false);
+                }
+            }
+        }
+    });
+
+    // Close on mobile backdrop click
+    const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+    if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener("click", () => {
+            window.toggleNavigateMapSidebar(false);
+        });
+    }
+
+    // Handle responsive window resize
+    window.addEventListener("resize", () => {
+        const isMobile = window.innerWidth < 1024;
+        const sidebarCol = document.getElementById("mapSidebarColumn");
+        const mapCol = document.getElementById("mapContainerColumn");
+        const backdrop = document.getElementById("sidebarBackdrop");
+        if (!sidebarCol) return;
+
+        if (!isMobile) {
+            if (backdrop) backdrop.classList.add("hidden");
+            sidebarCol.classList.remove("-translate-x-full", "translate-x-0");
+            const isHidden = sidebarCol.classList.contains("lg:hidden");
+            if (mapCol) {
+                if (isHidden) {
+                    mapCol.classList.remove("lg:col-span-7", "xl:col-span-8");
+                    mapCol.classList.add("lg:col-span-12", "xl:col-span-12");
+                } else {
+                    mapCol.classList.remove("lg:col-span-12", "xl:col-span-12");
+                    mapCol.classList.add("lg:col-span-7", "xl:col-span-8");
+                }
+            }
+            window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: !isHidden } }));
+        } else {
+            const isOpen = sidebarCol.classList.contains("translate-x-0");
+            if (backdrop) backdrop.classList.toggle("hidden", !isOpen);
+            if (!isOpen) sidebarCol.classList.add("-translate-x-full");
+            window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: isOpen } }));
+        }
+    });
+
+    // Set initial hamburger button state on page load
+    setTimeout(() => {
+        const initIsMobile = window.innerWidth < 1024;
+        const sidebarCol = document.getElementById("mapSidebarColumn");
+        const initOpen = sidebarCol ? (!initIsMobile && !sidebarCol.classList.contains("lg:hidden")) : true;
+        window.dispatchEvent(new CustomEvent("navigateMapSidebarStateChanged", { detail: { open: initOpen } }));
+    }, 50);
 
 });
 </script>

@@ -14,7 +14,9 @@
     "signup": "Sign Up",
     "admin": "Admin Panel",
     "logout": "Sign Out",
-    "language": "Language"
+    "language": "Language",
+    "toggle_menu": "Toggle Navigation Menu",
+    "close_menu": "Close Navigation Menu"
   },
   "map": {
     "title": "UAM Campus Navigator",

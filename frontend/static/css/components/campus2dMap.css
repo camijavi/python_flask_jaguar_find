@@ -1,23 +1,27 @@
 /**
  * ================================================================================
- * CAMPUS2DMAP.CSS - OFFICIAL 2D UAM CAMPUS MAP STYLES
+ * CAMPUS2DMAP.CSS - OFFICIAL 2D UAM CAMPUS MAP STYLES & FLUID ANIMATIONS
  * ================================================================================
- * Styling for the architectural 2D vector map replicating the official
- * UAM campus signage: teal building roofs, sports fields, parking landscaping,
- * compass rose, and animated pedestrian routes.
+ * Architectural 2D vector map replicating official UAM campus signage:
+ * - Direct official digital vector map representation
+ * - Interactive building overlays with hover & active states
+ * - Animated Dijkstra route path, pulse glow, and live floating pin
+ * - Smooth hardware-accelerated panning, zooming, and spring popovers
+ * ================================================================================
  */
 
 /* Map Container */
 .campus-map-wrapper {
     position: relative;
     width: 100%;
-    height: 650px;
-    background-color: #e8ecf1;
-    border-radius: 1.25rem;
+    height: 670px;
+    background-color: #edf1f7;
+    border-radius: 1.5rem;
     overflow: hidden;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.12), 0 10px 15px -5px rgba(15, 23, 42, 0.06);
     border: 1px solid #cbd5e1;
     user-select: none;
+    -webkit-user-select: none;
 }
 
 /* SVG Canvas */
@@ -25,33 +29,47 @@
     width: 100%;
     height: 100%;
     cursor: grab;
-    transition: transform 0.15s ease-out;
+    transform-origin: 0 0;
+    will-change: transform;
+    transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.campus-svg-canvas:active {
+.campus-svg-canvas:active,
+.campus-map-wrapper.cursor-grabbing .campus-svg-canvas {
     cursor: grabbing;
+    transition: none;
 }
 
-/* Building 2D Shapes */
+/* ---------------------------------------------------------------------------- */
+/* Interactive Building Hitboxes & Selection Glow                               */
+/* ---------------------------------------------------------------------------- */
 .bldg-shape {
-    transition: filter 0.2s ease, transform 0.2s ease;
+    fill: transparent;
+    stroke: transparent;
+    stroke-width: 2.5;
     cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .bldg-shape:hover {
-    filter: brightness(1.15) drop-shadow(0 4px 6px rgba(15, 118, 110, 0.4));
+    fill: rgba(2, 132, 199, 0.18);
+    stroke: #0284c7;
+    filter: drop-shadow(0 0 10px rgba(2, 132, 199, 0.65));
 }
 .bldg-shape.active-bldg {
-    filter: drop-shadow(0 0 10px #0284c7) brightness(1.2);
+    fill: rgba(2, 132, 199, 0.26);
+    stroke: #0284c7;
+    stroke-width: 3;
+    filter: drop-shadow(0 0 14px #0284c7);
 }
 
 /* Official Building Letter Badges */
-.badge-purple { fill: #6b21a8; }
-.badge-navy   { fill: #1e3a8a; }
-.badge-green  { fill: #15803d; }
-.badge-magenta{ fill: #be185d; }
-.badge-cyan   { fill: #0284c7; }
-.badge-maroon { fill: #881337; }
-.badge-amber  { fill: #b45309; }
-.badge-teal   { fill: #0f766e; }
+.badge-purple { fill: #7e22ce; stroke: #ffffff; stroke-width: 1.2; }
+.badge-navy   { fill: #1e3a8a; stroke: #ffffff; stroke-width: 1.2; }
+.badge-green  { fill: #15803d; stroke: #ffffff; stroke-width: 1.2; }
+.badge-magenta{ fill: #be185d; stroke: #ffffff; stroke-width: 1.2; }
+.badge-cyan   { fill: #0284c7; stroke: #ffffff; stroke-width: 1.2; }
+.badge-maroon { fill: #b91c1c; stroke: #ffffff; stroke-width: 1.2; }
+.badge-amber  { fill: #d97706; stroke: #ffffff; stroke-width: 1.2; }
+.badge-teal   { fill: #0f766e; stroke: #ffffff; stroke-width: 1.2; }
 
 /* Building Letter Text */
 .badge-text {
@@ -64,51 +82,90 @@
     pointer-events: none;
 }
 
-/* Label Texts */
-.map-label {
-    fill: #1e293b;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 700;
-    font-size: 10px;
-    letter-spacing: 0.02em;
-    pointer-events: none;
-}
-.map-sublabel {
-    fill: #64748b;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 600;
-    font-size: 8px;
-    letter-spacing: 0.01em;
-    pointer-events: none;
-}
-
-/* Animated Dijkstra Route Path */
+/* ---------------------------------------------------------------------------- */
+/* Animated Dijkstra Route Path                                                 */
+/* ---------------------------------------------------------------------------- */
 .ruta-animada {
-    stroke-dasharray: 10, 6;
-    animation: rutaDash 1.2s linear infinite;
+    stroke-dasharray: 12, 8;
+    animation: rutaDash 0.9s linear infinite;
 }
 @keyframes rutaDash {
     to {
-        stroke-dashoffset: -32;
+        stroke-dashoffset: -40;
     }
 }
 
-/* Compass Rose */
-.compass-rose {
-    pointer-events: none;
+.route-glow-pulse {
+    animation: glowPulse 2s ease-in-out infinite alternate;
+}
+@keyframes glowPulse {
+    from {
+        opacity: 0.4;
+        stroke-width: 10;
+    }
+    to {
+        opacity: 0.75;
+        stroke-width: 16;
+    }
+}
+
+/* Route Origin & Destination Marker Animations */
+.beacon-origin-wave {
+    animation: beaconPulse 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes beaconPulse {
+    0% {
+        r: 8;
+        opacity: 0.9;
+    }
+    100% {
+        r: 26;
+        opacity: 0;
+    }
+}
+
+.flag-destination-drop {
+    animation: flagWave 1.6s ease-in-out infinite alternate;
+    transform-origin: bottom center;
+}
+@keyframes flagWave {
+    from {
+        transform: rotate(0deg) translateY(0);
+    }
+    to {
+        transform: rotate(-6deg) translateY(-2px);
+    }
+}
+
+/* ---------------------------------------------------------------------------- */
+/* Popover Spring Entrance & Card Highlights                                    */
+/* ---------------------------------------------------------------------------- */
+.popover-animated {
+    animation: popoverSpring 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes popoverSpring {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 /* Directory Sidebar Cards */
 .directory-card {
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .directory-card:hover {
     background-color: #f8fafc;
     border-color: #0284c7;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 .directory-card.highlighted {
     border-color: #0284c7;
     background-color: #f0f9ff;
-    box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.15);
+    box-shadow: 0 4px 12px -2px rgba(2, 132, 199, 0.25);
 }

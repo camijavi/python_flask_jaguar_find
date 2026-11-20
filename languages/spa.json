@@ -14,7 +14,9 @@
     "signup": "Registrarse",
     "admin": "Panel Administrativo",
     "logout": "Cerrar Sesión",
-    "language": "Idioma"
+    "language": "Idioma",
+    "toggle_menu": "Alternar Menú de Navegación",
+    "close_menu": "Cerrar Menú de Navegación"
   },
   "map": {
     "title": "Navegador del Campus UAM",
