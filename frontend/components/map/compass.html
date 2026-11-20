@@ -1,0 +1,57 @@
+<!--
+================================================================================
+CAMPUS ORIENTATION COMPASS COMPONENT (COMPASS.HTML)
+================================================================================
+Official UAM Campus Orientation Compass Rose:
+- Positioned on the bottom-left of the 2D Vector Campus Map (campus2dMap)
+- Includes a subtle elevation shadow and clean frosted-glass backdrop
+- Faithfully represents official campus signage orientation (South facing top)
+- Interactive: clicking the compass centers and resets the map orientation
+================================================================================
+-->
+
+<div id="campusCompass"
+     class="campus-compass absolute bottom-4 left-4 z-20 flex items-center justify-center p-2 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-md shadow-slate-900/10 transition-transform duration-200 hover:scale-105 pointer-events-auto select-none cursor-pointer"
+     title="{{ t('map.compass_orientation', default='Orientación oficial del campus (Sur arriba) • Clic para centrar') }}"
+     aria-label="{{ t('map.compass_orientation', default='Orientación oficial del campus (Sur arriba)') }}">
+    <svg id="compassRose" class="w-14 h-14 sm:w-16 sm:h-16 compass-rose" viewBox="-48 -48 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- Subtle Elevation Shadow Filter for Compass Dial -->
+            <filter id="compassSubtleShadow" x="-25%" y="-25%" width="150%" height="150%">
+                <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.10" />
+            </filter>
+        </defs>
+
+        <!-- Base Compass Dial with Subtle Shadow -->
+        <circle cx="0" cy="0" r="32" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#compassSubtleShadow)" />
+        
+        <!-- Subtle Inner Decorative Ring -->
+        <circle cx="0" cy="0" r="28" fill="none" stroke="#f1f5f9" stroke-width="1" />
+
+        <!-- Compass Cardinal Pointers (S, N, E, W) -->
+        <!-- Top Pointer (South S - Official Primary Axis) -->
+        <polygon points="0,-28 -5,-5 0,0" fill="#0284c7" />
+        <polygon points="0,-28 5,-5 0,0" fill="#075985" />
+
+        <!-- Bottom Pointer (North N) -->
+        <polygon points="0,28 -5,5 0,0" fill="#cbd5e1" />
+        <polygon points="0,28 5,5 0,0" fill="#94a3b8" />
+
+        <!-- Left Pointer (East E) -->
+        <polygon points="-28,0 -5,-5 0,0" fill="#cbd5e1" />
+        <polygon points="-28,0 -5,5 0,0" fill="#94a3b8" />
+
+        <!-- Right Pointer (West W) -->
+        <polygon points="28,0 5,-5 0,0" fill="#cbd5e1" />
+        <polygon points="28,0 5,5 0,0" fill="#94a3b8" />
+
+        <!-- Center Pivot Dot -->
+        <circle cx="0" cy="0" r="3.5" fill="#075985" stroke="#ffffff" stroke-width="1" />
+
+        <!-- Cardinal Direction Letter Labels -->
+        <text x="0" y="-36" fill="#0284c7" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" text-anchor="middle">S</text>
+        <text x="0" y="44" fill="#64748b" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" text-anchor="middle">N</text>
+        <text x="-42" y="4" fill="#64748b" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" text-anchor="middle">E</text>
+        <text x="42" y="4" fill="#64748b" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="800" text-anchor="middle">W</text>
+    </svg>
+</div>

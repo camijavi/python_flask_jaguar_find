@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnZoomIn = document.getElementById("btnMapZoomIn");
     const btnZoomOut = document.getElementById("btnMapZoomOut");
     const btnResetView = document.getElementById("btnMapResetView");
+    const compassWidget = document.getElementById("campusCompass");
 
     const dirSearchInput = document.getElementById("directorySearchInput");
     const dirList = document.getElementById("directoryList");
@@ -335,6 +336,12 @@ document.addEventListener("DOMContentLoaded", function () {
             translateX = 0;
             translateY = 0;
             applyTransform();
+        });
+    }
+
+    if (compassWidget && btnResetView) {
+        compassWidget.addEventListener("click", () => {
+            btnResetView.click();
         });
     }
 
