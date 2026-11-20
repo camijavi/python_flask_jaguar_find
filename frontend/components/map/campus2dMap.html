@@ -54,10 +54,63 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
     <!-- Official SVG 2D Vector Map Canvas (1200 x 850) -->
     <svg id="officialCampus2dSvg" viewBox="0 0 1200 850" class="campus-svg-canvas">
         <defs>
-            <!-- Clean Shadow Filter for Buildings -->
+            <!-- Clean Elevation Shadow Filter for Buildings -->
             <filter id="bldgShadow" x="-10%" y="-10%" width="120%" height="120%">
-                <feDropShadow dx="1.5" dy="3" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.14" />
+                <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.2" />
             </filter>
+
+            <!-- ClipPaths for Buildings (Sharp Architectural Borders) -->
+            <clipPath id="clipBldgP">
+                <rect x="260" y="145" width="195" height="50" />
+            </clipPath>
+            <clipPath id="clipBldgO">
+                <polygon points="460,195 530,195 545,240 545,290 495,290 460,250" />
+            </clipPath>
+            <clipPath id="clipBldgN">
+                <path d="M 275 250 L 415 250 L 415 345 L 375 345 L 375 290 L 275 290 Z" />
+            </clipPath>
+            <clipPath id="clipBldgJ">
+                <rect x="280" y="355" width="45" height="35" />
+            </clipPath>
+            <clipPath id="clipBldgD">
+                <rect x="335" y="355" width="48" height="35" />
+            </clipPath>
+            <clipPath id="clipBldgC">
+                <rect x="280" y="410" width="250" height="36" />
+            </clipPath>
+            <clipPath id="clipBldgB">
+                <rect x="280" y="472" width="250" height="36" />
+            </clipPath>
+            <clipPath id="clipBldgA">
+                <rect x="235" y="415" width="42" height="90" />
+            </clipPath>
+            <clipPath id="clipBldgH">
+                <rect x="520" y="375" width="85" height="40" />
+            </clipPath>
+            <clipPath id="clipBldgM">
+                <rect x="540" y="430" width="50" height="50" />
+            </clipPath>
+            <clipPath id="clipBldgG">
+                <rect x="480" y="520" width="58" height="44" />
+            </clipPath>
+            <clipPath id="clipBldgF">
+                <rect x="480" y="575" width="58" height="44" />
+            </clipPath>
+            <clipPath id="clipBldgE">
+                <rect x="435" y="525" width="36" height="110" />
+            </clipPath>
+            <clipPath id="clipBldgK">
+                <rect x="250" y="545" width="55" height="50" />
+            </clipPath>
+            <clipPath id="clipBldgI">
+                <path d="M 600 625 L 690 625 L 690 725 L 640 725 L 640 680 L 600 680 Z" />
+            </clipPath>
+            <clipPath id="clipJaguarCenter">
+                <rect x="670" y="585" width="80" height="65" />
+            </clipPath>
+            <clipPath id="clipJaguarGym">
+                <rect x="765" y="640" width="65" height="50" />
+            </clipPath>
         </defs>
 
         <!-- ================================================================== -->
@@ -172,30 +225,48 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
 
             <!-- 3C. JAGUAR SPORTS COMPLEX (CENTER, GYM, TENNIS COURTS) -->
             <g id="jaguarSportsComplex">
-                <!-- Jaguar Center (Basketball Arena) - Solid Architectural Teal -->
-                <g class="bldg-shape" data-node="jaguarCenter" data-bldg="JAGUAR CENTER">
-                    <rect x="670" y="585" width="80" height="65" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                    <!-- Roof Ridge -->
-                    <rect x="676" y="591" width="68" height="53" rx="4" fill="#14b8a6" stroke="#0d9488" stroke-width="1" />
-                    <!-- Basketball Court Lines -->
-                    <rect x="684" y="599" width="52" height="37" rx="2" fill="#0f766e" stroke="#38bdf8" stroke-width="1.2" />
-                    <circle cx="710" cy="617" r="7" fill="none" stroke="#38bdf8" stroke-width="1.2" />
-                    <line x1="710" y1="599" x2="710" y2="636" stroke="#38bdf8" stroke-width="1.2" />
+                <!-- Jaguar Center (Basketball Arena) -->
+                <g class="bldg-shape" data-node="jaguarCenter" data-bldg="JAGUAR CENTER" filter="url(#bldgShadow)">
+                    <g clip-path="url(#clipJaguarCenter)">
+                        <!-- Base: #1da495 -->
+                        <rect x="670" y="585" width="80" height="65" fill="#1da495" />
+                        <!-- Lightning top slope: #48b2a9 -->
+                        <polygon points="670,585 750,585 750,617 670,617" fill="#48b2a9" />
+                        <!-- Shadow Left Triangle: #1f8383 -->
+                        <polygon points="670,585 670,650 695,617" fill="#1f8383" />
+                        <!-- Shadow Right Triangle: #1f8383 -->
+                        <polygon points="750,585 750,650 725,617" fill="#1f8383" />
+                        <!-- Basketball Court Lines -->
+                        <rect x="684" y="599" width="52" height="37" rx="2" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.8" />
+                        <circle cx="710" cy="617" r="7" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.8" />
+                        <line x1="710" y1="599" x2="710" y2="636" stroke="#ffffff" stroke-width="1.2" opacity="0.8" />
+                    </g>
+                    <!-- Navy Border: #253452, Sharp Corners -->
+                    <rect x="670" y="585" width="80" height="65" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                     <text x="710" y="663" class="map-label" text-anchor="middle">JAGUAR CENTER</text>
                 </g>
 
-                <!-- Jaguar Gym - Solid Architectural Teal -->
-                <g class="bldg-shape" data-node="jaguarCenter" data-bldg="JAGUAR GYM">
-                    <rect x="765" y="640" width="65" height="50" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                    <rect x="771" y="646" width="53" height="38" rx="4" fill="#14b8a6" />
-                    <rect x="775" y="650" width="45" height="30" rx="3" fill="#0f766e" />
+                <!-- Jaguar Gym -->
+                <g class="bldg-shape" data-node="jaguarCenter" data-bldg="JAGUAR GYM" filter="url(#bldgShadow)">
+                    <g clip-path="url(#clipJaguarGym)">
+                        <!-- Base: #1da495 -->
+                        <rect x="765" y="640" width="65" height="50" fill="#1da495" />
+                        <!-- Lightning top slope: #48b2a9 -->
+                        <polygon points="765,640 830,640 830,665 765,665" fill="#48b2a9" />
+                        <!-- Shadow Left Triangle: #1f8383 -->
+                        <polygon points="765,640 765,690 785,665" fill="#1f8383" />
+                        <!-- Shadow Right Triangle: #1f8383 -->
+                        <polygon points="830,640 830,690 810,665" fill="#1f8383" />
+                    </g>
+                    <!-- Navy Border: #253452, Sharp Corners -->
+                    <rect x="765" y="640" width="65" height="50" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                     <text x="797" y="666" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">JAGUAR</text>
-                    <text x="797" y="676" fill="#38bdf8" font-size="8.5" font-weight="bold" text-anchor="middle">GYM</text>
+                    <text x="797" y="677" fill="#ffffff" font-size="8.5" font-weight="bold" text-anchor="middle">GYM</text>
                 </g>
 
                 <!-- Multipurpose / Tennis / Volleyball Courts -->
                 <g class="bldg-shape" data-node="buildingL" data-bldg="CANCHAS">
-                    <rect x="765" y="555" width="75" height="55" rx="6" fill="#2563eb" stroke="#1d4ed8" stroke-width="2" />
+                    <rect x="765" y="555" width="75" height="55" fill="#2563eb" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                     <rect x="772" y="562" width="61" height="41" fill="none" stroke="#ffffff" stroke-width="1.5" />
                     <line x1="802" y1="555" x2="802" y2="610" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4,2" />
                     <text x="802" y="622" class="map-sublabel" text-anchor="middle">CANCHAS / COURTS</text>
@@ -203,7 +274,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
 
                 <!-- Grandstands (Graderías) -->
                 <g>
-                    <rect x="700" y="535" width="55" height="22" rx="4" fill="#94a3b8" stroke="#64748b" stroke-width="1.5" />
+                    <rect x="700" y="535" width="55" height="22" fill="#94a3b8" stroke="#253452" stroke-width="2" />
                     <text x="727" y="549" fill="#0f172a" font-size="8" font-weight="bold" text-anchor="middle">GRADERÍAS</text>
                 </g>
 
@@ -220,16 +291,22 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
         <g id="buildingsLayer">
 
             <!-- 4P. EDIFICIO P (COPÉRNICO & OBSERVATORIO DOME) -->
-            <g class="bldg-shape" data-node="buildingP" data-bldg="P">
-                <!-- Copernicus Building Rect - Solid Flat Teal -->
-                <rect x="260" y="145" width="195" height="50" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="268" y="151" width="179" height="38" rx="4" fill="#14b8a6" />
-                <rect x="274" y="155" width="167" height="30" rx="3" fill="#0f766e" />
+            <g class="bldg-shape" data-node="buildingP" data-bldg="P" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgP)">
+                    <!-- Base: #1da495 -->
+                    <rect x="260" y="145" width="195" height="50" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="260,145 455,145 455,170 260,170" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="260,145 260,195 285,170" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="260" y="145" width="195" height="50" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <!-- Observatorio Dome Circle on West End -->
-                <circle cx="250" cy="170" r="26" fill="#0284c7" stroke="#ffffff" stroke-width="3" filter="url(#bldgShadow)" />
+                <circle cx="250" cy="170" r="26" fill="#0284c7" stroke="#253452" stroke-width="3" />
                 <circle cx="250" cy="170" r="14" fill="#0369a1" stroke="#ffffff" stroke-width="1.5" />
                 <!-- Badge P (Maroon) -->
-                <rect x="390" y="152" width="22" height="22" rx="5" class="badge-maroon" />
+                <rect x="390" y="152" width="22" height="22" class="badge-maroon" />
                 <text x="401" y="163" class="badge-text">P</text>
                 <!-- Labels -->
                 <text x="325" y="174" fill="#ffffff" font-size="9" font-weight="bold">EDIFICIO COPÉRNICO</text>
@@ -237,70 +314,106 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             </g>
 
             <!-- 4O. EDIFICIO O (FACULTAD DE INGENIERÍA Y ARQUITECTURA - FIA) -->
-            <g class="bldg-shape" data-node="buildingO" data-bldg="O">
-                <!-- Angled multi-hipped building - Solid Flat Teal -->
-                <polygon points="460,195 530,195 545,240 545,290 495,290 460,250" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <polygon points="468,202 522,202 534,238 534,280 495,280 468,245" fill="#14b8a6" />
-                <polygon points="474,208 514,208 524,236 524,272 495,272 474,242" fill="#0f766e" />
+            <g class="bldg-shape" data-node="buildingO" data-bldg="O" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgO)">
+                    <!-- Base: #1da495 -->
+                    <polygon points="460,195 530,195 545,240 545,290 495,290 460,250" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="460,195 545,195 545,245 460,245" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="460,195 460,250 485,225" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <polygon points="460,195 530,195 545,240 545,290 495,290 460,250" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <!-- Badge O (Amber) -->
-                <rect x="480" y="225" width="22" height="22" rx="5" class="badge-amber" />
+                <rect x="480" y="225" width="22" height="22" class="badge-amber" />
                 <text x="491" y="236" class="badge-text">O</text>
                 <text x="495" y="305" class="map-sublabel" text-anchor="middle">LAB. INGENIERÍA / CIAR</text>
             </g>
 
             <!-- Ranchón (Pavilion near O) -->
-            <g class="bldg-shape" data-node="buildingO" data-bldg="RANCHON">
-                <circle cx="455" cy="315" r="18" fill="#14b8a6" stroke="#0f766e" stroke-width="2.5" filter="url(#bldgShadow)" />
-                <circle cx="455" cy="315" r="7" fill="#0f766e" />
-                <text x="455" y="342" class="map-sublabel" text-anchor="middle">RANCHÓN</text>
+            <g class="bldg-shape" data-node="buildingO" data-bldg="RANCHON" filter="url(#bldgShadow)">
+                <circle cx="455" cy="315" r="18" fill="#1da495" stroke="#253452" stroke-width="3.5" />
+                <path d="M 437 315 A 18 18 0 0 1 473 315 Z" fill="#48b2a9" />
+                <polygon points="437,315 455,315 455,333" fill="#1f8383" />
+                <circle cx="455" cy="315" r="6" fill="#1f8383" stroke="#253452" stroke-width="1.5" />
+                <text x="455" y="345" class="map-sublabel" text-anchor="middle">RANCHÓN</text>
             </g>
 
             <!-- 4N. EDIFICIO N (CLÍNICAS MÉDICAS ODONTOLÓGICAS) -->
-            <g class="bldg-shape" data-node="buildingN" data-bldg="N">
-                <!-- Large U-shaped Dental Clinics - Solid Flat Teal -->
-                <path d="M 280 250 L 415 250 L 415 340 L 375 340 L 375 290 L 320 290 L 320 340 L 280 340 Z" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <!-- Inner Roof Ridge -->
-                <path d="M 288 258 L 407 258 L 407 332 L 383 332 L 383 282 L 312 282 L 312 332 L 288 332 Z" fill="#14b8a6" />
-                <path d="M 294 264 L 401 264 L 401 326 L 389 326 L 389 276 L 306 276 L 306 326 L 294 326 Z" fill="#0f766e" />
+            <g class="bldg-shape" data-node="buildingN" data-bldg="N" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgN)">
+                    <!-- Base: #1da495 -->
+                    <path d="M 275 250 L 415 250 L 415 345 L 375 345 L 375 290 L 275 290 Z" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="275,250 415,250 395,270 275,270" fill="#48b2a9" />
+                    <polygon points="415,250 415,345 395,325 395,270" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="275,250 275,290 295,270" fill="#1f8383" />
+                    <!-- Shadow Bottom Triangle: #1f8383 -->
+                    <polygon points="375,345 415,345 395,325" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <path d="M 275 250 L 415 250 L 415 345 L 375 345 L 375 290 L 275 290 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <!-- Badge N (Magenta) -->
-                <rect x="300" y="260" width="22" height="22" rx="5" class="badge-magenta" />
-                <text x="311" y="271" class="badge-text">N</text>
-                <text x="355" y="272" fill="#ffffff" font-size="9" font-weight="bold">CLÍNICAS ODONTOLÓGICAS</text>
+                <rect x="290" y="258" width="22" height="22" class="badge-magenta" />
+                <text x="301" y="269" class="badge-text">N</text>
+                <text x="320" y="272" fill="#ffffff" font-size="8.5" font-weight="bold">CLÍNICAS MÉDICAS ODONTOLÓGICAS</text>
             </g>
 
             <!-- 4J. EDIFICIO J (LABORATORIOS DE ODONTOLOGÍA) -->
-            <g class="bldg-shape" data-node="buildingJ" data-bldg="J">
-                <rect x="280" y="355" width="45" height="35" rx="5" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="285" y="360" width="35" height="25" rx="3" fill="#14b8a6" />
-                <rect x="288" y="363" width="29" height="19" rx="2" fill="#0f766e" />
-                <rect x="291" y="362" width="22" height="22" rx="5" class="badge-cyan" />
-                <text x="302" y="373" class="badge-text">J</text>
+            <g class="bldg-shape" data-node="buildingJ" data-bldg="J" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgJ)">
+                    <!-- Base: #1da495 -->
+                    <rect x="280" y="355" width="45" height="35" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="280,355 325,355 325,372 280,372" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="280,355 280,390 297,372" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="280" y="355" width="45" height="35" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="291" y="361" width="22" height="22" class="badge-cyan" />
+                <text x="302" y="372" class="badge-text">J</text>
             </g>
 
             <!-- 4D. EDIFICIO D (ODONTOLOGÍA DIGITAL CAM-CAM) -->
-            <g class="bldg-shape" data-node="buildingD" data-bldg="D">
-                <rect x="335" y="355" width="48" height="35" rx="5" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="340" y="360" width="38" height="25" rx="3" fill="#14b8a6" />
-                <rect x="344" y="363" width="30" height="19" rx="2" fill="#0f766e" />
-                <rect x="348" y="362" width="22" height="22" rx="5" class="badge-green" />
-                <text x="359" y="373" class="badge-text">D</text>
+            <g class="bldg-shape" data-node="buildingD" data-bldg="D" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgD)">
+                    <!-- Base: #1da495 -->
+                    <rect x="335" y="355" width="48" height="35" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="335,355 383,355 383,372 335,372" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="335,355 335,390 353,372" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="335" y="355" width="48" height="35" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="348" y="361" width="22" height="22" class="badge-green" />
+                <text x="359" y="372" class="badge-text">D</text>
             </g>
 
             <!-- Plaza Chilamates -->
             <g class="bldg-shape" data-node="chilamatesPlaza" data-bldg="CHILAMATES">
-                <rect x="210" y="350" width="60" height="55" rx="8" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" />
+                <rect x="210" y="350" width="60" height="55" fill="#cbd5e1" stroke="#253452" stroke-width="2.5" />
                 <circle cx="240" cy="375" r="12" fill="#10b981" opacity="0.6" />
                 <text x="240" y="415" class="map-sublabel" text-anchor="middle">PLAZA CHILAMATES</text>
             </g>
 
             <!-- 4C. EDIFICIO C (AULAS C101-C310, CÓMPUTO & TESORERÍA) -->
-            <g class="bldg-shape" data-node="buildingC" data-bldg="C">
-                <!-- Long horizontal block parallel to B - Solid Flat Teal -->
-                <rect x="280" y="410" width="250" height="36" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="288" y="416" width="234" height="24" rx="4" fill="#14b8a6" />
-                <rect x="294" y="419" width="222" height="18" rx="3" fill="#0f766e" />
+            <g class="bldg-shape" data-node="buildingC" data-bldg="C" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgC)">
+                    <!-- Base: #1da495 -->
+                    <rect x="280" y="410" width="250" height="36" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="280,410 530,410 530,428 280,428" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="280,410 280,446 298,428" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="280" y="410" width="250" height="36" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <!-- Badge C (Navy) -->
-                <rect x="365" y="417" width="22" height="22" rx="5" class="badge-navy" />
+                <rect x="365" y="417" width="22" height="22" class="badge-navy" />
                 <text x="376" y="428" class="badge-text">C</text>
                 <text x="430" y="432" fill="#ffffff" font-size="9" font-weight="bold">EDIFICIO C (CÓMPUTO / AULAS)</text>
             </g>
@@ -317,104 +430,171 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             </g>
 
             <!-- 4B. EDIFICIO B (AULAS B101-B210 & FARMACIA) -->
-            <g class="bldg-shape" data-node="buildingB" data-bldg="B">
-                <!-- Long horizontal block parallel to C - Solid Flat Teal -->
-                <rect x="280" y="472" width="250" height="36" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="288" y="478" width="234" height="24" rx="4" fill="#14b8a6" />
-                <rect x="294" y="481" width="222" height="18" rx="3" fill="#0f766e" />
+            <g class="bldg-shape" data-node="buildingB" data-bldg="B" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgB)">
+                    <!-- Base: #1da495 -->
+                    <rect x="280" y="472" width="250" height="36" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="280,472 530,472 530,490 280,490" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="280,472 280,508 298,490" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="280" y="472" width="250" height="36" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <!-- Badge B (Purple) -->
-                <rect x="365" y="479" width="22" height="22" rx="5" class="badge-purple" />
+                <rect x="365" y="479" width="22" height="22" class="badge-purple" />
                 <text x="376" y="490" class="badge-text">B</text>
                 <text x="430" y="494" fill="#ffffff" font-size="9" font-weight="bold">EDIFICIO B (AULAS / FARMACIA)</text>
             </g>
 
             <!-- 4A. EDIFICIO A (ATENCIÓN AL ESTUDIANTE CAE / CUSTODIA) -->
-            <g class="bldg-shape" data-node="buildingA" data-bldg="A">
-                <!-- West head building facing B/C - Solid Flat Teal -->
-                <rect x="235" y="415" width="42" height="90" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="240" y="421" width="32" height="78" rx="4" fill="#14b8a6" />
-                <rect x="244" y="426" width="24" height="68" rx="3" fill="#0f766e" />
+            <g class="bldg-shape" data-node="buildingA" data-bldg="A" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgA)">
+                    <!-- Base: #1da495 -->
+                    <rect x="235" y="415" width="42" height="90" fill="#1da495" />
+                    <!-- Lightning left slope: #48b2a9 -->
+                    <polygon points="235,415 256,415 256,505 235,505" fill="#48b2a9" />
+                    <!-- Shadow Bottom Triangle: #1f8383 -->
+                    <polygon points="235,505 277,505 256,484" fill="#1f8383" />
+                    <!-- Shadow Top Triangle: #1f8383 -->
+                    <polygon points="235,415 277,415 256,436" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="235" y="415" width="42" height="90" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <!-- Badge A (Purple) -->
-                <rect x="245" y="445" width="22" height="22" rx="5" class="badge-purple" />
+                <rect x="245" y="445" width="22" height="22" class="badge-purple" />
                 <text x="256" y="456" class="badge-text">A</text>
             </g>
 
             <!-- 4H. EDIFICIO H (LABORATORIOS DE MEDICINA) -->
-            <g class="bldg-shape" data-node="buildingH" data-bldg="H">
-                <rect x="520" y="375" width="85" height="40" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="526" y="380" width="73" height="30" rx="4" fill="#14b8a6" />
-                <rect x="531" y="384" width="63" height="22" rx="3" fill="#0f766e" />
-                <rect x="552" y="384" width="22" height="22" rx="5" class="badge-green" />
+            <g class="bldg-shape" data-node="buildingH" data-bldg="H" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgH)">
+                    <!-- Base: #1da495 -->
+                    <rect x="520" y="375" width="85" height="40" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="520,375 605,375 605,395 520,395" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="520,375 520,415 540,395" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="520" y="375" width="85" height="40" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="552" y="384" width="22" height="22" class="badge-green" />
                 <text x="563" y="395" class="badge-text">H</text>
                 <text x="562" y="425" class="map-sublabel" text-anchor="middle">LABS MEDICINA</text>
             </g>
 
             <!-- 4M. EDIFICIO M (POSTGRADOS / GRADUATE PROGRAMS) -->
-            <g class="bldg-shape" data-node="buildingM" data-bldg="M">
-                <rect x="540" y="430" width="50" height="50" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="546" y="436" width="38" height="38" rx="4" fill="#14b8a6" />
-                <rect x="550" y="440" width="30" height="30" rx="3" fill="#0f766e" />
-                <rect x="554" y="444" width="22" height="22" rx="5" class="badge-teal" />
+            <g class="bldg-shape" data-node="buildingM" data-bldg="M" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgM)">
+                    <!-- Base: #1da495 -->
+                    <rect x="540" y="430" width="50" height="50" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="540,430 590,430 590,455 540,455" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="540,430 540,480 565,455" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="540" y="430" width="50" height="50" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="554" y="444" width="22" height="22" class="badge-teal" />
                 <text x="565" y="455" class="badge-text">M</text>
             </g>
 
             <!-- 4G. EDIFICIO G (AUDITORIO CENTRAL & DERECHO) -->
-            <g class="bldg-shape" data-node="buildingG" data-bldg="G">
-                <rect x="480" y="520" width="58" height="44" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="486" y="525" width="46" height="34" rx="4" fill="#14b8a6" />
-                <rect x="491" y="529" width="36" height="26" rx="3" fill="#0f766e" />
-                <rect x="498" y="531" width="22" height="22" rx="5" class="badge-cyan" />
+            <g class="bldg-shape" data-node="buildingG" data-bldg="G" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgG)">
+                    <!-- Base: #1da495 -->
+                    <rect x="480" y="520" width="58" height="44" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="480,520 538,520 538,542 480,542" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="480,520 480,564 502,542" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="480" y="520" width="58" height="44" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="498" y="531" width="22" height="22" class="badge-cyan" />
                 <text x="509" y="542" class="badge-text">G</text>
             </g>
 
             <!-- 4F. EDIFICIO F (FACULTAD DE CIENCIAS ECONÓMICAS - FCAE) -->
-            <g class="bldg-shape" data-node="buildingF" data-bldg="F">
-                <rect x="480" y="575" width="58" height="44" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="486" y="580" width="46" height="34" rx="4" fill="#14b8a6" />
-                <rect x="491" y="584" width="36" height="26" rx="3" fill="#0f766e" />
-                <rect x="498" y="586" width="22" height="22" rx="5" class="badge-magenta" />
+            <g class="bldg-shape" data-node="buildingF" data-bldg="F" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgF)">
+                    <!-- Base: #1da495 -->
+                    <rect x="480" y="575" width="58" height="44" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="480,575 538,575 538,597 480,597" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="480,575 480,619 502,597" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="480" y="575" width="58" height="44" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="498" y="586" width="22" height="22" class="badge-magenta" />
                 <text x="509" y="597" class="badge-text">F</text>
             </g>
 
             <!-- 4E. EDIFICIO E (FACULTAD DE MEDICINA) -->
-            <g class="bldg-shape" data-node="buildingE" data-bldg="E">
-                <rect x="435" y="525" width="36" height="110" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="440" y="531" width="26" height="98" rx="4" fill="#14b8a6" />
-                <rect x="444" y="536" width="18" height="88" rx="3" fill="#0f766e" />
-                <rect x="442" y="565" width="22" height="22" rx="5" class="badge-navy" />
+            <g class="bldg-shape" data-node="buildingE" data-bldg="E" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgE)">
+                    <!-- Base: #1da495 -->
+                    <rect x="435" y="525" width="36" height="110" fill="#1da495" />
+                    <!-- Lightning left slope: #48b2a9 -->
+                    <polygon points="435,525 453,525 453,635 435,635" fill="#48b2a9" />
+                    <!-- Shadow Bottom Triangle: #1f8383 -->
+                    <polygon points="435,635 471,635 453,617" fill="#1f8383" />
+                    <!-- Shadow Top Triangle: #1f8383 -->
+                    <polygon points="435,525 471,525 453,543" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="435" y="525" width="36" height="110" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="442" y="565" width="22" height="22" class="badge-navy" />
                 <text x="453" y="576" class="badge-text">E</text>
             </g>
 
             <!-- 4K. EDIFICIO K (CAFETERÍA CENTRAL & PLAZA RUBÉN DARÍO) -->
-            <g class="bldg-shape" data-node="buildingK" data-bldg="K">
+            <g class="bldg-shape" data-node="buildingK" data-bldg="K" filter="url(#bldgShadow)">
                 <!-- Plaza Central Rubén Darío (Circular Green Lawn) -->
                 <circle cx="340" cy="570" r="42" fill="#22c55e" stroke="#16a34a" stroke-width="2" />
                 <circle cx="340" cy="570" r="16" fill="#15803d" />
-                <!-- Cafetería Central Building - Solid Flat Teal -->
-                <rect x="250" y="545" width="55" height="50" rx="6" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <rect x="256" y="551" width="43" height="38" rx="4" fill="#14b8a6" />
-                <rect x="260" y="555" width="35" height="30" rx="3" fill="#0f766e" />
+                <!-- Cafetería Central Building -->
+                <g clip-path="url(#clipBldgK)">
+                    <!-- Base: #1da495 -->
+                    <rect x="250" y="545" width="55" height="50" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="250,545 305,545 305,570 250,570" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="250,545 250,595 275,570" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <rect x="250" y="545" width="55" height="50" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <!-- Badge K (Amber) -->
-                <rect x="266" y="559" width="22" height="22" rx="5" class="badge-amber" />
+                <rect x="266" y="559" width="22" height="22" class="badge-amber" />
                 <text x="277" y="570" class="badge-text">K</text>
                 <text x="340" y="622" class="map-sublabel" text-anchor="middle">PLAZA CENTRAL RUBÉN DARÍO</text>
             </g>
 
             <!-- 4I. EDIFICIO I (RECTORÍA & BIBLIOTECA CENTRAL) -->
-            <g class="bldg-shape" data-node="buildingI" data-bldg="I">
-                <!-- Large L-shaped modern administrative complex - Solid Flat Teal -->
-                <path d="M 600 625 L 690 625 L 690 725 L 640 725 L 640 680 L 600 680 Z" fill="#0f766e" stroke="#042f2e" stroke-width="1.5" filter="url(#bldgShadow)" />
-                <path d="M 607 632 L 683 632 L 683 718 L 646 718 L 646 673 L 607 673 Z" fill="#14b8a6" />
-                <path d="M 613 638 L 677 638 L 677 712 L 652 712 L 652 667 L 613 667 Z" fill="#0f766e" />
-                <rect x="635" y="640" width="24" height="24" rx="6" class="badge-navy" />
+            <g class="bldg-shape" data-node="buildingI" data-bldg="I" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipBldgI)">
+                    <!-- Base: #1da495 -->
+                    <path d="M 600 625 L 690 625 L 690 725 L 640 725 L 640 680 L 600 680 Z" fill="#1da495" />
+                    <!-- Lightning top slope: #48b2a9 -->
+                    <polygon points="600,625 690,625 665,652 600,652" fill="#48b2a9" />
+                    <polygon points="690,625 690,725 665,700 665,652" fill="#48b2a9" />
+                    <!-- Shadow Left Triangle: #1f8383 -->
+                    <polygon points="600,625 600,680 625,652" fill="#1f8383" />
+                    <!-- Shadow Bottom Triangle: #1f8383 -->
+                    <polygon points="640,725 690,725 665,700" fill="#1f8383" />
+                </g>
+                <!-- Navy Border: #253452, Sharp Corners -->
+                <path d="M 600 625 L 690 625 L 690 725 L 640 725 L 640 680 L 600 680 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="635" y="640" width="24" height="24" class="badge-navy" />
                 <text x="647" y="652" class="badge-text">I</text>
-                <text x="645" y="740" class="map-label" text-anchor="middle">EDIFICIO I (RECTORÍA / BIBLIOTECA)</text>
+                <text x="645" y="742" class="map-label" text-anchor="middle">EDIFICIO I (RECTORÍA / BIBLIOTECA)</text>
             </g>
 
             <!-- ENTRADA PRINCIPAL / SOUTH GATE -->
             <g class="bldg-shape" data-node="mainParking" data-bldg="ENTRADA">
-                <rect x="290" y="770" width="100" height="30" rx="6" fill="#0f172a" filter="url(#bldgShadow)" />
-                <text x="340" y="788" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">ENTRADA PRINCIPAL</text>
+                <rect x="290" y="770" width="100" height="30" fill="#253452" stroke="#253452" stroke-width="2" filter="url(#bldgShadow)" />
+                <text x="340" y="789" fill="#ffffff" font-size="9" font-weight="bold" text-anchor="middle">ENTRADA PRINCIPAL</text>
             </g>
 
         </g>

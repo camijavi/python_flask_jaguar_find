@@ -33,27 +33,42 @@
     transition: none !important;
 }
 
+/* Official Architectural Building Colors (from Signage Specification) */
+:root {
+    --bldg-border: #253452;
+    --bldg-color: #1da495;
+    --bldg-lightning: #48b2a9;
+    --bldg-shadow: #1f8383;
+}
+
 /* Building 2D Shapes */
 .bldg-shape {
     transition: filter 0.2s ease, transform 0.2s ease;
     cursor: pointer;
 }
+.bldg-shape rect,
+.bldg-shape path,
+.bldg-shape polygon {
+    rx: 0 !important;
+    ry: 0 !important;
+    border-radius: 0 !important;
+}
 .bldg-shape:hover {
-    filter: brightness(1.15) drop-shadow(0 4px 6px rgba(15, 118, 110, 0.4));
+    filter: brightness(1.08) drop-shadow(0 6px 14px rgba(37, 52, 82, 0.35));
 }
 .bldg-shape.active-bldg {
-    filter: drop-shadow(0 0 10px #0284c7) brightness(1.2);
+    filter: drop-shadow(0 0 14px #48b2a9) brightness(1.15);
 }
 
-/* Official Building Letter Badges */
-.badge-purple { fill: #6b21a8; }
-.badge-navy   { fill: #1e3a8a; }
-.badge-green  { fill: #15803d; }
-.badge-magenta{ fill: #be185d; }
-.badge-cyan   { fill: #0284c7; }
-.badge-maroon { fill: #881337; }
-.badge-amber  { fill: #b45309; }
-.badge-teal   { fill: #0f766e; }
+/* Official Building Letter Badges with Navy Outline */
+.badge-purple { fill: #6b21a8; stroke: #253452; stroke-width: 1.5; }
+.badge-navy   { fill: #1e3a8a; stroke: #253452; stroke-width: 1.5; }
+.badge-green  { fill: #15803d; stroke: #253452; stroke-width: 1.5; }
+.badge-magenta{ fill: #be185d; stroke: #253452; stroke-width: 1.5; }
+.badge-cyan   { fill: #0284c7; stroke: #253452; stroke-width: 1.5; }
+.badge-maroon { fill: #881337; stroke: #253452; stroke-width: 1.5; }
+.badge-amber  { fill: #b45309; stroke: #253452; stroke-width: 1.5; }
+.badge-teal   { fill: #0f766e; stroke: #253452; stroke-width: 1.5; }
 
 /* Building Letter Text */
 .badge-text {
