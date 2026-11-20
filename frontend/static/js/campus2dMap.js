@@ -37,29 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnZoomIn = document.getElementById("btnMapZoomIn");
     const btnZoomOut = document.getElementById("btnMapZoomOut");
     const btnResetView = document.getElementById("btnMapResetView");
-    const btnOpenSidebarMap = document.getElementById("btnOpenSidebarMap");
-
-    if (btnOpenSidebarMap) {
-        btnOpenSidebarMap.addEventListener("click", () => {
-            if (typeof window.toggleNavigateMapSidebar === "function") {
-                window.toggleNavigateMapSidebar(true);
-            }
-        });
-    }
-
-    // Sync floating button with sidebar open/close state
-    window.addEventListener("navigateMapSidebarStateChanged", (e) => {
-        const isOpen = e.detail && e.detail.open;
-        if (btnOpenSidebarMap) {
-            if (isOpen) {
-                btnOpenSidebarMap.classList.add("hidden");
-                btnOpenSidebarMap.classList.remove("inline-flex");
-            } else {
-                btnOpenSidebarMap.classList.remove("hidden");
-                btnOpenSidebarMap.classList.add("inline-flex");
-            }
-        }
-    });
 
     const dirSearchInput = document.getElementById("directorySearchInput");
     const dirList = document.getElementById("directoryList");
@@ -489,7 +466,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 originInput.value = activeSelectedBuilding.name;
                 originInput.dispatchEvent(new Event("input"));
             }
-            if (typeof window.toggleNavigateMapSidebar === "function") {
+            if (window.innerWidth < 1024 && typeof window.openMobileBottomSheet === "function") {
+                window.openMobileBottomSheet();
+            } else if (typeof window.toggleNavigateMapSidebar === "function") {
                 window.toggleNavigateMapSidebar(true);
             }
             bldgPopover.classList.add("hidden");
@@ -504,7 +483,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 destInput.value = activeSelectedBuilding.name;
                 destInput.dispatchEvent(new Event("input"));
             }
-            if (typeof window.toggleNavigateMapSidebar === "function") {
+            if (window.innerWidth < 1024 && typeof window.openMobileBottomSheet === "function") {
+                window.openMobileBottomSheet();
+            } else if (typeof window.toggleNavigateMapSidebar === "function") {
                 window.toggleNavigateMapSidebar(true);
             }
             bldgPopover.classList.add("hidden");
@@ -519,6 +500,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const bldgData = CAMPUS_BUILDINGS[nodeId];
             if (bldgData) {
                 showBuildingPopover(bldgData, bldgData.anchor);
+
+                // On small devices, close directory sidebar menu so the focused building is immediately visible
+                if (window.innerWidth < 1024 && typeof window.toggleNavigateMapSidebar === "function") {
+                    window.toggleNavigateMapSidebar(false);
+                }
             }
         });
     });
@@ -540,6 +526,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 applyTransform();
 
                 showBuildingPopover(bldgData, bldgData.anchor);
+
+                // On small devices, close directory sidebar menu so the focused building is immediately visible
+                if (window.innerWidth < 1024 && typeof window.toggleNavigateMapSidebar === "function") {
+                    window.toggleNavigateMapSidebar(false);
+                }
             }
         });
     });

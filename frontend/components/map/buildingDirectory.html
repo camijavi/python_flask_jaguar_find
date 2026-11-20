@@ -8,10 +8,10 @@ Interactive search filter & click-to-focus on 2D map.
 ================================================================================
 -->
 
-<div id="buildingDirectoryComponent" class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-5 md:p-6 transition-all flex flex-col min-h-[500px]">
+<div id="buildingDirectoryComponent" class="p-0 transition-all flex flex-col min-h-[400px]">
     
     <!-- Header & Search Filter -->
-    <div class="pb-3 border-b border-slate-100 mb-3">
+    <div class="pb-2 border-b border-slate-100 mb-2">
         <div class="flex items-center justify-between mb-2.5">
             <h3 class="text-sm font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
                 <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
@@ -40,7 +40,7 @@ Interactive search filter & click-to-focus on 2D map.
     </div>
 
     <!-- Directory Scrollable Cards List -->
-    <div id="directoryList" class="flex-1 overflow-y-auto pr-1 space-y-2.5 text-xs scrollbar-thin">
+    <div id="directoryList" class="flex-1 overflow-y-auto pr-1 space-y-2.5 text-xs custom-scrollbar">
 
         <!-- EDIFICIO A -->
         <div class="directory-card p-3 rounded-xl border border-slate-200 bg-white cursor-pointer" data-bldg="buildingA" data-letter="A">
