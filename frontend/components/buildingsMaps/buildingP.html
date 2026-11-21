@@ -163,7 +163,7 @@ Key UX & Mobile Features:
                 <div id="p-labels-layer" class="absolute inset-0 pointer-events-none overflow-hidden z-10"></div>
 
                 <!-- 4. FLOATING CANVAS CONTROLS (Zoom, Reset Camera, Mobile Camera Angle & 3D Settings Gear) -->
-                <div id="p-canvas-controls" class="absolute right-2.5 bottom-44 md:bottom-4 flex flex-col gap-1.5 z-20 transition-all duration-300">
+                <div id="p-canvas-controls" class="absolute right-2.5 bottom-4 flex flex-col gap-1.5 z-20 transition-all duration-300">
                     <!-- 3D Settings Popover Toggle Button -->
                     <button id="p-btn-toggle-3d-settings" type="button" title="Ajustes de Vista 3D y Capas" class="w-9 h-9 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl text-slate-700 hover:bg-white flex items-center justify-center shadow-md transition-all active:scale-95 cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
@@ -187,7 +187,7 @@ Key UX & Mobile Features:
                 </div>
 
                 <!-- 5. FLOATING 3D SETTINGS & ARCHITECTURAL LAYERS POPOVER (Cleanly tucked away) -->
-                <div id="p-3d-settings-popover" class="hidden absolute right-14 bottom-44 md:bottom-4 w-64 bg-white/98 backdrop-blur-md border border-slate-200 rounded-2xl shadow-2xl p-3.5 z-30 space-y-3">
+                <div id="p-3d-settings-popover" class="hidden absolute right-14 bottom-4 w-64 bg-white/98 backdrop-blur-md border border-slate-200 rounded-2xl shadow-2xl p-3.5 z-30 space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                         <span class="text-xs font-extrabold text-slate-800">Ajustes de Modelo 3D</span>
                         <button id="p-btn-close-3d-settings" type="button" class="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer">
@@ -244,98 +244,12 @@ Key UX & Mobile Features:
                     </div>
                 </div>
 
-                <!-- 6. Desktop Bottom Floating Gesture Hint Badge -->
+                <!-- 6. Bottom Floating Gesture Hint Badge -->
                 <div class="absolute bottom-4 left-4 z-20 hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-xl border border-slate-200/90 shadow-md text-[11px] text-slate-600 font-semibold pointer-events-none">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>1 dedo / Arrastrar: rotar &middot; 2 dedos / Clic der.: mover &middot; Pellizcar / Rueda: zoom</span>
                 </div>
             </main>
-
-            <!-- ============================================================== -->
-            <!-- MOBILE BOTTOM SHEET / DESKTOP LEFT SIDEBAR                     -->
-            <!-- ============================================================== -->
-            <aside id="p-bottom-sheet" data-sheet-state="peek" class="p-sheet-container order-2 md:order-1 w-full md:w-80 lg:w-88 bg-white md:border-r border-slate-200 flex flex-col shrink-0 z-25 shadow-2xl md:shadow-sm">
-                
-                <!-- Mobile Sheet Drag Handle & Peek Summary Header -->
-                <div id="p-sheet-drag-handle" class="md:hidden flex flex-col items-center pt-2 pb-1.5 px-3.5 cursor-grab active:cursor-grabbing select-none border-b border-slate-100">
-                    <div class="w-10 h-1.5 rounded-full bg-slate-300 mb-2"></div>
-                    <div class="w-full flex items-center justify-between gap-2">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <span id="p-mobile-sheet-badge" class="w-6 h-6 rounded-lg bg-sky-600 text-white font-extrabold text-[11px] flex items-center justify-center shrink-0">
-                                3D
-                            </span>
-                            <div class="min-w-0">
-                                <div id="p-mobile-sheet-title" class="text-xs font-extrabold text-slate-900 truncate">
-                                    Ruta hacia Observatorio (P501)
-                                </div>
-                                <div id="p-mobile-sheet-subtitle" class="text-[11px] font-semibold text-sky-700 truncate">
-                                    Piso 1 &rarr; Piso 5 &middot; Toca un paso para enfocar
-                                </div>
-                            </div>
-                        </div>
-                        <button id="p-btn-toggle-sheet" type="button" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] flex items-center gap-1 shrink-0 cursor-pointer">
-                            <span id="p-btn-toggle-sheet-label">Opciones</span>
-                            <svg id="p-btn-toggle-sheet-icon" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 15l7-7 7 7"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Scrollable Content Inside Sheet / Desktop Sidebar -->
-                <div id="p-sheet-scroll-body" class="flex-1 overflow-y-auto p-3 sm:p-3.5 space-y-3">
-                    
-                    <!-- STEP-BY-STEP INTERACTIVE CARDS (Always visible at top of sheet so user can tap steps while walking!) -->
-                    <section id="p-wayfinding-steps-section" class="space-y-2">
-                        <div id="p-route-summary" class="text-xs font-bold text-slate-800 bg-sky-50/90 border border-sky-200/80 rounded-xl px-3 py-2 shadow-2xs">
-                            Selecciona origen y destino para ver ruta 3D
-                        </div>
-
-                        <!-- Horizontal swipeable cards on mobile peek, vertical clickable list on desktop/expanded -->
-                        <ol id="p-route-steps" class="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-1 md:pb-0 no-scrollbar text-xs text-slate-700"></ol>
-                    </section>
-
-                    <!-- ORIGIN & DESTINATION SELECTORS -->
-                    <section id="p-wayfinding-panel" class="bg-slate-50 border border-slate-200/90 rounded-xl p-3 space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                                <span>Configurar Ruta Interior</span>
-                            </span>
-                            <div class="flex items-center gap-2">
-                                <button id="p-btn-swap-route" type="button" class="text-[11px] font-bold text-sky-700 hover:text-sky-900 flex items-center gap-0.5 cursor-pointer" title="Invertir origen y destino">
-                                    <span>⇅ Invertir</span>
-                                </button>
-                                <button id="p-btn-clear-route" type="button" class="text-[11px] font-bold text-slate-400 hover:text-rose-600 transition-colors cursor-pointer">
-                                    Limpiar
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <div>
-                                <label for="p-select-start" class="block text-[10px] font-bold uppercase text-emerald-700 mb-0.5">🟢 Punto de Partida (Origen):</label>
-                                <select id="p-select-start" class="w-full px-2.5 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg bg-white text-slate-800 outline-hidden focus:border-sky-600"></select>
-                            </div>
-                            <div>
-                                <label for="p-select-end" class="block text-[10px] font-bold uppercase text-sky-700 mb-0.5">🔵 ¿A dónde vas? (Destino):</label>
-                                <select id="p-select-end" class="w-full px-2.5 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg bg-white text-slate-800 outline-hidden focus:border-sky-600"></select>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- SELECTED SPACE INSPECTOR CARD -->
-                    <div id="p-inspector-card" class="border border-slate-200 rounded-xl bg-white p-3 shadow-2xs">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Detalle del Espacio</span>
-                            <span id="p-floor-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">Todos (5 Pisos)</span>
-                        </div>
-                        <div id="p-inspector-content" class="text-xs text-slate-700 space-y-1.5">
-                            <p class="text-slate-400 text-[11px]">Toca cualquier aula, observatorio o escalera en el modelo 3D para ver detalles y trazar ruta.</p>
-                        </div>
-                    </div>
-
-                </div>
-
-            </aside>
 
         </div>
 
@@ -647,22 +561,21 @@ Key UX & Mobile Features:
         const ctx = canvas.getContext("2d");
         if (!ctx) return null;
 
-        // Base warm stone/terrazzo university corridor tone (#b29f87)
-        ctx.fillStyle = "#b29f87";
+        // Distinct medium slate-grey tile palette so floors clearly contrast with white walls
+        ctx.fillStyle = "#8a99ad";
         ctx.fillRect(0, 0, 256, 256);
 
-        // Subtle alternating tile checkerboard warmth
         const tiles = 4;
         const step = 256 / tiles;
         for (let r = 0; r < tiles; r++) {
             for (let c = 0; c < tiles; c++) {
-                ctx.fillStyle = (r + c) % 2 === 0 ? "#b6a48c" : "#ae9b83";
+                ctx.fillStyle = (r + c) % 2 === 0 ? "#91a0b4" : "#8392a6";
                 ctx.fillRect(c * step, r * step, step, step);
             }
         }
 
-        // Grout lines between corridor floor tiles
-        ctx.strokeStyle = "#96836c";
+        // Darker grey grout lines
+        ctx.strokeStyle = "#6c7b8e";
         ctx.lineWidth = 2;
         for (let i = 0; i <= tiles; i++) {
             const pos = i * step;
@@ -680,34 +593,34 @@ Key UX & Mobile Features:
         const tex = new THREE.CanvasTexture(canvas);
         tex.wrapS = THREE.RepeatWrapping;
         tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(24, 2);
+        tex.repeat.set(22, 2);
         return tex;
     }
 
     function initMaterials() {
         const hallwayTex = createUniversityHallwayTexture();
         MAT = {
-            slab: new THREE.MeshStandardMaterial({ color: 0xede8e1, roughness: 0.85, metalness: 0.05 }),
+            slab: new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.82, metalness: 0.05 }),
             hallway: new THREE.MeshStandardMaterial({
-                color: hallwayTex ? 0xffffff : 0xb29f87,
+                color: hallwayTex ? 0xffffff : 0x8a99ad,
                 map: hallwayTex,
-                roughness: 0.76,
-                metalness: 0.04
+                roughness: 0.72,
+                metalness: 0.05
             }),
-            roomFloor: new THREE.MeshStandardMaterial({ color: 0xe2dcd3, roughness: 0.8 }),
+            roomFloor: new THREE.MeshStandardMaterial({ color: 0x9aa8b8, roughness: 0.78 }),
             roomSelected: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.45, emissive: 0x0369a1, emissiveIntensity: 0.25 }),
             roomHighlight: new THREE.MeshStandardMaterial({ color: 0x0ea5e9, roughness: 0.5, emissive: 0x0284c7, emissiveIntensity: 0.15 }),
-            restroomMenFloor: new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.75 }),
-            restroomWomenFloor: new THREE.MeshStandardMaterial({ color: 0xa8b3c2, roughness: 0.75 }),
-            wall: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6, transparent: true, opacity: 0.98 }),
-            wallEdge: new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.38 }),
-            doorPanel: new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.45 }),
-            doorHandle: new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.6, roughness: 0.3 }),
-            doorFrame: new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6 }),
+            restroomMenFloor: new THREE.MeshStandardMaterial({ color: 0x78879b, roughness: 0.75 }),
+            restroomWomenFloor: new THREE.MeshStandardMaterial({ color: 0x8291a5, roughness: 0.75 }),
+            wall: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55, transparent: true, opacity: 0.98 }),
+            wallEdge: new THREE.LineBasicMaterial({ color: 0x64748b, transparent: true, opacity: 0.45 }),
+            doorPanel: new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.45 }),
+            doorHandle: new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.6, roughness: 0.3 }),
+            doorFrame: new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.6 }),
             railingPost: new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.4, roughness: 0.45 }),
             railingBar: new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.35, roughness: 0.45 }),
-            stairStep: new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.75 }),
-            stairFloor: new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.85 }),
+            stairStep: new THREE.MeshStandardMaterial({ color: 0x7c8ba1, roughness: 0.75 }),
+            stairFloor: new THREE.MeshStandardMaterial({ color: 0x8a99ad, roughness: 0.82 }),
             routeLine: new THREE.MeshStandardMaterial({ color: 0x0284c7, emissive: 0x0284c7, emissiveIntensity: 0.55, roughness: 0.25 }),
             startPin: new THREE.MeshStandardMaterial({ color: 0x059669, roughness: 0.3 }),
             endPin: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3 }),
@@ -1162,7 +1075,7 @@ Key UX & Mobile Features:
             dome.userData = { spaceId: fullId };
             interactiveMeshes.push(tile, dome);
 
-            const el = createLabel("🔭 Cúpula (P501)", "dome", fullId);
+            const el = createLabel("Observatory Copernico", "dome", fullId);
             spaceRecords.push({
                 id: fullId,
                 code: "501",
@@ -1262,7 +1175,7 @@ Key UX & Mobile Features:
             tile.userData = { spaceId: fullId };
             interactiveMeshes.push(tile);
 
-            const el = createLabel("Anexo P401", "", fullId);
+            const el = createLabel("P401", "", fullId);
             spaceRecords.push({
                 id: fullId,
                 code: "401",
@@ -1415,7 +1328,7 @@ Key UX & Mobile Features:
             interactiveMeshes.push(tile);
 
             const labelText = item.kind === "room"
-                ? `P-${item.code}`
+                ? `P${item.code}`
                 : (item.kind === "restroom-men" ? `🚻 H P${floorNum}` : `🚻 M P${floorNum}`);
             const el = createLabel(labelText, item.kind === "room" ? "" : "restroom", fullId);
 
@@ -2157,12 +2070,8 @@ Key UX & Mobile Features:
             }
 
             if (eg && eg.visible) {
-                const pinY = endRec.floor === 5 ? 5.8 : 2.7;
-                tempV.set(endRec.x, pinY, endRec.z).add(eg.position).project(camera);
-                endPinEl.style.display = tempV.z <= 1 ? "block" : "none";
-                endPinEl.style.left = `${(tempV.x * 0.5 + 0.5) * width}px`;
-                endPinEl.style.top = `${(-(tempV.y * 0.5) + 0.5) * height}px`;
-                endPinEl.textContent = `🔵 DESTINO: ${endRec.code}`;
+                // Destination room's own tag (e.g., P101, P401, Observatory Copernico) is already highlighted, so hide duplicate "DESTINO:" badge
+                endPinEl.style.display = "none";
             } else {
                 endPinEl.style.display = "none";
             }
