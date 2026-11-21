@@ -80,12 +80,12 @@ Interactive search filter & click-to-focus on 2D map.
                     <span class="w-6 h-6 rounded-md bg-purple-700 text-white font-extrabold text-xs flex items-center justify-center">C</span>
                     <span class="font-bold text-slate-900 text-xs">Edificio C • Laboratorios & Tesorería</span>
                 </div>
-                <span class="text-[10px] text-slate-400 font-medium">3 Pisos</span>
+                <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-bold border border-brand-200">3 Pisos</span>
             </div>
             <div class="space-y-1 text-[11px] text-slate-600 pl-8">
-                <div><strong class="text-slate-800">Piso 1:</strong> Auditorio C101, Aulas C102-C104, Caja UAM / Tesorería, Aula C106, Lab MAC C107, Auditorio C109.</div>
-                <div><strong class="text-slate-800">Piso 2:</strong> Labs Cómputo C201-C205, Lab MAC C203, Aulas C209-C211.</div>
-                <div><strong class="text-slate-800">Piso 3:</strong> Aulas C301-C305, Coordinación de Compras, Aulas C307-C310.</div>
+                <div><strong class="text-slate-800">Piso 1:</strong> Auditorios C101 y C109, Aulas C102-C106, Caja UAM / Tesorería C105, Lab MAC C107, Lab ACAI-Erasmus+ (C108), Rampa Accesible.</div>
+                <div><strong class="text-slate-800">Piso 2:</strong> Labs de Cómputo C201, C202, C204, C205, Lab MAC C203, Bodega C206, Sanitarios H/M, Aulas C209-C211.</div>
+                <div><strong class="text-slate-800">Piso 3:</strong> Estudio Audiovisual A-301, Aulas C301-C304, Coordinación de Compras C306, Aulas C307-C310.</div>
             </div>
         </div>
 
@@ -185,7 +185,7 @@ Interactive search filter & click-to-focus on 2D map.
                 <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
             </div>
             <div class="space-y-1 text-[11px] text-slate-600 pl-8">
-                <div><strong class="text-slate-800">Piso 1:</strong> Laboratorios de Odontología J-101 y J-102, Simulación Dental.</div>
+                <div><strong class="text-slate-800">Piso 1:</strong> Laboratorio de Odontología J-101, Laboratorio J-102, Servicios Sanitarios Hombres y Mujeres.</div>
             </div>
         </div>
 
@@ -224,10 +224,11 @@ Interactive search filter & click-to-focus on 2D map.
                     <span class="w-6 h-6 rounded-md bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center">O</span>
                     <span class="font-bold text-slate-900 text-xs">Edificio O • Ingeniería & Arquitectura</span>
                 </div>
-                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+                <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-bold border border-brand-200">2 Pisos</span>
             </div>
             <div class="space-y-1 text-[11px] text-slate-600 pl-8">
-                <div><strong class="text-slate-800">Piso 1:</strong> Decanatura FIA, Laboratorio de Ingeniería y CIAR, Talleres de Maquetas y Dibujo.</div>
+                <div><strong class="text-slate-800">Piso 1:</strong> Decanatura FIA (O-101), Lab Suelos (O-102), Lab Materiales (O-104), Fluidos, Riesgos (O-105), Anexo Norte.</div>
+                <div><strong class="text-slate-800">Piso 2:</strong> CIAR (Inteligencia Artificial & Robótica), Lab Redes (O-201), Sala de Tutoría, Aula O-202.</div>
             </div>
         </div>
 
@@ -236,12 +237,20 @@ Interactive search filter & click-to-focus on 2D map.
             <div class="flex items-center justify-between mb-1.5">
                 <div class="flex items-center gap-2">
                     <span class="w-6 h-6 rounded-md bg-rose-900 text-white font-extrabold text-xs flex items-center justify-center">P</span>
-                    <span class="font-bold text-slate-900 text-xs">Edificio P • Copérnico & Observatorio</span>
+                    <span class="font-bold text-slate-900 text-xs">Edificio P • Copérnico</span>
                 </div>
-                <span class="text-[10px] text-slate-400 font-medium">1 Piso</span>
+                <span class="text-[10px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-bold border border-brand-200">3 Pisos</span>
             </div>
             <div class="space-y-1 text-[11px] text-slate-600 pl-8">
-                <div><strong class="text-slate-800">Piso 1:</strong> Aulas de Clase P, Cúpula del Observatorio Astronómico Copérnico, Estación Meteorológica.</div>
+                <div><strong class="text-slate-800">Piso 1:</strong> Aulas P-101 a P-108, Rampa Estacionamiento, Baños y Bebedero P1.</div>
+                <div><strong class="text-slate-800">Piso 2:</strong> Aulas P-201 a P-208, Baños Centrales y Bebedero P2.</div>
+                <div><strong class="text-slate-800">Piso 3:</strong> Aulas P-301 a P-306, Baños P3, Cúpula Observatorio Astronómico Copérnico.</div>
+            </div>
+            <div class="mt-2.5 pt-2 pl-8 border-t border-slate-100">
+                <button type="button" onclick="event.stopPropagation(); if(typeof window.openBuildingPIsometricModal==='function') window.openBuildingPIsometricModal();" class="w-full py-1.5 px-2 bg-pink-800 hover:bg-pink-900 text-white rounded-lg font-bold text-[11px] shadow-xs flex items-center justify-center gap-1.5 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <span>Ver Vista Isométrica 3D</span>
+                </button>
             </div>
         </div>
 

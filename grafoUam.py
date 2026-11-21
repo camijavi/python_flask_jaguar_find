@@ -24,6 +24,17 @@ from backend.graph import (
     getAllBuildingSubgraphs,
     BUILDING_SUBGRAPHS,
 )
+from backend.subgraphs import (
+    BuildingSubgraph,
+    buildingPSubgraph,
+    buildingDSubgraph,
+    buildingJSubgraph,
+    buildingOSubgraph,
+    buildingCSubgraph,
+    getBuildingSubgraph,
+    getAllBuildingSubgraphs,
+    BUILDING_SUBGRAPHS,
+)
 
 __all__ = [
     "DirectedEdge",
@@ -41,6 +52,10 @@ __all__ = [
     "t",
     "BuildingSubgraph",
     "buildingPSubgraph",
+    "buildingDSubgraph",
+    "buildingJSubgraph",
+    "buildingOSubgraph",
+    "buildingCSubgraph",
     "getBuildingSubgraph",
     "getAllBuildingSubgraphs",
     "BUILDING_SUBGRAPHS",
