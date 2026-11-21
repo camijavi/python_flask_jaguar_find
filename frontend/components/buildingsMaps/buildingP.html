@@ -116,13 +116,16 @@ Key UX & Mobile Features:
                     <!-- Quick Destination Filter Chips (One-tap mobile shortcuts) -->
                     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pointer-events-auto pb-0.5">
                         <button type="button" data-quick-dest="F5-501" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-pink-900 text-white font-bold text-[11px] shadow-sm flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
-                            <span>🔭</span><span>Observatorio P5</span>
+                            <span>🔭</span><span>Observatory Copernico</span>
                         </button>
                         <button type="button" data-quick-dest="F4-401" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
-                            <span>🎤</span><span>Salón P401</span>
+                            <span>🎤</span><span>P401</span>
                         </button>
                         <button type="button" data-quick-restroom="nearest" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
                             <span>🚻</span><span>Sanitarios</span>
+                        </button>
+                        <button type="button" data-quick-fountain="nearest" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
+                            <span>💧</span><span>Bebedero</span>
                         </button>
                         <button type="button" data-quick-floor="1" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs active:scale-95 transition-transform cursor-pointer">
                             Aulas P101–108
@@ -131,7 +134,7 @@ Key UX & Mobile Features:
                             Aulas P201–208
                         </button>
                         <button type="button" data-quick-floor="3" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs active:scale-95 transition-transform cursor-pointer">
-                            Aulas P301–308
+                            Aulas P301–306
                         </button>
                     </div>
                 </div>
@@ -244,10 +247,37 @@ Key UX & Mobile Features:
                     </div>
                 </div>
 
-                <!-- 6. Bottom Floating Gesture Hint Badge -->
-                <div class="absolute bottom-4 left-4 z-20 hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-xl border border-slate-200/90 shadow-md text-[11px] text-slate-600 font-semibold pointer-events-none">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>1 dedo / Arrastrar: rotar &middot; 2 dedos / Clic der.: mover &middot; Pellizcar / Rueda: zoom</span>
+                <!-- 6. COMPACT FLOATING GRAPH WAYFINDING HUD (Bottom-Left of 3D Canvas, No Sidebar) -->
+                <div id="p-floating-wayfinding-hud" class="absolute bottom-3 left-3 right-14 sm:right-auto sm:w-96 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-xl p-2.5 space-y-2">
+                    <!-- Compact Origin -> Destination Selector Row -->
+                    <div class="grid grid-cols-2 gap-1.5 items-center">
+                        <div>
+                            <label for="p-select-start" class="block text-[9px] font-extrabold uppercase tracking-wider text-emerald-700 mb-0.5">🟢 Origen</label>
+                            <select id="p-select-start" class="w-full px-2 py-1 text-[11px] font-bold border border-slate-200 rounded-lg bg-slate-50/90 text-slate-800 outline-hidden focus:border-sky-600 truncate"></select>
+                        </div>
+                        <div>
+                            <label for="p-select-end" class="block text-[9px] font-extrabold uppercase tracking-wider text-sky-700 mb-0.5">🔵 Destino</label>
+                            <select id="p-select-end" class="w-full px-2 py-1 text-[11px] font-bold border border-slate-200 rounded-lg bg-slate-50/90 text-slate-800 outline-hidden focus:border-sky-600 truncate"></select>
+                        </div>
+                    </div>
+
+                    <!-- Active Route Step & Graph Coordinates Summary -->
+                    <div class="flex items-center justify-between gap-2 bg-slate-900 text-white rounded-xl px-2.5 py-1.5">
+                        <button id="p-btn-prev-step" type="button" class="w-6 h-6 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs font-bold shrink-0 cursor-pointer" title="Paso anterior">
+                            &#9664;
+                        </button>
+                        <div class="min-w-0 flex-1 text-center">
+                            <div id="p-hud-step-title" class="text-[11px] font-extrabold truncate text-sky-300">
+                                Selecciona un destino en el mapa
+                            </div>
+                            <div id="p-hud-step-meta" class="text-[10px] text-slate-300 truncate">
+                                Grafo Edificio P &middot; 5 niveles
+                            </div>
+                        </div>
+                        <button id="p-btn-next-step" type="button" class="w-6 h-6 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs font-bold shrink-0 cursor-pointer" title="Siguiente paso">
+                            &#9654;
+                        </button>
+                    </div>
                 </div>
             </main>
 
@@ -419,6 +449,11 @@ Key UX & Mobile Features:
     background: rgba(241, 245, 249, 0.96);
     border-color: #64748b;
     color: #334155;
+}
+.p-map-label.fountain {
+    background: rgba(224, 242, 254, 0.96);
+    border-color: #0284c7;
+    color: #0369a1;
 }
 .p-map-label.orientation-badge {
     font-size: 9px;
@@ -960,10 +995,18 @@ Key UX & Mobile Features:
         northPlat.userData = { spaceId: fullId };
         interactiveMeshes.push(northPlat);
 
+        const graphNodeId = cx < 0 ? `p_stairs_f${floorNum}_east` : `p_stairs_f${floorNum}_west`;
+        const stairLat = cx < 0 ? 12.107470 : 12.107410;
+        const stairLng = cx < 0 ? -86.256753 : -86.257431;
+
         const el = createLabel(label, "stair", fullId);
         spaceRecords.push({
             id: fullId,
             code: id,
+            graphNodeId,
+            graphNodeIds: [graphNodeId],
+            lat: stairLat,
+            lng: stairLng,
             floor: floorNum,
             type: "Escalera",
             name: `${label} (Piso ${floorNum})`,
@@ -973,15 +1016,74 @@ Key UX & Mobile Features:
             x: cx,
             z: cz,
             doorX: xFlight1,
+            doorXs: [xFlight1, xFlight2],
             notes: cx < 0
                 ? (isNarrow
-                    ? "Tramo de escalera Oeste más estrecho (sin barandas, en el mismo núcleo Oeste) que conecta hacia el Anexo Superior."
-                    : "Escalera principal Oeste gruesa sin barandas (orientada de Norte a Sur con descanso intermedio).")
-                : "Escalera Este gruesa sin barandas (orientada de Norte a Sur con descanso intermedio): conecta pisos 1 a 3.",
+                    ? "Tramo de escalera más estrecho (sin barandas) que conecta hacia el Anexo Superior P401 y Observatory Copernico."
+                    : "Escalera principal gruesa sin barandas (orientada de Norte a Sur con descanso intermedio).")
+                : "Segundas escaleras gruesas sin barandas (orientadas de Norte a Sur con descanso intermedio): conecta pisos 1 a 3.",
             mesh: northPlat,
             baseMat: MAT.stairFloor,
             labelEl: el,
             localPos: new THREE.Vector3(cx, 1.8, 0.4)
+        });
+    }
+
+    // 3D Drinking Fountain (Bebedero) Helper mapped to official graph coordinates
+    function addWaterFountain(parent, floorNum, id, graphNodeId, shortLabel, fullName, x, z, lat, lng, notes) {
+        const g = new THREE.Group();
+
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, metalness: 0.65, roughness: 0.28 });
+        const basinMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.35, roughness: 0.25 });
+
+        const bodyGeo = new THREE.BoxGeometry(0.62, 0.92, 0.48);
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.position.set(0, 0.46, 0);
+        body.castShadow = true;
+        body.receiveShadow = true;
+        g.add(body);
+
+        const basinGeo = new THREE.CylinderGeometry(0.22, 0.18, 0.12, 16);
+        const basin = new THREE.Mesh(basinGeo, basinMat);
+        basin.position.set(0, 0.96, 0.04);
+        g.add(basin);
+
+        const backSplashGeo = new THREE.BoxGeometry(0.62, 0.36, 0.08);
+        const backSplash = new THREE.Mesh(backSplashGeo, bodyMat);
+        backSplash.position.set(0, 1.08, -0.20);
+        g.add(backSplash);
+
+        g.position.set(x, 0.12, z);
+        parent.add(g);
+
+        const fullId = `F${floorNum}-${id}`;
+        body.userData = { spaceId: fullId };
+        basin.userData = { spaceId: fullId };
+        interactiveMeshes.push(body, basin);
+
+        const el = createLabel(shortLabel, "fountain", fullId);
+        spaceRecords.push({
+            id: fullId,
+            code: id,
+            graphNodeId,
+            graphNodeIds: [graphNodeId],
+            lat,
+            lng,
+            floor: floorNum,
+            type: "Bebedero",
+            name: fullName,
+            wing: x < 0 ? "Pasillo Este" : "Pasillo Oeste",
+            doors: 1,
+            area: "Bebedero UAM",
+            x,
+            z,
+            doorX: x,
+            doorXs: [x],
+            notes,
+            mesh: body,
+            baseMat: bodyMat,
+            labelEl: el,
+            localPos: new THREE.Vector3(x, 1.55, z + 0.3)
         });
     }
 
@@ -1117,24 +1219,29 @@ Key UX & Mobile Features:
             spaceRecords.push({
                 id: fullId,
                 code: "501",
+                graphNodeId: "p_observatory_501",
+                graphNodeIds: ["p_observatory_501"],
+                lat: 12.107461,
+                lng: -86.256743,
                 floor: 5,
                 type: "Cúpula Astronómica",
-                name: "Observatorio Astronómico y Meteorológico (P501)",
+                name: "Observatory Copernico (P501)",
                 wing: "Anexo Superior (Nivel 5)",
                 doors: 1,
                 area: "105.6 m²",
                 x: cx,
                 z: zCenter,
                 doorX: -32,
-                notes: "Segundo nivel del anexo superior coronado por la cúpula metálica del Observatorio UAM. No tiene pasillo exterior; se accede por el núcleo de escaleras Oeste.",
+                doorXs: [-32],
+                notes: "Segundo nivel del anexo superior coronado por la cúpula metálica del Observatorio UAM. No tiene pasillo exterior; se accede por las escaleras estrechas.",
                 mesh: tile,
                 baseMat: MAT.roomFloor,
                 labelEl: el,
                 localPos: new THREE.Vector3(cx, 4.4, zCenter)
             });
 
-            // Arrival platform of the narrow West stairs at the exact same location (cx = -36), without railings
-            addStairwell(floorGroup, 5, "ST-W", "Llegada Esc. P5", -36, -1.4, "Núcleo Oeste", false, true);
+            // Arrival platform of the narrow stairs at the exact same location (cx = -36), without railings
+            addStairwell(floorGroup, 5, "ST-W", "Esc. P5", -36, -1.4, "Núcleo Este", false, true);
 
             scene.add(floorGroup);
             floorGroups.push({ floorNum, group: floorGroup });
@@ -1158,7 +1265,7 @@ Key UX & Mobile Features:
             const zHallWall = 1.5;
             const zCenter = -2.5;
 
-            // Annex room slab (x = -32.2 to -18.4) leaving the West stairwell shaft (cx = -36) open
+            // Annex room slab (x = -32.2 to -18.4) leaving the stairwell shaft (cx = -36) open
             const roomSlabW = -18.4 - (-32.2);
             const roomSlabCx = (-32.2 + -18.4) / 2;
             const roomSlabGeo = new THREE.BoxGeometry(roomSlabW, 0.24, 8.2);
@@ -1217,24 +1324,29 @@ Key UX & Mobile Features:
             spaceRecords.push({
                 id: fullId,
                 code: "401",
+                graphNodeId: "p_room_401",
+                graphNodeIds: ["p_room_401"],
+                lat: 12.107461,
+                lng: -86.256743,
                 floor: 4,
                 type: "Salón Conferencia",
-                name: "Anexo Superior • Salón P401",
-                wing: "Anexo Torre Oeste (Nivel 4)",
+                name: "Salón P-401 (Anexo Superior)",
+                wing: "Anexo Superior (Nivel 4)",
                 doors: 1,
                 area: "105.6 m²",
                 x: cx,
                 z: zCenter,
                 doorX,
-                notes: "Primer nivel del anexo superior en el extremo oeste. Se accede por la escalera estrecha en el núcleo Oeste.",
+                doorXs: [doorX],
+                notes: "Primer nivel del anexo superior del Edificio P. Se accede por la escalera estrecha desde el 3er piso.",
                 mesh: tile,
                 baseMat: MAT.roomFloor,
                 labelEl: el,
                 localPos: new THREE.Vector3(cx, 1.5, zCenter)
             });
 
-            // Narrower zig-zag stairs in the exact same West stairwell location (cx = -36) climbing from P4 -> P5, without railings
-            addStairwell(floorGroup, 4, "ST-W", "Esc. Oeste (Estrecha)", -36, -1.4, "Núcleo Oeste", true, true);
+            // Narrower zig-zag stairs in the exact same stairwell location (cx = -36) climbing from P4 -> P5, without railings
+            addStairwell(floorGroup, 4, "ST-W", "Esc. P4", -36, -1.4, "Núcleo Este", true, true);
 
             scene.add(floorGroup);
             floorGroups.push({ floorNum, group: floorGroup });
@@ -1278,13 +1390,47 @@ Key UX & Mobile Features:
 
         addWallBox(floorGroup, 0, 0.12, -6.5, 64, wallH, 0.24);
 
-        // Accesos de Planta Baja (Piso 1)
+        // Accesos Exteriores Oficiales del Grafo en Planta Baja (Piso 1)
         if (floorNum === 1) {
             [
-                { id: "F1-ENT-W", name: "Entrada Principal Oeste (P1)", shortLabel: "🚪 ENTRADA OESTE", x: -36, z: 4.9 },
-                { id: "F1-ENT-E", name: "Entrada Este (P1)", shortLabel: "🚪 ENTRADA ESTE", x: 36, z: 4.9 }
+                {
+                    id: "F1-ENT-W",
+                    graphNodeId: "p_stairs_f1_ext_left",
+                    name: "Escaleras del P (Izquierda / Exterior)",
+                    shortLabel: "🚪 Esc. Ext. Izq.",
+                    x: -36.5,
+                    z: 4.9,
+                    lat: 12.107584,
+                    lng: -86.256779,
+                    wing: "Acceso Este / Exterior Izquierda",
+                    notes: "Escaleras exteriores izquierdas hacia la entrada este del Edificio P (junto a P101 y el núcleo hacia P401 / Observatory Copernico)."
+                },
+                {
+                    id: "F1-ENT-O",
+                    graphNodeId: "p_stairs_to_building_o",
+                    name: "Escaleras del P hacia Edificio O",
+                    shortLabel: "🚪 Hacia Edif. O",
+                    x: 33.8,
+                    z: 4.9,
+                    lat: 12.107453,
+                    lng: -86.257413,
+                    wing: "Conexión Edificio O (Oeste)",
+                    notes: "Escaleras de interconexión peatonal entre el extremo oeste del Edificio P y el Edificio O."
+                },
+                {
+                    id: "F1-ENT-E",
+                    graphNodeId: "p_ramp_parking",
+                    name: "Rampa del Estacionamiento (Frente al O)",
+                    shortLabel: "♿ Rampa Parqueo",
+                    x: 38.2,
+                    z: 4.9,
+                    lat: 12.106991,
+                    lng: -86.258233,
+                    wing: "Acceso Accesible Oeste",
+                    notes: "Rampa accesible desde el estacionamiento (enfrente del Edificio O) hacia el extremo oeste del Edificio P."
+                }
             ].forEach(ent => {
-                const pad = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.08, 1.4), MAT.doorPanel);
+                const pad = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.08, 1.35), MAT.doorPanel);
                 pad.position.set(ent.x, 0.17, ent.z);
                 pad.userData = { spaceId: ent.id };
                 interactiveMeshes.push(pad);
@@ -1292,18 +1438,21 @@ Key UX & Mobile Features:
                 spaceRecords.push({
                     id: ent.id,
                     code: ent.id,
+                    graphNodeId: ent.graphNodeId,
+                    graphNodeIds: [ent.graphNodeId],
+                    lat: ent.lat,
+                    lng: ent.lng,
                     floor: 1,
                     type: "Acceso",
                     name: ent.name,
-                    wing: ent.x < 0 ? "Acceso Principal Oeste" : "Acceso Este",
+                    wing: ent.wing,
                     doors: 1,
-                    area: "Acceso Peatonal",
+                    area: "Acceso Oficial Grafo",
                     x: ent.x,
                     z: 3.5,
-                    doorX: ent.x,
-                    notes: ent.x < 0
-                        ? "Acceso principal junto a la Torre Oeste (el más cercano para subir a los pisos 4 y 5 / Observatorio)."
-                        : "Acceso peatonal por el extremo Este (junto a sanitarios y aulas P107–P108).",
+                    doorX: ent.x < 0 ? -36.0 : 36.0,
+                    doorXs: [ent.x < 0 ? -36.0 : 36.0],
+                    notes: ent.notes,
                     mesh: pad,
                     baseMat: MAT.doorPanel,
                     labelEl: createLabel(ent.shortLabel, "stair", ent.id),
@@ -1312,17 +1461,80 @@ Key UX & Mobile Features:
             });
         }
 
+        // Official GPS coordinates & node IDs per floor from backend/subgraphs/buildingP.py
+        const FLOOR_GRAPH_SPECS = {
+            1: {
+                rooms: [
+                    { code: "101", w: 6.6, nodeIds: ["p_room_101"], lat: 12.107460, lng: -86.256743 },
+                    { code: "102", w: 6.6, nodeIds: ["p_room_102"], lat: 12.107431, lng: -86.256783 },
+                    { code: "103", w: 6.6, nodeIds: ["p_room_103"], lat: 12.107439, lng: -86.256947 },
+                    { code: "104", w: 6.6, nodeIds: ["p_room_104"], lat: 12.107455, lng: -86.256981 },
+                    { code: "105", w: 6.6, nodeIds: ["p_room_105"], lat: 12.107453, lng: -86.257149 },
+                    { code: "106", w: 6.6, nodeIds: ["p_room_106"], lat: 12.107467, lng: -86.257202 },
+                    { code: "107", w: 6.6, nodeIds: ["p_room_107"], lat: 12.107450, lng: -86.257270 },
+                    { code: "108", w: 6.6, nodeIds: ["p_room_108"], lat: 12.107477, lng: -86.257206 }
+                ],
+                restroomNodeId: "p_restrooms_f1",
+                restroomLat: 12.107441,
+                restroomLng: -86.257422
+            },
+            2: {
+                rooms: [
+                    { code: "201", w: 6.6, nodeIds: ["p_room_201"], lat: 12.107484, lng: -86.256721 },
+                    { code: "202", w: 6.6, nodeIds: ["p_room_202"], lat: 12.107428, lng: -86.256817 },
+                    { code: "203", w: 6.6, nodeIds: ["p_room_203"], lat: 12.107447, lng: -86.256957 },
+                    { code: "204", w: 6.6, nodeIds: ["p_room_204"], lat: 12.107434, lng: -86.257043 },
+                    { code: "205", w: 6.6, nodeIds: ["p_room_205"], lat: 12.107492, lng: -86.257090 },
+                    { code: "206", w: 6.6, nodeIds: ["p_room_206"], lat: 12.107413, lng: -86.257153 },
+                    { code: "207", w: 6.6, nodeIds: ["p_room_207"], lat: 12.107427, lng: -86.257217 },
+                    { code: "208", w: 6.6, nodeIds: ["p_room_208"], lat: 12.107402, lng: -86.257297 }
+                ],
+                restroomNodeId: "p_restrooms_f2",
+                restroomLat: 12.107480,
+                restroomLng: -86.257337
+            },
+            3: {
+                // Floor 3 has 6 classrooms (P301 to P306, each 8.8m wide = 52.8m total) with dual access nodes on P301 & P306
+                rooms: [
+                    { code: "301", w: 8.8, nodeIds: ["p_room_301", "p_room_301_b"], lat: 12.107461, lng: -86.256717 },
+                    { code: "302", w: 8.8, nodeIds: ["p_room_302"], lat: 12.107443, lng: -86.256934 },
+                    { code: "303", w: 8.8, nodeIds: ["p_room_303"], lat: 12.107442, lng: -86.256936 },
+                    { code: "304", w: 8.8, nodeIds: ["p_room_304"], lat: 12.107443, lng: -86.256999 },
+                    { code: "305", w: 8.8, nodeIds: ["p_room_305"], lat: 12.107454, lng: -86.257114 },
+                    { code: "306", w: 8.8, nodeIds: ["p_room_306", "p_room_306_b"], lat: 12.107461, lng: -86.257145 }
+                ],
+                restroomNodeId: "p_restrooms_f3",
+                restroomLat: 12.107468,
+                restroomLng: -86.257189
+            }
+        };
+
+        const floorSpec = FLOOR_GRAPH_SPECS[floorNum];
         const rowLayout = [
-            { kind: "room", code: `${floorNum}01`, w: 6.6 },
-            { kind: "room", code: `${floorNum}02`, w: 6.6 },
-            { kind: "room", code: `${floorNum}03`, w: 6.6 },
-            { kind: "room", code: `${floorNum}04`, w: 6.6 },
-            { kind: "room", code: `${floorNum}05`, w: 6.6 },
-            { kind: "room", code: `${floorNum}06`, w: 6.6 },
-            { kind: "room", code: `${floorNum}07`, w: 6.6 },
-            { kind: "room", code: `${floorNum}08`, w: 6.6 },
-            { kind: "restroom-men", code: `HOMBRES-${floorNum}`, w: 5.6 },
-            { kind: "restroom-women", code: `MUJERES-${floorNum}`, w: 5.6 }
+            ...floorSpec.rooms.map(r => ({
+                kind: "room",
+                code: r.code,
+                w: r.w,
+                nodeIds: r.nodeIds,
+                lat: r.lat,
+                lng: r.lng
+            })),
+            {
+                kind: "restroom-men",
+                code: `HOMBRES-${floorNum}`,
+                w: 5.6,
+                nodeIds: [floorSpec.restroomNodeId],
+                lat: floorSpec.restroomLat,
+                lng: floorSpec.restroomLng
+            },
+            {
+                kind: "restroom-women",
+                code: `MUJERES-${floorNum}`,
+                w: 5.6,
+                nodeIds: [floorSpec.restroomNodeId],
+                lat: floorSpec.restroomLat,
+                lng: floorSpec.restroomLng
+            }
         ];
 
         const zHallWall = 1.5;
@@ -1382,27 +1594,30 @@ Key UX & Mobile Features:
             const el = createLabel(labelText, item.kind === "room" ? "" : "restroom", fullId);
 
             const spaceName = item.kind === "room"
-                ? `Aula P-${item.code}`
-                : (item.kind === "restroom-men" ? `Sanitarios Hombres (Piso ${floorNum})` : `Sanitarios Mujeres (Piso ${floorNum})`);
+                ? `Salón P-${item.code}`
+                : (item.kind === "restroom-men" ? `Baños Hombres (Piso ${floorNum})` : `Baños Mujeres (Piso ${floorNum})`);
 
             const spaceNotes = item.kind === "room"
-                ? `Aula académica P-${item.code} en Piso ${floorNum} con doble puerta hacia el balcón exterior.`
-                : (item.kind === "restroom-men"
-                    ? `Sanitarios para hombres en el extremo Este del Piso ${floorNum}, contiguos al Aula P-${floorNum}08.`
-                    : `Sanitarios para mujeres en el extremo Este del Piso ${floorNum}, junto a las Escaleras Este.`);
+                ? `Salón P-${item.code} en Piso ${floorNum} (Coords: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}).`
+                : `Servicios sanitarios del Piso ${floorNum} con puertas persiana (Coords: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}).`;
 
             spaceRecords.push({
                 id: fullId,
                 code: item.code,
+                graphNodeId: item.nodeIds[0],
+                graphNodeIds: item.nodeIds,
+                lat: item.lat,
+                lng: item.lng,
                 floor: floorNum,
                 type: item.kind === "room" ? "Aula" : "Sanitarios",
                 name: spaceName,
-                wing: item.kind === "room" ? "Pasillo Principal" : "Ala Este (Sanitarios)",
+                wing: item.kind === "room" ? "Pasillo Principal" : "Sector Sanitarios",
                 doors: item.kind === "room" ? 2 : 1,
-                area: item.kind === "room" ? "52.8 m²" : "44.8 m²",
+                area: item.kind === "room" ? (floorNum === 3 ? "70.4 m²" : "52.8 m²") : "44.8 m²",
                 x: cx,
                 z: zCenter,
                 doorX: doorXs[0],
+                doorXs,
                 notes: spaceNotes,
                 mesh: tile,
                 baseMat,
@@ -1411,35 +1626,104 @@ Key UX & Mobile Features:
             });
         });
 
-        // Single unified zig-zag stairwell per wing (on Floor 3, the West stair climbing to Floor 4 is narrower)
+        // Official Drinking Fountains (Bebederos) from backend/subgraphs/buildingP.py
+        if (floorNum === 1) {
+            addWaterFountain(
+                floorGroup,
+                1,
+                "FOUNTAIN-1",
+                "p_fountain_f1",
+                "💧 P1",
+                "Bebedero 1er Piso del P",
+                -31.5,
+                1.85,
+                12.107460,
+                -86.256743,
+                "Bebedero de agua en Planta Baja junto a las escaleras este y entrada al Salón P-101."
+            );
+        } else if (floorNum === 2) {
+            addWaterFountain(
+                floorGroup,
+                2,
+                "FOUNTAIN-2E",
+                "p_fountain_f2_east",
+                "💧 P2-E",
+                "2do Bebedero del P (Piso 2 Este)",
+                -25.4,
+                1.85,
+                12.107434,
+                -86.256781,
+                "Bebedero este del Piso 2 ubicado entre el Salón P-201 y el Salón P-202."
+            );
+            addWaterFountain(
+                floorGroup,
+                2,
+                "FOUNTAIN-2W",
+                "p_fountain_f2_west",
+                "💧 P2-O",
+                "Bebedero del P (Piso 2 Oeste)",
+                20.8,
+                1.85,
+                12.107407,
+                -86.257298,
+                "Bebedero oeste del Piso 2 ubicado entre el Salón P-208 y la batería de baños."
+            );
+        } else if (floorNum === 3) {
+            addWaterFountain(
+                floorGroup,
+                3,
+                "FOUNTAIN-3",
+                "p_fountain_f3",
+                "💧 P3",
+                "1er Bebedero del P (Piso 3)",
+                -27.6,
+                1.85,
+                12.107434,
+                -86.256751,
+                "Bebedero del Piso 3 ubicado frente al Salón P-301 (entre Acceso 1 y Acceso 2)."
+            );
+        }
+
+        // Single unified zig-zag stairwell per wing (on Floor 3, the stair climbing to Floor 4 is narrower)
         addStairwell(
             floorGroup,
             floorNum,
             "ST-W",
-            floorNum === 3 ? "Esc. Oeste (A Anexo)" : "Esc. Oeste",
+            `Esc. Este P${floorNum}`,
             -36,
             -1.4,
-            "Núcleo Oeste",
+            "Núcleo Este",
             true,
             floorNum === 3
         );
-        addStairwell(floorGroup, floorNum, "ST-E", "Esc. Este", 36, -1.4, "Núcleo Este", floorNum < 3, false);
+        addStairwell(
+            floorGroup,
+            floorNum,
+            "ST-E",
+            `Esc. Oeste P${floorNum}`,
+            36,
+            -1.4,
+            "Núcleo Oeste",
+            floorNum < 3,
+            false
+        );
 
         scene.add(floorGroup);
         floorGroups.push({ floorNum, group: floorGroup });
     }
 
-    // Populate Wayfinding Dropdowns
+    // Populate Wayfinding Dropdowns with All Graph Nodes (Entrances, Classrooms, Fountains, Restrooms)
     function populateSelectors() {
         const startSel = document.getElementById("p-select-start");
         const endSel = document.getElementById("p-select-end");
         if (!startSel || !endSel) return;
 
-        const entrances = spaceRecords.filter(r => r.type === "Acceso");
+        const entrances = spaceRecords.filter(r => r.type === "Acceso" || (r.type === "Escalera" && r.floor === 1));
         const destinations = spaceRecords.filter(r =>
             r.type === "Aula" ||
             r.type === "Salón Conferencia" ||
             r.type === "Cúpula Astronómica" ||
+            r.type === "Bebedero" ||
             r.type === "Sanitarios"
         );
 
@@ -1447,13 +1731,14 @@ Key UX & Mobile Features:
         entrances.forEach(r => {
             const opt = document.createElement("option");
             opt.value = r.id;
-            opt.textContent = `🚪 ${r.name}`;
+            const icon = r.id === "F1-ENT-E" ? "♿" : (r.type === "Escalera" ? "🪜" : "🚪");
+            opt.textContent = `${icon} ${r.name}`;
             startSel.appendChild(opt);
         });
         destinations.forEach(r => {
             const opt = document.createElement("option");
             opt.value = r.id;
-            opt.textContent = `Piso ${r.floor} · ${r.name}`;
+            opt.textContent = `P${r.floor} · ${r.name}`;
             startSel.appendChild(opt);
         });
 
@@ -1461,7 +1746,7 @@ Key UX & Mobile Features:
         destinations.forEach(r => {
             const opt = document.createElement("option");
             opt.value = r.id;
-            opt.textContent = `Piso ${r.floor} · ${r.name}`;
+            opt.textContent = `P${r.floor} · ${r.name}`;
             endSel.appendChild(opt);
         });
 
@@ -1469,11 +1754,245 @@ Key UX & Mobile Features:
         endSel.value = state.endId;
     }
 
-    // Wayfinding Engine with Zig-Zag Stair Path & Internal Annex P4->P5 Access
+    // =========================================================================
+    // OFFICIAL BUILDING P DIRECTED GRAPH & COORDINATES (Synced with buildingP.py)
+    // =========================================================================
+    const BUILDING_P_GRAPH_NODES = {
+        // --- FLOOR 1 ---
+        "p_stairs_f1_ext_left": { id: "p_stairs_f1_ext_left", spaceId: "F1-ENT-W", name: "Escaleras del P (Izquierda / Exterior)", floor: 1, lat: 12.107584, lng: -86.256779, hallX: -36.5, hallZ: 4.8 },
+        "p_stairs_f1_east":     { id: "p_stairs_f1_east",     spaceId: "F1-ST-W",  name: "Escaleras Este del P (Piso 1)",          floor: 1, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 3.5, isStair: true, stairX: -36 },
+        "p_fountain_f1":        { id: "p_fountain_f1",        spaceId: "F1-FOUNTAIN-1", name: "Bebedero 1er Piso del P",           floor: 1, lat: 12.107460, lng: -86.256743, hallX: -31.5, hallZ: 3.5 },
+        "p_room_101":           { id: "p_room_101",           spaceId: "F1-101",   name: "Salón P-101",                            floor: 1, lat: 12.107460, lng: -86.256743, hallX: -30.22, hallZ: 3.5 },
+        "p_room_102":           { id: "p_room_102",           spaceId: "F1-102",   name: "Salón P-102",                            floor: 1, lat: 12.107431, lng: -86.256783, hallX: -23.62, hallZ: 3.5 },
+        "p_room_103":           { id: "p_room_103",           spaceId: "F1-103",   name: "Salón P-103",                            floor: 1, lat: 12.107439, lng: -86.256947, hallX: -17.02, hallZ: 3.5 },
+        "p_room_104":           { id: "p_room_104",           spaceId: "F1-104",   name: "Salón P-104",                            floor: 1, lat: 12.107455, lng: -86.256981, hallX: -10.42, hallZ: 3.5 },
+        "p_room_105":           { id: "p_room_105",           spaceId: "F1-105",   name: "Salón P-105",                            floor: 1, lat: 12.107453, lng: -86.257149, hallX: -3.82,  hallZ: 3.5 },
+        "p_room_106":           { id: "p_room_106",           spaceId: "F1-106",   name: "Salón P-106",                            floor: 1, lat: 12.107467, lng: -86.257202, hallX: 2.78,   hallZ: 3.5 },
+        "p_room_107":           { id: "p_room_107",           spaceId: "F1-107",   name: "Salón P-107",                            floor: 1, lat: 12.107450, lng: -86.257270, hallX: 9.38,   hallZ: 3.5 },
+        "p_room_108":           { id: "p_room_108",           spaceId: "F1-108",   name: "Salón P-108",                            floor: 1, lat: 12.107477, lng: -86.257206, hallX: 15.98,  hallZ: 3.5 },
+        "p_restrooms_f1":       { id: "p_restrooms_f1",       spaceId: "F1-HOMBRES-1", name: "Baños del P (Primer Piso)",          floor: 1, lat: 12.107441, lng: -86.257422, hallX: 26.4,   hallZ: 3.5 },
+        "p_stairs_f1_west":     { id: "p_stairs_f1_west",     spaceId: "F1-ST-E",  name: "Segundas Escaleras Oeste del P (Piso 1)",floor: 1, lat: 12.107410, lng: -86.257431, hallX: 36.0,   hallZ: 3.5, isStair: true, stairX: 36 },
+        "p_stairs_to_building_o": { id: "p_stairs_to_building_o", spaceId: "F1-ENT-O", name: "Escaleras del P hacia Edificio O",   floor: 1, lat: 12.107453, lng: -86.257413, hallX: 33.8,   hallZ: 4.8 },
+        "p_ramp_parking":       { id: "p_ramp_parking",       spaceId: "F1-ENT-E", name: "Rampa del Estacionamiento hacia el P",   floor: 1, lat: 12.106991, lng: -86.258233, hallX: 38.2,   hallZ: 4.8 },
+
+        // --- FLOOR 2 ---
+        "p_stairs_f2_east":     { id: "p_stairs_f2_east",     spaceId: "F2-ST-W",  name: "Escaleras Este del P (Piso 2)",          floor: 2, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 3.5, isStair: true, stairX: -36 },
+        "p_room_201":           { id: "p_room_201",           spaceId: "F2-201",   name: "Salón P-201",                            floor: 2, lat: 12.107484, lng: -86.256721, hallX: -30.22, hallZ: 3.5 },
+        "p_fountain_f2_east":   { id: "p_fountain_f2_east",   spaceId: "F2-FOUNTAIN-2E", name: "2do Bebedero del P (Piso 2 Este)", floor: 2, lat: 12.107434, lng: -86.256781, hallX: -25.4,  hallZ: 3.5 },
+        "p_room_202":           { id: "p_room_202",           spaceId: "F2-202",   name: "Salón P-202",                            floor: 2, lat: 12.107428, lng: -86.256817, hallX: -23.62, hallZ: 3.5 },
+        "p_room_203":           { id: "p_room_203",           spaceId: "F2-203",   name: "Salón P-203",                            floor: 2, lat: 12.107447, lng: -86.256957, hallX: -17.02, hallZ: 3.5 },
+        "p_room_204":           { id: "p_room_204",           spaceId: "F2-204",   name: "Salón P-204",                            floor: 2, lat: 12.107434, lng: -86.257043, hallX: -10.42, hallZ: 3.5 },
+        "p_room_205":           { id: "p_room_205",           spaceId: "F2-205",   name: "Salón P-205",                            floor: 2, lat: 12.107492, lng: -86.257090, hallX: -3.82,  hallZ: 3.5 },
+        "p_room_206":           { id: "p_room_206",           spaceId: "F2-206",   name: "Salón P-206",                            floor: 2, lat: 12.107413, lng: -86.257153, hallX: 2.78,   hallZ: 3.5 },
+        "p_room_207":           { id: "p_room_207",           spaceId: "F2-207",   name: "Salón P-207",                            floor: 2, lat: 12.107427, lng: -86.257217, hallX: 9.38,   hallZ: 3.5 },
+        "p_room_208":           { id: "p_room_208",           spaceId: "F2-208",   name: "Salón P-208",                            floor: 2, lat: 12.107402, lng: -86.257297, hallX: 15.98,  hallZ: 3.5 },
+        "p_fountain_f2_west":   { id: "p_fountain_f2_west",   spaceId: "F2-FOUNTAIN-2W", name: "Bebedero del P (Piso 2 Oeste)",    floor: 2, lat: 12.107407, lng: -86.257298, hallX: 20.8,   hallZ: 3.5 },
+        "p_restrooms_f2":       { id: "p_restrooms_f2",       spaceId: "F2-HOMBRES-2", name: "Baños del P (Segundo Piso)",         floor: 2, lat: 12.107480, lng: -86.257337, hallX: 26.4,   hallZ: 3.5 },
+        "p_stairs_f2_west":     { id: "p_stairs_f2_west",     spaceId: "F2-ST-E",  name: "Segundas Escaleras Oeste del P (Piso 2)",floor: 2, lat: 12.107410, lng: -86.257431, hallX: 36.0,   hallZ: 3.5, isStair: true, stairX: 36 },
+
+        // --- FLOOR 3 ---
+        "p_stairs_f3_east":     { id: "p_stairs_f3_east",     spaceId: "F3-ST-W",  name: "Escaleras Este del P (Piso 3)",          floor: 3, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 3.5, isStair: true, stairX: -36 },
+        "p_room_301":           { id: "p_room_301",           spaceId: "F3-301",   name: "Salón P-301 (Acceso 1)",                 floor: 3, lat: 12.107461, lng: -86.256717, hallX: -29.62, hallZ: 3.5 },
+        "p_fountain_f3":        { id: "p_fountain_f3",        spaceId: "F3-FOUNTAIN-3", name: "1er Bebedero del P (Piso 3)",       floor: 3, lat: 12.107434, lng: -86.256751, hallX: -27.6,  hallZ: 3.5 },
+        "p_room_301_b":         { id: "p_room_301_b",         spaceId: "F3-301",   name: "Salón P-301 (Acceso 2)",                 floor: 3, lat: 12.107462, lng: -86.256862, hallX: -25.58, hallZ: 3.5 },
+        "p_room_302":           { id: "p_room_302",           spaceId: "F3-302",   name: "Salón P-302",                            floor: 3, lat: 12.107443, lng: -86.256934, hallX: -20.82, hallZ: 3.5 },
+        "p_room_303":           { id: "p_room_303",           spaceId: "F3-303",   name: "Salón P-303",                            floor: 3, lat: 12.107442, lng: -86.256936, hallX: -12.02, hallZ: 3.5 },
+        "p_room_304":           { id: "p_room_304",           spaceId: "F3-304",   name: "Salón P-304",                            floor: 3, lat: 12.107443, lng: -86.256999, hallX: -3.22,  hallZ: 3.5 },
+        "p_room_305":           { id: "p_room_305",           spaceId: "F3-305",   name: "Salón P-305",                            floor: 3, lat: 12.107454, lng: -86.257114, hallX: 5.58,   hallZ: 3.5 },
+        "p_room_306":           { id: "p_room_306",           spaceId: "F3-306",   name: "Salón P-306 (Acceso 1)",                 floor: 3, lat: 12.107461, lng: -86.257145, hallX: 14.38,  hallZ: 3.5 },
+        "p_room_306_b":         { id: "p_room_306_b",         spaceId: "F3-306",   name: "Salón P-306 (Acceso 2)",                 floor: 3, lat: 12.107435, lng: -86.257136, hallX: 18.42,  hallZ: 3.5 },
+        "p_restrooms_f3":       { id: "p_restrooms_f3",       spaceId: "F3-HOMBRES-3", name: "Baños del P (Tercer Piso)",          floor: 3, lat: 12.107468, lng: -86.257189, hallX: 26.4,   hallZ: 3.5 },
+        "p_stairs_f3_west":     { id: "p_stairs_f3_west",     spaceId: "F3-ST-E",  name: "Segundas Escaleras Oeste del P (Piso 3)",floor: 3, lat: 12.107410, lng: -86.257431, hallX: 36.0,   hallZ: 3.5, isStair: true, stairX: 36 },
+
+        // --- FLOOR 4 (ANNEX P401) ---
+        "p_stairs_f4_east":     { id: "p_stairs_f4_east",     spaceId: "F4-ST-W",  name: "Escaleras del Anexo del P (Piso 4)",     floor: 4, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 3.05, isStair: true, stairX: -36 },
+        "p_room_401":           { id: "p_room_401",           spaceId: "F4-401",   name: "Salón P-401",                            floor: 4, lat: 12.107461, lng: -86.256743, hallX: -20.9, hallZ: 3.05 },
+
+        // --- FLOOR 5 (OBSERVATORY COPERNICO) ---
+        "p_stairs_f5_east":     { id: "p_stairs_f5_east",     spaceId: "F5-ST-W",  name: "Escaleras del Observatorio (Piso 5)",    floor: 5, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 1.25, isStair: true, stairX: -36 },
+        "p_observatory_501":    { id: "p_observatory_501",    spaceId: "F5-501",   name: "Observatory Copernico (P-501)",          floor: 5, lat: 12.107461, lng: -86.256743, hallX: -32.0, hallZ: 1.25 }
+    };
+
+    const BUILDING_P_GRAPH_EDGES = [
+        // Floor 1 Corridor Edges
+        { u: "p_stairs_f1_ext_left", v: "p_stairs_f1_east", dist: 13.0, fwd: "Baja por las escaleras exteriores hacia la entrada este del Edificio P.", bwd: "Sube por las escaleras exteriores izquierdas." },
+        { u: "p_stairs_f1_east",     v: "p_fountain_f1",    dist: 1.6,  fwd: "Avanza 2m hacia el bebedero y entrada al Salón P-101.", bwd: "Dirígete hacia las escaleras este del primer piso." },
+        { u: "p_fountain_f1",        v: "p_room_101",       dist: 1.5,  fwd: "Avanza hacia el Salón P-101.", bwd: "Avanza hacia el bebedero del primer piso." },
+        { u: "p_room_101",           v: "p_room_102",       dist: 5.4,  fwd: "Camina 5m por el pasillo hacia el Salón P-102.", bwd: "Camina 5m por el pasillo hacia el Salón P-101." },
+        { u: "p_room_102",           v: "p_room_103",       dist: 17.9, fwd: "Avanza 18m por el pasillo principal hacia el Salón P-103.", bwd: "Avanza 18m por el pasillo hacia el Salón P-102." },
+        { u: "p_room_103",           v: "p_room_104",       dist: 4.1,  fwd: "Avanza 4m hacia el Salón P-104.", bwd: "Avanza 4m hacia el Salón P-103." },
+        { u: "p_room_104",           v: "p_room_105",       dist: 18.3, fwd: "Continúa 18m por el pasillo central hacia el Salón P-105.", bwd: "Continúa 18m hacia el Salón P-104." },
+        { u: "p_room_105",           v: "p_room_106",       dist: 6.0,  fwd: "Avanza 6m hacia el Salón P-106.", bwd: "Avanza 6m hacia el Salón P-105." },
+        { u: "p_room_106",           v: "p_room_107",       dist: 7.6,  fwd: "Camina 7m hacia el Salón P-107.", bwd: "Camina 7m hacia el Salón P-106." },
+        { u: "p_room_107",           v: "p_room_108",       dist: 7.6,  fwd: "Avanza hacia el Salón P-108.", bwd: "Avanza hacia el Salón P-107." },
+        { u: "p_room_108",           v: "p_restrooms_f1",   dist: 23.8, fwd: "Camina 24m hacia los baños del primer piso.", bwd: "Camina 24m por el pasillo hacia el Salón P-108." },
+        { u: "p_restrooms_f1",       v: "p_stairs_f1_west", dist: 3.6,  fwd: "Gira hacia las segundas escaleras oeste del primer piso.", bwd: "Avanza hacia los baños del primer piso." },
+        { u: "p_stairs_f1_west",     v: "p_stairs_to_building_o", dist: 5.2, fwd: "Sal hacia las escaleras de interconexión con el Edificio O.", bwd: "Entra hacia las escaleras oeste del Edificio P." },
+        { u: "p_stairs_f1_west",     v: "p_ramp_parking",   dist: 14.0, fwd: "Toma la rampa exterior hacia el estacionamiento enfrente del Edificio O.", bwd: "Sube por la rampa accesible hacia la entrada oeste del Edificio P." },
+        { u: "p_room_108",           v: "p_ramp_parking",   dist: 22.0, fwd: "Sal por el acceso accesible hacia la rampa del estacionamiento.", bwd: "Entra por el acceso oeste accesible hacia el Salón P-108." },
+
+        // Floor 2 Corridor Edges
+        { u: "p_stairs_f2_east",     v: "p_room_201",       dist: 8.6,  fwd: "Avanza 8m por el pasillo este hacia el Salón P-201.", bwd: "Dirígete hacia el descanso de las escaleras este en el Piso 2." },
+        { u: "p_room_201",           v: "p_fountain_f2_east", dist: 8.6, fwd: "Camina 8m hacia el bebedero este del segundo piso.", bwd: "Camina 8m hacia el Salón P-201." },
+        { u: "p_fountain_f2_east",   v: "p_room_202",       dist: 4.0,  fwd: "Avanza 4m hacia el Salón P-202.", bwd: "Avanza hacia el bebedero este." },
+        { u: "p_room_202",           v: "p_room_203",       dist: 15.4, fwd: "Camina 15m por el pasillo central hacia el Salón P-203.", bwd: "Camina 15m hacia el Salón P-202." },
+        { u: "p_room_203",           v: "p_room_204",       dist: 9.5,  fwd: "Avanza 9m hacia el Salón P-204.", bwd: "Avanza 9m hacia el Salón P-203." },
+        { u: "p_room_204",           v: "p_room_205",       dist: 8.2,  fwd: "Continúa 8m hacia el Salón P-205.", bwd: "Continúa hacia el Salón P-204." },
+        { u: "p_room_205",           v: "p_room_206",       dist: 11.1, fwd: "Avanza 11m hacia el Salón P-206.", bwd: "Avanza 11m hacia el Salón P-205." },
+        { u: "p_room_206",           v: "p_room_207",       dist: 7.1,  fwd: "Camina 7m hacia el Salón P-207.", bwd: "Camina 7m hacia el Salón P-206." },
+        { u: "p_room_207",           v: "p_room_208",       dist: 9.1,  fwd: "Avanza 9m hacia el Salón P-208.", bwd: "Avanza 9m hacia el Salón P-207." },
+        { u: "p_room_208",           v: "p_fountain_f2_west", dist: 1.5, fwd: "Avanza al bebedero oeste del segundo piso.", bwd: "Avanza hacia el Salón P-208." },
+        { u: "p_fountain_f2_west",   v: "p_restrooms_f2",   dist: 9.2,  fwd: "Avanza 9m hacia los baños del segundo piso.", bwd: "Dirígete hacia el bebedero oeste." },
+        { u: "p_restrooms_f2",       v: "p_stairs_f2_west", dist: 5.0,  fwd: "Avanza hacia las escaleras oeste del segundo piso.", bwd: "Avanza hacia los baños del segundo piso." },
+
+        // Floor 3 Corridor Edges
+        { u: "p_stairs_f3_east",     v: "p_room_301",       dist: 4.8,  fwd: "Avanza 5m hacia el Salón P-301.", bwd: "Dirígete hacia las escaleras este del Piso 3." },
+        { u: "p_room_301",           v: "p_fountain_f3",    dist: 4.8,  fwd: "Avanza hacia el bebedero del tercer piso.", bwd: "Avanza hacia el Salón P-301." },
+        { u: "p_fountain_f3",        v: "p_room_301_b",     dist: 12.5, fwd: "Camina 12m hacia el acceso 2 del Salón P-301.", bwd: "Camina hacia el bebedero del tercer piso." },
+        { u: "p_room_301_b",         v: "p_room_302",       dist: 8.1,  fwd: "Avanza 8m hacia el Salón P-302.", bwd: "Avanza 8m hacia el Salón P-301 (Acceso 2)." },
+        { u: "p_room_302",           v: "p_room_303",       dist: 2.0,  fwd: "Continúa al Salón P-303 contiguo.", bwd: "Regresa al Salón P-302." },
+        { u: "p_room_303",           v: "p_room_304",       dist: 6.9,  fwd: "Avanza 7m hacia el Salón P-304.", bwd: "Avanza 7m hacia el Salón P-303." },
+        { u: "p_room_304",           v: "p_room_305",       dist: 12.6, fwd: "Camina 13m por el pasillo central hacia el Salón P-305.", bwd: "Camina 13m hacia el Salón P-304." },
+        { u: "p_room_305",           v: "p_room_306",       dist: 3.5,  fwd: "Avanza 3m hacia el Salón P-306.", bwd: "Avanza 3m hacia el Salón P-305." },
+        { u: "p_room_306",           v: "p_room_306_b",     dist: 3.1,  fwd: "Avanza hacia el segundo acceso del Salón P-306.", bwd: "Avanza hacia el primer acceso del Salón P-306." },
+        { u: "p_room_306_b",         v: "p_restrooms_f3",   dist: 6.8,  fwd: "Camina 7m hacia los baños del tercer piso.", bwd: "Camina hacia el Salón P-306." },
+        { u: "p_restrooms_f3",       v: "p_stairs_f3_west", dist: 6.0,  fwd: "Avanza hacia las escaleras oeste del tercer piso.", bwd: "Avanza hacia los baños del tercer piso." },
+
+        // Floor 4 & Floor 5 Corridor Edges
+        { u: "p_stairs_f4_east",     v: "p_room_401",       dist: 6.5,  fwd: "Avanza por la terraza del 4to piso hacia el Salón P-401.", bwd: "Sal del Salón P-401 hacia las escaleras del 4to piso." },
+        { u: "p_stairs_f5_east",     v: "p_observatory_501",dist: 4.5,  fwd: "Entra al Observatory Copernico (P-501).", bwd: "Sal del Observatory Copernico hacia las escaleras del 5to piso." },
+
+        // Vertical Stair Connections (East & West Stairwells)
+        { u: "p_stairs_f1_east",     v: "p_stairs_f2_east", dist: 12.0, isVertical: true, fwd: "Sube por las escaleras este hacia el Piso 2 del Edificio P.", bwd: "Baja por las escaleras este hacia el Piso 1 del Edificio P." },
+        { u: "p_stairs_f2_east",     v: "p_stairs_f3_east", dist: 12.0, isVertical: true, fwd: "Sube por las escaleras este hacia el Piso 3 del Edificio P.", bwd: "Baja por las escaleras este hacia el Piso 2 del Edificio P." },
+        { u: "p_stairs_f3_east",     v: "p_stairs_f4_east", dist: 10.5, isVertical: true, fwd: "Sube por las escaleras estrechas hacia el Piso 4 (Anexo P401).", bwd: "Baja por las escaleras estrechas hacia el Piso 3." },
+        { u: "p_stairs_f4_east",     v: "p_stairs_f5_east", dist: 10.5, isVertical: true, fwd: "Sube por las escaleras estrechas hacia el Piso 5 (Observatory Copernico).", bwd: "Baja por las escaleras estrechas hacia el Piso 4 (P401)." },
+        { u: "p_stairs_f1_west",     v: "p_stairs_f2_west", dist: 12.0, isVertical: true, fwd: "Sube por las segundas escaleras oeste hacia el Piso 2 del Edificio P.", bwd: "Baja por las segundas escaleras oeste hacia el Piso 1 del Edificio P." },
+        { u: "p_stairs_f2_west",     v: "p_stairs_f3_west", dist: 12.0, isVertical: true, fwd: "Sube por las escaleras oeste hacia el Piso 3 del Edificio P.", bwd: "Baja por las escaleras oeste hacia el Piso 2 del Edificio P." }
+    ];
+
+    // Resolve any spaceId, graphNodeId, placeId (e.g. "classroomP205", "p_room_205", "P205", "F2-205") to a 3D spaceRecord.id
+    function resolveSpaceId(query) {
+        if (!query) return null;
+        const raw = String(query).trim();
+        const direct = spaceRecords.find(r => r.id === raw || r.graphNodeId === raw || (r.graphNodeIds && r.graphNodeIds.includes(raw)));
+        if (direct) return direct.id;
+
+        if (BUILDING_P_GRAPH_NODES[raw]) {
+            return BUILDING_P_GRAPH_NODES[raw].spaceId;
+        }
+
+        const clean = raw.toLowerCase().replace(/[\s\-_]/g, "");
+        // Check placeCatalog IDs like classroomP101..306, copernicusObservatoryP, drinkingFountainP1, restroomsP1
+        if (clean.includes("observator") || clean.includes("copernic") || clean.includes("501")) return "F5-501";
+        if (clean.includes("401")) return "F4-401";
+        if (clean.includes("fountainp1") || clean.includes("bebederop1")) return "F1-FOUNTAIN-1";
+        if (clean.includes("fountainp2east") || clean.includes("bebederop2este")) return "F2-FOUNTAIN-2E";
+        if (clean.includes("fountainp2west") || clean.includes("bebederop2oeste")) return "F2-FOUNTAIN-2W";
+        if (clean.includes("fountainp3") || clean.includes("bebederop3")) return "F3-FOUNTAIN-3";
+        if (clean.includes("restroomsp1") || clean.includes("banosp1")) return "F1-HOMBRES-1";
+        if (clean.includes("restroomsp2") || clean.includes("banosp2")) return "F2-HOMBRES-2";
+        if (clean.includes("restroomsp3") || clean.includes("banosp3")) return "F3-HOMBRES-3";
+        if (clean.includes("rampparking") || clean.includes("rampa")) return "F1-ENT-E";
+        if (clean.includes("buildingo") || clean.includes("edificioo")) return "F1-ENT-O";
+
+        const roomMatch = clean.match(/p?([12345]0[1-8])/);
+        if (roomMatch) {
+            const code = roomMatch[1];
+            const f = code.charAt(0);
+            const candidate = `F${f}-${code}`;
+            if (spaceRecords.some(r => r.id === candidate)) return candidate;
+        }
+
+        const fuzzy = spaceRecords.find(r =>
+            r.id.toLowerCase().replace(/[\s\-_]/g, "") === clean ||
+            r.code.toLowerCase().replace(/[\s\-_]/g, "") === clean ||
+            r.name.toLowerCase().replace(/[\s\-_]/g, "").includes(clean)
+        );
+        return fuzzy ? fuzzy.id : null;
+    }
+
+    // Build Adjacency List & Run Dijkstra's Shortest-Path Algorithm on BUILDING_P_GRAPH
+    function findShortestGraphPath(startNodeId, targetNodeIds) {
+        const adj = {};
+        Object.keys(BUILDING_P_GRAPH_NODES).forEach(nid => { adj[nid] = []; });
+        BUILDING_P_GRAPH_EDGES.forEach(e => {
+            if (adj[e.u] && adj[e.v]) {
+                adj[e.u].push({ to: e.v, dist: e.dist, instruction: e.fwd, isVertical: Boolean(e.isVertical) });
+                adj[e.v].push({ to: e.u, dist: e.dist, instruction: e.bwd, isVertical: Boolean(e.isVertical) });
+            }
+        });
+
+        const dist = {};
+        const prev = {};
+        const prevEdge = {};
+        const visited = new Set();
+
+        Object.keys(BUILDING_P_GRAPH_NODES).forEach(nid => { dist[nid] = Infinity; });
+        if (dist[startNodeId] === undefined) return null;
+        dist[startNodeId] = 0;
+
+        while (true) {
+            let u = null;
+            let bestD = Infinity;
+            for (const nid in dist) {
+                if (!visited.has(nid) && dist[nid] < bestD) {
+                    bestD = dist[nid];
+                    u = nid;
+                }
+            }
+            if (!u || bestD === Infinity) break;
+            visited.add(u);
+
+            for (const edge of adj[u]) {
+                const alt = dist[u] + edge.dist;
+                if (alt < dist[edge.to]) {
+                    dist[edge.to] = alt;
+                    prev[edge.to] = u;
+                    prevEdge[edge.to] = edge;
+                }
+            }
+        }
+
+        // Pick the target door node (e.g., p_room_301 vs p_room_301_b) that yields the shortest total distance
+        let bestTarget = null;
+        let minTargetDist = Infinity;
+        targetNodeIds.forEach(tid => {
+            if (dist[tid] !== undefined && dist[tid] < minTargetDist) {
+                minTargetDist = dist[tid];
+                bestTarget = tid;
+            }
+        });
+
+        if (!bestTarget || minTargetDist === Infinity) return null;
+
+        const nodeIds = [];
+        const edgesUsed = [];
+        let curr = bestTarget;
+        while (curr) {
+            nodeIds.unshift(curr);
+            if (prevEdge[curr]) {
+                edgesUsed.unshift({ from: prev[curr], to: curr, ...prevEdge[curr] });
+            }
+            curr = prev[curr];
+        }
+
+        return {
+            nodeIds,
+            edgesUsed,
+            targetNodeId: bestTarget,
+            totalDistance: Math.max(2, Math.round(minTargetDist))
+        };
+    }
+
+    // Wayfinding Engine powered by Official Building P Graph & Coordinates
     function computeRoute(startId, endId) {
-        const startRec = spaceRecords.find(r => r.id === startId);
-        const endRec = spaceRecords.find(r => r.id === endId);
-        if (!startRec || !endRec || startId === endId) {
+        const resolvedStartId = resolveSpaceId(startId) || startId;
+        const resolvedEndId = resolveSpaceId(endId) || endId;
+        const startRec = spaceRecords.find(r => r.id === resolvedStartId);
+        const endRec = spaceRecords.find(r => r.id === resolvedEndId);
+
+        if (!startRec || !endRec || startRec.id === endRec.id) {
             state.activePath = null;
             state.activeStepIdx = null;
             renderRoute3D();
@@ -1481,169 +2000,206 @@ Key UX & Mobile Features:
             return;
         }
 
-        const hallZ = 3.5;
+        const startNodeId = startRec.graphNodeId;
+        const endNodeIds = endRec.graphNodeIds && endRec.graphNodeIds.length > 0
+            ? endRec.graphNodeIds
+            : [endRec.graphNodeId];
+
+        const dijkstraResult = findShortestGraphPath(startNodeId, endNodeIds);
+        if (!dijkstraResult) {
+            state.activePath = null;
+            state.activeStepIdx = null;
+            renderRoute3D();
+            renderDirectionsUI();
+            return;
+        }
+
+        const { nodeIds, edgesUsed, targetNodeId, totalDistance } = dijkstraResult;
         const pts = [];
-        const steps = [];
+        const graphWaypointNodes = [];
         let stairChoiceCode = null;
-        let totalDist = 0;
 
-        const startEntryX = startRec.type === "Acceso" ? startRec.x : startRec.doorX;
-        const endEntryX = endRec.doorX;
-
-        if (startRec.floor === endRec.floor) {
-            const flHallZ = startRec.floor === 4 ? 3.05 : hallZ;
-            pts.push({ floor: startRec.floor, x: startRec.x, yOffset: 0.45, z: startRec.type === "Acceso" ? 4.8 : startRec.z });
-            pts.push({ floor: startRec.floor, x: startEntryX, yOffset: 0.45, z: flHallZ });
-            pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: flHallZ });
-            pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
-            const walkMeters = Math.round(Math.abs(endEntryX - startEntryX));
-            totalDist = walkMeters + 4;
-
-            const dir = endEntryX > startEntryX ? "hacia el Este (derecha)" : "hacia el Oeste (izquierda)";
-            steps.push({
-                icon: "🟢",
-                title: `Inicia en ${startRec.name}`,
-                detail: `Ubícate en el Piso ${startRec.floor}`,
+        // 1. Start point inside/at the origin space
+        const firstGNode = BUILDING_P_GRAPH_NODES[nodeIds[0]];
+        const startHallZ = startRec.floor === 5 ? 1.25 : (startRec.floor === 4 ? 3.05 : 3.5);
+        pts.push({
+            floor: startRec.floor,
+            x: startRec.x,
+            yOffset: 0.45,
+            z: startRec.type === "Acceso" ? 4.8 : startRec.z
+        });
+        if (startRec.type !== "Escalera") {
+            pts.push({
                 floor: startRec.floor,
-                focusX: startRec.x,
-                focusZ: flHallZ
+                x: firstGNode ? firstGNode.hallX : startRec.doorX,
+                yOffset: 0.45,
+                z: startHallZ
             });
-            steps.push({
-                icon: "🚶",
-                title: `Avanza ${dir}`,
-                detail: `Camina ~${walkMeters}m por el pasillo exterior del Piso ${startRec.floor}`,
-                floor: startRec.floor,
-                focusX: (startEntryX + endEntryX) / 2,
-                focusZ: flHallZ
-            });
-            steps.push({
-                icon: "🔵",
-                title: `Llegaste a ${endRec.name}`,
-                detail: `${endRec.wing} · Piso ${endRec.floor}`,
-                floor: endRec.floor,
-                focusX: endRec.x,
-                focusZ: endRec.z
-            });
-        } else {
-            const mustUseWest = startRec.floor >= 4 || endRec.floor >= 4;
-            const westCost = Math.abs(startEntryX - (-36)) + Math.abs(endEntryX - (-36));
-            const eastCost = Math.abs(startEntryX - 36) + Math.abs(endEntryX - 36);
-            const useWest = mustUseWest ? true : (westCost <= eastCost);
-            const stairX = useWest ? -36 : 36;
-            const stairName = useWest ? "Escaleras Oeste" : "Escaleras Este";
-            stairChoiceCode = useWest ? "ST-W" : "ST-E";
+        }
 
-            const innerSign = useWest ? 1 : -1;
+        // 2. Traverse each graph edge in the Dijkstra shortest path
+        for (let i = 0; i < edgesUsed.length; i++) {
+            const edge = edgesUsed[i];
+            const uNode = BUILDING_P_GRAPH_NODES[edge.from];
+            const vNode = BUILDING_P_GRAPH_NODES[edge.to];
+            if (!uNode || !vNode) continue;
 
-            totalDist = (useWest ? westCost : eastCost) + Math.abs(endRec.floor - startRec.floor) * 6.5 + 4;
+            if (uNode.floor === vNode.floor) {
+                // Horizontal corridor movement to vNode's exact 3D coordinate
+                pts.push({
+                    floor: vNode.floor,
+                    x: vNode.hallX,
+                    yOffset: 0.45,
+                    z: vNode.hallZ
+                });
+                graphWaypointNodes.push({
+                    floor: vNode.floor,
+                    x: vNode.hallX,
+                    z: vNode.hallZ,
+                    nodeId: vNode.id
+                });
+            } else {
+                // Vertical transition through North-to-South Zig-Zag Stairwell
+                const stairX = uNode.stairX !== undefined ? uNode.stairX : -36;
+                stairChoiceCode = stairX < 0 ? "ST-W" : "ST-E";
+                const innerSign = stairX < 0 ? 1 : -1;
+                const zNorth = 1.25;
 
-            // 1. Walk from starting point to the stairwell North entrance
-            const startHallZ = startRec.floor === 5 ? 1.25 : (startRec.floor === 4 ? 3.05 : hallZ);
-            pts.push({ floor: startRec.floor, x: startRec.x, yOffset: 0.45, z: startRec.type === "Acceso" ? 4.8 : startRec.z });
-            pts.push({ floor: startRec.floor, x: startEntryX, yOffset: 0.45, z: startHallZ });
-            pts.push({ floor: startRec.floor, x: stairX, yOffset: 0.45, z: startHallZ });
+                // Ensure we step to the stairwell corridor threshold before entering stairs
+                const uHallZ = uNode.floor === 5 ? 1.25 : (uNode.floor === 4 ? 3.05 : 3.5);
+                pts.push({ floor: uNode.floor, x: stairX, yOffset: 0.45, z: uHallZ });
 
-            // 2. Traverse North-to-South zig-zag stairs in the exact same stairwell column (narrower for f >= 3)
-            if (endRec.floor > startRec.floor) {
-                for (let f = startRec.floor; f < endRec.floor; f++) {
+                if (vNode.floor > uNode.floor) {
+                    const f = uNode.floor;
                     const isNarrowFlight = (f >= 3);
                     const laneOffset = isNarrowFlight ? 0.76 : 1.20;
                     const xF1 = stairX + innerSign * laneOffset;
                     const xF2 = stairX - innerSign * laneOffset;
-                    const zNorth = 1.25;
                     const zSouthLand = isNarrowFlight ? -3.75 : -4.40;
 
-                    // Start at North entrance of Tramo 1
                     pts.push({ floor: f, yFrac: 0, x: xF1, yOffset: 0.35, z: zNorth });
-                    // Climb Tramo 1 from North to South mid-floor landing
                     pts.push({ floor: f, yFrac: 0.5, x: xF1, yOffset: 0.3, z: zSouthLand });
-                    // Turn 180° on South mid-floor landing
                     pts.push({ floor: f, yFrac: 0.5, x: xF2, yOffset: 0.3, z: zSouthLand });
-                    // Climb Tramo 2 from South back to North upper floor landing
                     pts.push({ floor: f + 1, yFrac: 0, x: xF2, yOffset: 0.35, z: zNorth });
-                }
-            } else {
-                for (let f = startRec.floor; f > endRec.floor; f--) {
+                } else {
+                    const f = uNode.floor;
                     const isNarrowFlight = (f - 1 >= 3);
                     const laneOffset = isNarrowFlight ? 0.76 : 1.20;
                     const xF1 = stairX + innerSign * laneOffset;
                     const xF2 = stairX - innerSign * laneOffset;
-                    const zNorth = 1.25;
                     const zSouthLand = isNarrowFlight ? -3.75 : -4.40;
 
-                    // Enter top of Tramo 2 at North landing
                     pts.push({ floor: f, yFrac: 0, x: xF2, yOffset: 0.35, z: zNorth });
-                    // Descend Tramo 2 from North to South mid-floor landing
                     pts.push({ floor: f - 1, yFrac: 0.5, x: xF2, yOffset: 0.3, z: zSouthLand });
-                    // Turn 180° on South mid-floor landing
                     pts.push({ floor: f - 1, yFrac: 0.5, x: xF1, yOffset: 0.3, z: zSouthLand });
-                    // Descend Tramo 1 from South back to North lower floor landing
                     pts.push({ floor: f - 1, yFrac: 0, x: xF1, yOffset: 0.35, z: zNorth });
                 }
-            }
 
-            // 3. Exit stairwell at destination floor into the destination space
-            const endHallZ = endRec.floor === 5 ? 1.25 : (endRec.floor === 4 ? 3.05 : hallZ);
-            pts.push({ floor: endRec.floor, x: stairX, yOffset: 0.45, z: endHallZ });
-            pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: endHallZ });
-            pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
-
-            const floorDiff = Math.abs(endRec.floor - startRec.floor);
-            const climbWord = endRec.floor > startRec.floor ? "Sube" : "Baja";
-            const walkDir = endEntryX > stairX ? "el Este (derecha)" : "el Oeste (izquierda)";
-            const walkDist = Math.round(Math.abs(endEntryX - stairX));
-
-            steps.push({
-                icon: "🟢",
-                title: `Inicia en ${startRec.name}`,
-                detail: `Punto de partida en Piso ${startRec.floor}`,
-                floor: startRec.floor,
-                focusX: startRec.x,
-                focusZ: startHallZ
-            });
-            steps.push({
-                icon: "🪜",
-                title: `Ve a las ${stairName}`,
-                detail: mustUseWest ? "Núcleo Oeste (tramos gruesos P1–P3 y más estrechos hacia el Anexo P4–P5)" : `En el extremo ${useWest ? "Oeste" : "Este"} del Piso ${startRec.floor}`,
-                floor: startRec.floor,
-                focusX: stairX,
-                focusZ: -1.4
-            });
-            steps.push({
-                icon: endRec.floor > startRec.floor ? "⬆️" : "⬇️",
-                title: `${climbWord} ${floorDiff} nivel${floorDiff > 1 ? "es" : ""} en zig-zag al Piso ${endRec.floor}`,
-                detail: `Por ${stairName} de Norte a Sur con descanso intermedio (Piso ${startRec.floor} → Piso ${endRec.floor})`,
-                floor: endRec.floor,
-                focusX: stairX,
-                focusZ: -1.4
-            });
-            if (walkDist > 2 && endRec.floor < 5) {
-                steps.push({
-                    icon: "🚶",
-                    title: `Camina ~${walkDist}m hacia ${walkDir}`,
-                    detail: `Por el pasillo del Piso ${endRec.floor}`,
-                    floor: endRec.floor,
-                    focusX: (stairX + endEntryX) / 2,
-                    focusZ: endHallZ
+                const vHallZ = vNode.floor === 5 ? 1.25 : (vNode.floor === 4 ? 3.05 : 3.5);
+                pts.push({ floor: vNode.floor, x: stairX, yOffset: 0.45, z: vHallZ });
+                graphWaypointNodes.push({
+                    floor: vNode.floor,
+                    x: stairX,
+                    z: vHallZ,
+                    nodeId: vNode.id
                 });
             }
-            steps.push({
-                icon: "🔵",
-                title: `Llegaste a ${endRec.name}`,
-                detail: `${endRec.wing} · Piso ${endRec.floor}`,
-                floor: endRec.floor,
-                focusX: endRec.x,
-                focusZ: endRec.z
-            });
         }
+
+        // 3. Enter final destination space through the exact chosen door coordinate
+        const lastGNode = BUILDING_P_GRAPH_NODES[targetNodeId];
+        const endEntryX = lastGNode ? lastGNode.hallX : endRec.doorX;
+        const endHallZ = endRec.floor === 5 ? 1.25 : (endRec.floor === 4 ? 3.05 : 3.5);
+        pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: endHallZ });
+        pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
+
+        // 4. Build Turn-by-Turn Graph Steps with GPS coordinates (lat, lng)
+        const steps = [];
+        steps.push({
+            icon: "🟢",
+            title: `Origen: ${startRec.name}`,
+            detail: `Piso ${startRec.floor} · Nodo ${startNodeId} (${startRec.lat.toFixed(6)}, ${startRec.lng.toFixed(6)})`,
+            floor: startRec.floor,
+            focusX: startRec.x,
+            focusZ: startHallZ,
+            nodeId: startNodeId,
+            lat: startRec.lat,
+            lng: startRec.lng
+        });
+
+        // Consolidate consecutive horizontal corridor edges on the same floor, keeping key transitions & fountains/stairs explicit
+        let idx = 0;
+        while (idx < edgesUsed.length) {
+            const e = edgesUsed[idx];
+            const vNode = BUILDING_P_GRAPH_NODES[e.to];
+            if (e.isVertical) {
+                steps.push({
+                    icon: vNode.floor > BUILDING_P_GRAPH_NODES[e.from].floor ? "⬆️" : "⬇️",
+                    title: e.instruction,
+                    detail: `Piso ${vNode.floor} · ${vNode.name} (${vNode.lat.toFixed(6)}, ${vNode.lng.toFixed(6)})`,
+                    floor: vNode.floor,
+                    focusX: vNode.hallX,
+                    focusZ: -1.4,
+                    nodeId: vNode.id,
+                    lat: vNode.lat,
+                    lng: vNode.lng
+                });
+                idx++;
+            } else {
+                // Group consecutive corridor hops on the same floor unless it's the final edge
+                let segDist = e.dist;
+                let lastEdge = e;
+                let hopCount = 1;
+                while (
+                    idx + 1 < edgesUsed.length &&
+                    !edgesUsed[idx + 1].isVertical &&
+                    BUILDING_P_GRAPH_NODES[edgesUsed[idx + 1].to].floor === vNode.floor &&
+                    hopCount < 3
+                ) {
+                    idx++;
+                    lastEdge = edgesUsed[idx];
+                    segDist += lastEdge.dist;
+                    hopCount++;
+                }
+                const targetV = BUILDING_P_GRAPH_NODES[lastEdge.to];
+                steps.push({
+                    icon: "🚶",
+                    title: lastEdge.instruction,
+                    detail: `Piso ${targetV.floor} · ~${Math.round(segDist)}m hacia ${targetV.name} (${targetV.lat.toFixed(6)}, ${targetV.lng.toFixed(6)})`,
+                    floor: targetV.floor,
+                    focusX: targetV.hallX,
+                    focusZ: targetV.hallZ,
+                    nodeId: targetV.id,
+                    lat: targetV.lat,
+                    lng: targetV.lng
+                });
+                idx++;
+            }
+        }
+
+        const destGNode = BUILDING_P_GRAPH_NODES[targetNodeId] || endRec;
+        steps.push({
+            icon: "🔵",
+            title: `Destino: ${endRec.name}`,
+            detail: `Piso ${endRec.floor} · Nodo ${targetNodeId} (${destGNode.lat.toFixed(6)}, ${destGNode.lng.toFixed(6)})`,
+            floor: endRec.floor,
+            focusX: endRec.x,
+            focusZ: endRec.z,
+            nodeId: targetNodeId,
+            lat: destGNode.lat,
+            lng: destGNode.lng
+        });
 
         state.activePath = {
             points: pts,
+            graphWaypointNodes,
+            pathNodeIds: nodeIds,
             stairCode: stairChoiceCode,
             startRec,
             endRec,
-            distanceM: Math.round(totalDist),
-            estSec: Math.round(totalDist / 1.15),
+            targetNodeId,
+            distanceM: totalDistance,
+            estSec: Math.max(10, Math.round(totalDistance / 1.2)),
             steps
         };
         state.activeStepIdx = null;
@@ -1652,22 +2208,22 @@ Key UX & Mobile Features:
     }
 
     function focusRouteStep(stepIdx) {
-        if (!state.activePath || !state.activePath.steps[stepIdx]) return;
-        state.activeStepIdx = stepIdx;
-        const step = state.activePath.steps[stepIdx];
+        if (!state.activePath || !state.activePath.steps || !state.activePath.steps[stepIdx]) return;
+        const totalSteps = state.activePath.steps.length;
+        const clampedIdx = ((stepIdx % totalSteps) + totalSteps) % totalSteps;
+        state.activeStepIdx = clampedIdx;
+        const step = state.activePath.steps[clampedIdx];
 
-        // Highlight active step card
-        document.querySelectorAll(".p-route-step-card").forEach((el, idx) => {
-            if (idx === stepIdx) {
-                el.classList.add("ring-2", "ring-sky-600", "bg-sky-50/90", "border-sky-300");
-                el.classList.remove("bg-white", "border-slate-200");
-            } else {
-                el.classList.remove("ring-2", "ring-sky-600", "bg-sky-50/90", "border-sky-300");
-                el.classList.add("bg-white", "border-slate-200");
-            }
-        });
+        const hudTitle = document.getElementById("p-hud-step-title");
+        const hudMeta = document.getElementById("p-hud-step-meta");
+        if (hudTitle) {
+            hudTitle.textContent = `${step.icon} Paso ${clampedIdx + 1}/${totalSteps}: ${step.title}`;
+        }
+        if (hudMeta) {
+            hudMeta.textContent = step.detail;
+        }
 
-        // Smoothly fly camera to focus on that waypoint
+        // Smoothly fly camera to focus on that graph node's 3D coordinate
         const targetZoom = getResponsiveDefaultZoom(46);
         animateCameraTo({
             panX: step.focusX * 0.65,
@@ -1714,6 +2270,16 @@ Key UX & Mobile Features:
                 routeGroup.add(joint);
             }
 
+            // Render distinct graph node waypoint rings along the corridor path
+            if (state.activePath.graphWaypointNodes) {
+                const wpGeo = new THREE.SphereGeometry(0.32, 12, 12);
+                state.activePath.graphWaypointNodes.forEach(wp => {
+                    const wpMesh = new THREE.Mesh(wpGeo, MAT.routeLine);
+                    wpMesh.position.set(wp.x, (wp.floor - 1) * spacing + 0.45, wp.z);
+                    routeGroup.add(wpMesh);
+                });
+            }
+
             const startMarker = new THREE.Mesh(new THREE.SphereGeometry(0.6, 16, 16), MAT.startPin);
             startMarker.position.copy(vectors[0]).add(new THREE.Vector3(0, 0.4, 0));
             routeGroup.add(startMarker);
@@ -1726,61 +2292,27 @@ Key UX & Mobile Features:
     }
 
     function renderDirectionsUI() {
-        const sumEl = document.getElementById("p-route-summary");
-        const stepsEl = document.getElementById("p-route-steps");
-        const mobileTitle = document.getElementById("p-mobile-sheet-title");
-        const mobileSub = document.getElementById("p-mobile-sheet-subtitle");
-        if (!sumEl || !stepsEl) return;
+        const hudTitle = document.getElementById("p-hud-step-title");
+        const hudMeta = document.getElementById("p-hud-step-meta");
 
         if (!state.activePath) {
-            sumEl.textContent = "Toca cualquier aula en el mapa o elige un destino para trazar la ruta 3D.";
-            stepsEl.innerHTML = "";
-            if (mobileTitle) mobileTitle.textContent = "Explorar Edificio P • Copérnico";
-            if (mobileSub) mobileSub.textContent = "Toca un aula o usa los botones rápidos arriba";
+            if (hudTitle) hudTitle.textContent = "Selecciona un destino en el mapa 3D";
+            if (hudMeta) hudMeta.textContent = "Grafo Oficial Edificio P · 44 nodos con coordenadas GPS";
             return;
         }
 
-        const { distanceM, estSec, steps, startRec, endRec } = state.activePath;
+        const { distanceM, estSec, steps, startRec, endRec, targetNodeId, pathNodeIds } = state.activePath;
         const mins = Math.floor(estSec / 60);
         const secs = estSec % 60;
-        const timeStr = mins > 0 ? `${mins} min ${secs} s` : `${secs} seg`;
+        const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+        const destNode = BUILDING_P_GRAPH_NODES[targetNodeId] || endRec;
 
-        if (mobileTitle) {
-            mobileTitle.textContent = `Hacia ${endRec.name}`;
+        if (hudTitle) {
+            hudTitle.textContent = `🔵 Hacia ${endRec.name} · ~${distanceM}m (~${timeStr})`;
         }
-        if (mobileSub) {
-            mobileSub.textContent = `Piso ${startRec.floor} → Piso ${endRec.floor} · ~${distanceM}m (~${timeStr})`;
+        if (hudMeta) {
+            hudMeta.textContent = `P${startRec.floor} → P${endRec.floor} · ${pathNodeIds.length} nodos (${destNode.lat.toFixed(6)}, ${destNode.lng.toFixed(6)}) · Usa ◀ ▶ para guiar`;
         }
-
-        sumEl.innerHTML = `
-            <div class="flex items-center justify-between gap-2">
-                <div class="flex items-center gap-1.5 text-sky-900 font-extrabold">
-                    <span>Piso ${startRec.floor} &rarr; Piso ${endRec.floor}</span>
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">~${distanceM}m</span>
-                </div>
-                <span class="text-slate-600 font-semibold text-[11px]">⏱ ~${timeStr} a pie</span>
-            </div>
-        `;
-
-        stepsEl.innerHTML = steps.map((s, idx) => `
-            <li class="p-route-step-card shrink-0 w-60 md:w-full p-2.5 rounded-xl border border-slate-200 bg-white hover:border-sky-400 transition-all cursor-pointer select-none flex items-start gap-2 shadow-2xs" data-step-idx="${idx}">
-                <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-800 font-extrabold text-[11px] flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
-                <div class="min-w-0 flex-1">
-                    <div class="font-bold text-slate-900 text-xs leading-snug flex items-center gap-1">
-                        <span>${s.icon}</span>
-                        <span class="truncate">${s.title}</span>
-                    </div>
-                    <div class="text-[11px] text-slate-500 leading-tight mt-0.5">${s.detail}</div>
-                </div>
-            </li>
-        `).join("");
-
-        stepsEl.querySelectorAll(".p-route-step-card").forEach(card => {
-            card.addEventListener("click", () => {
-                const idx = Number(card.getAttribute("data-step-idx"));
-                focusRouteStep(idx);
-            });
-        });
     }
 
     // Floor Elevation & Position Updates (Floor 1 always sits on the ground y = 0)
@@ -1881,8 +2413,9 @@ Key UX & Mobile Features:
 
     function selectSpace(spaceId, options) {
         const opts = options || {};
-        state.selectedId = spaceId;
-        const rec = spaceRecords.find(r => r.id === spaceId);
+        const resolvedId = resolveSpaceId(spaceId) || spaceId;
+        state.selectedId = resolvedId;
+        const rec = spaceRecords.find(r => r.id === resolvedId);
         const inspector = document.getElementById("p-inspector-content");
         if (!rec) {
             if (inspector) {
@@ -1896,16 +2429,31 @@ Key UX & Mobile Features:
             rec.type === "Aula" ||
             rec.type === "Salón Conferencia" ||
             rec.type === "Cúpula Astronómica" ||
+            rec.type === "Bebedero" ||
             rec.type === "Sanitarios"
         )) {
             state.endId = rec.id;
             const endSel = document.getElementById("p-select-end");
             if (endSel) endSel.value = rec.id;
 
-            // Smart Entrance Selection: if going to Floor 4 or 5 (West Tower), or West rooms X < -5, default to West Entrance if user was on an entrance
-            if (state.startId === "F1-ENT-W" || state.startId === "F1-ENT-E") {
-                const preferWest = rec.floor >= 4 || rec.x <= 0;
-                state.startId = preferWest ? "F1-ENT-W" : "F1-ENT-E";
+            // Smart Entrance Selection using Dijkstra shortest distance when origin is one of the default entrances and not manually locked
+            if (!state.userLockedOrigin && (state.startId === "F1-ENT-W" || state.startId === "F1-ENT-E" || state.startId === "F1-ENT-O")) {
+                const candidateEntrances = ["F1-ENT-W", "F1-ENT-O", "F1-ENT-E"];
+                let bestEnt = state.startId;
+                let bestDist = Infinity;
+                const endNodeIds = rec.graphNodeIds && rec.graphNodeIds.length > 0 ? rec.graphNodeIds : [rec.graphNodeId];
+
+                candidateEntrances.forEach(entId => {
+                    const entRec = spaceRecords.find(r => r.id === entId);
+                    if (entRec && entRec.graphNodeId) {
+                        const res = findShortestGraphPath(entRec.graphNodeId, endNodeIds);
+                        if (res && res.totalDistance < bestDist) {
+                            bestDist = res.totalDistance;
+                            bestEnt = entId;
+                        }
+                    }
+                });
+                state.startId = bestEnt;
                 const startSel = document.getElementById("p-select-start");
                 if (startSel) startSel.value = state.startId;
             }
@@ -1920,8 +2468,8 @@ Key UX & Mobile Features:
                 </div>
                 <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] pt-1">
                     <div><span class="text-slate-400 font-semibold">Categoría:</span> <span class="font-bold text-slate-700">${rec.type}</span></div>
-                    <div><span class="text-slate-400 font-semibold">Sector:</span> <span class="font-medium text-slate-700">${rec.wing}</span></div>
-                    <div><span class="text-slate-400 font-semibold">Accesos:</span> <span class="font-bold text-slate-700">${rec.doors} puerta${rec.doors > 1 ? "s" : ""}</span></div>
+                    <div><span class="text-slate-400 font-semibold">Nodo Grafo:</span> <span class="font-mono font-bold text-sky-700">${rec.graphNodeId || rec.id}</span></div>
+                    <div><span class="text-slate-400 font-semibold">Coords GPS:</span> <span class="font-mono text-slate-700">${rec.lat ? `${rec.lat.toFixed(6)}, ${rec.lng.toFixed(6)}` : "N/A"}</span></div>
                     <div><span class="text-slate-400 font-semibold">Superficie:</span> <span class="font-medium text-slate-700">${rec.area}</span></div>
                 </div>
                 <p class="text-[11px] text-slate-600 pt-1 leading-snug">${rec.notes}</p>
@@ -1948,19 +2496,22 @@ Key UX & Mobile Features:
     }
 
     window.setBuildingPRouteOrigin = function(id) {
-        state.startId = id;
+        const resolved = resolveSpaceId(id) || id;
+        state.startId = resolved;
+        state.userLockedOrigin = true;
         const sel = document.getElementById("p-select-start");
-        if (sel) sel.value = id;
+        if (sel) sel.value = resolved;
         computeRoute(state.startId, state.endId);
     };
 
     window.setBuildingPRouteDest = function(id) {
-        state.endId = id;
-        state.selectedId = id;
+        const resolved = resolveSpaceId(id) || id;
+        state.endId = resolved;
+        state.selectedId = resolved;
         const sel = document.getElementById("p-select-end");
-        if (sel) sel.value = id;
+        if (sel) sel.value = resolved;
         computeRoute(state.startId, state.endId);
-        selectSpace(id, { focusCamera: true });
+        selectSpace(resolved, { focusCamera: true });
     };
 
     // 3D Projected Floating Labels with Mobile Collision & Priority Filtering
@@ -2113,7 +2664,11 @@ Key UX & Mobile Features:
                 startPinEl.style.display = tempV.z <= 1 ? "block" : "none";
                 startPinEl.style.left = `${(tempV.x * 0.5 + 0.5) * width}px`;
                 startPinEl.style.top = `${(-(tempV.y * 0.5) + 0.5) * height}px`;
-                startPinEl.textContent = `🟢 ORIGEN: ${startRec.code.replace("F1-ENT-W", "ENTRADA OESTE").replace("F1-ENT-E", "ENTRADA ESTE")}`;
+                const originShort = startRec.code
+                    .replace("F1-ENT-W", "ESC. EXT. IZQ.")
+                    .replace("F1-ENT-O", "HACIA EDIF. O")
+                    .replace("F1-ENT-E", "RAMPA PARQUEO");
+                startPinEl.textContent = `🟢 ORIGEN: ${originShort}`;
             } else {
                 startPinEl.style.display = "none";
             }
@@ -2478,6 +3033,7 @@ Key UX & Mobile Features:
 
         bind("p-select-start", "change", (e) => {
             state.startId = e.target.value;
+            state.userLockedOrigin = true;
             computeRoute(state.startId, state.endId);
         });
 
@@ -2486,6 +3042,18 @@ Key UX & Mobile Features:
             state.selectedId = e.target.value;
             computeRoute(state.startId, state.endId);
             if (state.endId) selectSpace(state.endId, { focusCamera: true });
+        });
+
+        bind("p-btn-prev-step", "click", () => {
+            if (!state.activePath || !state.activePath.steps || state.activePath.steps.length === 0) return;
+            const prevIdx = state.activeStepIdx === null ? 0 : state.activeStepIdx - 1;
+            focusRouteStep(prevIdx);
+        });
+
+        bind("p-btn-next-step", "click", () => {
+            if (!state.activePath || !state.activePath.steps || state.activePath.steps.length === 0) return;
+            const nextIdx = state.activeStepIdx === null ? 0 : state.activeStepIdx + 1;
+            focusRouteStep(nextIdx);
         });
 
         bind("p-btn-swap-route", "click", () => {
@@ -2517,6 +3085,7 @@ Key UX & Mobile Features:
                 const destId = chip.getAttribute("data-quick-dest");
                 const floorNum = chip.getAttribute("data-quick-floor");
                 const nearestRestroom = chip.getAttribute("data-quick-restroom");
+                const nearestFountain = chip.getAttribute("data-quick-fountain");
 
                 if (destId) {
                     setFloorIsolation("all", { animateCamera: false });
@@ -2526,8 +3095,26 @@ Key UX & Mobile Features:
                 } else if (nearestRestroom) {
                     const targetFloor = state.selectedFloor === "all" ? 1 : Math.min(3, Number(state.selectedFloor));
                     selectSpace(`F${targetFloor}-HOMBRES-${targetFloor}`, { focusCamera: true });
+                } else if (nearestFountain) {
+                    const targetFloor = state.selectedFloor === "all" ? 1 : Math.min(3, Number(state.selectedFloor));
+                    const fountainId = targetFloor === 1
+                        ? "F1-FOUNTAIN-1"
+                        : (targetFloor === 2 ? "F2-FOUNTAIN-2E" : "F3-FOUNTAIN-3");
+                    selectSpace(fountainId, { focusCamera: true });
                 }
             });
+        });
+
+        // Listen for global campus navigation route events so Building P automatically guides the user to their destination room
+        window.addEventListener("jaguarMapRouteCalculated", (e) => {
+            const routeData = e.detail;
+            if (!routeData) return;
+            const destRaw = (routeData.destination && (routeData.destination.placeId || routeData.destination.nodeId || routeData.destination.name)) || "";
+            const resolved = resolveSpaceId(destRaw);
+            if (resolved) {
+                state.userLockedOrigin = false;
+                selectSpace(resolved, { focusCamera: true });
+            }
         });
 
         // Vertical Elevator Floor Buttons
