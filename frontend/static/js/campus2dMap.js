@@ -52,9 +52,9 @@ document.addEventListener("DOMContentLoaded", function () {
             id: "buildingA",
             letter: "A",
             name: "Edificio A • Atención al Estudiante",
-            badgeClass: "badge-purple",
-            badgeBg: "#6b21a8",
-            anchor: { x: 252, y: 459 },
+            badgeClass: "badge-maroon",
+            badgeBg: "#991b1b",
+            anchor: { x: 250, y: 455 },
             floors: [
                 { floor: "Piso 1", rooms: "Contabilidad, CAE (Centro de Atención al Estudiante), Admisiones, Registro Académico, Cartera y Cobro, Finanzas, Cajeros Automáticos." },
                 { floor: "Piso 2", rooms: "Dirección Administrativa, Logística Académica, TIC (Tecnología de la Información), Mercadeo y Publicidad, Gestión del Talento y RRHH." },
@@ -66,8 +66,8 @@ document.addEventListener("DOMContentLoaded", function () {
             letter: "B",
             name: "Edificio B • Aulas & Farmacia",
             badgeClass: "badge-purple",
-            badgeBg: "#6b21a8",
-            anchor: { x: 390, y: 490 },
+            badgeBg: "#581c87",
+            anchor: { x: 384, y: 500 },
             floors: [
                 { floor: "Piso 1", rooms: "Módulo Comercial 1, Aulas B101 - B109, SS Hombres / Mujeres, Jaguar Shop." },
                 { floor: "Piso 2", rooms: "Aulas B201 - B210." }
@@ -77,9 +77,9 @@ document.addEventListener("DOMContentLoaded", function () {
             id: "buildingC",
             letter: "C",
             name: "Edificio C • Cómputo & Caja UAM",
-            badgeClass: "badge-navy",
-            badgeBg: "#1e3a8a",
-            anchor: { x: 390, y: 427 },
+            badgeClass: "badge-purple",
+            badgeBg: "#4c1d95",
+            anchor: { x: 384, y: 410 },
             floors: [
                 { floor: "Piso 1", rooms: "Área de Lavado Uso Común, Auditorio C101, Aulas C102-C104, Caja UAM / Tesorería, Aula C106, Lab MAC C107, Lab Cómputo Acad-Erasmus, Auditorio C109." },
                 { floor: "Piso 2", rooms: "Laboratorios de Computación C201-C205, Laboratorio MAC C203, SS Hombres / Mujeres, Aulas C209-C211." },

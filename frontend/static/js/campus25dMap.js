@@ -93,9 +93,9 @@
 
             // Map building coordinates lookup (matches campus2dMap.js)
             this.buildingAnchors = {
-                "buildingA": { x: 252, y: 459 },
-                "buildingB": { x: 390, y: 490 },
-                "buildingC": { x: 390, y: 427 },
+                "buildingA": { x: 250, y: 455 },
+                "buildingB": { x: 384, y: 500 },
+                "buildingC": { x: 384, y: 410 },
                 "buildingD": { x: 351, y: 335 },
                 "buildingE": { x: 458, y: 620 },
                 "buildingF": { x: 517, y: 628 },
@@ -162,7 +162,7 @@
                 "buildingP": "Edificio P", "sportsZone": "Campos Deportivos", "jaguarCenter": "Jaguar Center"
             };
             const colorMap = {
-                "buildingA": "#6b21a8", "buildingB": "#1e3a8a", "buildingC": "#1e3a8a",
+                "buildingA": "#991b1b", "buildingB": "#581c87", "buildingC": "#4c1d95",
                 "buildingD": "#15803d", "buildingE": "#0284c7", "buildingF": "#be185d",
                 "buildingG": "#0284c7", "buildingH": "#15803d", "buildingI": "#1e3a8a",
                 "buildingJ": "#0284c7", "buildingK": "#b45309", "buildingL": "#0284c7",
