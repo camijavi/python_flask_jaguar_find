@@ -13,8 +13,10 @@ from flask import Blueprint, request, jsonify, session
 from typing import Dict, Any, List
 
 from backend.graph.navigationService import globalNavigationService
+from backend.graph.geoUtils import CampusGeoUtils
 from backend.data.campusCategories import CampusCategory, CATEGORY_METADATA
 from backend.data.placesCatalog import PLACES_CATALOG
+from backend.subgraphs import getBuildingSubgraph, getAllBuildingSubgraphs
 
 mapController = Blueprint("mapController", __name__, url_prefix="/api/map")
 
@@ -213,14 +215,29 @@ def calculateRoute():
     return jsonify(routeResult), statusCode
 
 
+@mapController.route("/perimeter", methods=["GET"])
+def getCampusPerimeter():
+    """
+    GET /api/map/perimeter
+    Returns the official UAM campus polygon perimeter coordinates and validation status.
+    """
+    perimeter = CampusGeoUtils.getCampusPerimeter()
+    return jsonify({
+        "success": True,
+        "count": len(perimeter),
+        "perimeter": perimeter,
+    }), 200
+
+
 @mapController.route("/nearest-gps", methods=["GET"])
 def findNearestGpsNode():
     """
     GET /api/map/nearest-gps
     Snaps a device GPS latitude/longitude coordinate to the nearest campus macro node.
+    Validates whether the user's location is within the official UAM campus perimeter.
     Query Params:
-      - lat: float latitude (e.g. 12.12460)
-      - lng: float longitude (e.g. -86.27090)
+      - lat: float latitude (e.g. 12.1077)
+      - lng: float longitude (e.g. -86.2579)
       - lang: 'eng' | 'spa'
     """
     latRaw = request.args.get("lat")
@@ -241,9 +258,135 @@ def findNearestGpsNode():
     lang = _getPreferredLanguage()
     result = globalNavigationService.findNearestGpsNode(userLat, userLng, lang=lang)
 
+    isInside = result.get("isWithinCampus", True)
+    if not isInside:
+        return jsonify({
+            "success": False,
+            "outsideCampus": True,
+            "message": "Te encuentras fuera del campus de la UAM." if lang == "spa" else "You are outside the UAM campus.",
+            "language": lang,
+            "userCoordinates": {"lat": userLat, "lng": userLng},
+            "suggestedFallbackNode": "mainParking",
+            "nearest": result,
+        }), 200
+
     return jsonify({
         "success": True,
+        "outsideCampus": False,
         "language": lang,
         "userCoordinates": {"lat": userLat, "lng": userLng},
         "nearest": result,
     }), 200
+
+
+# =============================================================================
+# INDOOR BUILDING SUBGRAPHS (CHILD GRAPHS) ENDPOINTS
+# =============================================================================
+
+@mapController.route("/subgraphs", methods=["GET"])
+def getSubgraphsCatalog():
+    """
+    GET /api/map/subgraphs
+    Returns the catalog of all campus buildings with detailed indoor child graphs.
+    """
+    lang = _getPreferredLanguage()
+    subgraphs = getAllBuildingSubgraphs()
+    catalog = []
+    for bId, sg in subgraphs.items():
+        catalog.append({
+            "buildingId": sg.buildingId,
+            "name": sg.name,
+            "code": sg.code,
+            "floors": sg.floors,
+            "macroNodeId": sg.macroNodeId,
+            "entranceNodeIds": sg.entranceNodeIds,
+            "description": sg.description,
+            "totalNodes": len(sg.getAllNodes()),
+        })
+    return jsonify({
+        "success": True,
+        "count": len(catalog),
+        "buildings": catalog,
+    }), 200
+
+
+@mapController.route("/buildings/<buildingId>/subgraph", methods=["GET"])
+def getBuildingSubgraphDetail(buildingId: str):
+    """
+    GET /api/map/buildings/<buildingId>/subgraph
+    Returns the full indoor child graph (nodes, edges, floors) for the specified building.
+    Query Params:
+      - floor: optional integer filter for a specific floor (e.g. 1, 2, 3)
+      - lang: 'eng' | 'spa'
+    """
+    lang = _getPreferredLanguage()
+    sg = getBuildingSubgraph(buildingId)
+    if not sg:
+        return jsonify({
+            "success": False,
+            "error": f"Child graph for building '{buildingId}' not found."
+        }), 404
+
+    floorParam = request.args.get("floor")
+    data = sg.toDict(lang=lang)
+
+    if floorParam is not None:
+        try:
+            targetFloor = int(floorParam)
+            data["filteredFloor"] = targetFloor
+            data["nodes"] = [n for n in data["nodes"] if n.get("floorLevel") == targetFloor]
+            data["nodesCount"] = len(data["nodes"])
+        except ValueError:
+            pass
+
+    return jsonify({
+        "success": True,
+        "subgraph": data,
+    }), 200
+
+
+@mapController.route("/buildings/<buildingId>/route", methods=["GET", "POST"])
+def calculateIndoorRoute(buildingId: str):
+    """
+    GET/POST /api/map/buildings/<buildingId>/route
+    Calculates turn-by-turn indoor routing between two rooms/nodes inside the building.
+    Parameters (JSON or Query Params):
+      - origin: starting room code or node ID (e.g. 'P101', 'p_room_101')
+      - destination: target room code or node ID (e.g. 'P208', 'p_restrooms_f3')
+      - accessibleOnly: boolean (True enforces ramps/elevators, avoiding stairs)
+      - lang: 'eng' | 'spa'
+    """
+    if request.method == "POST":
+        payload = request.get_json(silent=True) or request.form.to_dict() or {}
+    else:
+        payload = request.args.to_dict()
+
+    origin = payload.get("origin") or payload.get("source")
+    destination = payload.get("destination") or payload.get("target")
+
+    if not origin or not destination:
+        return jsonify({
+            "success": False,
+            "error": "Both 'origin' and 'destination' parameters are required."
+        }), 400
+
+    accessibleRaw = payload.get("accessibleOnly", False)
+    accessibleOnly = str(accessibleRaw).lower() in ("true", "1", "yes")
+    lang = payload.get("lang") or _getPreferredLanguage()
+
+    sg = getBuildingSubgraph(buildingId)
+    if not sg:
+        return jsonify({
+            "success": False,
+            "error": f"Child graph for building '{buildingId}' not found."
+        }), 404
+
+    result = sg.calculateIndoorRoute(
+        originQuery=str(origin),
+        destinationQuery=str(destination),
+        accessibleOnly=accessibleOnly,
+        lang=lang,
+    )
+
+    statusCode = 200 if result.get("success") else 404
+    return jsonify(result), statusCode

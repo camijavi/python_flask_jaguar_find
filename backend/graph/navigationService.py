@@ -158,10 +158,12 @@ class NavigationService:
         return [p for p in PLACES_CATALOG if p["category"] == category]
 
     def findNearestGpsNode(self, userLat: float, userLng: float, lang: str = "eng") -> dict:
-        """Finds nearest macro node to given GPS coordinates."""
+        """Finds nearest macro node to given GPS coordinates and validates campus perimeter."""
+        isWithinCampus = CampusGeoUtils.isWithinCampusPerimeter(userLat, userLng, bufferMeters=25.0)
         nearestId, distMeters = CampusGeoUtils.findNearestNodeByGps(self.graph, userLat, userLng)
         node = self.graph.getNode(nearestId) if nearestId else None
         return {
+            "isWithinCampus": isWithinCampus,
             "nearestNodeId": nearestId,
             "nodeName": node.getName(lang) if node else None,
             "distanceMeters": distMeters
