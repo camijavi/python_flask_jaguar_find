@@ -740,15 +740,15 @@ def buildBuildingPSubgraph() -> BuildingSubgraph:
 
     # Corridor Floor 4: Stairs <-> P401
     subgraph.addBidirectionalCorridor(
-        "p_stairs_f4_east", "p_room_401", 6.5, isAccessible=False,
-        forwardInstruction="Avanza por la terraza del 4to piso hacia el Salón P-401.",
+        "p_stairs_f4_east", "p_room_401", 4.0, isAccessible=False,
+        forwardInstruction="Entra al Salón P-401 por la puerta izquierda.",
         backwardInstruction="Sal del Salón P-401 hacia las escaleras del 4to piso."
     )
 
     # Corridor Floor 5: Stairs <-> Observatory Copernico
     subgraph.addBidirectionalCorridor(
-        "p_stairs_f5_east", "p_observatory_501", 4.5, isAccessible=False,
-        forwardInstruction="Entra al Observatory Copernico (P-501).",
+        "p_stairs_f5_east", "p_observatory_501", 4.0, isAccessible=False,
+        forwardInstruction="Entra al Observatory Copernico (P-501) por la puerta izquierda.",
         backwardInstruction="Sal del Observatory Copernico hacia las escaleras del 5to piso."
     )
 

@@ -427,7 +427,7 @@ Key UX & Mobile Features:
 
 /* 3D Canvas Viewport */
 #p-viewport {
-    background: radial-gradient(circle at 50% 38%, #f8fafc 0%, #e2e8f0 100%);
+    background: #f1f5f9;
     touch-action: none;
 }
 #p-viewport canvas {
@@ -471,84 +471,82 @@ Key UX & Mobile Features:
     }
 }
 
-/* 3D Projected Floating Labels */
+/* 3D Projected Floating Labels - Modern Architectural Glassmorphism */
 .p-map-label {
     position: absolute;
     transform: translate(-50%, -50%);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.01em;
-    padding: 3px 7px;
-    border-radius: 7px;
+    padding: 3px 8px;
+    border-radius: 8px;
     white-space: nowrap;
-    border: 1px solid rgba(71, 85, 105, 0.35);
-    background: rgba(255, 255, 255, 0.94);
-    color: #1e293b;
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #334155;
     pointer-events: auto;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(15, 23, 42, 0.1);
-    transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    transition: background-color 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.15s;
     user-select: none;
 }
 .p-map-label:hover {
-    border-color: #0284c7;
-    background: #ffffff;
-    transform: translate(-50%, -50%) scale(1.08);
+    border-color: #94a3b8;
+    background: rgba(255, 255, 255, 0.98);
+    transform: translate(-50%, -50%) scale(1.06);
     z-index: 5;
 }
+/* Solid Accent Colors ONLY for Active / Destino */
 .p-map-label.active {
-    background: #0f172a;
+    background: #0284c7;
     color: #ffffff;
     border-color: #38bdf8;
-    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.45);
     transform: translate(-50%, -50%) scale(1.08);
     z-index: 10;
 }
-.p-map-label.restroom {
-    background: rgba(241, 245, 249, 0.96);
-    border-color: #64748b;
-    color: #1e293b;
-}
+/* Informative labels: Sanitarios, Bebederos, Escaleras, Campus, in clean glassmorphism */
+.p-map-label.restroom,
+.p-map-label.stair,
+.p-map-label.fountain,
 .p-map-label.dome {
-    background: #881337;
-    color: #ffffff;
-    border-color: #f43f5e;
-}
-.p-map-label.stair {
-    background: rgba(241, 245, 249, 0.96);
-    border-color: #64748b;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(203, 213, 225, 0.7);
     color: #334155;
-}
-.p-map-label.fountain {
-    background: rgba(224, 242, 254, 0.96);
-    border-color: #0284c7;
-    color: #0369a1;
 }
 .p-map-label.orientation-badge {
     font-size: 9px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    padding: 2px 8px;
+    padding: 2.5px 8px;
     border-radius: 9999px;
-    background: rgba(15, 23, 42, 0.72);
-    color: #f8fafc;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #475569;
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
     pointer-events: none;
 }
 
-/* Wayfinding Start & End Floating Badges */
+/* Wayfinding Start & End Solid Accent Floating Badges */
 .p-pin-badge {
     position: absolute;
     transform: translate(-50%, -100%);
     font-size: 10px;
     font-weight: 800;
-    padding: 3.5px 8px;
+    letter-spacing: 0.03em;
+    padding: 3px 8px;
     border-radius: 7px;
     white-space: nowrap;
     pointer-events: none;
-    border: 2px solid #ffffff;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.32);
+    border: 1.5px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
     display: none;
     z-index: 12;
 }
@@ -592,6 +590,9 @@ Key UX & Mobile Features:
     "use strict";
 
     let scene, camera, renderer;
+    let dirLight = null;
+    let hemiLight = null;
+    let routeArrowTex = null;
     let isInitialized = false;
     let animFrameId = null;
 
@@ -742,45 +743,106 @@ Key UX & Mobile Features:
         return tex;
     }
 
+    function createRouteArrowTexture() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 128;
+        canvas.height = 32;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#06b6d4";
+        ctx.fillRect(0, 0, 128, 32);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 3.5;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        for (let x = 16; x < 128; x += 32) {
+            ctx.beginPath();
+            ctx.moveTo(x - 8, 6);
+            ctx.lineTo(x + 4, 16);
+            ctx.lineTo(x - 8, 26);
+            ctx.stroke();
+        }
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(12, 1);
+        return tex;
+    }
+
     function initMaterials() {
-        const hallwayTex = createUniversityHallwayTexture();
+        routeArrowTex = createRouteArrowTexture();
+
         MAT = {
-            slab: new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.82, metalness: 0.05 }),
+            // Slabs and hallways: MeshStandardMaterial in very light grey (#E2E8F0), roughness: 0.85, metalness: 0.05
+            slab: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.85, metalness: 0.05 }),
             hallway: new THREE.MeshStandardMaterial({
-                color: hallwayTex ? 0xffffff : 0x8a99ad,
-                map: hallwayTex,
-                roughness: 0.72,
+                color: 0xe2e8f0,
+                roughness: 0.85,
                 metalness: 0.05
             }),
-            roomFloor: new THREE.MeshStandardMaterial({ color: 0x9aa8b8, roughness: 0.78 }),
+            roomFloor: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.85, metalness: 0.05 }),
             roomSelected: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.45, emissive: 0x0369a1, emissiveIntensity: 0.25 }),
             roomHighlight: new THREE.MeshStandardMaterial({ color: 0x0ea5e9, roughness: 0.5, emissive: 0x0284c7, emissiveIntensity: 0.15 }),
-            restroomMenFloor: new THREE.MeshStandardMaterial({ color: 0x78879b, roughness: 0.75 }),
-            restroomWomenFloor: new THREE.MeshStandardMaterial({ color: 0x8291a5, roughness: 0.75 }),
-            wall: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55, transparent: true, opacity: 0.98 }),
+            restroomMenFloor: new THREE.MeshStandardMaterial({ color: 0xdbeafe, roughness: 0.85, metalness: 0.05 }),
+            restroomWomenFloor: new THREE.MeshStandardMaterial({ color: 0xfce7f3, roughness: 0.85, metalness: 0.05 }),
+
+            // Sanitary Restroom Fixtures: Glossy white porcelain, slate seats, chrome faucets, reflective mirrors & dividers
+            porcelain: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.15, metalness: 0.05 }),
+            toiletSeat: new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.35, metalness: 0.1 }),
+            toiletWater: new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.1, metalness: 0.1, transparent: true, opacity: 0.75 }),
+            stallDivider: new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.55, metalness: 0.1 }),
+            countertop: new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.35, metalness: 0.15 }),
+            mirror: new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.04, metalness: 0.96 }),
+            mirrorFrame: new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.3 }),
+            faucet: new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.18, metalness: 0.88 }),
+
+            // Walls: pure or slightly warm white (#FFFFFF) with roughness: 0.9.
+            // Translucent front walls: transparent: true, opacity: 0.35 with subtle blue (#E0F2FE).
+            wall: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 }),
             frontWall: new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                roughness: 0.55,
+                color: 0xe0f2fe,
+                roughness: 0.9,
                 transparent: true,
-                opacity: 0.32,
+                opacity: 0.35,
                 depthWrite: false
             }),
-            wallEdge: new THREE.LineBasicMaterial({ color: 0x64748b, transparent: true, opacity: 0.45 }),
+            wallEdge: new THREE.LineBasicMaterial({ color: 0xcbd5e1, transparent: true, opacity: 0.35 }),
+
             doorPanel: new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.45 }),
             doorHandle: new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.6, roughness: 0.3 }),
             doorFrame: new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.6 }),
-            railingPost: new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.4, roughness: 0.45 }),
-            railingBar: new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.35, roughness: 0.45 }),
-            stairStep: new THREE.MeshStandardMaterial({ color: 0x7c8ba1, roughness: 0.75 }),
-            stairFloor: new THREE.MeshStandardMaterial({ color: 0x8a99ad, roughness: 0.82 }),
-            routeLine: new THREE.MeshStandardMaterial({ color: 0x0284c7, emissive: 0x0284c7, emissiveIntensity: 0.55, roughness: 0.25 }),
+
+            // Railings: semi-transparent glass panel (opacity: 0.25, color: '#94A3B8') with dark slate handrail (#334155)
+            railingPost: new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.5, metalness: 0.2 }),
+            railingGlass: new THREE.MeshStandardMaterial({
+                color: 0x94a3b8,
+                transparent: true,
+                opacity: 0.25,
+                roughness: 0.2,
+                metalness: 0.1,
+                depthWrite: false
+            }),
+
+            stairStep: new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.8, metalness: 0.05 }),
+            stairFloor: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.85, metalness: 0.05 }),
+
+            // Route: cyan line with subtle glow (color: '#06B6D4', emissive: '#0891B2', emissiveIntensity: 0.4)
+            routeLine: new THREE.MeshStandardMaterial({
+                color: 0x06b6d4,
+                emissive: 0x0891b2,
+                emissiveIntensity: 0.4,
+                roughness: 0.25,
+                metalness: 0.1,
+                map: routeArrowTex
+            }),
             startPin: new THREE.MeshStandardMaterial({ color: 0x059669, roughness: 0.3 }),
             endPin: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3 }),
-            roofDeck: new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.85, metalness: 0.05 }),
+            roofDeck: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.85, metalness: 0.05 }),
             annexTrim: new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, metalness: 0.15 }),
             windowGlass: new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.2, metalness: 0.7 }),
-            domeShell: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.22, metalness: 0.72 }),
-            domeTrim: new THREE.MeshStandardMaterial({ color: 0x0369a1, roughness: 0.45, metalness: 0.35 }),
+
+            // Copernicus Observatory Dome: MeshStandardMaterial with roughness: 0.65, metalness: 0.2
+            domeShell: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.65, metalness: 0.2 }),
+            domeTrim: new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.65, metalness: 0.2 }),
             domeSlit: new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5, metalness: 0.5 })
         };
     }
@@ -789,7 +851,7 @@ Key UX & Mobile Features:
         const isCutaway = Boolean(state.cutawayWalls && state.mode === "visitor");
         if (MAT.frontWall) {
             MAT.frontWall.transparent = isCutaway;
-            MAT.frontWall.opacity = isCutaway ? 0.32 : 0.98;
+            MAT.frontWall.opacity = isCutaway ? 0.35 : 0.98;
             MAT.frontWall.depthWrite = !isCutaway;
             MAT.frontWall.needsUpdate = true;
         }
@@ -810,7 +872,7 @@ Key UX & Mobile Features:
         return mesh;
     }
 
-    function addDoor(parent, x, z, swingDirZ, hingeLeft) {
+    function addDoor(parent, x, z, swingDirZ, hingeLeft, isSideWall) {
         const g = new THREE.Group();
         const doorW = 1.15;
         const doorH = 2.05;
@@ -836,6 +898,10 @@ Key UX & Mobile Features:
         const thresh = new THREE.Mesh(threshGeo, MAT.doorFrame);
         thresh.position.set(0, 0.02, 0);
         g.add(thresh);
+
+        if (isSideWall) {
+            g.rotation.y = Math.PI / 2;
+        }
 
         g.position.set(x, 0.12, z);
         parent.add(g);
@@ -910,26 +976,32 @@ Key UX & Mobile Features:
         const dz = z2 - z1;
         const len = Math.hypot(dx, dz);
         const angle = Math.atan2(dx, dz);
-        const railH = 1.1;
+        const railH = 1.05;
 
-        const topGeo = new THREE.BoxGeometry(0.11, 0.08, len);
+        // Thin top handrail in dark slate grey (#334155)
+        const topGeo = new THREE.BoxGeometry(0.08, 0.045, len);
         const top = new THREE.Mesh(topGeo, MAT.railingPost);
         top.position.set(0, railH, 0);
+        top.castShadow = true;
+        top.receiveShadow = true;
         g.add(top);
 
-        const barGeo = new THREE.BoxGeometry(0.05, 0.04, len);
-        [0.22, 0.44, 0.66, 0.88].forEach(h => {
-            const bar = new THREE.Mesh(barGeo, MAT.railingBar);
-            bar.position.set(0, h, 0);
-            g.add(bar);
-        });
+        // Semi-transparent architectural glass panel (opacity: 0.25, color: '#94A3B8')
+        const glassGeo = new THREE.BoxGeometry(0.02, railH * 0.86, Math.max(0.1, len - 0.06));
+        const glass = new THREE.Mesh(glassGeo, MAT.railingGlass);
+        glass.position.set(0, railH * 0.45, 0);
+        glass.receiveShadow = true;
+        g.add(glass);
 
-        const postCount = Math.max(2, Math.round(len / 2.6) + 1);
-        const postGeo = new THREE.BoxGeometry(0.09, railH, 0.09);
+        // Minimal support posts
+        const postCount = Math.max(2, Math.round(len / 3.2) + 1);
+        const postGeo = new THREE.BoxGeometry(0.05, railH, 0.05);
         for (let i = 0; i < postCount; i++) {
             const t = i / (postCount - 1);
             const p = new THREE.Mesh(postGeo, MAT.railingPost);
             p.position.set(0, railH / 2, -len / 2 + t * len);
+            p.castShadow = true;
+            p.receiveShadow = true;
             g.add(p);
         }
 
@@ -1041,12 +1113,14 @@ Key UX & Mobile Features:
         const totalStairW = flightW * 2 + laneGap + (isNarrow ? 0.25 : 0.45);
         const slabThick = isNarrow ? 0.22 : 0.34;
 
-        // 1. North floor-level threshold platform connecting the front hallway (or P5 annex entry) to the stair flights
-        const northPlatW = (floorNum === 5) ? (totalStairW + 2.6) : (totalStairW + 0.6);
-        const northPlatX = (floorNum === 5) ? (cx + 1.1) : cx;
-        const northPlatGeo = new THREE.BoxGeometry(northPlatW, slabThick, 1.5);
+        // 1. North floor-level threshold platform connecting the front hallway (or P4/P5 annex entry) to the stair flights
+        const northPlatW = (floorNum >= 4) ? (totalStairW + 2.6) : (totalStairW + 0.6);
+        const northPlatX = (floorNum >= 4) ? (cx + 1.1) : cx;
+        const northPlatD = (floorNum >= 4) ? 2.0 : 1.5;
+        const northPlatZ = (floorNum >= 4) ? 1.0 : 1.25;
+        const northPlatGeo = new THREE.BoxGeometry(northPlatW, slabThick, northPlatD);
         const northPlat = new THREE.Mesh(northPlatGeo, MAT.stairFloor.clone());
-        northPlat.position.set(northPlatX, 0.02, 1.25);
+        northPlat.position.set(northPlatX, 0.02, northPlatZ);
         northPlat.receiveShadow = true;
         northPlat.castShadow = true;
         g.add(northPlat);
@@ -1277,6 +1351,408 @@ Key UX & Mobile Features:
         }
     }
 
+    // =========================================================================
+    // 3D SANITARY RESTROOM FIXTURES (Toilets, Urinals, Vanity Counters & Mirrors)
+    // =========================================================================
+
+    /**
+     * Adds an architectural 3D porcelain toilet with seat, lid, water, and flush tank.
+     */
+    function addToiletFixture(parent, x, y, z, facing = "Z+") {
+        const g = new THREE.Group();
+
+        // 1. Base / Pedestal (white porcelain)
+        const baseGeo = new THREE.BoxGeometry(0.36, 0.22, 0.44);
+        const base = new THREE.Mesh(baseGeo, MAT.porcelain);
+        base.position.set(0, 0.11, 0.04);
+        base.castShadow = true;
+        base.receiveShadow = true;
+        g.add(base);
+
+        // 2. Bowl
+        const bowlGeo = new THREE.CylinderGeometry(0.20, 0.15, 0.18, 16);
+        const bowl = new THREE.Mesh(bowlGeo, MAT.porcelain);
+        bowl.position.set(0, 0.29, 0.08);
+        bowl.scale.set(1.0, 1.0, 1.25);
+        bowl.castShadow = true;
+        bowl.receiveShadow = true;
+        g.add(bowl);
+
+        // Water surface
+        const waterGeo = new THREE.CircleGeometry(0.12, 16);
+        const water = new THREE.Mesh(waterGeo, MAT.toiletWater);
+        water.rotation.x = -Math.PI / 2;
+        water.position.set(0, 0.35, 0.08);
+        g.add(water);
+
+        // 3. Toilet Seat (dark slate for crisp visibility from distance)
+        const seatGeo = new THREE.TorusGeometry(0.16, 0.035, 8, 20);
+        const seat = new THREE.Mesh(seatGeo, MAT.toiletSeat);
+        seat.rotation.x = Math.PI / 2;
+        seat.scale.set(0.9, 1.25, 1.0);
+        seat.position.set(0, 0.39, 0.08);
+        seat.castShadow = true;
+        g.add(seat);
+
+        // 4. Porcelain Flush Tank (Cisterna)
+        const tankGeo = new THREE.BoxGeometry(0.42, 0.34, 0.18);
+        const tank = new THREE.Mesh(tankGeo, MAT.porcelain);
+        tank.position.set(0, 0.46, -0.16);
+        tank.castShadow = true;
+        tank.receiveShadow = true;
+        g.add(tank);
+
+        // Flush tank lid
+        const lidGeo = new THREE.BoxGeometry(0.44, 0.03, 0.20);
+        const lid = new THREE.Mesh(lidGeo, MAT.porcelain);
+        lid.position.set(0, 0.64, -0.16);
+        g.add(lid);
+
+        // Dual-flush chrome actuator button
+        const btnGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.02, 12);
+        const btn = new THREE.Mesh(btnGeo, MAT.faucet);
+        btn.position.set(0, 0.66, -0.16);
+        g.add(btn);
+
+        // Orientation
+        if (facing === "X+") {
+            g.rotation.y = Math.PI / 2;
+        } else if (facing === "X-") {
+            g.rotation.y = -Math.PI / 2;
+        } else if (facing === "Z-") {
+            g.rotation.y = Math.PI;
+        }
+
+        g.position.set(x, y, z);
+        parent.add(g);
+        return g;
+    }
+
+    /**
+     * Adds an architectural wall-mounted porcelain urinal with chrome flush valve.
+     */
+    function addUrinalFixture(parent, x, y, z, facing = "Z+") {
+        const g = new THREE.Group();
+
+        // 1. Urinal porcelain body (backplate & sides)
+        const bodyGeo = new THREE.BoxGeometry(0.34, 0.62, 0.16);
+        const body = new THREE.Mesh(bodyGeo, MAT.porcelain);
+        body.position.set(0, 0.72, 0.08);
+        body.castShadow = true;
+        body.receiveShadow = true;
+        g.add(body);
+
+        // Projecting basin bowl
+        const basinGeo = new THREE.CylinderGeometry(0.17, 0.12, 0.22, 14, 1, false, 0, Math.PI);
+        const basin = new THREE.Mesh(basinGeo, MAT.porcelain);
+        basin.position.set(0, 0.52, 0.16);
+        basin.rotation.y = -Math.PI / 2;
+        basin.castShadow = true;
+        basin.receiveShadow = true;
+        g.add(basin);
+
+        // Drain ring inside urinal
+        const drainGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.02, 10);
+        const drain = new THREE.Mesh(drainGeo, MAT.faucet);
+        drain.position.set(0, 0.44, 0.18);
+        g.add(drain);
+
+        // 2. Chrome flush pipe & automatic sensor valve
+        const pipeGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.28, 8);
+        const pipe = new THREE.Mesh(pipeGeo, MAT.faucet);
+        pipe.position.set(0, 1.15, 0.06);
+        pipe.castShadow = true;
+        g.add(pipe);
+
+        const valveGeo = new THREE.BoxGeometry(0.08, 0.10, 0.08);
+        const valve = new THREE.Mesh(valveGeo, MAT.faucet);
+        valve.position.set(0, 1.30, 0.06);
+        g.add(valve);
+
+        // Orientation
+        if (facing === "X+") {
+            g.rotation.y = Math.PI / 2;
+        } else if (facing === "X-") {
+            g.rotation.y = -Math.PI / 2;
+        } else if (facing === "Z-") {
+            g.rotation.y = Math.PI;
+        }
+
+        g.position.set(x, y, z);
+        parent.add(g);
+        return g;
+    }
+
+    /**
+     * Adds a privacy divider screen for urinals.
+     */
+    function addUrinalDivider(parent, x, y, z, depth = 0.42) {
+        const divGeo = new THREE.BoxGeometry(0.03, 0.82, depth);
+        const div = new THREE.Mesh(divGeo, MAT.stallDivider);
+        div.position.set(x, y + 0.88, z + depth / 2);
+        div.castShadow = true;
+        div.receiveShadow = true;
+        parent.add(div);
+        return div;
+    }
+
+    /**
+     * Adds vanity counter with inset ceramic washbasins, chrome swan-neck faucets, and wall mirror.
+     */
+    function addVanityCounter(parent, cx, z, y, width, depth, sinkXs, mirrorW, mirrorH, mirrorYOffset) {
+        const g = new THREE.Group();
+
+        // 1. Dark granite / quartz countertop slab
+        const slabGeo = new THREE.BoxGeometry(width, 0.08, depth);
+        const slab = new THREE.Mesh(slabGeo, MAT.countertop);
+        slab.position.set(0, 0.80, depth / 2);
+        slab.castShadow = true;
+        slab.receiveShadow = true;
+        g.add(slab);
+
+        // Front and side skirt aprons
+        const skirtGeo = new THREE.BoxGeometry(width, 0.16, 0.03);
+        const skirt = new THREE.Mesh(skirtGeo, MAT.countertop);
+        skirt.position.set(0, 0.68, depth - 0.015);
+        skirt.castShadow = true;
+        g.add(skirt);
+
+        // Chrome vanity support legs (pezuñas cuadradas)
+        [-width / 2 + 0.06, width / 2 - 0.06].forEach(legX => {
+            const legGeo = new THREE.BoxGeometry(0.045, 0.76, 0.045);
+            const leg = new THREE.Mesh(legGeo, MAT.faucet);
+            leg.position.set(legX, 0.38, depth - 0.06);
+            leg.castShadow = true;
+            g.add(leg);
+        });
+
+        // 2. Inset Ceramic Sinks & Chrome Faucets
+        sinkXs.forEach(relX => {
+            // White porcelain sink basin
+            const basinGeo = new THREE.BoxGeometry(0.48, 0.12, 0.38);
+            const basin = new THREE.Mesh(basinGeo, MAT.porcelain);
+            basin.position.set(relX, 0.81, depth / 2 + 0.02);
+            basin.castShadow = true;
+            g.add(basin);
+
+            // Water surface inside sink
+            const waterGeo = new THREE.BoxGeometry(0.42, 0.02, 0.32);
+            const water = new THREE.Mesh(waterGeo, MAT.toiletWater);
+            water.position.set(relX, 0.84, depth / 2 + 0.02);
+            g.add(water);
+
+            // Drain ring
+            const drainGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.02, 10);
+            const drain = new THREE.Mesh(drainGeo, MAT.faucet);
+            drain.position.set(relX, 0.85, depth / 2 + 0.02);
+            g.add(drain);
+
+            // Chrome Swan-Neck Faucet
+            const faucetBaseGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.14, 10);
+            const faucetBase = new THREE.Mesh(faucetBaseGeo, MAT.faucet);
+            faucetBase.position.set(relX, 0.91, depth / 2 - 0.14);
+            faucetBase.castShadow = true;
+            g.add(faucetBase);
+
+            const spoutGeo = new THREE.BoxGeometry(0.02, 0.02, 0.12);
+            const spout = new THREE.Mesh(spoutGeo, MAT.faucet);
+            spout.position.set(relX, 0.97, depth / 2 - 0.09);
+            spout.castShadow = true;
+            g.add(spout);
+        });
+
+        // 3. Mirror mounted on back wall directly above the counter
+        const mirrorFrameGeo = new THREE.BoxGeometry(mirrorW + 0.06, mirrorH + 0.06, 0.03);
+        const mirrorFrame = new THREE.Mesh(mirrorFrameGeo, MAT.mirrorFrame);
+        mirrorFrame.position.set(0, mirrorYOffset, 0.015);
+        g.add(mirrorFrame);
+
+        const mirrorGeo = new THREE.BoxGeometry(mirrorW, mirrorH, 0.02);
+        const mirror = new THREE.Mesh(mirrorGeo, MAT.mirror);
+        mirror.position.set(0, mirrorYOffset, 0.025);
+        mirror.castShadow = true;
+        g.add(mirror);
+
+        g.position.set(cx, y, z);
+        parent.add(g);
+        return g;
+    }
+
+    /**
+     * Builds complete 3D restroom interior with toilets, cubicle stalls, urinals, vanity sinks and mirrors.
+     */
+    function addRestroomInterior(parent, floorNum, gender, x1, x2, zBack, zFront, wallH) {
+        const floorY = 0.18;
+        const spaceId = `F${floorNum}-${gender === "men" ? "HOMBRES" : "MUJERES"}-${floorNum}`;
+
+        if (gender === "men") {
+            // =================================================================
+            // MEN'S RESTROOM (HOMBRES P1–P3)
+            // =================================================================
+            
+            // 1. BACK WALL (z = -6.5):
+            // - Left section: Vanity counter with 2 sinks and framed mirror (x = 21.15 .. 23.3)
+            const vanityW = 2.15;
+            const vanityCx = x1 + 0.35 + vanityW / 2; // ~22.225
+            const vanityG = addVanityCounter(
+                parent,
+                vanityCx,
+                zBack,
+                floorY,
+                vanityW,
+                0.62,
+                [-0.52, 0.52], // 2 sinks
+                2.05,
+                0.92,
+                1.42
+            );
+            if (vanityG) {
+                vanityG.userData = { spaceId };
+            }
+
+            // Privacy wing between vanity and urinals
+            addUrinalDivider(parent, x1 + 2.7, floorY, zBack, 0.55);
+
+            // - Right section: 3 Wall-mounted porcelain urinals with chrome flush pipes (x = 23.8 .. 25.8)
+            const uXs = [x1 + 3.15, x1 + 3.95, x1 + 4.75]; // 23.95, 24.75, 25.55
+            uXs.forEach(ux => {
+                const ug = addUrinalFixture(parent, ux, floorY, zBack, "Z+");
+                if (ug) ug.userData = { spaceId };
+            });
+
+            // Urinal divider screens between adjacent urinals
+            addUrinalDivider(parent, x1 + 3.55, floorY, zBack, 0.42);
+            addUrinalDivider(parent, x1 + 4.35, floorY, zBack, 0.42);
+
+            // 2. WEST WALL (x = x1 = 20.8): 2 TOILET STALL CUBICLES
+            // Stalls run along west wall: Stall 1 (z = -5.5 .. -4.1), Stall 2 (z = -4.1 .. -2.7)
+            const stallDepth = 1.4;
+            const stallWidth = 1.55;
+            const stallZCenters = [-4.8, -3.4];
+            const stallDivZ = [-5.5, -4.1, -2.7];
+
+            // Stall divider panels extending from west wall in +X
+            stallDivZ.forEach(sz => {
+                const divGeo = new THREE.BoxGeometry(stallWidth, 1.65, 0.035);
+                const div = new THREE.Mesh(divGeo, MAT.stallDivider);
+                div.position.set(x1 + stallWidth / 2, floorY + 0.95, sz);
+                div.castShadow = true;
+                div.receiveShadow = true;
+                parent.add(div);
+
+                // Chrome support legs on floor
+                const legGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.15, 8);
+                const leg = new THREE.Mesh(legGeo, MAT.faucet);
+                leg.position.set(x1 + stallWidth - 0.08, floorY + 0.075, sz);
+                parent.add(leg);
+            });
+
+            // Front stall panels with door openings
+            stallZCenters.forEach(cz => {
+                // Front pilaster
+                const pilGeo = new THREE.BoxGeometry(0.035, 1.85, 0.45);
+                const pil = new THREE.Mesh(pilGeo, MAT.stallDivider);
+                pil.position.set(x1 + stallWidth, floorY + 0.95, cz + stallDepth / 2 - 0.225);
+                pil.castShadow = true;
+                parent.add(pil);
+
+                // Partial stall door (shown slightly ajar for realistic architectural maqueta look)
+                const doorGeo = new THREE.BoxGeometry(0.025, 1.65, 0.75);
+                const door = new THREE.Mesh(doorGeo, MAT.stallDivider);
+                door.position.set(x1 + stallWidth - 0.12, floorY + 0.95, cz - 0.12);
+                door.rotation.y = -0.35; // ajar
+                door.castShadow = true;
+                parent.add(door);
+
+                // Toilet fixture inside cubicle, against west wall facing +X
+                const tg = addToiletFixture(parent, x1 + 0.42, floorY, cz, "X+");
+                if (tg) tg.userData = { spaceId };
+            });
+
+        } else {
+            // =================================================================
+            // WOMEN'S RESTROOM (MUJERES P1–P3)
+            // =================================================================
+
+            // 1. BACK WALL (z = -6.5):
+            // - Wide luxury vanity counter with 3 sinks and a 3.15m wide mirror (x = 26.75 .. 30.0)
+            const vanityW = 3.25;
+            const vanityCx = x1 + 0.35 + vanityW / 2; // ~28.375
+            const vanityG = addVanityCounter(
+                parent,
+                vanityCx,
+                zBack,
+                floorY,
+                vanityW,
+                0.62,
+                [-0.95, 0, 0.95], // 3 sinks
+                3.15,
+                0.92,
+                1.42
+            );
+            if (vanityG) {
+                vanityG.userData = { spaceId };
+            }
+
+            // 2. EAST WALL (x = x2 = 32.0): 3 TOILET STALL CUBICLES
+            // Stalls run along east wall: Stall 1 (z = -6.4 .. -5.0), Stall 2 (z = -5.0 .. -3.6), Stall 3 (z = -3.6 .. -2.2)
+            const stallDepth = 1.4;
+            const stallWidth = 1.55;
+            const stallZCenters = [-5.7, -4.3, -2.9];
+            const stallDivZ = [-6.4, -5.0, -3.6, -2.2];
+
+            // Stall divider panels extending from east wall in -X
+            stallDivZ.forEach(sz => {
+                const divGeo = new THREE.BoxGeometry(stallWidth, 1.65, 0.035);
+                const div = new THREE.Mesh(divGeo, MAT.stallDivider);
+                div.position.set(x2 - stallWidth / 2, floorY + 0.95, sz);
+                div.castShadow = true;
+                div.receiveShadow = true;
+                parent.add(div);
+
+                // Chrome support legs on floor
+                const legGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.15, 8);
+                const leg = new THREE.Mesh(legGeo, MAT.faucet);
+                leg.position.set(x2 - stallWidth + 0.08, floorY + 0.075, sz);
+                parent.add(leg);
+            });
+
+            // Front stall panels with door openings
+            stallZCenters.forEach(cz => {
+                // Front pilaster
+                const pilGeo = new THREE.BoxGeometry(0.035, 1.85, 0.45);
+                const pil = new THREE.Mesh(pilGeo, MAT.stallDivider);
+                pil.position.set(x2 - stallWidth, floorY + 0.95, cz + stallDepth / 2 - 0.225);
+                pil.castShadow = true;
+                parent.add(pil);
+
+                // Stall door (slightly ajar)
+                const doorGeo = new THREE.BoxGeometry(0.025, 1.65, 0.75);
+                const door = new THREE.Mesh(doorGeo, MAT.stallDivider);
+                door.position.set(x2 - stallWidth + 0.12, floorY + 0.95, cz - 0.12);
+                door.rotation.y = 0.35; // ajar
+                door.castShadow = true;
+                parent.add(door);
+
+                // Toilet fixture inside cubicle, against east wall facing -X
+                const tg = addToiletFixture(parent, x2 - 0.42, floorY, cz, "X-");
+                if (tg) tg.userData = { spaceId };
+            });
+
+            // 3. WEST DIVIDING WALL (x = x1 = 26.4): Full-length grooming mirror
+            const mirrorFrameGeo = new THREE.BoxGeometry(0.03, 1.65, 1.45);
+            const mirrorFrame = new THREE.Mesh(mirrorFrameGeo, MAT.mirrorFrame);
+            mirrorFrame.position.set(x1 + 0.02, floorY + 1.15, -3.8);
+            parent.add(mirrorFrame);
+
+            const fullMirrorGeo = new THREE.BoxGeometry(0.02, 1.55, 1.35);
+            const fullMirror = new THREE.Mesh(fullMirrorGeo, MAT.mirror);
+            fullMirror.position.set(x1 + 0.035, floorY + 1.15, -3.8);
+            fullMirror.castShadow = true;
+            parent.add(fullMirror);
+        }
+    }
+
     // Build Floor Geometry
     function buildFloor(floorNum) {
         const floorGroup = new THREE.Group();
@@ -1302,11 +1778,22 @@ Key UX & Mobile Features:
             annexSlab.receiveShadow = true;
             floorGroup.add(annexSlab);
 
-            // 4 flush exterior walls of the 5th-floor annex (no exterior doors on Floor 5)
+            // 4 exterior walls of the 5th-floor annex (entrance door on the left side from stairs landing)
             addWallBox(floorGroup, cx, 0.12, zBack, roomW, wallH, 0.24);
             addWallBox(floorGroup, cx, 0.12, zFront, roomW, wallH, 0.24, MAT.frontWall);
-            addWallBox(floorGroup, x1, 0.12, zCenter, 0.24, wallH, 8.0);
             addWallBox(floorGroup, x2, 0.12, zCenter, 0.24, wallH, 8.0);
+
+            // Left wall (x1 = -32) with door opening at z = 0.8 connecting to stair landing
+            const doorZ = 0.8;
+            const doorW = 1.15;
+            const southWallLen = (doorZ - doorW / 2) - zBack;
+            const northWallLen = zFront - (doorZ + doorW / 2);
+            addWallBox(floorGroup, x1, 0.12, zBack + southWallLen / 2, 0.24, wallH, southWallLen);
+            if (northWallLen > 0.05) {
+                addWallBox(floorGroup, x1, 0.12, zFront - northWallLen / 2, 0.24, wallH, northWallLen);
+            }
+            addWallBox(floorGroup, x1, 0.12 + 2.05, doorZ, 0.24, Math.max(0.25, wallH - 2.05), doorW);
+            addDoor(floorGroup, x1, doorZ, -1, true, true);
 
             // Photo-accurate grey pilasters, trim & windows on the 5th-floor annex facade
             addAnnexFacadeDetails(floorGroup, x1, x2, zBack, zFront, wallH, true);
@@ -1371,7 +1858,7 @@ Key UX & Mobile Features:
                 z: zCenter,
                 doorX: -32,
                 doorXs: [-32],
-                notes: "Segundo nivel del anexo superior coronado por la cúpula metálica del Observatorio UAM. No tiene pasillo exterior; se accede por las escaleras estrechas.",
+                notes: "Segundo nivel del anexo superior coronado por la cúpula metálica del Observatorio UAM. Se accede por la puerta izquierda desde el descanso de las escaleras.",
                 mesh: tile,
                 baseMat: MAT.roomFloor,
                 labelEl: el,
@@ -1387,14 +1874,12 @@ Key UX & Mobile Features:
         }
 
         // =====================================================================
-        // PISO 4: PRIMER NIVEL DEL ANEXO SUPERIOR + TERRAZA CON BARANDAL
+        // PISO 4: PRIMER NIVEL DEL ANEXO SUPERIOR (SALÓN P-401)
+        // (Sin puerta exterior, sin terraza/pasillo exterior ni barandales;
+        //  puerta en el lado izquierdo hacia el descanso de escaleras,
+        //  al igual que el Observatorio Copérnico del Piso 5)
         // =====================================================================
         if (floorNum === 4) {
-            const xLeft = -39.8;
-            const xRight = -18.4;
-            const slabW = xRight - xLeft;
-            const slabCx = (xLeft + xRight) / 2;
-
             const x1 = -32;
             const x2 = -18.8;
             const roomW = x2 - x1;
@@ -1403,47 +1888,29 @@ Key UX & Mobile Features:
             const zHallWall = 1.5;
             const zCenter = -2.5;
 
-            // Annex room slab (x = -32.2 to -18.4) leaving the stairwell shaft (cx = -36) open
-            const roomSlabW = -18.4 - (-32.2);
-            const roomSlabCx = (-32.2 + -18.4) / 2;
-            const roomSlabGeo = new THREE.BoxGeometry(roomSlabW, 0.24, 8.2);
-            const roomSlab = new THREE.Mesh(roomSlabGeo, MAT.slab);
-            roomSlab.position.set(roomSlabCx, 0, zCenter);
-            roomSlab.receiveShadow = true;
-            floorGroup.add(roomSlab);
+            // Annex room slab strictly matching Floor 5 annex footprint (no exterior balcony or terrace)
+            const annexSlabGeo = new THREE.BoxGeometry(roomW + 0.24, 0.24, 8.24);
+            const annexSlab = new THREE.Mesh(annexSlabGeo, MAT.slab);
+            annexSlab.position.set(cx, 0, zCenter);
+            annexSlab.receiveShadow = true;
+            floorGroup.add(annexSlab);
 
-            // Front terrace walkway on top of the 3rd floor roof (z = 1.5 to 4.6)
-            const hallSlabGeo = new THREE.BoxGeometry(slabW, 0.24, 3.3);
-            const hallSlab = new THREE.Mesh(hallSlabGeo, MAT.slab);
-            hallSlab.position.set(slabCx, 0, 3.05);
-            hallSlab.receiveShadow = true;
-            floorGroup.add(hallSlab);
-
-            const hallGeo = new THREE.BoxGeometry(slabW - 0.3, 0.04, 3.0);
-            const hallMesh = new THREE.Mesh(hallGeo, MAT.hallway);
-            hallMesh.position.set(slabCx, 0.13, 3.05);
-            hallMesh.receiveShadow = true;
-            floorGroup.add(hallMesh);
-
-            // Front balcony railing on Floor 4 (no railings on the stairs themselves)
-            addHorizontalRailing(floorGroup, -39.6, 4.55, -18.6, 4.55);
-            addHorizontalRailing(floorGroup, -39.6, 1.6, -39.6, 4.55);
-            addHorizontalRailing(floorGroup, -18.6, 1.6, -18.6, 4.55);
-
-            // Annex 4th-floor walls (flush with the 5th-floor annex above)
+            // Exterior walls of P4 annex (flush with 5th-floor annex above, front wall uses MAT.frontWall)
             addWallBox(floorGroup, cx, 0.12, zBack, roomW, wallH, 0.24);
-            addWallBox(floorGroup, x1, 0.12, zCenter, 0.24, wallH, 8.0);
+            addWallBox(floorGroup, cx, 0.12, zHallWall, roomW, wallH, 0.24, MAT.frontWall);
             addWallBox(floorGroup, x2, 0.12, zCenter, 0.24, wallH, 8.0);
 
-            // Front wall of P4 annex with entrance door on the right side
-            const doorX = x2 - 2.1;
-            const doorW = 1.2;
-            const leftSegW = (doorX - doorW / 2) - x1;
-            const rightSegW = x2 - (doorX + doorW / 2);
-            if (leftSegW > 0.05) addWallBox(floorGroup, x1 + leftSegW / 2, 0.12, zHallWall, leftSegW, wallH, 0.24, MAT.frontWall);
-            if (rightSegW > 0.05) addWallBox(floorGroup, (doorX + doorW / 2) + rightSegW / 2, 0.12, zHallWall, rightSegW, wallH, 0.24, MAT.frontWall);
-            addWallBox(floorGroup, doorX, 0.12 + 2.05, zHallWall, doorW, Math.max(0.25, wallH - 2.05), 0.24, MAT.frontWall);
-            addDoor(floorGroup, doorX, zHallWall, -1, true);
+            // Left wall (x1 = -32) with door opening at z = 0.8 connecting to stair landing (like Copernico Observatory)
+            const doorZ = 0.8;
+            const doorW = 1.15;
+            const southWallLen = (doorZ - doorW / 2) - zBack;
+            const northWallLen = zHallWall - (doorZ + doorW / 2);
+            addWallBox(floorGroup, x1, 0.12, zBack + southWallLen / 2, 0.24, wallH, southWallLen);
+            if (northWallLen > 0.05) {
+                addWallBox(floorGroup, x1, 0.12, zHallWall - northWallLen / 2, 0.24, wallH, northWallLen);
+            }
+            addWallBox(floorGroup, x1, 0.12 + 2.05, doorZ, 0.24, Math.max(0.25, wallH - 2.05), doorW);
+            addDoor(floorGroup, x1, doorZ, -1, true, true);
 
             // Photo-accurate grey pilasters, trim & windows on P4 annex facade
             addAnnexFacadeDetails(floorGroup, x1, x2, zBack, zHallWall, wallH, false);
@@ -1474,9 +1941,9 @@ Key UX & Mobile Features:
                 area: "105.6 m²",
                 x: cx,
                 z: zCenter,
-                doorX,
-                doorXs: [doorX],
-                notes: "Primer nivel del anexo superior del Edificio P. Se accede por la escalera estrecha desde el 3er piso.",
+                doorX: -32,
+                doorXs: [-32],
+                notes: "Primer nivel del anexo superior del Edificio P. Se accede por la puerta izquierda en el descanso de escaleras, al igual que el Observatorio Copérnico.",
                 mesh: tile,
                 baseMat: MAT.roomFloor,
                 labelEl: el,
@@ -1493,12 +1960,31 @@ Key UX & Mobile Features:
 
         // Pisos 1 a 3: Edificio completo (80.4m x 12.4m)
         if (floorNum === 1) {
-            // Ground floor: full foundation slab
-            const slabGeo = new THREE.BoxGeometry(80.4, 0.24, 12.4);
-            const slab = new THREE.Mesh(slabGeo, MAT.slab);
-            slab.position.set(0, 0, -0.5);
-            slab.receiveShadow = true;
-            floorGroup.add(slab);
+            // Ground floor: foundation slab notched for the west accessible ramp (x = 36.0 .. 40.4, z = 4.18 .. 5.7)
+            // 1) Main foundation slab from x = -40.2 to x = 36.0 (depth 12.4m from z = -6.7 to z = +5.7)
+            const slabMain = new THREE.Mesh(new THREE.BoxGeometry(76.2, 0.24, 12.4), MAT.slab);
+            slabMain.position.set(-2.1, 0, -0.5);
+            slabMain.receiveShadow = true;
+            floorGroup.add(slabMain);
+
+            // 2) Foundation slab behind the ramp from x = 36.0 to x = 40.2 (depth from z = -6.7 to z = 4.18)
+            const slabRear = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.24, 10.88), MAT.slab);
+            slabRear.position.set(38.1, 0, -1.26);
+            slabRear.receiveShadow = true;
+            floorGroup.add(slabRear);
+
+            // Ground floor hallway tile (notched at the ramp pocket: x = 36.0 .. 40.0, z = 4.18 .. 5.45)
+            // 1) Main hallway from x = -40.0 to x = 36.0
+            const hallMain = new THREE.Mesh(new THREE.BoxGeometry(76.0, 0.04, 3.9), MAT.hallway);
+            hallMain.position.set(-2.0, 0.13, 3.5);
+            hallMain.receiveShadow = true;
+            floorGroup.add(hallMain);
+
+            // 2) Hallway walkway behind the ramp from x = 36.0 to x = 40.0, z = 1.55 to 4.18
+            const hallRear = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.04, 2.63), MAT.hallway);
+            hallRear.position.set(38.0, 0.13, 2.865);
+            hallRear.receiveShadow = true;
+            floorGroup.add(hallRear);
         } else {
             // Upper floors (P2, P3): leave stairwell shafts open (x = -40.2..-32.2 and x = 32.2..40.2) so zig-zag flights pass cleanly
             const centerRoomSlabGeo = new THREE.BoxGeometry(64.4, 0.24, 8.2);
@@ -1512,13 +1998,13 @@ Key UX & Mobile Features:
             frontHallSlab.position.set(0, 0, 3.6);
             frontHallSlab.receiveShadow = true;
             floorGroup.add(frontHallSlab);
-        }
 
-        const hallGeo = new THREE.BoxGeometry(80, 0.04, 3.9);
-        const hallMesh = new THREE.Mesh(hallGeo, MAT.hallway);
-        hallMesh.position.set(0, 0.13, 3.5);
-        hallMesh.receiveShadow = true;
-        floorGroup.add(hallMesh);
+            const hallGeo = new THREE.BoxGeometry(80, 0.04, 3.9);
+            const hallMesh = new THREE.Mesh(hallGeo, MAT.hallway);
+            hallMesh.position.set(0, 0.13, 3.5);
+            hallMesh.receiveShadow = true;
+            floorGroup.add(hallMesh);
+        }
 
         if (floorNum > 1) {
             addHorizontalRailing(floorGroup, -39.8, 5.4, 39.8, 5.4);
@@ -1571,8 +2057,41 @@ Key UX & Mobile Features:
                     notes: "Rampa accesible desde el estacionamiento (enfrente del Edificio O) hacia el extremo oeste del Edificio P."
                 }
             ].forEach(ent => {
-                const pad = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.08, 1.35), MAT.doorPanel);
-                pad.position.set(ent.x, 0.17, ent.z);
+                let pad;
+                if (ent.iconType === "ramp") {
+                    // Accessible Ramp with rightward downward slope (inclinación hacia la derecha ->)
+                    // Seamlessly fits the Floor 1 notched pocket (x = 36.0 .. 40.4, z = 4.18 .. 5.62)
+                    const rampLen = 4.4;
+                    const rampW = 1.44;
+                    const yLeft = 0.155;
+                    const yRight = -0.14;
+                    const yBottom = -0.14;
+
+                    const rampShape = new THREE.Shape();
+                    rampShape.moveTo(-rampLen / 2, yBottom);
+                    rampShape.lineTo(rampLen / 2, yBottom);
+                    rampShape.lineTo(rampLen / 2, yRight);
+                    rampShape.lineTo(-rampLen / 2, yLeft);
+                    rampShape.closePath();
+
+                    const rampGeo = new THREE.ExtrudeGeometry(rampShape, {
+                        depth: rampW,
+                        bevelEnabled: false
+                    });
+                    rampGeo.translate(0, 0, -rampW / 2);
+
+                    pad = new THREE.Mesh(rampGeo, MAT.doorPanel);
+                    pad.position.set(ent.x, 0, ent.z);
+                    pad.castShadow = true;
+                    pad.receiveShadow = true;
+
+                } else {
+                    pad = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.08, 1.35), MAT.doorPanel);
+                    pad.position.set(ent.x, 0.17, ent.z);
+                    pad.castShadow = true;
+                    pad.receiveShadow = true;
+                }
+
                 pad.userData = { spaceId: ent.id };
                 interactiveMeshes.push(pad);
                 floorGroup.add(pad);
@@ -1723,6 +2242,13 @@ Key UX & Mobile Features:
                 const lintelH = Math.max(0.2, wallH - lintelY);
                 addWallBox(floorGroup, doorCenter, 0.12 + lintelY, zHallWall, doorW, lintelH, 0.22, MAT.frontWall);
                 addLouveredDoor(floorGroup, doorCenter, zHallWall, doorW, doorH, yBottom);
+
+                // Add photo-accurate 3D sanitary fixtures (toilets in stalls, urinals, vanity sinks & mirrors)
+                if (isMen) {
+                    addRestroomInterior(floorGroup, floorNum, "men", x1, x2, -6.5, zHallWall, wallH);
+                } else {
+                    addRestroomInterior(floorGroup, floorNum, "women", x1, x2, -6.5, zHallWall, wallH);
+                }
             }
 
             const fullId = `F${floorNum}-${item.code}`;
@@ -1740,7 +2266,9 @@ Key UX & Mobile Features:
 
             const spaceNotes = item.kind === "room"
                 ? `Salón P-${item.code} en Piso ${floorNum} (Coords: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}).`
-                : `Servicios sanitarios del Piso ${floorNum} con puertas persiana (Coords: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}).`;
+                : (item.kind === "restroom-men"
+                    ? `Servicios sanitarios de hombres (Piso ${floorNum}) equipados con inodoros en cubículos privados, urinarios de pared con divisores, lavamanos y espejo (Coords: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}).`
+                    : `Servicios sanitarios de mujeres (Piso ${floorNum}) equipados con inodoros en cubículos privados, mesón de lavamanos y espejos (Coords: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}).`);
 
             spaceRecords.push({
                 id: fullId,
@@ -1945,12 +2473,12 @@ Key UX & Mobile Features:
         "p_stairs_f3_west":     { id: "p_stairs_f3_west",     spaceId: "F3-ST-E",  name: "Segundas Escaleras Oeste del P (Piso 3)",floor: 3, lat: 12.107410, lng: -86.257431, hallX: 36.0,   hallZ: 3.5, isStair: true, stairX: 36 },
 
         // --- FLOOR 4 (ANNEX P401) ---
-        "p_stairs_f4_east":     { id: "p_stairs_f4_east",     spaceId: "F4-ST-W",  name: "Escaleras del Anexo del P (Piso 4)",     floor: 4, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 3.05, isStair: true, stairX: -36 },
-        "p_room_401":           { id: "p_room_401",           spaceId: "F4-401",   name: "Salón P-401",                            floor: 4, lat: 12.107461, lng: -86.256743, hallX: -20.9, hallZ: 3.05 },
+        "p_stairs_f4_east":     { id: "p_stairs_f4_east",     spaceId: "F4-ST-W",  name: "Escaleras del Anexo del P (Piso 4)",     floor: 4, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 0.8, isStair: true, stairX: -36 },
+        "p_room_401":           { id: "p_room_401",           spaceId: "F4-401",   name: "Salón P-401",                            floor: 4, lat: 12.107461, lng: -86.256743, hallX: -32.0, hallZ: 0.8 },
 
         // --- FLOOR 5 (OBSERVATORY COPERNICO) ---
-        "p_stairs_f5_east":     { id: "p_stairs_f5_east",     spaceId: "F5-ST-W",  name: "Escaleras del Observatorio (Piso 5)",    floor: 5, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 1.25, isStair: true, stairX: -36 },
-        "p_observatory_501":    { id: "p_observatory_501",    spaceId: "F5-501",   name: "Observatory Copernico (P-501)",          floor: 5, lat: 12.107461, lng: -86.256743, hallX: -32.0, hallZ: 1.25 }
+        "p_stairs_f5_east":     { id: "p_stairs_f5_east",     spaceId: "F5-ST-W",  name: "Escaleras del Observatorio (Piso 5)",    floor: 5, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 0.8, isStair: true, stairX: -36 },
+        "p_observatory_501":    { id: "p_observatory_501",    spaceId: "F5-501",   name: "Observatory Copernico (P-501)",          floor: 5, lat: 12.107461, lng: -86.256743, hallX: -32.0, hallZ: 0.8 }
     };
 
     const BUILDING_P_GRAPH_EDGES = [
@@ -1999,8 +2527,8 @@ Key UX & Mobile Features:
         { u: "p_restrooms_f3",       v: "p_stairs_f3_west", dist: 6.0,  fwd: "Avanza hacia las escaleras oeste del tercer piso.", bwd: "Avanza hacia los baños del tercer piso." },
 
         // Floor 4 & Floor 5 Corridor Edges
-        { u: "p_stairs_f4_east",     v: "p_room_401",       dist: 6.5,  fwd: "Avanza por la terraza del 4to piso hacia el Salón P-401.", bwd: "Sal del Salón P-401 hacia las escaleras del 4to piso." },
-        { u: "p_stairs_f5_east",     v: "p_observatory_501",dist: 4.5,  fwd: "Entra al Observatory Copernico (P-501).", bwd: "Sal del Observatory Copernico hacia las escaleras del 5to piso." },
+        { u: "p_stairs_f4_east",     v: "p_room_401",       dist: 4.0,  fwd: "Entra al Salón P-401 por la puerta izquierda.", bwd: "Sal del Salón P-401 hacia las escaleras del 4to piso." },
+        { u: "p_stairs_f5_east",     v: "p_observatory_501",dist: 4.0,  fwd: "Entra al Observatory Copernico (P-501) por la puerta izquierda.", bwd: "Sal del Observatory Copernico hacia las escaleras del 5to piso." },
 
         // Vertical Stair Connections (East & West Stairwells)
         { u: "p_stairs_f1_east",     v: "p_stairs_f2_east", dist: 12.0, isVertical: true, fwd: "Sube por las escaleras este hacia el Piso 2 del Edificio P.", bwd: "Baja por las escaleras este hacia el Piso 1 del Edificio P." },
@@ -2165,7 +2693,7 @@ Key UX & Mobile Features:
 
         // 1. Start point inside/at the origin space
         const firstGNode = BUILDING_P_GRAPH_NODES[nodeIds[0]];
-        const startHallZ = startRec.floor === 5 ? 1.25 : (startRec.floor === 4 ? 3.05 : 3.5);
+        const startHallZ = startRec.floor >= 4 ? 0.8 : 3.5;
         pts.push({
             floor: startRec.floor,
             x: startRec.x,
@@ -2210,7 +2738,7 @@ Key UX & Mobile Features:
                 const zNorth = 1.25;
 
                 // Ensure we step to the stairwell corridor threshold before entering stairs
-                const uHallZ = uNode.floor === 5 ? 1.25 : (uNode.floor === 4 ? 3.05 : 3.5);
+                const uHallZ = uNode.floor >= 4 ? 0.8 : 3.5;
                 pts.push({ floor: uNode.floor, x: stairX, yOffset: 0.45, z: uHallZ });
 
                 if (vNode.floor > uNode.floor) {
@@ -2239,7 +2767,7 @@ Key UX & Mobile Features:
                     pts.push({ floor: f - 1, yFrac: 0, x: xF1, yOffset: 0.35, z: zNorth });
                 }
 
-                const vHallZ = vNode.floor === 5 ? 1.25 : (vNode.floor === 4 ? 3.05 : 3.5);
+                const vHallZ = vNode.floor >= 4 ? 0.8 : 3.5;
                 pts.push({ floor: vNode.floor, x: stairX, yOffset: 0.45, z: vHallZ });
                 graphWaypointNodes.push({
                     floor: vNode.floor,
@@ -2253,7 +2781,7 @@ Key UX & Mobile Features:
         // 3. Enter final destination space through the exact chosen door coordinate
         const lastGNode = BUILDING_P_GRAPH_NODES[targetNodeId];
         const endEntryX = lastGNode ? lastGNode.hallX : endRec.doorX;
-        const endHallZ = endRec.floor === 5 ? 1.25 : (endRec.floor === 4 ? 3.05 : 3.5);
+        const endHallZ = endRec.floor >= 4 ? 0.8 : 3.5;
         pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: endHallZ });
         pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
 
@@ -2350,7 +2878,7 @@ Key UX & Mobile Features:
                 } else if (hasRestroom) {
                     landmarkCue = "Pasa la batería de baños";
                 } else if (targetV.floor >= 4) {
-                    landmarkCue = "Sigue por el pasillo del anexo superior";
+                    landmarkCue = "Descanso de escaleras del anexo superior";
                 } else {
                     landmarkCue = headingRight ? "Avanza hacia el ala oeste" : "Avanza hacia el ala este";
                 }
@@ -2390,10 +2918,10 @@ Key UX & Mobile Features:
             focusX: endRec.x,
             focusZ: 0.2,
             puckX: endEntryX,
-            puckZ: 1.5,
-            puckYaw: Math.PI,
-            // Waze Arrival Camera: turns South to face the destination classroom door head-on
-            wazeBearing: 6,
+            puckZ: endRec.floor >= 4 ? 0.8 : 1.5,
+            puckYaw: endRec.floor >= 4 ? Math.PI * 0.5 : Math.PI,
+            // Waze Arrival Camera: turns to face the destination door
+            wazeBearing: endRec.floor >= 4 ? -45 : 6,
             wazePitch: 25,
             wazeZoom: 21,
             nodeId: targetNodeId,
@@ -2696,25 +3224,30 @@ Key UX & Mobile Features:
         });
 
         if (vectors.length >= 2) {
-            for (let i = 0; i < vectors.length - 1; i++) {
-                const a = vectors[i];
-                const b = vectors[i + 1];
-                const dist = a.distanceTo(b);
-                if (dist < 0.05) continue;
-                const cylGeo = new THREE.CylinderGeometry(0.22, 0.22, dist, 12);
-                const cyl = new THREE.Mesh(cylGeo, MAT.routeLine);
-                cyl.position.copy(a).add(b).multiplyScalar(0.5);
-                cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
-                routeGroup.add(cyl);
+            // Clean consecutive duplicate or extremely close points to ensure smooth CatmullRom curve tangents
+            const cleanVecs = [];
+            for (let i = 0; i < vectors.length; i++) {
+                if (cleanVecs.length === 0 || cleanVecs[cleanVecs.length - 1].distanceTo(vectors[i]) > 0.12) {
+                    cleanVecs.push(vectors[i]);
+                }
+            }
 
-                const joint = new THREE.Mesh(new THREE.SphereGeometry(0.26, 10, 10), MAT.routeLine);
-                joint.position.copy(a);
-                routeGroup.add(joint);
+            if (cleanVecs.length >= 2) {
+                // Smooth navigation curve using CatmullRomCurve3 with TubeGeometry (radius 0.15, 30% reduction from 0.22)
+                const curve = new THREE.CatmullRomCurve3(cleanVecs, false, "centripetal", 0.22);
+                const tubularSegments = Math.max(36, cleanVecs.length * 14);
+                const tubeRadius = 0.15;
+                const radialSegments = 12;
+                const tubeGeo = new THREE.TubeGeometry(curve, tubularSegments, tubeRadius, radialSegments, false);
+                const tubeMesh = new THREE.Mesh(tubeGeo, MAT.routeLine);
+                tubeMesh.castShadow = true;
+                tubeMesh.receiveShadow = true;
+                routeGroup.add(tubeMesh);
             }
 
             // Render distinct graph node waypoint rings along the corridor path
             if (state.activePath.graphWaypointNodes) {
-                const wpGeo = new THREE.SphereGeometry(0.32, 12, 12);
+                const wpGeo = new THREE.SphereGeometry(0.24, 12, 12);
                 state.activePath.graphWaypointNodes.forEach(wp => {
                     const wpMesh = new THREE.Mesh(wpGeo, MAT.routeLine);
                     wpMesh.position.set(wp.x, (wp.floor - 1) * spacing + 0.45, wp.z);
@@ -2722,13 +3255,15 @@ Key UX & Mobile Features:
                 });
             }
 
-            const startMarker = new THREE.Mesh(new THREE.SphereGeometry(0.6, 16, 16), MAT.startPin);
-            startMarker.position.copy(vectors[0]).add(new THREE.Vector3(0, 0.4, 0));
+            const startMarker = new THREE.Mesh(new THREE.SphereGeometry(0.48, 16, 16), MAT.startPin);
+            startMarker.position.copy(vectors[0]).add(new THREE.Vector3(0, 0.35, 0));
+            startMarker.castShadow = true;
             routeGroup.add(startMarker);
 
-            const endMarker = new THREE.Mesh(new THREE.ConeGeometry(0.65, 1.5, 16), MAT.endPin);
+            const endMarker = new THREE.Mesh(new THREE.ConeGeometry(0.52, 1.3, 16), MAT.endPin);
             endMarker.rotation.x = Math.PI;
-            endMarker.position.copy(vectors[vectors.length - 1]).add(new THREE.Vector3(0, 1.0, 0));
+            endMarker.position.copy(vectors[vectors.length - 1]).add(new THREE.Vector3(0, 0.9, 0));
+            endMarker.castShadow = true;
             routeGroup.add(endMarker);
 
             // Add 3D Waze Navigation Puck on the route
@@ -2826,6 +3361,35 @@ Key UX & Mobile Features:
         });
     }
 
+    // Dynamic Bounding Box (Box3) calibration for Directional Sun & Soft Horizon Fog
+    function adjustEnvironmentToBuildingBounds() {
+        if (!scene || floorGroups.length === 0) return;
+        const box = new THREE.Box3();
+        floorGroups.forEach(({ group }) => {
+            box.expandByObject(group);
+        });
+        if (box.isEmpty()) return;
+
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const maxDim = Math.max(size.x, size.y, size.z);
+
+        if (scene.fog) {
+            scene.fog.near = Math.max(35, maxDim * 0.55);
+            scene.fog.far = Math.max(130, maxDim * 1.95);
+        }
+
+        if (dirLight && dirLight.shadow && dirLight.shadow.camera) {
+            const padX = size.x * 0.65;
+            const padZ = Math.max(size.y, size.z) * 0.85;
+            dirLight.shadow.camera.left = -padX;
+            dirLight.shadow.camera.right = padX;
+            dirLight.shadow.camera.top = padZ;
+            dirLight.shadow.camera.bottom = -padZ;
+            dirLight.shadow.camera.updateProjectionMatrix();
+        }
+    }
+
     // Floor Elevation & Position Updates (Floor 1 always sits on the ground y = 0)
     function updateFloorPositions() {
         const spacing = state.explode;
@@ -2843,6 +3407,7 @@ Key UX & Mobile Features:
         });
 
         updateFloorXRay();
+        adjustEnvironmentToBuildingBounds();
         renderRoute3D();
         updateCamera();
     }
@@ -3152,6 +3717,16 @@ Key UX & Mobile Features:
                 visibleOnFloor = false;
             }
 
+            // Eliminate duplicate room/stair labels at the origin point so only the clean start pin is visible
+            if (state.mode === "visitor" && state.activePath) {
+                const sId = state.startId;
+                const rStart = state.activePath.startRec;
+                if (rec.id === sId || rec.id === rStart.id || (sId === "F1-ENT-W" && (rec.id === "F1-ST-W" || rec.id === "F1-ENT-W"))) {
+                    rec.labelEl.style.display = "none";
+                    return;
+                }
+            }
+
             if (!visibleOnFloor || !floorGroup.visible) {
                 rec.labelEl.style.display = "none";
                 return;
@@ -3210,11 +3785,7 @@ Key UX & Mobile Features:
                 startPinEl.style.display = tempV.z <= 1 ? "block" : "none";
                 startPinEl.style.left = `${(tempV.x * 0.5 + 0.5) * width}px`;
                 startPinEl.style.top = `${(-(tempV.y * 0.5) + 0.5) * height}px`;
-                const originShort = startRec.code
-                    .replace("F1-ENT-W", "ESC. EXT. IZQ.")
-                    .replace("F1-ENT-O", "HACIA EDIF. O")
-                    .replace("F1-ENT-E", "RAMPA PARQUEO");
-                startPinEl.textContent = `ORIGEN: ${originShort}`;
+                startPinEl.textContent = "ORIGEN";
             } else {
                 startPinEl.style.display = "none";
             }
@@ -3308,32 +3879,56 @@ Key UX & Mobile Features:
         const initH = Math.max(viewport.clientHeight || 540, 240);
 
         scene = new THREE.Scene();
+        // 1. Escena, Fondo gris azulado claro (#F1F5F9) y Niebla suave para desvanecer el suelo hacia el horizonte
+        scene.background = new THREE.Color(0xf1f5f9);
+        scene.fog = new THREE.Fog(0xf1f5f9, 45, 160);
+
         camera = new THREE.PerspectiveCamera(38, initW / initH, 0.5, 500);
 
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.setSize(initW, initH);
+        // Tone mapping para colores arquitectónicos naturales
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.05;
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         viewport.insertBefore(renderer.domElement, labelsLayer);
 
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        // 2. Iluminación y Sombras Suaves (AmbientLight suave + HemisphereLight + DirectionalLight 45°)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
         scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.72);
-        dirLight.position.set(40, 75, 48);
+        hemiLight = new THREE.HemisphereLight(0xffffff, 0xe2e8f0, 0.6);
+        hemiLight.position.set(0, 50, 0);
+        scene.add(hemiLight);
+
+        dirLight = new THREE.DirectionalLight(0xfffdf8, 1.2);
+        dirLight.position.set(45, 75, 45);
         dirLight.castShadow = true;
-        dirLight.shadow.mapSize.width = 1024;
-        dirLight.shadow.mapSize.height = 1024;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.left = -55;
+        dirLight.shadow.camera.right = 55;
+        dirLight.shadow.camera.top = 45;
+        dirLight.shadow.camera.bottom = -45;
+        dirLight.shadow.camera.near = 1;
+        dirLight.shadow.camera.far = 220;
+        dirLight.shadow.bias = -0.0005;
         scene.add(dirLight);
 
-        const fillLight = new THREE.DirectionalLight(0xe2e8f0, 0.35);
+        const fillLight = new THREE.DirectionalLight(0xe2e8f0, 0.25);
         fillLight.position.set(-45, 25, -35);
         scene.add(fillLight);
 
-        const groundGrid = new THREE.GridHelper(115, 36, 0x94a3b8, 0xcbd5e1);
+        // 5. Suelo (Grid) con opacidad sutil 0.18 en gris suave (#CBD5E1) para no competir con el edificio
+        const groundGrid = new THREE.GridHelper(120, 36, 0xcbd5e1, 0xe2e8f0);
         groundGrid.position.y = -0.13;
+        if (groundGrid.material) {
+            groundGrid.material.transparent = true;
+            groundGrid.material.opacity = 0.18;
+            groundGrid.material.depthWrite = false;
+        }
         scene.add(groundGrid);
 
         // Route Group
@@ -3355,6 +3950,7 @@ Key UX & Mobile Features:
         for (let f = 1; f <= 5; f++) {
             buildFloor(f);
         }
+        adjustEnvironmentToBuildingBounds();
         addOrientationLandmarks();
 
         // ======================================================================
@@ -3932,6 +4528,11 @@ Key UX & Mobile Features:
 
     function animate(now) {
         animFrameId = requestAnimationFrame(animate);
+
+        // 4. Animate subtle directional chevrons along active 3D navigation route
+        if (routeArrowTex) {
+            routeArrowTex.offset.x -= 0.006;
+        }
 
         // 1. Process continuous 3D Waze Walk Simulation along Hallways & Stairs
         if (wazeSim.active) {

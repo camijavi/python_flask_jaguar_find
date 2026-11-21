@@ -257,8 +257,8 @@
 
         if (subEl) {
             if (nodeId.includes("restroom")) {
-                subEl.textContent = `${floorText} • Pared Divisoria Central • Servicios Higiénicos Hombres & Mujeres`;
-                if (iconEl) iconEl.innerHTML = `<span class="text-xs font-bold">WC</span>`;
+                subEl.textContent = `${floorText} • Batería de Sanitarios (Hombres & Mujeres) • Inodoros en Cubículos, Urinarios de Pared, Lavamanos y Espejos`;
+                if (iconEl) iconEl.innerHTML = `<svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="7" r="3" stroke-width="2"/><circle cx="16" cy="7" r="3" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 20v-2a4 4 0 014-4h2a4 4 0 014 4v2m3 0v-2a3.5 3.5 0 013.5-3.5H21"/></svg>`;
             } else if (nodeId.includes("fountain")) {
                 subEl.textContent = `${floorText} • Bebedero de Agua Filtrada`;
                 if (iconEl) iconEl.innerHTML = `<svg class="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>`;
