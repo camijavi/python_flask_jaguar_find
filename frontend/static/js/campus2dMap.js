@@ -743,16 +743,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     showBuildingPopover(bldgData, bldgData.anchor);
                 }
 
-                if (nodeId === "buildingP") {
-                    setTimeout(() => {
-                        if (typeof window.openBuildingMap === "function") {
-                            window.openBuildingMap("buildingP");
-                        } else if (typeof window.openBuildingPModal === "function") {
-                            window.openBuildingPModal();
-                        }
-                    }, 400);
-                }
-
                 // If building is Building P, open the 3D model with super WOW animation after zooming in
                 if (nodeId === "buildingP") {
                     setTimeout(() => {

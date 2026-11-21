@@ -2,231 +2,340 @@
 ================================================================================
 buildingP.html (buildingsMaps/buildingP.html)
 ================================================================================
-Interactive 2.5D Multi-Floor Building Map & Visitor Wayfinding for EDIFICIO P COPÉRNICO.
-Replicates the real architectural building:
-- 3 Full-length levels (Pisos 1–3) with external balcony hallways and steel railings
-- 1 West Tower extension (Piso 4)
-- 1 Metallic Astronomical Observatory Dome atop the West Tower (Piso 5 Cúpula UAM)
-- Golden UAM coat of arms & "EDIFICIO P • COPÉRNICO" facade branding
-- Interactive Three.js WebGL viewport with drag-to-orbit, pan, zoom, touch support
-- Turn-by-turn 3D wayfinding routes, multi-floor stair routing, and room inspector
-- Super WOW 3D perspective pop-in entrance animation matching the Building PopOver
+Mobile-First Interactive 2.5D Multi-Floor Building Map & Visitor Wayfinding
+for EDIFICIO P • COPÉRNICO (UAM).
+
+Key UX & Mobile Features:
+- Full-screen 3D WebGL viewport on mobile phones with floating Apple/Google Maps
+  style controls (vertical elevator floor selector, top search & quick chips,
+  3D settings popover, and swipeable/collapsible thumb-zone bottom sheet)
+- True multi-touch gestures: 1-finger orbit, 2-finger pinch-to-zoom, 2-finger pan
+- Portrait aspect-ratio auto-framing so the 80.4m building fits phone screens
+- Smooth camera fly-to (lerp) on room selection, floor isolation, and route steps
+- Interactive clickable turn-by-turn steps that fly the camera to each waypoint
+- Smart mobile label decluttering so room pills never turn into an overlapping wall
 ================================================================================
 -->
 
 <div id="buildingPModal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="buildingPModalTitle">
     
-    <!-- 3D Perspective Animated Card Container -->
+    <!-- 3D Perspective Animated Card Container (Full-screen on mobile, floating card on desktop) -->
     <div class="bldg-card-wow" id="buildingPCard">
         
         <!-- ================================================================== -->
         <!-- TOP NAVIGATION & BRANDING BAR                                       -->
         <!-- ================================================================== -->
-        <header class="flex items-center justify-between gap-3 px-4 py-2.5 bg-white/95 backdrop-blur-md border-b border-slate-200 z-30 shrink-0">
+        <header class="flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white/95 backdrop-blur-md border-b border-slate-200 z-30 shrink-0">
             
             <!-- Left Branding: UAM Badge & Building Name -->
-            <div class="flex items-center gap-3">
-                <span class="w-9 h-9 rounded-xl bg-pink-900 text-white font-extrabold flex items-center justify-center text-sm shadow-md ring-2 ring-pink-700/20">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <span class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-pink-900 text-white font-extrabold flex items-center justify-center text-xs sm:text-sm shadow-md ring-2 ring-pink-700/20 shrink-0">
                     P
                 </span>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h2 id="buildingPModalTitle" class="text-sm sm:text-base font-extrabold text-slate-900 leading-tight">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <h2 id="buildingPModalTitle" class="text-xs sm:text-base font-extrabold text-slate-900 leading-tight truncate">
                             Edificio P • Copérnico
                         </h2>
-                        <span class="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold py-0.5 px-2 bg-pink-50 text-pink-900 rounded-full border border-pink-200">
+                        <span class="inline-flex items-center gap-1 text-[10px] font-bold py-0.5 px-1.5 sm:px-2 bg-pink-50 text-pink-900 rounded-full border border-pink-200 shrink-0">
                             <span class="w-1.5 h-1.5 rounded-full bg-pink-700"></span>
-                            Observatorio UAM • 5 Niveles
+                            <span>5 Pisos</span>
                         </span>
                     </div>
-                    <p class="text-[11px] text-slate-500 hidden sm:block">
-                        Aulas P101–P308 &middot; Sanitarios &middot; Cúpula Astronómica y Meteorológica UAM
+                    <p class="text-[10px] sm:text-[11px] text-slate-500 truncate">
+                        Aulas P101–P308 &middot; Sanitarios &middot; Observatorio UAM (P5)
                     </p>
                 </div>
             </div>
 
             <!-- Mode Selector & Camera Presets -->
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 
-                <!-- Visitor Map vs Blueprint mode -->
-                <div class="hidden md:flex items-center p-0.5 bg-slate-100 rounded-lg border border-slate-200 text-xs font-semibold">
-                    <button id="p-mode-visitor" type="button" class="py-1 px-2.5 rounded-md bg-white text-slate-900 shadow-xs transition-all">
-                        Vista Visitante
+                <!-- Visitor Map vs Blueprint mode (Desktop & Tablet) -->
+                <div class="hidden lg:flex items-center p-0.5 bg-slate-100 rounded-lg border border-slate-200 text-xs font-semibold">
+                    <button id="p-mode-visitor" type="button" class="py-1 px-2.5 rounded-md bg-white text-slate-900 shadow-xs transition-all cursor-pointer">
+                        Guía Visitante
                     </button>
-                    <button id="p-mode-blueprint" type="button" class="py-1 px-2.5 rounded-md text-slate-600 hover:text-slate-900 transition-all">
-                        Blueprint 3D
+                    <button id="p-mode-blueprint" type="button" class="py-1 px-2.5 rounded-md text-slate-600 hover:text-slate-900 transition-all cursor-pointer">
+                        Explorador 3D
                     </button>
                 </div>
 
-                <!-- Camera Angle Presets -->
+                <!-- Camera Angle Presets (Desktop header; on mobile moved to floating canvas bar) -->
                 <div class="hidden sm:flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white text-xs font-semibold">
-                    <button id="p-btn-iso" type="button" class="px-2.5 py-1 text-slate-700 hover:bg-slate-100 transition-colors" title="Perspectiva 2.5D">
+                    <button id="p-btn-iso" type="button" class="px-2.5 py-1 text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer" title="Perspectiva 2.5D">
                         2.5D
                     </button>
-                    <button id="p-btn-top" type="button" class="px-2.5 py-1 text-slate-700 hover:bg-slate-100 border-l border-slate-200 transition-colors" title="Planta 2D">
+                    <button id="p-btn-top" type="button" class="px-2.5 py-1 text-slate-700 hover:bg-slate-100 border-l border-slate-200 transition-colors cursor-pointer" title="Planta 2D">
                         Planta 2D
                     </button>
-                    <button id="p-btn-side" type="button" class="px-2.5 py-1 text-slate-700 hover:bg-slate-100 border-l border-slate-200 transition-colors" title="Vista Lateral">
+                    <button id="p-btn-side" type="button" class="px-2.5 py-1 text-slate-700 hover:bg-slate-100 border-l border-slate-200 transition-colors cursor-pointer" title="Vista Lateral">
                         Fachada
                     </button>
                 </div>
 
-                <!-- Fullscreen Toggle -->
-                <button id="p-btn-fullscreen" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors" title="Pantalla completa">
+                <!-- Fullscreen Toggle (Desktop) -->
+                <button id="p-btn-fullscreen" type="button" class="hidden sm:flex w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 items-center justify-center transition-colors cursor-pointer" title="Pantalla completa">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                 </button>
 
                 <!-- Close Modal Button -->
-                <button id="p-btn-close-modal" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 flex items-center justify-center transition-colors cursor-pointer" title="Cerrar (Esc)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button id="p-btn-close-modal" type="button" class="w-8 h-8 sm:w-8 sm:h-8 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-700 flex items-center justify-center transition-colors cursor-pointer" title="Cerrar (Esc)" aria-label="Cerrar mapa de Edificio P">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
         </header>
 
         <!-- ================================================================== -->
-        <!-- MAIN WORKSPACE: SIDEBAR CONTROLS + 3D WEBGL VIEWPORT               -->
+        <!-- MAIN WORKSPACE: SIDEBAR / BOTTOM SHEET + FULL-SCREEN 3D VIEWPORT   -->
         <!-- ================================================================== -->
         <div class="flex flex-1 min-h-0 relative flex-col md:flex-row overflow-hidden bg-slate-100">
             
-            <!-- LEFT CONTROL PANEL (Wayfinding, Floor Isolation, Layers & Inspector) -->
-            <aside class="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r border-slate-200 p-3.5 flex flex-col gap-3 overflow-y-auto shrink-0 z-20 max-h-56 md:max-h-none shadow-sm">
+            <!-- ============================================================== -->
+            <!-- 3D VIEWPORT (First on mobile for full-bleed map, right on md+) -->
+            <!-- ============================================================== -->
+            <main id="p-viewport" class="flex-1 w-full h-full min-w-0 min-h-0 relative select-none order-1 md:order-2">
                 
-                <!-- Quick Search -->
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <!-- 1. MOBILE & TABLET FLOATING TOP SEARCH + QUICK DESTINATION CHIPS -->
+                <div class="absolute top-2.5 left-2.5 right-14 sm:right-16 z-20 flex flex-col gap-1.5 pointer-events-none">
+                    
+                    <!-- Search Input Pill (Mobile floating, or quick jump) -->
+                    <div class="relative pointer-events-auto max-w-md">
+                        <div class="flex items-center bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl shadow-md px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-pink-700/20 focus-within:border-pink-700 transition-all">
+                            <svg class="w-4 h-4 text-slate-400 shrink-0 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <input id="p-search-input" type="text" autocomplete="off" placeholder="Buscar aula (ej. P-204), baños, cúpula..." class="w-full text-xs sm:text-xs font-medium bg-transparent text-slate-800 placeholder-slate-400 outline-hidden">
+                            <button id="p-search-clear" type="button" class="hidden text-slate-400 hover:text-slate-600 p-0.5 ml-1" aria-label="Limpiar búsqueda">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+
+                        <!-- Instant Autocomplete Results Dropdown -->
+                        <div id="p-search-results" class="hidden absolute left-0 right-0 mt-1 bg-white/98 backdrop-blur-md border border-slate-200 rounded-xl shadow-xl max-h-52 overflow-y-auto z-30 divide-y divide-slate-100 text-xs"></div>
                     </div>
-                    <input id="p-search-input" type="text" placeholder="Buscar aula, observatorio, baños..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 rounded-lg outline-hidden focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-all">
+
+                    <!-- Quick Destination Filter Chips (One-tap mobile shortcuts) -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pointer-events-auto pb-0.5">
+                        <button type="button" data-quick-dest="F5-501" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-pink-900 text-white font-bold text-[11px] shadow-sm flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
+                            <span>🔭</span><span>Observatorio P5</span>
+                        </button>
+                        <button type="button" data-quick-dest="F4-401" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
+                            <span>🎤</span><span>Salón P401</span>
+                        </button>
+                        <button type="button" data-quick-restroom="nearest" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
+                            <span>🚻</span><span>Sanitarios</span>
+                        </button>
+                        <button type="button" data-quick-floor="1" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs active:scale-95 transition-transform cursor-pointer">
+                            Aulas P101–108
+                        </button>
+                        <button type="button" data-quick-floor="2" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs active:scale-95 transition-transform cursor-pointer">
+                            Aulas P201–208
+                        </button>
+                        <button type="button" data-quick-floor="3" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs active:scale-95 transition-transform cursor-pointer">
+                            Aulas P301–308
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Visitor Wayfinding (Turn-by-turn Route Calculator) -->
-                <section id="p-wayfinding-panel" class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2.5">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                            <span>Ruta Interior</span>
-                        </span>
-                        <button id="p-btn-clear-route" type="button" class="text-[10px] font-bold text-slate-400 hover:text-rose-600 transition-colors">
-                            Limpiar
+                <!-- 2. FLOATING VERTICAL ELEVATOR FLOOR SELECTOR (Right Edge of Map) -->
+                <div class="absolute top-2.5 right-2.5 z-20 flex flex-col items-center gap-1 bg-white/95 backdrop-blur-md p-1 rounded-2xl border border-slate-200/90 shadow-lg" aria-label="Selector de Piso">
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 px-1 pt-0.5">Piso</span>
+                    <button data-floor="all" type="button" class="p-floor-btn w-9 h-8 text-[11px] font-extrabold rounded-xl border border-slate-900 bg-slate-900 text-white shadow-xs transition-all active:scale-95 cursor-pointer" title="Ver todos los pisos">
+                        Todo
+                    </button>
+                    <button data-floor="5" type="button" class="p-floor-btn w-9 h-8 text-xs font-bold rounded-xl border border-transparent bg-transparent text-slate-700 hover:bg-slate-100 transition-all active:scale-95 cursor-pointer" title="Piso 5: Cúpula Observatorio">
+                        P5
+                    </button>
+                    <button data-floor="4" type="button" class="p-floor-btn w-9 h-8 text-xs font-bold rounded-xl border border-transparent bg-transparent text-slate-700 hover:bg-slate-100 transition-all active:scale-95 cursor-pointer" title="Piso 4: Salón Conferencia P401">
+                        P4
+                    </button>
+                    <button data-floor="3" type="button" class="p-floor-btn w-9 h-8 text-xs font-bold rounded-xl border border-transparent bg-transparent text-slate-700 hover:bg-slate-100 transition-all active:scale-95 cursor-pointer" title="Piso 3: Aulas P301-P308">
+                        P3
+                    </button>
+                    <button data-floor="2" type="button" class="p-floor-btn w-9 h-8 text-xs font-bold rounded-xl border border-transparent bg-transparent text-slate-700 hover:bg-slate-100 transition-all active:scale-95 cursor-pointer" title="Piso 2: Aulas P201-P208">
+                        P2
+                    </button>
+                    <button data-floor="1" type="button" class="p-floor-btn w-9 h-8 text-xs font-bold rounded-xl border border-transparent bg-transparent text-slate-700 hover:bg-slate-100 transition-all active:scale-95 cursor-pointer" title="Piso 1: Planta Baja y Accesos">
+                        P1
+                    </button>
+                </div>
+
+                <!-- 3. FLOATING 3D PROJECTED HTML LABELS LAYER -->
+                <div id="p-labels-layer" class="absolute inset-0 pointer-events-none overflow-hidden z-10"></div>
+
+                <!-- 4. FLOATING CANVAS CONTROLS (Zoom, Reset Camera, Mobile Camera Angle & 3D Settings Gear) -->
+                <div id="p-canvas-controls" class="absolute right-2.5 bottom-44 md:bottom-4 flex flex-col gap-1.5 z-20 transition-all duration-300">
+                    <!-- 3D Settings Popover Toggle Button -->
+                    <button id="p-btn-toggle-3d-settings" type="button" title="Ajustes de Vista 3D y Capas" class="w-9 h-9 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl text-slate-700 hover:bg-white flex items-center justify-center shadow-md transition-all active:scale-95 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                    </button>
+                    <!-- Zoom In -->
+                    <button id="p-btn-zoom-in" type="button" title="Acercar (+)" class="w-9 h-9 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl text-slate-700 font-bold hover:bg-white flex items-center justify-center text-sm shadow-md transition-all active:scale-95 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
+                    <!-- Zoom Out -->
+                    <button id="p-btn-zoom-out" type="button" title="Alejar (-)" class="w-9 h-9 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl text-slate-700 font-bold hover:bg-white flex items-center justify-center text-sm shadow-md transition-all active:scale-95 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                    </button>
+                    <!-- Auto-Frame / Reset Isometric Camera -->
+                    <button id="p-btn-reset-cam" type="button" title="Centrar Vista 3D" class="w-9 h-9 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl text-slate-700 font-extrabold hover:bg-white flex items-center justify-center text-xs shadow-md transition-all active:scale-95 cursor-pointer">
+                        2.5D
+                    </button>
+                    <!-- Toggle 2D Top-Down Floorplan -->
+                    <button id="p-btn-mobile-2d" type="button" title="Cambiar entre 2.5D y Planta 2D" class="sm:hidden w-9 h-9 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl text-slate-700 font-extrabold hover:bg-white flex items-center justify-center text-[11px] shadow-md transition-all active:scale-95 cursor-pointer">
+                        2D
+                    </button>
+                </div>
+
+                <!-- 5. FLOATING 3D SETTINGS & ARCHITECTURAL LAYERS POPOVER (Cleanly tucked away) -->
+                <div id="p-3d-settings-popover" class="hidden absolute right-14 bottom-44 md:bottom-4 w-64 bg-white/98 backdrop-blur-md border border-slate-200 rounded-2xl shadow-2xl p-3.5 z-30 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span class="text-xs font-extrabold text-slate-800">Ajustes de Modelo 3D</span>
+                        <button id="p-btn-close-3d-settings" type="button" class="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
 
-                    <div class="space-y-1.5">
+                    <!-- Camera Sliders -->
+                    <div class="space-y-2">
                         <div>
-                            <label for="p-select-start" class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Usted está en (Origen):</label>
-                            <select id="p-select-start" class="w-full px-2 py-1 text-xs border border-slate-200 rounded-lg bg-white text-slate-800 outline-hidden focus:border-brand-500"></select>
+                            <div class="flex justify-between text-[11px] text-slate-600 mb-0.5 font-medium">
+                                <span>Separación de Pisos</span>
+                                <span id="p-val-explode" class="font-bold text-slate-900">3.8m</span>
+                            </div>
+                            <input id="p-slider-explode" type="range" min="3.2" max="12" step="0.2" value="3.8" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer accent-pink-800">
                         </div>
                         <div>
-                            <label for="p-select-end" class="block text-[10px] font-bold uppercase text-slate-500 mb-0.5">Destino:</label>
-                            <select id="p-select-end" class="w-full px-2 py-1 text-xs border border-slate-200 rounded-lg bg-white text-slate-800 outline-hidden focus:border-brand-500"></select>
+                            <div class="flex justify-between text-[11px] text-slate-600 mb-0.5 font-medium">
+                                <span>Inclinación (Pitch)</span>
+                                <span id="p-val-pitch" class="font-bold text-slate-900">44°</span>
+                            </div>
+                            <input id="p-slider-pitch" type="range" min="5" max="85" step="1" value="44" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer accent-pink-800">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[11px] text-slate-600 mb-0.5 font-medium">
+                                <span>Rotación (Bearing)</span>
+                                <span id="p-val-bearing" class="font-bold text-slate-900">22°</span>
+                            </div>
+                            <input id="p-slider-bearing" type="range" min="-180" max="180" step="1" value="22" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer accent-pink-800">
                         </div>
                     </div>
 
-                    <div id="p-route-summary" class="text-[11px] font-bold text-slate-800 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 shadow-2xs">
-                        Selecciona origen y destino para ver ruta 3D
-                    </div>
-                    <ol id="p-route-steps" class="text-[11px] text-slate-600 space-y-1 pl-4 list-decimal max-h-28 overflow-y-auto pr-1 leading-snug"></ol>
-                </section>
-
-                <!-- Floor Level Isolation Buttons -->
-                <div>
-                    <div class="flex items-center justify-between mb-1.5">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Nivel de Piso</span>
-                        <span id="p-floor-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">Todos (5 Pisos)</span>
-                    </div>
-                    <div class="grid grid-cols-6 gap-1" id="p-floor-buttons">
-                        <button data-floor="all" type="button" class="p-floor-btn py-1.5 text-xs font-bold rounded-lg border border-slate-900 bg-slate-900 text-white shadow-xs">Todos</button>
-                        <button data-floor="1" type="button" class="p-floor-btn py-1.5 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors">P1</button>
-                        <button data-floor="2" type="button" class="p-floor-btn py-1.5 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors">P2</button>
-                        <button data-floor="3" type="button" class="p-floor-btn py-1.5 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors">P3</button>
-                        <button data-floor="4" type="button" class="p-floor-btn py-1.5 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors">P4</button>
-                        <button data-floor="5" type="button" class="p-floor-btn py-1.5 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors" title="Cúpula">P5</button>
+                    <!-- Layer Toggles -->
+                    <div class="border-t border-slate-100 pt-2">
+                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Capas Visibles</span>
+                        <div class="grid grid-cols-2 gap-1.5 text-xs">
+                            <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 font-medium">
+                                <input id="p-toggle-railings" type="checkbox" checked class="rounded border-slate-300 accent-pink-800">
+                                <span>Barandales</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 font-medium">
+                                <input id="p-toggle-doors" type="checkbox" checked class="rounded border-slate-300 accent-pink-800">
+                                <span>Puertas</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 font-medium">
+                                <input id="p-toggle-labels" type="checkbox" checked class="rounded border-slate-300 accent-pink-800">
+                                <span>Etiquetas</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 font-medium">
+                                <input id="p-toggle-stairs" type="checkbox" checked class="rounded border-slate-300 accent-pink-800">
+                                <span>Escaleras</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 2.5D Camera & Explode Controls -->
-                <div class="space-y-2 border-t border-slate-100 pt-2.5">
-                    <div>
-                        <div class="flex justify-between text-[11px] text-slate-600 mb-0.5 font-medium">
-                            <span>Separación de Pisos</span>
-                            <span id="p-val-explode" class="font-bold text-slate-900">3.2m</span>
+                <!-- 6. Desktop Bottom Floating Gesture Hint Badge -->
+                <div class="absolute bottom-4 left-4 z-20 hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-xl border border-slate-200/90 shadow-md text-[11px] text-slate-600 font-semibold pointer-events-none">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>1 dedo / Arrastrar: rotar &middot; 2 dedos / Clic der.: mover &middot; Pellizcar / Rueda: zoom</span>
+                </div>
+            </main>
+
+            <!-- ============================================================== -->
+            <!-- MOBILE BOTTOM SHEET / DESKTOP LEFT SIDEBAR                     -->
+            <!-- ============================================================== -->
+            <aside id="p-bottom-sheet" data-sheet-state="peek" class="p-sheet-container order-2 md:order-1 w-full md:w-80 lg:w-88 bg-white md:border-r border-slate-200 flex flex-col shrink-0 z-25 shadow-2xl md:shadow-sm">
+                
+                <!-- Mobile Sheet Drag Handle & Peek Summary Header -->
+                <div id="p-sheet-drag-handle" class="md:hidden flex flex-col items-center pt-2 pb-1.5 px-3.5 cursor-grab active:cursor-grabbing select-none border-b border-slate-100">
+                    <div class="w-10 h-1.5 rounded-full bg-slate-300 mb-2"></div>
+                    <div class="w-full flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span id="p-mobile-sheet-badge" class="w-6 h-6 rounded-lg bg-sky-600 text-white font-extrabold text-[11px] flex items-center justify-center shrink-0">
+                                3D
+                            </span>
+                            <div class="min-w-0">
+                                <div id="p-mobile-sheet-title" class="text-xs font-extrabold text-slate-900 truncate">
+                                    Ruta hacia Observatorio (P501)
+                                </div>
+                                <div id="p-mobile-sheet-subtitle" class="text-[11px] font-semibold text-sky-700 truncate">
+                                    Piso 1 &rarr; Piso 5 &middot; Toca un paso para enfocar
+                                </div>
+                            </div>
                         </div>
-                        <input id="p-slider-explode" type="range" min="3.2" max="12" step="0.2" value="3.2" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer accent-slate-800">
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-[11px] text-slate-600 mb-0.5 font-medium">
-                            <span>Inclinación (Pitch)</span>
-                            <span id="p-val-pitch" class="font-bold text-slate-900">44°</span>
-                        </div>
-                        <input id="p-slider-pitch" type="range" min="5" max="82" step="1" value="44" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer accent-slate-800">
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-[11px] text-slate-600 mb-0.5 font-medium">
-                            <span>Rotación (Bearing)</span>
-                            <span id="p-val-bearing" class="font-bold text-slate-900">24°</span>
-                        </div>
-                        <input id="p-slider-bearing" type="range" min="-180" max="180" step="1" value="24" class="w-full h-1.5 bg-slate-200 rounded-lg cursor-pointer accent-slate-800">
+                        <button id="p-btn-toggle-sheet" type="button" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] flex items-center gap-1 shrink-0 cursor-pointer">
+                            <span id="p-btn-toggle-sheet-label">Opciones</span>
+                            <svg id="p-btn-toggle-sheet-icon" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 15l7-7 7 7"></path></svg>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Architectural Layer Toggles -->
-                <div class="border-t border-slate-100 pt-2">
-                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Capas del Modelo</span>
-                    <div class="grid grid-cols-2 gap-1.5 text-xs">
-                        <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 font-medium">
-                            <input id="p-toggle-railings" type="checkbox" checked class="rounded border-slate-300 accent-slate-800">
-                            <span>Barandales</span>
-                        </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 font-medium">
-                            <input id="p-toggle-doors" type="checkbox" checked class="rounded border-slate-300 accent-slate-800">
-                            <span>Puertas</span>
-                        </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 font-medium">
-                            <input id="p-toggle-labels" type="checkbox" checked class="rounded border-slate-300 accent-slate-800">
-                            <span>Etiquetas</span>
-                        </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 font-medium">
-                            <input id="p-toggle-stairs" type="checkbox" checked class="rounded border-slate-300 accent-slate-800">
-                            <span>Escaleras</span>
-                        </label>
-                    </div>
-                </div>
+                <!-- Scrollable Content Inside Sheet / Desktop Sidebar -->
+                <div id="p-sheet-scroll-body" class="flex-1 overflow-y-auto p-3 sm:p-3.5 space-y-3">
+                    
+                    <!-- STEP-BY-STEP INTERACTIVE CARDS (Always visible at top of sheet so user can tap steps while walking!) -->
+                    <section id="p-wayfinding-steps-section" class="space-y-2">
+                        <div id="p-route-summary" class="text-xs font-bold text-slate-800 bg-sky-50/90 border border-sky-200/80 rounded-xl px-3 py-2 shadow-2xs">
+                            Selecciona origen y destino para ver ruta 3D
+                        </div>
 
-                <!-- Selected Space Inspector -->
-                <div id="p-inspector-card" class="border border-slate-200 rounded-xl bg-slate-50/80 p-2.5 mt-auto">
-                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Espacio Seleccionado</div>
-                    <div id="p-inspector-content" class="text-xs text-slate-700 space-y-1">
-                        <p class="text-slate-400 text-[11px]">Toca cualquier aula, observatorio o escalera en el modelo 3D para ver detalles.</p>
+                        <!-- Horizontal swipeable cards on mobile peek, vertical clickable list on desktop/expanded -->
+                        <ol id="p-route-steps" class="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-1 md:pb-0 no-scrollbar text-xs text-slate-700"></ol>
+                    </section>
+
+                    <!-- ORIGIN & DESTINATION SELECTORS -->
+                    <section id="p-wayfinding-panel" class="bg-slate-50 border border-slate-200/90 rounded-xl p-3 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                <span>Configurar Ruta Interior</span>
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <button id="p-btn-swap-route" type="button" class="text-[11px] font-bold text-sky-700 hover:text-sky-900 flex items-center gap-0.5 cursor-pointer" title="Invertir origen y destino">
+                                    <span>⇅ Invertir</span>
+                                </button>
+                                <button id="p-btn-clear-route" type="button" class="text-[11px] font-bold text-slate-400 hover:text-rose-600 transition-colors cursor-pointer">
+                                    Limpiar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div>
+                                <label for="p-select-start" class="block text-[10px] font-bold uppercase text-emerald-700 mb-0.5">🟢 Punto de Partida (Origen):</label>
+                                <select id="p-select-start" class="w-full px-2.5 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg bg-white text-slate-800 outline-hidden focus:border-sky-600"></select>
+                            </div>
+                            <div>
+                                <label for="p-select-end" class="block text-[10px] font-bold uppercase text-sky-700 mb-0.5">🔵 ¿A dónde vas? (Destino):</label>
+                                <select id="p-select-end" class="w-full px-2.5 py-1.5 text-xs font-semibold border border-slate-200 rounded-lg bg-white text-slate-800 outline-hidden focus:border-sky-600"></select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SELECTED SPACE INSPECTOR CARD -->
+                    <div id="p-inspector-card" class="border border-slate-200 rounded-xl bg-white p-3 shadow-2xs">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Detalle del Espacio</span>
+                            <span id="p-floor-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">Todos (5 Pisos)</span>
+                        </div>
+                        <div id="p-inspector-content" class="text-xs text-slate-700 space-y-1.5">
+                            <p class="text-slate-400 text-[11px]">Toca cualquier aula, observatorio o escalera en el modelo 3D para ver detalles y trazar ruta.</p>
+                        </div>
                     </div>
+
                 </div>
 
             </aside>
-
-            <!-- RIGHT 3D VIEWPORT (Three.js WebGL Canvas) -->
-            <main id="p-viewport" class="flex-1 min-w-0 min-h-0 relative select-none">
-                
-                <!-- Floating 3D Projected HTML Labels Layer -->
-                <div id="p-labels-layer" class="absolute inset-0 pointer-events-none overflow-hidden z-10"></div>
-
-                <!-- Floating Canvas Controls (Zoom In, Zoom Out, Reset Camera) -->
-                <div class="absolute bottom-4 right-4 flex flex-col gap-1.5 z-20">
-                    <button id="p-btn-zoom-in" type="button" title="Acercar (+)" class="w-9 h-9 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl text-slate-700 font-bold hover:bg-white flex items-center justify-center text-sm shadow-md transition-all active:scale-95">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    </button>
-                    <button id="p-btn-zoom-out" type="button" title="Alejar (-)" class="w-9 h-9 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl text-slate-700 font-bold hover:bg-white flex items-center justify-center text-sm shadow-md transition-all active:scale-95">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
-                    </button>
-                    <button id="p-btn-reset-cam" type="button" title="Restablecer Vista Isométrica" class="w-9 h-9 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl text-slate-700 font-extrabold hover:bg-white flex items-center justify-center text-xs shadow-md transition-all active:scale-95">
-                        N
-                    </button>
-                </div>
-
-                <!-- Bottom Floating Architectural Badge -->
-                <div class="absolute bottom-4 left-4 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-xl border border-slate-200/90 shadow-md text-[11px] text-slate-600 font-semibold pointer-events-none">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Arrastra para rotar &middot; Clic derecho para desplazar &middot; Rueda para zoom</span>
-                </div>
-            </main>
 
         </div>
 
@@ -235,7 +344,7 @@ Replicates the real architectural building:
 </div>
 
 <!-- ========================================================================== -->
-<!-- COMPONENT STYLES (Super WOW 3D Perspective Modal Animation)                 -->
+<!-- COMPONENT STYLES (Mobile-First Responsive Bottom Sheet & 3D Labels)        -->
 <!-- ========================================================================== -->
 <style>
 /* Modal Backdrop Overlay */
@@ -251,7 +360,7 @@ Replicates the real architectural building:
     -webkit-backdrop-filter: blur(10px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #buildingPModal.bldg-modal-open {
@@ -259,31 +368,38 @@ Replicates the real architectural building:
     pointer-events: auto;
 }
 
-/* Modal Dialog Card with 3D Perspective Spring Entrance */
+/* Modal Dialog Card: Full-screen on Mobile, Floating 3D Card on Desktop */
 .bldg-card-wow {
     position: relative;
-    width: 96vw;
-    max-width: 1380px;
-    height: 92vh;
-    max-height: 890px;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     background: #f8fafc;
-    border-radius: 1.5rem;
-    box-shadow: 0 30px 70px -15px rgba(15, 23, 42, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.4);
+    border-radius: 0;
+    box-shadow: 0 30px 70px -15px rgba(15, 23, 42, 0.55);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transform: scale(0.85) translateY(42px) perspective(1200px) rotateX(9deg);
+    transform: translateY(24px) scale(0.96);
     opacity: 0;
-    filter: blur(4px);
-    transition: transform 0.46s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.4s ease-out,
-                filter 0.4s ease-out;
+    transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.35s ease-out;
+}
+
+@media (min-width: 768px) {
+    .bldg-card-wow {
+        width: 96vw;
+        max-width: 1380px;
+        height: 92vh;
+        max-height: 890px;
+        border-radius: 1.5rem;
+        transform: scale(0.88) translateY(36px) perspective(1200px) rotateX(7deg);
+    }
 }
 
 #buildingPModal.bldg-modal-open .bldg-card-wow {
     transform: scale(1) translateY(0) perspective(1200px) rotateX(0deg);
     opacity: 1;
-    filter: blur(0px);
 }
 
 /* Fullscreen Mode */
@@ -291,19 +407,55 @@ Replicates the real architectural building:
     width: 100vw !important;
     max-width: 100vw !important;
     height: 100vh !important;
-    max-height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
     border-radius: 0 !important;
 }
 
 /* 3D Canvas Viewport */
 #p-viewport {
-    background: radial-gradient(circle at 50% 40%, #f8fafc 0%, #e2e8f0 100%);
+    background: radial-gradient(circle at 50% 38%, #f8fafc 0%, #e2e8f0 100%);
     touch-action: none;
 }
 #p-viewport canvas {
     display: block;
     width: 100%;
     height: 100%;
+    touch-action: none;
+}
+
+/* Hide scrollbars on horizontal pill carousels */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Mobile Bottom Sheet States (< 768px) */
+@media (max-width: 767px) {
+    .p-sheet-container {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-top-left-radius: 1.25rem;
+        border-top-right-radius: 1.25rem;
+        border-top: 1px solid #e2e8f0;
+        transition: max-height 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: max-height;
+        z-index: 25;
+    }
+    .p-sheet-container[data-sheet-state="peek"] {
+        max-height: 168px;
+    }
+    .p-sheet-container[data-sheet-state="half"] {
+        max-height: 52dvh;
+    }
+    .p-sheet-container[data-sheet-state="expanded"] {
+        max-height: 82dvh;
+    }
 }
 
 /* 3D Projected Floating Labels */
@@ -312,16 +464,16 @@ Replicates the real architectural building:
     transform: translate(-50%, -50%);
     font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.02em;
-    padding: 2px 7px;
-    border-radius: 6px;
+    letter-spacing: 0.01em;
+    padding: 3px 7px;
+    border-radius: 7px;
     white-space: nowrap;
     border: 1px solid rgba(71, 85, 105, 0.35);
     background: rgba(255, 255, 255, 0.94);
     color: #1e293b;
     pointer-events: auto;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 2px 5px rgba(15, 23, 42, 0.1);
     transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
     user-select: none;
 }
@@ -329,15 +481,18 @@ Replicates the real architectural building:
     border-color: #0284c7;
     background: #ffffff;
     transform: translate(-50%, -50%) scale(1.08);
+    z-index: 5;
 }
 .p-map-label.active {
     background: #0f172a;
     color: #ffffff;
-    border-color: #0284c7;
-    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
+    border-color: #38bdf8;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+    transform: translate(-50%, -50%) scale(1.08);
+    z-index: 10;
 }
 .p-map-label.restroom {
-    background: rgba(226, 232, 240, 0.96);
+    background: rgba(241, 245, 249, 0.96);
     border-color: #64748b;
     color: #1e293b;
 }
@@ -351,20 +506,33 @@ Replicates the real architectural building:
     border-color: #64748b;
     color: #334155;
 }
+.p-map-label.orientation-badge {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: rgba(15, 23, 42, 0.72);
+    color: #f8fafc;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    pointer-events: none;
+}
 
-/* Wayfinding Badges */
+/* Wayfinding Start & End Floating Badges */
 .p-pin-badge {
     position: absolute;
     transform: translate(-50%, -100%);
     font-size: 10px;
     font-weight: 800;
-    padding: 3px 8px;
-    border-radius: 6px;
+    padding: 3.5px 8px;
+    border-radius: 7px;
     white-space: nowrap;
     pointer-events: none;
     border: 2px solid #ffffff;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.32);
     display: none;
+    z-index: 12;
 }
 .p-pin-start {
     background: #059669;
@@ -391,9 +559,12 @@ Replicates the real architectural building:
     const floorGroups = [];
     const interactiveMeshes = [];
     const spaceRecords = [];
+    const orientationLandmarks = [];
     const doorGroups = [];
     const railingGroups = [];
     const stairGroups = [];
+    const stairFlightGroups = [];
+    const BASE_STAIR_H = 3.8;
     let routeGroup = null;
 
     let startPinEl = null;
@@ -403,9 +574,9 @@ Replicates the real architectural building:
     const state = {
         mode: "visitor",
         selectedFloor: "all",
-        explode: 3.2,
+        explode: 3.8,
         pitchDeg: 44,
-        bearingDeg: 24,
+        bearingDeg: 22,
         zoom: 74,
         panX: 0,
         panZ: 0,
@@ -417,19 +588,115 @@ Replicates the real architectural building:
         searchQuery: "",
         startId: "F1-ENT-W",
         endId: "F5-501",
-        activePath: null
+        activePath: null,
+        activeStepIdx: null,
+        isTopDown2D: false
     };
+
+    // Smooth Camera Interpolation Target
+    const camAnim = {
+        active: false,
+        startTime: 0,
+        duration: 420,
+        from: { pitchDeg: 44, bearingDeg: 22, zoom: 74, panX: 0, panZ: 0, explode: 3.8 },
+        to: { pitchDeg: 44, bearingDeg: 22, zoom: 74, panX: 0, panZ: 0, explode: 3.8 }
+    };
+
+    function getResponsiveDefaultZoom(baseZoom) {
+        const viewport = document.getElementById("p-viewport");
+        if (!viewport) return baseZoom;
+        const w = Math.max(viewport.clientWidth, 300);
+        const h = Math.max(viewport.clientHeight, 300);
+        const aspect = w / h;
+        // On narrow portrait phones (aspect ~0.5 - 0.75), pull back slightly so the 80m building fits horizontally
+        if (aspect < 0.85) {
+            return Math.min(130, Math.round(baseZoom / Math.max(0.62, aspect * 0.92)));
+        }
+        return baseZoom;
+    }
+
+    function animateCameraTo(target, durationMs) {
+        camAnim.from = {
+            pitchDeg: state.pitchDeg,
+            bearingDeg: state.bearingDeg,
+            zoom: state.zoom,
+            panX: state.panX,
+            panZ: state.panZ,
+            explode: state.explode
+        };
+        camAnim.to = {
+            pitchDeg: target.pitchDeg !== undefined ? target.pitchDeg : state.pitchDeg,
+            bearingDeg: target.bearingDeg !== undefined ? target.bearingDeg : state.bearingDeg,
+            zoom: target.zoom !== undefined ? target.zoom : state.zoom,
+            panX: target.panX !== undefined ? target.panX : state.panX,
+            panZ: target.panZ !== undefined ? target.panZ : state.panZ,
+            explode: target.explode !== undefined ? target.explode : state.explode
+        };
+        camAnim.startTime = performance.now();
+        camAnim.duration = durationMs || 420;
+        camAnim.active = true;
+    }
 
     // Architectural Materials
     let MAT = {};
 
+    function createUniversityHallwayTexture() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 256;
+        canvas.height = 256;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return null;
+
+        // Base warm stone/terrazzo university corridor tone (#b29f87)
+        ctx.fillStyle = "#b29f87";
+        ctx.fillRect(0, 0, 256, 256);
+
+        // Subtle alternating tile checkerboard warmth
+        const tiles = 4;
+        const step = 256 / tiles;
+        for (let r = 0; r < tiles; r++) {
+            for (let c = 0; c < tiles; c++) {
+                ctx.fillStyle = (r + c) % 2 === 0 ? "#b6a48c" : "#ae9b83";
+                ctx.fillRect(c * step, r * step, step, step);
+            }
+        }
+
+        // Grout lines between corridor floor tiles
+        ctx.strokeStyle = "#96836c";
+        ctx.lineWidth = 2;
+        for (let i = 0; i <= tiles; i++) {
+            const pos = i * step;
+            ctx.beginPath();
+            ctx.moveTo(pos, 0);
+            ctx.lineTo(pos, 256);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(0, pos);
+            ctx.lineTo(256, pos);
+            ctx.stroke();
+        }
+
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(24, 2);
+        return tex;
+    }
+
     function initMaterials() {
+        const hallwayTex = createUniversityHallwayTexture();
         MAT = {
-            slab: new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.85, metalness: 0.05 }),
-            hallway: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.9 }),
-            roomFloor: new THREE.MeshStandardMaterial({ color: 0xdde3ea, roughness: 0.8 }),
-            roomSelected: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.45, emissive: 0x0369a1, emissiveIntensity: 0.2 }),
-            roomHighlight: new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6 }),
+            slab: new THREE.MeshStandardMaterial({ color: 0xede8e1, roughness: 0.85, metalness: 0.05 }),
+            hallway: new THREE.MeshStandardMaterial({
+                color: hallwayTex ? 0xffffff : 0xb29f87,
+                map: hallwayTex,
+                roughness: 0.76,
+                metalness: 0.04
+            }),
+            roomFloor: new THREE.MeshStandardMaterial({ color: 0xe2dcd3, roughness: 0.8 }),
+            roomSelected: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.45, emissive: 0x0369a1, emissiveIntensity: 0.25 }),
+            roomHighlight: new THREE.MeshStandardMaterial({ color: 0x0ea5e9, roughness: 0.5, emissive: 0x0284c7, emissiveIntensity: 0.15 }),
             restroomMenFloor: new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.75 }),
             restroomWomenFloor: new THREE.MeshStandardMaterial({ color: 0xa8b3c2, roughness: 0.75 }),
             wall: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6, transparent: true, opacity: 0.98 }),
@@ -441,13 +708,14 @@ Replicates the real architectural building:
             railingBar: new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.35, roughness: 0.45 }),
             stairStep: new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.75 }),
             stairFloor: new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.85 }),
-            routeLine: new THREE.MeshStandardMaterial({ color: 0x0284c7, emissive: 0x0284c7, emissiveIntensity: 0.5, roughness: 0.3 }),
+            routeLine: new THREE.MeshStandardMaterial({ color: 0x0284c7, emissive: 0x0284c7, emissiveIntensity: 0.55, roughness: 0.25 }),
             startPin: new THREE.MeshStandardMaterial({ color: 0x059669, roughness: 0.3 }),
             endPin: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3 }),
             roofDeck: new THREE.MeshStandardMaterial({ color: 0xcbd5e1, roughness: 0.85, metalness: 0.05 }),
-            // Metallic Silver Astronomical Dome
-            domeShell: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.25, metalness: 0.65 }),
-            domeTrim: new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.45, metalness: 0.4 }),
+            annexTrim: new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, metalness: 0.15 }),
+            windowGlass: new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.2, metalness: 0.7 }),
+            domeShell: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.22, metalness: 0.72 }),
+            domeTrim: new THREE.MeshStandardMaterial({ color: 0x0369a1, roughness: 0.45, metalness: 0.35 }),
             domeSlit: new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5, metalness: 0.5 })
         };
     }
@@ -564,61 +832,216 @@ Replicates the real architectural building:
         el.type = "button";
         el.className = `p-map-label ${kind}`.trim();
         el.textContent = text;
-        el.dataset.spaceId = spaceId;
-        el.addEventListener("click", (e) => {
-            e.stopPropagation();
-            selectSpace(spaceId);
-        });
+        if (spaceId) {
+            el.dataset.spaceId = spaceId;
+            el.addEventListener("click", (e) => {
+                e.stopPropagation();
+                selectSpace(spaceId, { focusCamera: true });
+            });
+        }
         if (labelsLayer) labelsLayer.appendChild(el);
         return el;
     }
 
-    function addStairwell(parent, floorNum, id, label, cx, cz, sideLabel, dirSign) {
+    function addOrientationLandmarks() {
+        const landmarks = [
+            { text: "↑ FRENTE: PASILLO Y CAMPUS UAM", pos: new THREE.Vector3(0, 0.2, 11.5) },
+            { text: "← OESTE: TORRE OBSERVATORIO", pos: new THREE.Vector3(-46, 0.2, 0) },
+            { text: "ESTE: BATERÍA SANITARIOS →", pos: new THREE.Vector3(46, 0.2, 0) }
+        ];
+        landmarks.forEach(lm => {
+            const el = createLabel(lm.text, "orientation-badge", null);
+            orientationLandmarks.push({ el, pos: lm.pos });
+        });
+    }
+
+    function addInclinedRailing(parent, x1, y1, z1, x2, y2, z2) {
         const g = new THREE.Group();
-        const w = 6.2;
-        const d = 6.0;
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const dz = z2 - z1;
+        const len = Math.hypot(dx, dy, dz);
+        const railH = 0.92;
 
-        const padGeo = new THREE.BoxGeometry(w, 0.14, d);
-        const pad = new THREE.Mesh(padGeo, MAT.stairFloor.clone());
-        pad.position.set(cx, 0.07, cz);
-        pad.receiveShadow = true;
-        g.add(pad);
+        // Posts at start, middle, end
+        const postGeo = new THREE.BoxGeometry(0.08, railH, 0.08);
+        [0, 0.5, 1].forEach(t => {
+            const post = new THREE.Mesh(postGeo, MAT.railingPost);
+            post.position.set(x1 + dx * t, y1 + dy * t + railH / 2, z1 + dz * t);
+            g.add(post);
+        });
 
-        const stepsUp = 9;
-        const stepH = 0.24;
-        const stepD = 0.46;
-        const flightW = 2.15;
+        // Inclined top handrail & mid-rail
+        const startV = new THREE.Vector3(x1, y1 + railH, z1);
+        const endV = new THREE.Vector3(x2, y2 + railH, z2);
+        const dirV = endV.clone().sub(startV).normalize();
+        const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dirV);
 
-        for (let s = 0; s < stepsUp; s++) {
-            const stepGeo = new THREE.BoxGeometry(flightW, stepH, stepD);
-            const stepMesh = new THREE.Mesh(stepGeo, MAT.stairStep);
-            const offsetZ = (s - stepsUp / 2 + 0.5) * stepD * dirSign;
-            stepMesh.position.set(cx - 1.3, 0.14 + (s + 0.5) * stepH, cz + offsetZ);
-            stepMesh.castShadow = true;
-            g.add(stepMesh);
+        const topBarGeo = new THREE.CylinderGeometry(0.045, 0.045, len, 8);
+        const topBar = new THREE.Mesh(topBarGeo, MAT.railingPost);
+        topBar.position.copy(startV).add(endV).multiplyScalar(0.5);
+        topBar.quaternion.copy(quat);
+        g.add(topBar);
+
+        const midBarGeo = new THREE.CylinderGeometry(0.03, 0.03, len, 8);
+        const midBar = new THREE.Mesh(midBarGeo, MAT.railingBar);
+        midBar.position.copy(startV).add(endV).multiplyScalar(0.5);
+        midBar.position.y -= railH * 0.45;
+        midBar.quaternion.copy(quat);
+        g.add(midBar);
+
+        parent.add(g);
+        railingGroups.push(g);
+    }
+
+    // Unified North-to-South Zig-Zag Switchback Stairwell:
+    // Starts at the North (front hallway z = 1.25), climbs toward the South (z = -3.15) to the mid-floor landing (z = -4.25),
+    // turns 180°, and climbs from South back to North (z = 1.25) arriving at the upper floor's North hallway.
+    // Supports narrower flights (isNarrow = true) for the P3 -> P4 stair transition.
+    function addStairwell(parent, floorNum, id, label, cx, cz, sideLabel, hasUpwardFlights, isNarrow) {
+        const g = new THREE.Group();
+
+        const flightW = isNarrow ? 1.22 : 1.85;
+        const laneGap = isNarrow ? 0.22 : 0.32;
+        const laneOffset = flightW * 0.5 + laneGap * 0.5;
+        // Inner lane (closer to classrooms) starts at North and climbs South; outer lane climbs South back to North
+        const innerSign = cx < 0 ? 1 : -1;
+        const xFlight1 = cx + innerSign * laneOffset;
+        const xFlight2 = cx - innerSign * laneOffset;
+
+        const zNorth = 1.25;
+        const zSouth = isNarrow ? -2.85 : -3.25;
+        const midLandDepth = isNarrow ? 1.9 : 2.3;
+        const zMidLand = zSouth - midLandDepth * 0.5 + 0.08;
+        const totalStairW = flightW * 2 + laneGap + 0.4;
+
+        // 1. North floor-level threshold platform connecting the front hallway (z = 1.5) to the stair flights
+        const northPlatGeo = new THREE.BoxGeometry(totalStairW + 0.6, 0.22, 1.35);
+        const northPlat = new THREE.Mesh(northPlatGeo, MAT.stairFloor.clone());
+        northPlat.position.set(cx, 0.02, 1.35);
+        northPlat.receiveShadow = true;
+        northPlat.castShadow = true;
+        g.add(northPlat);
+
+        // If this is a top-arrival floor with no upward flights (e.g., P4 terrace or P3 East), add a safety guardrail around the shaft opening
+        if (!hasUpwardFlights) {
+            addHorizontalRailing(g, cx - totalStairW * 0.52, -4.4, cx + totalStairW * 0.52, -4.4);
+            addHorizontalRailing(g, cx - totalStairW * 0.52, -4.4, cx - totalStairW * 0.52, 0.85);
+            addHorizontalRailing(g, cx + totalStairW * 0.52, -4.4, cx + totalStairW * 0.52, 0.85);
         }
 
-        const landingGeo = new THREE.BoxGeometry(flightW * 2 + 0.6, 0.18, 1.0);
-        const landing = new THREE.Mesh(landingGeo, MAT.stairFloor);
-        landing.position.set(cx, 0.14 + stepsUp * stepH, cz + (stepsUp / 2 + 0.4) * stepD * dirSign);
-        landing.castShadow = true;
-        g.add(landing);
+        // 2. Upward North -> South -> North Zig-Zag Flights connecting Floor N -> Floor N+1
+        if (hasUpwardFlights) {
+            const flightGroup = new THREE.Group();
+            const numSteps = 8;
+            const yStart1 = 0.12;
+            const yMid = BASE_STAIR_H * 0.5;
+            const yTop = BASE_STAIR_H;
 
-        for (let s = 0; s < 5; s++) {
-            const stepGeo = new THREE.BoxGeometry(flightW, stepH, stepD);
-            const stepMesh = new THREE.Mesh(stepGeo, MAT.stairStep);
-            const offsetZ = ((stepsUp / 2 - 0.5) - s) * stepD * dirSign;
-            stepMesh.position.set(cx + 1.3, 0.14 + (stepsUp + s + 0.5) * stepH, cz + offsetZ);
-            stepMesh.castShadow = true;
-            g.add(stepMesh);
+            const spanZ = Math.abs(zNorth - zSouth);
+            const stepD = (spanZ / numSteps) + 0.05;
+            const stepH1 = (yMid - yStart1) / numSteps;
+            const stepH2 = (yTop - yMid) / numSteps;
+
+            // --- TRAMO 1 (Inferior): Empieza en el Norte (pasillo) y sube hacia el Sur (-Z) ---
+            for (let s = 0; s < numSteps; s++) {
+                const t = (s + 0.5) / numSteps;
+                const sz = zNorth - t * spanZ;
+                const sy = yStart1 + (s + 0.5) * stepH1;
+                const blockH = stepH1 * 1.45;
+                const stepGeo = new THREE.BoxGeometry(flightW, blockH, stepD);
+                const stepMesh = new THREE.Mesh(stepGeo, MAT.stairStep);
+                stepMesh.position.set(xFlight1, sy - blockH * 0.15, sz);
+                stepMesh.castShadow = true;
+                stepMesh.receiveShadow = true;
+                flightGroup.add(stepMesh);
+            }
+
+            // Inclined carriage/stringer beam under Tramo 1 (North -> South)
+            const s1Start = new THREE.Vector3(xFlight1, yStart1 - 0.08, zNorth);
+            const s1End = new THREE.Vector3(xFlight1, yMid - 0.08, zSouth);
+            const s1Len = s1Start.distanceTo(s1End);
+            const stringer1Geo = new THREE.BoxGeometry(flightW - 0.22, s1Len, 0.18);
+            const stringer1 = new THREE.Mesh(stringer1Geo, MAT.stairFloor);
+            stringer1.position.copy(s1Start).add(s1End).multiplyScalar(0.5);
+            stringer1.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), s1End.clone().sub(s1Start).normalize());
+            flightGroup.add(stringer1);
+
+            // Handrail along Tramo 1
+            addInclinedRailing(
+                flightGroup,
+                xFlight1 + innerSign * flightW * 0.46,
+                yStart1,
+                zNorth,
+                xFlight1 + innerSign * flightW * 0.46,
+                yMid,
+                zSouth
+            );
+
+            // --- DESCANSO INTERMEDIO EN EL SUR (Mid-Floor Landing at South end z = zMidLand, y = 0.5 * H) ---
+            const midLandGeo = new THREE.BoxGeometry(totalStairW, 0.2, midLandDepth);
+            const midLand = new THREE.Mesh(midLandGeo, MAT.stairFloor);
+            midLand.position.set(cx, yMid - 0.06, zMidLand);
+            midLand.castShadow = true;
+            midLand.receiveShadow = true;
+            flightGroup.add(midLand);
+
+            // Guardrail on the southern outer edge of the mid-landing
+            addInclinedRailing(
+                flightGroup,
+                cx - totalStairW * 0.47,
+                yMid,
+                zMidLand - midLandDepth * 0.46,
+                cx + totalStairW * 0.47,
+                yMid,
+                zMidLand - midLandDepth * 0.46
+            );
+
+            // --- TRAMO 2 (Superior): Sube desde el Descanso Sur de regreso hacia el Norte (+Z) ---
+            for (let s = 0; s < numSteps; s++) {
+                const t = (s + 0.5) / numSteps;
+                const sz = zSouth + t * spanZ;
+                const sy = yMid + (s + 0.5) * stepH2;
+                const blockH = stepH2 * 1.45;
+                const stepGeo = new THREE.BoxGeometry(flightW, blockH, stepD);
+                const stepMesh = new THREE.Mesh(stepGeo, MAT.stairStep);
+                stepMesh.position.set(xFlight2, sy - blockH * 0.15, sz);
+                stepMesh.castShadow = true;
+                stepMesh.receiveShadow = true;
+                flightGroup.add(stepMesh);
+            }
+
+            // Inclined carriage/stringer beam under Tramo 2 (South -> North)
+            const s2Start = new THREE.Vector3(xFlight2, yMid - 0.08, zSouth);
+            const s2End = new THREE.Vector3(xFlight2, yTop - 0.08, zNorth);
+            const s2Len = s2Start.distanceTo(s2End);
+            const stringer2Geo = new THREE.BoxGeometry(flightW - 0.22, s2Len, 0.18);
+            const stringer2 = new THREE.Mesh(stringer2Geo, MAT.stairFloor);
+            stringer2.position.copy(s2Start).add(s2End).multiplyScalar(0.5);
+            stringer2.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), s2End.clone().sub(s2Start).normalize());
+            flightGroup.add(stringer2);
+
+            // Handrail along Tramo 2
+            addInclinedRailing(
+                flightGroup,
+                xFlight2 - innerSign * flightW * 0.46,
+                yMid,
+                zSouth,
+                xFlight2 - innerSign * flightW * 0.46,
+                yTop,
+                zNorth
+            );
+
+            g.add(flightGroup);
+            stairFlightGroups.push(flightGroup);
         }
 
         parent.add(g);
         stairGroups.push(g);
 
         const fullId = `F${floorNum}-${id}`;
-        pad.userData = { spaceId: fullId };
-        interactiveMeshes.push(pad);
+        northPlat.userData = { spaceId: fullId };
+        interactiveMeshes.push(northPlat);
 
         const el = createLabel(label, "stair", fullId);
         spaceRecords.push({
@@ -629,18 +1052,103 @@ Replicates the real architectural building:
             name: `${label} (Piso ${floorNum})`,
             wing: sideLabel,
             doors: 1,
-            area: "37 m²",
+            area: isNarrow ? "24 m² (Estrecha)" : "34 m²",
             x: cx,
             z: cz,
-            doorX: cx,
+            doorX: xFlight1,
             notes: cx < 0
-                ? `Escaleras Oeste conectando desde el acceso hasta los 5 niveles.`
-                : `Escaleras Este conectando los pisos 1 a 3.`,
-            mesh: pad,
+                ? (floorNum === 3
+                    ? "Tramo de escalera Oeste más estrecho (orientado de Norte a Sur) que sube del 3er piso a la terraza del Anexo en el 4to piso."
+                    : "Escalera principal Oeste en zig-zag Norte-Sur (inicia en el pasillo Norte, sube hacia el descanso Sur y regresa al pasillo Norte superior).")
+                : "Escalera Este en zig-zag Norte-Sur (inicia en el pasillo Norte, sube hacia el descanso Sur y regresa al pasillo Norte superior): conecta pisos 1 a 3.",
+            mesh: northPlat,
             baseMat: MAT.stairFloor,
             labelEl: el,
-            localPos: new THREE.Vector3(cx, 1.8, cz)
+            localPos: new THREE.Vector3(cx, 1.8, 0.4)
         });
+    }
+
+    // Internal compact staircase inside the Annex connecting Piso 4 (P401) -> Piso 5 (P501 Observatory)
+    function addInternalAnnexStair(parent) {
+        const g = new THREE.Group();
+        const flightGroup = new THREE.Group();
+        const numSteps = 9;
+        const xPos = -30.5;
+        const zStart = 0.2;
+        const zEnd = -4.2;
+        const spanZ = Math.abs(zEnd - zStart);
+        const stepD = (spanZ / numSteps) + 0.04;
+        const stepH = (BASE_STAIR_H - 0.15) / numSteps;
+        const flightW = 1.05;
+
+        for (let s = 0; s < numSteps; s++) {
+            const t = (s + 0.5) / numSteps;
+            const sz = zStart - t * spanZ;
+            const sy = 0.15 + (s + 0.5) * stepH;
+            const stepGeo = new THREE.BoxGeometry(flightW, stepH * 1.4, stepD);
+            const stepMesh = new THREE.Mesh(stepGeo, MAT.stairStep);
+            stepMesh.position.set(xPos, sy, sz);
+            stepMesh.castShadow = true;
+            flightGroup.add(stepMesh);
+        }
+
+        addInclinedRailing(flightGroup, xPos + 0.5, 0.15, zStart, xPos + 0.5, BASE_STAIR_H, zEnd);
+        g.add(flightGroup);
+        stairFlightGroups.push(flightGroup);
+        stairGroups.push(g);
+        parent.add(g);
+    }
+
+    // Helper to add architectural annex facade pilasters, top trim band & dark glass windows (as seen in the real photo)
+    function addAnnexFacadeDetails(parent, x1, x2, zBack, zFront, wallH, isFloor5) {
+        const roomW = x2 - x1;
+        const cx = (x1 + x2) / 2;
+        const depth = zFront - zBack;
+        const zCenter = (zFront + zBack) / 2;
+
+        // Grey structural corner & mid-wall vertical pilasters (front & left side)
+        const pilasterXs = [x1, x1 + 3.4, x2];
+        pilasterXs.forEach(px => {
+            const pilGeo = new THREE.BoxGeometry(0.32, wallH + 0.12, 0.32);
+            const pil = new THREE.Mesh(pilGeo, MAT.annexTrim);
+            pil.position.set(px, 0.12 + wallH / 2, zFront);
+            parent.add(pil);
+        });
+
+        // Horizontal grey structural band along top of front & left side walls
+        const frontBand = new THREE.Mesh(new THREE.BoxGeometry(roomW + 0.35, 0.26, 0.3), MAT.annexTrim);
+        frontBand.position.set(cx, 0.12 + wallH - 0.08, zFront);
+        parent.add(frontBand);
+
+        const leftBand = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.26, depth + 0.3), MAT.annexTrim);
+        leftBand.position.set(x1, 0.12 + wallH - 0.08, zCenter);
+        parent.add(leftBand);
+
+        // Vertical conduit/downpipe on the center of the West (left) white wall (visible in the real photo)
+        const pipeGeo = new THREE.CylinderGeometry(0.07, 0.07, wallH, 8);
+        const pipe = new THREE.Mesh(pipeGeo, MAT.slab);
+        pipe.position.set(x1 - 0.14, 0.12 + wallH / 2, zCenter);
+        parent.add(pipe);
+
+        // Left bay rectangular dark glass window on front facade (present on both P4 and P5 in the photo)
+        const leftWinGeo = new THREE.BoxGeometry(1.55, 1.15, 0.28);
+        const leftWin = new THREE.Mesh(leftWinGeo, MAT.windowGlass);
+        leftWin.position.set(x1 + 1.7, 0.12 + 1.25, zFront);
+        parent.add(leftWin);
+
+        if (isFloor5) {
+            // Piso 5 right bay: two vertical slit windows as seen in the real photo
+            [-0.38, 0.38].forEach(offset => {
+                const slitWin = new THREE.Mesh(new THREE.BoxGeometry(0.38, 1.35, 0.28), MAT.windowGlass);
+                slitWin.position.set(x2 - 2.1 + offset, 0.12 + 1.3, zFront);
+                parent.add(slitWin);
+            });
+        } else {
+            // Piso 4 right bay: wide multi-pane horizontal window next to the annex entrance door
+            const wideWin = new THREE.Mesh(new THREE.BoxGeometry(4.4, 1.15, 0.28), MAT.windowGlass);
+            wideWin.position.set(cx + 1.2, 0.12 + 1.25, zFront);
+            parent.add(wideWin);
+        }
     }
 
     // Build Floor Geometry
@@ -648,113 +1156,202 @@ Replicates the real architectural building:
         const floorGroup = new THREE.Group();
         const wallH = 2.4;
 
-        // Pisos 4 y 5: Torre Oeste del Observatorio
-        if (floorNum === 4 || floorNum === 5) {
-            const xLeft = -40.2;
-            const xRight = -18.4;
-            const slabW = xRight - xLeft;
-            const slabCx = (xLeft + xRight) / 2;
-
-            const slabGeo = new THREE.BoxGeometry(slabW, 0.24, 12.4);
-            const slab = new THREE.Mesh(slabGeo, MAT.slab);
-            slab.position.set(slabCx, 0, -0.5);
-            slab.receiveShadow = true;
-            floorGroup.add(slab);
-
-            const hallGeo = new THREE.BoxGeometry(slabW - 0.4, 0.04, 3.9);
-            const hallMesh = new THREE.Mesh(hallGeo, MAT.hallway);
-            hallMesh.position.set(slabCx, 0.13, 3.5);
-            hallMesh.receiveShadow = true;
-            floorGroup.add(hallMesh);
-
-            addHorizontalRailing(floorGroup, -39.8, 5.4, -18.6, 5.4);
-            addHorizontalRailing(floorGroup, -39.8, 1.6, -39.8, 5.4);
-            addHorizontalRailing(floorGroup, -18.6, 1.6, -18.6, 5.4);
-
+        // =====================================================================
+        // PISO 5: SEGUNDO NIVEL DEL ANEXO SUPERIOR + CÚPULA OBSERVATORIO
+        // (Sin pasillo exterior, sin barandales exteriores y sin escalera exterior)
+        // =====================================================================
+        if (floorNum === 5) {
             const x1 = -32;
             const x2 = -18.8;
             const roomW = x2 - x1;
             const cx = (x1 + x2) / 2;
-            const zHallWall = 1.5;
+            const zBack = -6.5;
+            const zFront = 1.5;
             const zCenter = -2.5;
 
-            addWallBox(floorGroup, cx, 0.12, -6.5, roomW, wallH, 0.24);
-            addWallBox(floorGroup, x1, 0.12, zCenter, 0.2, wallH, 8.0);
-            addWallBox(floorGroup, x2, 0.12, zCenter, 0.2, wallH, 8.0);
+            // Slab strictly matches the Annex box footprint (no exterior balcony hallway on Floor 5!)
+            const annexSlabGeo = new THREE.BoxGeometry(roomW + 0.24, 0.24, 8.24);
+            const annexSlab = new THREE.Mesh(annexSlabGeo, MAT.slab);
+            annexSlab.position.set(cx, 0, zCenter);
+            annexSlab.receiveShadow = true;
+            floorGroup.add(annexSlab);
 
-            const tileGeo = new THREE.BoxGeometry(roomW - 0.24, 0.06, 7.75);
+            // 4 flush exterior walls of the 5th-floor annex (no exterior doors on Floor 5)
+            addWallBox(floorGroup, cx, 0.12, zBack, roomW, wallH, 0.24);
+            addWallBox(floorGroup, cx, 0.12, zFront, roomW, wallH, 0.24);
+            addWallBox(floorGroup, x1, 0.12, zCenter, 0.24, wallH, 8.0);
+            addWallBox(floorGroup, x2, 0.12, zCenter, 0.24, wallH, 8.0);
+
+            // Photo-accurate grey pilasters, trim & windows on the 5th-floor annex facade
+            addAnnexFacadeDetails(floorGroup, x1, x2, zBack, zFront, wallH, true);
+
+            // Interior floor tile for P501 Observatory
+            const tileGeo = new THREE.BoxGeometry(roomW - 0.3, 0.06, 7.75);
             const tile = new THREE.Mesh(tileGeo, MAT.roomFloor.clone());
             tile.position.set(cx, 0.15, zCenter);
             tile.receiveShadow = true;
             floorGroup.add(tile);
 
-            const doorXs = addWallWithTwoDoors(floorGroup, x1, x2, zHallWall, wallH, -1);
+            // Internal guardrail around the interior stair arrival from Piso 4
+            addHorizontalRailing(floorGroup, -29.8, -4.4, -29.8, 0.3);
 
-            const isObservatory = floorNum === 5;
-            const code = isObservatory ? "501" : "401";
-            const fullId = `F${floorNum}-${code}`;
+            // Annex flat roof with slight perimeter parapet + Metallic Observatory Dome
+            const roofGeo = new THREE.BoxGeometry(roomW + 0.4, 0.24, 8.4);
+            const roof = new THREE.Mesh(roofGeo, MAT.roofDeck);
+            roof.position.set(cx, 0.12 + wallH + 0.12, zCenter);
+            roof.castShadow = true;
+            roof.receiveShadow = true;
+            floorGroup.add(roof);
+
+            const domeBaseY = 0.12 + wallH + 0.24;
+
+            // Blue-teal base collar ring of the Observatory Dome (visible in the real photo)
+            const collarGeo = new THREE.CylinderGeometry(3.45, 3.6, 0.45, 32);
+            const collar = new THREE.Mesh(collarGeo, MAT.domeTrim);
+            collar.position.set(cx, domeBaseY + 0.225, zCenter);
+            collar.castShadow = true;
+            floorGroup.add(collar);
+
+            // Metallic Silver Observatory Dome
+            const domeGeo = new THREE.SphereGeometry(3.35, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2);
+            const dome = new THREE.Mesh(domeGeo, MAT.domeShell);
+            dome.position.set(cx, domeBaseY + 0.42, zCenter);
+            dome.castShadow = true;
+            floorGroup.add(dome);
+
+            const slitGeo = new THREE.TorusGeometry(3.37, 0.22, 10, 28, Math.PI);
+            const slit = new THREE.Mesh(slitGeo, MAT.domeSlit);
+            slit.position.set(cx, domeBaseY + 0.42, zCenter);
+            slit.rotation.y = Math.PI / 2;
+            floorGroup.add(slit);
+
+            const fullId = "F5-501";
             tile.userData = { spaceId: fullId };
-            interactiveMeshes.push(tile);
+            dome.userData = { spaceId: fullId };
+            interactiveMeshes.push(tile, dome);
 
-            const labelText = isObservatory ? "Cúpula Observatorio (P501)" : "Salón Doble (P401)";
-            const el = createLabel(labelText, isObservatory ? "dome" : "", fullId);
-
+            const el = createLabel("🔭 Cúpula (P501)", "dome", fullId);
             spaceRecords.push({
                 id: fullId,
-                code,
-                floor: floorNum,
-                type: isObservatory ? "Cúpula Astronómica" : "Salón Conferencia",
-                name: isObservatory ? "Observatorio Astronómico y Meteorológico (P501)" : "Aula Conferencia P401",
-                wing: "Torre Oeste (Copérnico)",
-                doors: 2,
+                code: "501",
+                floor: 5,
+                type: "Cúpula Astronómica",
+                name: "Observatorio Astronómico y Meteorológico (P501)",
+                wing: "Anexo Superior (Nivel 5)",
+                doors: 1,
                 area: "105.6 m²",
                 x: cx,
                 z: zCenter,
-                doorX: doorXs[0],
-                notes: isObservatory
-                    ? "Nivel superior del Edificio P coronado por la cúpula metálica esférica con telescopio y estación meteorológica."
-                    : "Salón de gran capacidad (doble ancho) ubicado en la torre oeste del Edificio P.",
+                doorX: -30.5,
+                notes: "Segundo nivel del anexo superior coronado por la cúpula metálica del Observatorio UAM. No tiene pasillo exterior; se accede internamente desde el 4to piso.",
                 mesh: tile,
                 baseMat: MAT.roomFloor,
                 labelEl: el,
-                localPos: new THREE.Vector3(cx, isObservatory ? 4.4 : 1.5, zCenter)
+                localPos: new THREE.Vector3(cx, 4.4, zCenter)
             });
 
-            // Piso 5: Techo de la Torre + Cúpula Metálica Copérnico
-            if (isObservatory) {
-                const roofGeo = new THREE.BoxGeometry(roomW + 0.3, 0.24, 8.3);
-                const roof = new THREE.Mesh(roofGeo, MAT.roofDeck);
-                roof.position.set(cx, 0.12 + wallH + 0.12, zCenter);
-                roof.castShadow = true;
-                roof.receiveShadow = true;
-                floorGroup.add(roof);
+            scene.add(floorGroup);
+            floorGroups.push({ floorNum, group: floorGroup });
+            return;
+        }
 
-                const domeBaseY = 0.12 + wallH + 0.24;
+        // =====================================================================
+        // PISO 4: PRIMER NIVEL DEL ANEXO SUPERIOR + TERRAZA CON BARANDAL
+        // =====================================================================
+        if (floorNum === 4) {
+            const xLeft = -39.8;
+            const xRight = -18.4;
+            const slabW = xRight - xLeft;
+            const slabCx = (xLeft + xRight) / 2;
 
-                // Anillo de base del telescopio
-                const collarGeo = new THREE.CylinderGeometry(3.45, 3.6, 0.45, 32);
-                const collar = new THREE.Mesh(collarGeo, MAT.domeTrim);
-                collar.position.set(cx, domeBaseY + 0.225, zCenter);
-                collar.castShadow = true;
-                floorGroup.add(collar);
+            const x1 = -32;
+            const x2 = -18.8;
+            const roomW = x2 - x1;
+            const cx = (x1 + x2) / 2;
+            const zBack = -6.5;
+            const zHallWall = 1.5;
+            const zCenter = -2.5;
 
-                // Cúpula esférica plateada metálica
-                const domeGeo = new THREE.SphereGeometry(3.35, 32, 20, 0, Math.PI * 2, 0, Math.PI / 2);
-                const dome = new THREE.Mesh(domeGeo, MAT.domeShell);
-                dome.position.set(cx, domeBaseY + 0.42, zCenter);
-                dome.castShadow = true;
-                floorGroup.add(dome);
+            // Annex room slab (x = -32.2 to -18.4) leaving the P3->P4 narrow stair arrival shaft open on the left
+            const roomSlabW = -18.4 - (-32.2);
+            const roomSlabCx = (-32.2 + -18.4) / 2;
+            const roomSlabGeo = new THREE.BoxGeometry(roomSlabW, 0.24, 8.2);
+            const roomSlab = new THREE.Mesh(roomSlabGeo, MAT.slab);
+            roomSlab.position.set(roomSlabCx, 0, zCenter);
+            roomSlab.receiveShadow = true;
+            floorGroup.add(roomSlab);
 
-                // Ranura de observación
-                const slitGeo = new THREE.TorusGeometry(3.37, 0.22, 10, 28, Math.PI);
-                const slit = new THREE.Mesh(slitGeo, MAT.domeSlit);
-                slit.position.set(cx, domeBaseY + 0.42, zCenter);
-                slit.rotation.y = Math.PI / 2;
-                floorGroup.add(slit);
-            }
+            // Front terrace walkway on top of the 3rd floor roof (z = 1.5 to 4.6)
+            const hallSlabGeo = new THREE.BoxGeometry(slabW, 0.24, 3.3);
+            const hallSlab = new THREE.Mesh(hallSlabGeo, MAT.slab);
+            hallSlab.position.set(slabCx, 0, 3.05);
+            hallSlab.receiveShadow = true;
+            floorGroup.add(hallSlab);
 
-            addStairwell(floorGroup, floorNum, "ST-W1", "ST-W1", -36, -3.7, "Oeste Posterior", 1);
-            addStairwell(floorGroup, floorNum, "ST-W2", "ST-W2", -36, 2.2, "Oeste Frontal", -1);
+            const hallGeo = new THREE.BoxGeometry(slabW - 0.3, 0.04, 3.0);
+            const hallMesh = new THREE.Mesh(hallGeo, MAT.hallway);
+            hallMesh.position.set(slabCx, 0.13, 3.05);
+            hallMesh.receiveShadow = true;
+            floorGroup.add(hallMesh);
+
+            // Perimeter grey horizontal-bar railing around the P4 terrace & stair arrival (as seen in the real photo)
+            addHorizontalRailing(floorGroup, -39.6, 4.55, -18.6, 4.55);
+            addHorizontalRailing(floorGroup, -39.6, -4.4, -39.6, 4.55);
+            addHorizontalRailing(floorGroup, -18.6, 1.6, -18.6, 4.55);
+
+            // Annex 4th-floor walls (flush with the 5th-floor annex above)
+            addWallBox(floorGroup, cx, 0.12, zBack, roomW, wallH, 0.24);
+            addWallBox(floorGroup, x1, 0.12, zCenter, 0.24, wallH, 8.0);
+            addWallBox(floorGroup, x2, 0.12, zCenter, 0.24, wallH, 8.0);
+
+            // Front wall of P4 annex with entrance door on the right side
+            const doorX = x2 - 2.1;
+            const doorW = 1.2;
+            const leftSegW = (doorX - doorW / 2) - x1;
+            const rightSegW = x2 - (doorX + doorW / 2);
+            if (leftSegW > 0.05) addWallBox(floorGroup, x1 + leftSegW / 2, 0.12, zHallWall, leftSegW, wallH, 0.24);
+            if (rightSegW > 0.05) addWallBox(floorGroup, (doorX + doorW / 2) + rightSegW / 2, 0.12, zHallWall, rightSegW, wallH, 0.24);
+            addWallBox(floorGroup, doorX, 0.12 + 2.05, zHallWall, doorW, Math.max(0.25, wallH - 2.05), 0.24);
+            addDoor(floorGroup, doorX, zHallWall, -1, true);
+
+            // Photo-accurate grey pilasters, trim & windows on P4 annex facade
+            addAnnexFacadeDetails(floorGroup, x1, x2, zBack, zHallWall, wallH, false);
+
+            // Internal stair climbing inside the Annex from P4 (P401) -> P5 (P501 Observatory)
+            addInternalAnnexStair(floorGroup);
+
+            const tileGeo = new THREE.BoxGeometry(roomW - 0.3, 0.06, 7.75);
+            const tile = new THREE.Mesh(tileGeo, MAT.roomFloor.clone());
+            tile.position.set(cx, 0.15, zCenter);
+            tile.receiveShadow = true;
+            floorGroup.add(tile);
+
+            const fullId = "F4-401";
+            tile.userData = { spaceId: fullId };
+            interactiveMeshes.push(tile);
+
+            const el = createLabel("Anexo P401", "", fullId);
+            spaceRecords.push({
+                id: fullId,
+                code: "401",
+                floor: 4,
+                type: "Salón Conferencia",
+                name: "Anexo Superior • Salón P401",
+                wing: "Anexo Torre Oeste (Nivel 4)",
+                doors: 1,
+                area: "105.6 m²",
+                x: cx,
+                z: zCenter,
+                doorX,
+                notes: "Primer nivel del anexo superior en el extremo oeste. Se accede subiendo la escalera estrecha desde el 3er piso y conecta internamente con el 5to piso (Observatorio).",
+                mesh: tile,
+                baseMat: MAT.roomFloor,
+                labelEl: el,
+                localPos: new THREE.Vector3(cx, 1.5, zCenter)
+            });
+
+            // Arrival platform of the narrow P3->P4 stairs on the P4 terrace (NO exterior upward flights from P4 to P5!)
+            addStairwell(floorGroup, 4, "ST-W", "Llegada Esc. P4", -36, -1.4, "Terraza Anexo P4", false, true);
 
             scene.add(floorGroup);
             floorGroups.push({ floorNum, group: floorGroup });
@@ -762,11 +1359,27 @@ Replicates the real architectural building:
         }
 
         // Pisos 1 a 3: Edificio completo (80.4m x 12.4m)
-        const slabGeo = new THREE.BoxGeometry(80.4, 0.24, 12.4);
-        const slab = new THREE.Mesh(slabGeo, MAT.slab);
-        slab.position.set(0, 0, -0.5);
-        slab.receiveShadow = true;
-        floorGroup.add(slab);
+        if (floorNum === 1) {
+            // Ground floor: full foundation slab
+            const slabGeo = new THREE.BoxGeometry(80.4, 0.24, 12.4);
+            const slab = new THREE.Mesh(slabGeo, MAT.slab);
+            slab.position.set(0, 0, -0.5);
+            slab.receiveShadow = true;
+            floorGroup.add(slab);
+        } else {
+            // Upper floors (P2, P3): leave stairwell shafts open (x = -40.2..-32.2 and x = 32.2..40.2) so zig-zag flights pass cleanly
+            const centerRoomSlabGeo = new THREE.BoxGeometry(64.4, 0.24, 8.2);
+            const centerRoomSlab = new THREE.Mesh(centerRoomSlabGeo, MAT.slab);
+            centerRoomSlab.position.set(0, 0, -2.5);
+            centerRoomSlab.receiveShadow = true;
+            floorGroup.add(centerRoomSlab);
+
+            const frontHallSlabGeo = new THREE.BoxGeometry(80.4, 0.24, 4.2);
+            const frontHallSlab = new THREE.Mesh(frontHallSlabGeo, MAT.slab);
+            frontHallSlab.position.set(0, 0, 3.6);
+            frontHallSlab.receiveShadow = true;
+            floorGroup.add(frontHallSlab);
+        }
 
         const hallGeo = new THREE.BoxGeometry(80, 0.04, 3.9);
         const hallMesh = new THREE.Mesh(hallGeo, MAT.hallway);
@@ -774,7 +1387,6 @@ Replicates the real architectural building:
         hallMesh.receiveShadow = true;
         floorGroup.add(hallMesh);
 
-        // Barandas solo en pisos superiores (sin barandas en el primer piso)
         if (floorNum > 1) {
             addHorizontalRailing(floorGroup, -39.8, 5.4, 39.8, 5.4);
             addHorizontalRailing(floorGroup, -39.8, 1.6, -39.8, 5.4);
@@ -786,11 +1398,13 @@ Replicates the real architectural building:
         // Accesos de Planta Baja (Piso 1)
         if (floorNum === 1) {
             [
-                { id: "F1-ENT-W", name: "Entrada Principal Oeste (P1)", x: -36, z: 4.9 },
-                { id: "F1-ENT-E", name: "Entrada Este (P1)", x: 36, z: 4.9 }
+                { id: "F1-ENT-W", name: "Entrada Principal Oeste (P1)", shortLabel: "🚪 ENTRADA OESTE", x: -36, z: 4.9 },
+                { id: "F1-ENT-E", name: "Entrada Este (P1)", shortLabel: "🚪 ENTRADA ESTE", x: 36, z: 4.9 }
             ].forEach(ent => {
                 const pad = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.08, 1.4), MAT.doorPanel);
                 pad.position.set(ent.x, 0.17, ent.z);
+                pad.userData = { spaceId: ent.id };
+                interactiveMeshes.push(pad);
                 floorGroup.add(pad);
                 spaceRecords.push({
                     id: ent.id,
@@ -800,14 +1414,16 @@ Replicates the real architectural building:
                     name: ent.name,
                     wing: ent.x < 0 ? "Acceso Principal Oeste" : "Acceso Este",
                     doors: 1,
-                    area: "Entrada",
+                    area: "Acceso Peatonal",
                     x: ent.x,
                     z: 3.5,
                     doorX: ent.x,
-                    notes: "Punto de entrada peatonal exterior al Edificio P.",
+                    notes: ent.x < 0
+                        ? "Acceso principal junto a la Torre Oeste (el más cercano para subir a los pisos 4 y 5 / Observatorio)."
+                        : "Acceso peatonal por el extremo Este (junto a sanitarios y aulas P107–P108).",
                     mesh: pad,
                     baseMat: MAT.doorPanel,
-                    labelEl: createLabel(ent.x < 0 ? "ENTRADA OESTE" : "ENTRADA ESTE", "stair", ent.id),
+                    labelEl: createLabel(ent.shortLabel, "stair", ent.id),
                     localPos: new THREE.Vector3(ent.x, 1.4, ent.z)
                 });
             });
@@ -868,18 +1484,18 @@ Replicates the real architectural building:
 
             const labelText = item.kind === "room"
                 ? `P-${item.code}`
-                : (item.kind === "restroom-men" ? `SS Hombres P${floorNum}` : `SS Mujeres P${floorNum}`);
+                : (item.kind === "restroom-men" ? `🚻 H P${floorNum}` : `🚻 M P${floorNum}`);
             const el = createLabel(labelText, item.kind === "room" ? "" : "restroom", fullId);
 
             const spaceName = item.kind === "room"
                 ? `Aula P-${item.code}`
-                : (item.kind === "restroom-men" ? `Servicios Sanitarios Hombres (Piso ${floorNum})` : `Servicios Sanitarios Mujeres (Piso ${floorNum})`);
+                : (item.kind === "restroom-men" ? `Sanitarios Hombres (Piso ${floorNum})` : `Sanitarios Mujeres (Piso ${floorNum})`);
 
             const spaceNotes = item.kind === "room"
-                ? "Aula académica con doble puerta de acceso sobre el pasillo frontal exterior."
+                ? `Aula académica P-${item.code} en Piso ${floorNum} con doble puerta hacia el balcón exterior.`
                 : (item.kind === "restroom-men"
-                    ? `Sanitarios para hombres contiguos al Aula P-${floorNum}08.`
-                    : `Sanitarios para mujeres en el extremo este del Edificio P.`);
+                    ? `Sanitarios para hombres en el extremo Este del Piso ${floorNum}, contiguos al Aula P-${floorNum}08.`
+                    : `Sanitarios para mujeres en el extremo Este del Piso ${floorNum}, junto a las Escaleras Este.`);
 
             spaceRecords.push({
                 id: fullId,
@@ -887,7 +1503,7 @@ Replicates the real architectural building:
                 floor: floorNum,
                 type: item.kind === "room" ? "Aula" : "Sanitarios",
                 name: spaceName,
-                wing: item.kind === "room" ? "Pasillo Principal" : "Batería de Sanitarios",
+                wing: item.kind === "room" ? "Pasillo Principal" : "Ala Este (Sanitarios)",
                 doors: item.kind === "room" ? 2 : 1,
                 area: item.kind === "room" ? "52.8 m²" : "44.8 m²",
                 x: cx,
@@ -901,16 +1517,25 @@ Replicates the real architectural building:
             });
         });
 
-        addStairwell(floorGroup, floorNum, "ST-W1", "ST-W1", -36, -3.7, "Oeste Posterior", 1);
-        addStairwell(floorGroup, floorNum, "ST-W2", "ST-W2", -36, 2.2, "Oeste Frontal", -1);
-        addStairwell(floorGroup, floorNum, "ST-E1", "ST-E1", 36, -3.7, "Este Posterior", -1);
-        addStairwell(floorGroup, floorNum, "ST-E2", "ST-E2", 36, 2.2, "Este Frontal", 1);
+        // Single unified zig-zag stairwell per wing (on Floor 3, the West stair climbing to Floor 4 is narrower)
+        addStairwell(
+            floorGroup,
+            floorNum,
+            "ST-W",
+            floorNum === 3 ? "Esc. Oeste (A Anexo)" : "Esc. Oeste",
+            -36,
+            -1.4,
+            "Núcleo Oeste",
+            true,
+            floorNum === 3
+        );
+        addStairwell(floorGroup, floorNum, "ST-E", "Esc. Este", 36, -1.4, "Núcleo Este", floorNum < 3, false);
 
         scene.add(floorGroup);
         floorGroups.push({ floorNum, group: floorGroup });
     }
 
-    // Wayfinding Dropdowns
+    // Populate Wayfinding Dropdowns
     function populateSelectors() {
         const startSel = document.getElementById("p-select-start");
         const endSel = document.getElementById("p-select-end");
@@ -928,7 +1553,7 @@ Replicates the real architectural building:
         entrances.forEach(r => {
             const opt = document.createElement("option");
             opt.value = r.id;
-            opt.textContent = r.name;
+            opt.textContent = `🚪 ${r.name}`;
             startSel.appendChild(opt);
         });
         destinations.forEach(r => {
@@ -950,12 +1575,13 @@ Replicates the real architectural building:
         endSel.value = state.endId;
     }
 
-    // Dijkstra Wayfinding Engine
+    // Wayfinding Engine with Zig-Zag Stair Path & Internal Annex P4->P5 Access
     function computeRoute(startId, endId) {
         const startRec = spaceRecords.find(r => r.id === startId);
         const endRec = spaceRecords.find(r => r.id === endId);
         if (!startRec || !endRec || startId === endId) {
             state.activePath = null;
+            state.activeStepIdx = null;
             renderRoute3D();
             renderDirectionsUI();
             return;
@@ -964,70 +1590,251 @@ Replicates the real architectural building:
         const hallZ = 3.5;
         const pts = [];
         const steps = [];
-        let stairChoice = null;
+        let stairChoiceCode = null;
         let totalDist = 0;
 
         const startEntryX = startRec.type === "Acceso" ? startRec.x : startRec.doorX;
         const endEntryX = endRec.doorX;
 
         if (startRec.floor === endRec.floor) {
+            const flHallZ = startRec.floor === 4 ? 3.05 : hallZ;
             pts.push({ floor: startRec.floor, x: startRec.x, yOffset: 0.45, z: startRec.type === "Acceso" ? 4.8 : startRec.z });
-            pts.push({ floor: startRec.floor, x: startEntryX, yOffset: 0.45, z: hallZ });
-            pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: hallZ });
+            pts.push({ floor: startRec.floor, x: startEntryX, yOffset: 0.45, z: flHallZ });
+            pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: flHallZ });
             pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
-            totalDist = Math.abs(endEntryX - startEntryX) + 4;
+            const walkMeters = Math.round(Math.abs(endEntryX - startEntryX));
+            totalDist = walkMeters + 4;
 
-            const dir = endEntryX > startEntryX ? "hacia el Este" : "hacia el Oeste";
-            steps.push(`Partiendo de <strong>${startRec.name}</strong>.`);
-            steps.push(`Camina <strong>${dir}</strong> por el pasillo exterior del Piso ${startRec.floor} (~${Math.round(Math.abs(endEntryX - startEntryX))}m).`);
-            steps.push(`Llegada a <strong>${endRec.name}</strong>.`);
+            const dir = endEntryX > startEntryX ? "hacia el Este (derecha)" : "hacia el Oeste (izquierda)";
+            steps.push({
+                icon: "🟢",
+                title: `Inicia en ${startRec.name}`,
+                detail: `Ubícate en el Piso ${startRec.floor}`,
+                floor: startRec.floor,
+                focusX: startRec.x,
+                focusZ: flHallZ
+            });
+            steps.push({
+                icon: "🚶",
+                title: `Avanza ${dir}`,
+                detail: `Camina ~${walkMeters}m por el pasillo exterior del Piso ${startRec.floor}`,
+                floor: startRec.floor,
+                focusX: (startEntryX + endEntryX) / 2,
+                focusZ: flHallZ
+            });
+            steps.push({
+                icon: "🔵",
+                title: `Llegaste a ${endRec.name}`,
+                detail: `${endRec.wing} · Piso ${endRec.floor}`,
+                floor: endRec.floor,
+                focusX: endRec.x,
+                focusZ: endRec.z
+            });
         } else {
             const mustUseWest = startRec.floor >= 4 || endRec.floor >= 4;
             const westCost = Math.abs(startEntryX - (-36)) + Math.abs(endEntryX - (-36));
             const eastCost = Math.abs(startEntryX - 36) + Math.abs(endEntryX - 36);
             const useWest = mustUseWest ? true : (westCost <= eastCost);
             const stairX = useWest ? -36 : 36;
-            const stairCode = useWest ? "ST-W2 (Oeste)" : "ST-E2 (Este)";
-            stairChoice = stairCode;
+            const stairName = useWest ? "Escaleras Oeste" : "Escaleras Este";
+            stairChoiceCode = useWest ? "ST-W" : "ST-E";
 
-            totalDist = (useWest ? westCost : eastCost) + Math.abs(endRec.floor - startRec.floor) * 4.5 + 4;
+            const innerSign = useWest ? 1 : -1;
+            const annexDoorX = -20.9;
+            const annexInternalStairX = -30.5;
 
-            pts.push({ floor: startRec.floor, x: startRec.x, yOffset: 0.45, z: startRec.type === "Acceso" ? 4.8 : startRec.z });
-            pts.push({ floor: startRec.floor, x: startEntryX, yOffset: 0.45, z: hallZ });
-            pts.push({ floor: startRec.floor, x: stairX, yOffset: 0.45, z: hallZ });
-            pts.push({ floor: startRec.floor, x: stairX, yOffset: 0.5, z: 2.2 });
+            totalDist = (useWest ? westCost : eastCost) + Math.abs(endRec.floor - startRec.floor) * 6.5 + 4;
 
-            const stepDir = endRec.floor > startRec.floor ? 1 : -1;
-            for (let f = startRec.floor + stepDir; f !== endRec.floor + stepDir; f += stepDir) {
-                pts.push({ floor: f, x: stairX, yOffset: 0.5, z: 2.2 });
+            // 1. Starting point -> exterior stairwell North entrance (or internal annex stair if starting on Floor 5)
+            const extStartFloor = Math.min(startRec.floor, 4);
+            const extEndFloor = Math.min(endRec.floor, 4);
+
+            if (startRec.floor === 5) {
+                // Start inside P5 Observatory -> descend internal annex stair to P4 -> exit P4 annex door
+                pts.push({ floor: 5, x: startRec.x, yOffset: 0.45, z: startRec.z });
+                pts.push({ floor: 5, x: annexInternalStairX, yOffset: 0.35, z: -4.2 });
+                pts.push({ floor: 4, x: annexInternalStairX, yOffset: 0.35, z: 0.2 });
+                pts.push({ floor: 4, x: annexDoorX, yOffset: 0.45, z: 0.2 });
+                pts.push({ floor: 4, x: annexDoorX, yOffset: 0.45, z: 3.05 });
+                if (endRec.floor < 4) {
+                    pts.push({ floor: 4, x: stairX, yOffset: 0.45, z: 3.05 });
+                }
+            } else {
+                const startHallZ = startRec.floor === 4 ? 3.05 : hallZ;
+                pts.push({ floor: startRec.floor, x: startRec.x, yOffset: 0.45, z: startRec.type === "Acceso" ? 4.8 : startRec.z });
+                pts.push({ floor: startRec.floor, x: startEntryX, yOffset: 0.45, z: startHallZ });
+                if (extStartFloor !== extEndFloor) {
+                    pts.push({ floor: startRec.floor, x: stairX, yOffset: 0.45, z: startHallZ });
+                }
             }
 
-            pts.push({ floor: endRec.floor, x: stairX, yOffset: 0.45, z: hallZ });
-            pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: hallZ });
-            pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
+            // 2. Traverse exterior North-to-South zig-zag stairs between extStartFloor and extEndFloor (P1..P4)
+            if (extEndFloor > extStartFloor) {
+                for (let f = extStartFloor; f < extEndFloor; f++) {
+                    const isNarrowFlight = (f === 3);
+                    const laneOffset = isNarrowFlight ? 0.72 : 1.08;
+                    const xF1 = stairX + innerSign * laneOffset;
+                    const xF2 = stairX - innerSign * laneOffset;
+                    const zNorth = 1.25;
+                    const zSouthLand = isNarrowFlight ? -3.65 : -4.25;
+
+                    // Start at North entrance of Tramo 1
+                    pts.push({ floor: f, yFrac: 0, x: xF1, yOffset: 0.35, z: zNorth });
+                    // Climb Tramo 1 from North to South mid-floor landing
+                    pts.push({ floor: f, yFrac: 0.5, x: xF1, yOffset: 0.3, z: zSouthLand });
+                    // Turn 180° on South mid-floor landing
+                    pts.push({ floor: f, yFrac: 0.5, x: xF2, yOffset: 0.3, z: zSouthLand });
+                    // Climb Tramo 2 from South back to North upper floor hallway
+                    pts.push({ floor: f + 1, yFrac: 0, x: xF2, yOffset: 0.35, z: zNorth });
+                }
+            } else if (extEndFloor < extStartFloor) {
+                for (let f = extStartFloor; f > extEndFloor; f--) {
+                    const isNarrowFlight = (f - 1 === 3);
+                    const laneOffset = isNarrowFlight ? 0.72 : 1.08;
+                    const xF1 = stairX + innerSign * laneOffset;
+                    const xF2 = stairX - innerSign * laneOffset;
+                    const zNorth = 1.25;
+                    const zSouthLand = isNarrowFlight ? -3.65 : -4.25;
+
+                    // Enter top of Tramo 2 at North hallway
+                    pts.push({ floor: f, yFrac: 0, x: xF2, yOffset: 0.35, z: zNorth });
+                    // Descend Tramo 2 from North to South mid-floor landing
+                    pts.push({ floor: f - 1, yFrac: 0.5, x: xF2, yOffset: 0.3, z: zSouthLand });
+                    // Turn 180° on South mid-floor landing
+                    pts.push({ floor: f - 1, yFrac: 0.5, x: xF1, yOffset: 0.3, z: zSouthLand });
+                    // Descend Tramo 1 from South back to North lower floor hallway
+                    pts.push({ floor: f - 1, yFrac: 0, x: xF1, yOffset: 0.35, z: zNorth });
+                }
+            }
+
+            // 3. Arrival at destination floor (if destination is Floor 5, enter P4 Annex and climb internal stair)
+            if (endRec.floor === 5) {
+                if (startRec.floor < 4) {
+                    pts.push({ floor: 4, x: stairX, yOffset: 0.45, z: 3.05 });
+                }
+                pts.push({ floor: 4, x: annexDoorX, yOffset: 0.45, z: 3.05 });
+                pts.push({ floor: 4, x: annexDoorX, yOffset: 0.45, z: 0.2 });
+                pts.push({ floor: 4, x: annexInternalStairX, yOffset: 0.35, z: 0.2 });
+                pts.push({ floor: 5, x: annexInternalStairX, yOffset: 0.35, z: -4.2 });
+                pts.push({ floor: 5, x: endRec.x, yOffset: 0.45, z: endRec.z });
+            } else {
+                const endHallZ = endRec.floor === 4 ? 3.05 : hallZ;
+                if (extStartFloor !== extEndFloor) {
+                    pts.push({ floor: endRec.floor, x: stairX, yOffset: 0.45, z: endHallZ });
+                }
+                pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: endHallZ });
+                pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
+            }
 
             const floorDiff = Math.abs(endRec.floor - startRec.floor);
             const climbWord = endRec.floor > startRec.floor ? "Sube" : "Baja";
-            const walkDir = endEntryX > stairX ? "Este" : "Oeste";
+            const walkDir = endEntryX > stairX ? "el Este (derecha)" : "el Oeste (izquierda)";
+            const walkDist = Math.round(Math.abs(endEntryX - stairX));
 
-            steps.push(`Partiendo de <strong>${startRec.name}</strong>.`);
-            steps.push(`Dirígete a las <strong>Escaleras ${stairCode}</strong>.`);
-            steps.push(`${climbWord} <strong>${floorDiff} piso${floorDiff > 1 ? "s" : ""}</strong> hasta llegar al <strong>Piso ${endRec.floor}</strong>.`);
-            steps.push(`Sal al pasillo exterior y avanza hacia el <strong>${walkDir}</strong> (~${Math.round(Math.abs(endEntryX - stairX))}m).`);
-            steps.push(`Llegada a <strong>${endRec.name}</strong>.`);
+            steps.push({
+                icon: "🟢",
+                title: `Inicia en ${startRec.name}`,
+                detail: `Punto de partida en Piso ${startRec.floor}`,
+                floor: startRec.floor,
+                focusX: startRec.x,
+                focusZ: hallZ
+            });
+            steps.push({
+                icon: "🪜",
+                title: `Ve a las ${stairName}`,
+                detail: mustUseWest ? "Núcleo Oeste que sube hacia el Anexo Superior" : `En el extremo ${useWest ? "Oeste" : "Este"} del Piso ${startRec.floor}`,
+                floor: startRec.floor,
+                focusX: stairX,
+                focusZ: -1.4
+            });
+            if (endRec.floor === 5) {
+                steps.push({
+                    icon: "⬆️",
+                    title: "Sube al Piso 4 (Terraza del Anexo)",
+                    detail: "Del 3er al 4to piso usa el tramo de escalera más estrecho",
+                    floor: 4,
+                    focusX: stairX,
+                    focusZ: -1.4
+                });
+                steps.push({
+                    icon: "🔭",
+                    title: "Entra al Anexo P401 y sube al Observatorio (P5)",
+                    detail: "El 5to piso no tiene pasillo exterior; se sube por dentro del anexo",
+                    floor: 5,
+                    focusX: endRec.x,
+                    focusZ: endRec.z
+                });
+            } else {
+                steps.push({
+                    icon: endRec.floor > startRec.floor ? "⬆️" : "⬇️",
+                    title: `${climbWord} ${floorDiff} nivel${floorDiff > 1 ? "es" : ""} en zig-zag al Piso ${endRec.floor}`,
+                    detail: endRec.floor === 4
+                        ? "Del Piso 3 al Piso 4 sube por la escalera más estrecha hacia el Anexo"
+                        : `Por ${stairName} con descanso intermedio (Piso ${startRec.floor} → Piso ${endRec.floor})`,
+                    floor: endRec.floor,
+                    focusX: stairX,
+                    focusZ: -1.4
+                });
+                if (walkDist > 2) {
+                    steps.push({
+                        icon: "🚶",
+                        title: `Camina ~${walkDist}m hacia ${walkDir}`,
+                        detail: `Por el pasillo del Piso ${endRec.floor}`,
+                        floor: endRec.floor,
+                        focusX: (stairX + endEntryX) / 2,
+                        focusZ: endRec.floor === 4 ? 3.05 : hallZ
+                    });
+                }
+                steps.push({
+                    icon: "🔵",
+                    title: `Llegaste a ${endRec.name}`,
+                    detail: `${endRec.wing} · Piso ${endRec.floor}`,
+                    floor: endRec.floor,
+                    focusX: endRec.x,
+                    focusZ: endRec.z
+                });
+            }
         }
 
         state.activePath = {
             points: pts,
-            stairCode: stairChoice,
+            stairCode: stairChoiceCode,
             startRec,
             endRec,
             distanceM: Math.round(totalDist),
-            estSec: Math.round(totalDist / 1.1),
+            estSec: Math.round(totalDist / 1.15),
             steps
         };
+        state.activeStepIdx = null;
         renderRoute3D();
         renderDirectionsUI();
+    }
+
+    function focusRouteStep(stepIdx) {
+        if (!state.activePath || !state.activePath.steps[stepIdx]) return;
+        state.activeStepIdx = stepIdx;
+        const step = state.activePath.steps[stepIdx];
+
+        // Highlight active step card
+        document.querySelectorAll(".p-route-step-card").forEach((el, idx) => {
+            if (idx === stepIdx) {
+                el.classList.add("ring-2", "ring-sky-600", "bg-sky-50/90", "border-sky-300");
+                el.classList.remove("bg-white", "border-slate-200");
+            } else {
+                el.classList.remove("ring-2", "ring-sky-600", "bg-sky-50/90", "border-sky-300");
+                el.classList.add("bg-white", "border-slate-200");
+            }
+        });
+
+        // Smoothly fly camera to focus on that waypoint
+        const targetZoom = getResponsiveDefaultZoom(46);
+        animateCameraTo({
+            panX: step.focusX * 0.65,
+            panZ: step.focusZ * 0.4,
+            zoom: targetZoom,
+            pitchDeg: state.isTopDown2D ? 84 : 46,
+            explode: state.selectedFloor === "all" ? 4.4 : state.explode
+        }, 420);
     }
 
     function renderRoute3D() {
@@ -1043,11 +1850,9 @@ Replicates the real architectural building:
         }
 
         const spacing = state.explode;
-        const activeFloor = state.selectedFloor === "all" ? null : Number(state.selectedFloor);
-        const midY = activeFloor ? (activeFloor - 1) * spacing : 2 * spacing;
 
         const vectors = state.activePath.points.map(p => {
-            const y = (p.floor - 1) * spacing - midY + p.yOffset;
+            const y = ((p.floor - 1) + (p.yFrac || 0)) * spacing + (p.yOffset || 0);
             return new THREE.Vector3(p.x, y, p.z);
         });
 
@@ -1057,22 +1862,22 @@ Replicates the real architectural building:
                 const b = vectors[i + 1];
                 const dist = a.distanceTo(b);
                 if (dist < 0.05) continue;
-                const cylGeo = new THREE.CylinderGeometry(0.18, 0.18, dist, 10);
+                const cylGeo = new THREE.CylinderGeometry(0.22, 0.22, dist, 12);
                 const cyl = new THREE.Mesh(cylGeo, MAT.routeLine);
                 cyl.position.copy(a).add(b).multiplyScalar(0.5);
                 cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
                 routeGroup.add(cyl);
 
-                const joint = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), MAT.routeLine);
+                const joint = new THREE.Mesh(new THREE.SphereGeometry(0.26, 10, 10), MAT.routeLine);
                 joint.position.copy(a);
                 routeGroup.add(joint);
             }
 
-            const startMarker = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 16), MAT.startPin);
+            const startMarker = new THREE.Mesh(new THREE.SphereGeometry(0.6, 16, 16), MAT.startPin);
             startMarker.position.copy(vectors[0]).add(new THREE.Vector3(0, 0.4, 0));
             routeGroup.add(startMarker);
 
-            const endMarker = new THREE.Mesh(new THREE.ConeGeometry(0.6, 1.4, 16), MAT.endPin);
+            const endMarker = new THREE.Mesh(new THREE.ConeGeometry(0.65, 1.5, 16), MAT.endPin);
             endMarker.rotation.x = Math.PI;
             endMarker.position.copy(vectors[vectors.length - 1]).add(new THREE.Vector3(0, 1.0, 0));
             routeGroup.add(endMarker);
@@ -1082,39 +1887,89 @@ Replicates the real architectural building:
     function renderDirectionsUI() {
         const sumEl = document.getElementById("p-route-summary");
         const stepsEl = document.getElementById("p-route-steps");
+        const mobileTitle = document.getElementById("p-mobile-sheet-title");
+        const mobileSub = document.getElementById("p-mobile-sheet-subtitle");
         if (!sumEl || !stepsEl) return;
 
         if (!state.activePath) {
-            sumEl.textContent = "Selecciona origen y destino para ver ruta 3D.";
+            sumEl.textContent = "Toca cualquier aula en el mapa o elige un destino para trazar la ruta 3D.";
             stepsEl.innerHTML = "";
+            if (mobileTitle) mobileTitle.textContent = "Explorar Edificio P • Copérnico";
+            if (mobileSub) mobileSub.textContent = "Toca un aula o usa los botones rápidos arriba";
             return;
         }
 
         const { distanceM, estSec, steps, startRec, endRec } = state.activePath;
         const mins = Math.floor(estSec / 60);
         const secs = estSec % 60;
-        const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+        const timeStr = mins > 0 ? `${mins} min ${secs} s` : `${secs} seg`;
+
+        if (mobileTitle) {
+            mobileTitle.textContent = `Hacia ${endRec.name}`;
+        }
+        if (mobileSub) {
+            mobileSub.textContent = `Piso ${startRec.floor} → Piso ${endRec.floor} · ~${distanceM}m (~${timeStr})`;
+        }
+
         sumEl.innerHTML = `
-            <div class="flex items-center justify-between text-brand-700 font-bold">
-                <span>Piso ${startRec.floor} &rarr; Piso ${endRec.floor}</span>
-                <span class="text-slate-500 font-semibold text-[10px]">~${distanceM}m &middot; ~${timeStr}</span>
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5 text-sky-900 font-extrabold">
+                    <span>Piso ${startRec.floor} &rarr; Piso ${endRec.floor}</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">~${distanceM}m</span>
+                </div>
+                <span class="text-slate-600 font-semibold text-[11px]">⏱ ~${timeStr} a pie</span>
             </div>
         `;
-        stepsEl.innerHTML = steps.map(s => `<li>${s}</li>`).join("");
+
+        stepsEl.innerHTML = steps.map((s, idx) => `
+            <li class="p-route-step-card shrink-0 w-60 md:w-full p-2.5 rounded-xl border border-slate-200 bg-white hover:border-sky-400 transition-all cursor-pointer select-none flex items-start gap-2 shadow-2xs" data-step-idx="${idx}">
+                <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-800 font-extrabold text-[11px] flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
+                <div class="min-w-0 flex-1">
+                    <div class="font-bold text-slate-900 text-xs leading-snug flex items-center gap-1">
+                        <span>${s.icon}</span>
+                        <span class="truncate">${s.title}</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500 leading-tight mt-0.5">${s.detail}</div>
+                </div>
+            </li>
+        `).join("");
+
+        stepsEl.querySelectorAll(".p-route-step-card").forEach(card => {
+            card.addEventListener("click", () => {
+                const idx = Number(card.getAttribute("data-step-idx"));
+                focusRouteStep(idx);
+            });
+        });
     }
 
-    // Floor Elevation & Position Updates
+    // Floor Elevation & Position Updates (Floor 1 always sits on the ground y = 0)
     function updateFloorPositions() {
         const spacing = state.explode;
         const activeFloor = state.selectedFloor === "all" ? null : Number(state.selectedFloor);
-        const midY = activeFloor ? (activeFloor - 1) * spacing : 2 * spacing;
 
         floorGroups.forEach(({ floorNum, group }) => {
-            group.position.y = (floorNum - 1) * spacing - midY;
+            group.position.y = (floorNum - 1) * spacing;
             group.visible = activeFloor === null ? true : (floorNum === activeFloor);
         });
 
+        // Dynamically scale zig-zag stair flights so Tramo 2 always reaches the exact upper floor slab height
+        const stairScaleY = spacing / BASE_STAIR_H;
+        stairFlightGroups.forEach(fg => {
+            fg.scale.y = stairScaleY;
+        });
+
         renderRoute3D();
+        updateCamera();
+    }
+
+    function getCameraTargetY() {
+        const spacing = state.explode;
+        const activeFloor = state.selectedFloor === "all" ? null : Number(state.selectedFloor);
+        if (activeFloor !== null) {
+            return (activeFloor - 1) * spacing + 1.2;
+        }
+        // Vertical center of the building above ground
+        return 1.6 * spacing;
     }
 
     // Camera Spherical Coordinates
@@ -1123,12 +1978,13 @@ Replicates the real architectural building:
         const phi = THREE.MathUtils.degToRad(90 - state.pitchDeg);
         const theta = THREE.MathUtils.degToRad(state.bearingDeg);
         const r = state.zoom;
+        const targetY = getCameraTargetY();
 
-        const clampedPhi = Math.max(0.06, Math.min(Math.PI / 2 - 0.03, phi));
+        const clampedPhi = Math.max(0.05, Math.min(Math.PI / 2 - 0.03, phi));
         camera.position.x = state.panX + r * Math.sin(clampedPhi) * Math.sin(theta);
-        camera.position.y = r * Math.cos(clampedPhi);
+        camera.position.y = targetY + r * Math.cos(clampedPhi);
         camera.position.z = state.panZ + r * Math.sin(clampedPhi) * Math.cos(theta);
-        camera.lookAt(state.panX, 0, state.panZ);
+        camera.lookAt(state.panX, targetY, state.panZ);
     }
 
     // Selection & Highlight Updates
@@ -1140,6 +1996,7 @@ Replicates the real architectural building:
             const matchesSearch = q.length > 0 && (
                 rec.id.toLowerCase().includes(q) ||
                 rec.name.toLowerCase().includes(q) ||
+                rec.code.toLowerCase().includes(q) ||
                 rec.type.toLowerCase().includes(q) ||
                 rec.wing.toLowerCase().includes(q)
             );
@@ -1157,7 +2014,32 @@ Replicates the real architectural building:
         });
     }
 
-    function selectSpace(spaceId) {
+    function setFloorIsolation(floorValue, options) {
+        state.selectedFloor = String(floorValue);
+        document.querySelectorAll(".p-floor-btn").forEach(b => {
+            const active = b.dataset.floor === state.selectedFloor;
+            b.className = active
+                ? "p-floor-btn w-9 h-8 text-xs font-extrabold rounded-xl border border-slate-900 bg-slate-900 text-white shadow-xs transition-all active:scale-95 cursor-pointer"
+                : "p-floor-btn w-9 h-8 text-xs font-bold rounded-xl border border-transparent bg-transparent text-slate-700 hover:bg-slate-100 transition-all active:scale-95 cursor-pointer";
+        });
+        const badge = document.getElementById("p-floor-badge");
+        if (badge) {
+            badge.textContent = state.selectedFloor === "all" ? "Todos (5 Pisos)" : `Piso ${state.selectedFloor} Aislado`;
+        }
+        updateFloorPositions();
+
+        if (options && options.animateCamera) {
+            const isHighTower = state.selectedFloor === "4" || state.selectedFloor === "5";
+            animateCameraTo({
+                panX: isHighTower ? -22 : 0,
+                panZ: 0,
+                zoom: getResponsiveDefaultZoom(isHighTower ? 45 : (state.selectedFloor === "all" ? 74 : 64))
+            }, 380);
+        }
+    }
+
+    function selectSpace(spaceId, options) {
+        const opts = options || {};
         state.selectedId = spaceId;
         const rec = spaceRecords.find(r => r.id === spaceId);
         const inspector = document.getElementById("p-inspector-content");
@@ -1178,32 +2060,49 @@ Replicates the real architectural building:
             state.endId = rec.id;
             const endSel = document.getElementById("p-select-end");
             if (endSel) endSel.value = rec.id;
+
+            // Smart Entrance Selection: if going to Floor 4 or 5 (West Tower), or West rooms X < -5, default to West Entrance if user was on an entrance
+            if (state.startId === "F1-ENT-W" || state.startId === "F1-ENT-E") {
+                const preferWest = rec.floor >= 4 || rec.x <= 0;
+                state.startId = preferWest ? "F1-ENT-W" : "F1-ENT-E";
+                const startSel = document.getElementById("p-select-start");
+                if (startSel) startSel.value = state.startId;
+            }
             computeRoute(state.startId, state.endId);
         }
 
         if (inspector) {
             inspector.innerHTML = `
-                <div class="flex items-center justify-between pb-1 border-b border-slate-100">
-                    <span class="font-extrabold text-slate-900">${rec.name}</span>
-                    <span class="px-2 py-0.5 text-[10px] font-bold bg-pink-100 text-pink-900 rounded-full">Piso ${rec.floor}</span>
+                <div class="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-100">
+                    <span class="font-extrabold text-slate-900 text-xs">${rec.name}</span>
+                    <span class="px-2 py-0.5 text-[10px] font-bold bg-pink-100 text-pink-900 rounded-full shrink-0">Piso ${rec.floor}</span>
                 </div>
                 <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] pt-1">
-                    <div><span class="text-slate-400 font-semibold">Tipo:</span> <span class="font-bold text-slate-700">${rec.type}</span></div>
-                    <div><span class="text-slate-400 font-semibold">Zona:</span> <span class="font-medium text-slate-700">${rec.wing}</span></div>
-                    <div><span class="text-slate-400 font-semibold">Puertas:</span> <span class="font-bold text-slate-700">${rec.doors}</span></div>
-                    <div><span class="text-slate-400 font-semibold">Área:</span> <span class="font-medium text-slate-700">${rec.area}</span></div>
+                    <div><span class="text-slate-400 font-semibold">Categoría:</span> <span class="font-bold text-slate-700">${rec.type}</span></div>
+                    <div><span class="text-slate-400 font-semibold">Sector:</span> <span class="font-medium text-slate-700">${rec.wing}</span></div>
+                    <div><span class="text-slate-400 font-semibold">Accesos:</span> <span class="font-bold text-slate-700">${rec.doors} puerta${rec.doors > 1 ? "s" : ""}</span></div>
+                    <div><span class="text-slate-400 font-semibold">Superficie:</span> <span class="font-medium text-slate-700">${rec.area}</span></div>
                 </div>
                 <p class="text-[11px] text-slate-600 pt-1 leading-snug">${rec.notes}</p>
                 <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100 mt-2">
-                    <button type="button" onclick="window.setBuildingPRouteOrigin('${rec.id}')" class="flex-1 py-1 px-2 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-[10px] transition-colors">
-                        Fijar Origen
+                    <button type="button" onclick="window.setBuildingPRouteOrigin('${rec.id}')" class="flex-1 py-1.5 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-[11px] transition-colors cursor-pointer">
+                        🟢 Estoy Aquí (Origen)
                     </button>
-                    <button type="button" onclick="window.setBuildingPRouteDest('${rec.id}')" class="flex-1 py-1 px-2 rounded-md bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold text-[10px] transition-colors">
-                        Fijar Destino
+                    <button type="button" onclick="window.setBuildingPRouteDest('${rec.id}')" class="flex-1 py-1.5 px-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-[11px] transition-colors shadow-2xs cursor-pointer">
+                        🔵 Ir Aquí (Destino)
                     </button>
                 </div>
             `;
         }
+
+        if (opts.focusCamera) {
+            animateCameraTo({
+                panX: rec.x * 0.55,
+                panZ: 0,
+                zoom: getResponsiveDefaultZoom(56)
+            }, 400);
+        }
+
         updateSelectionVisuals();
     }
 
@@ -1220,10 +2119,10 @@ Replicates the real architectural building:
         const sel = document.getElementById("p-select-end");
         if (sel) sel.value = id;
         computeRoute(state.startId, state.endId);
-        selectSpace(id);
+        selectSpace(id, { focusCamera: true });
     };
 
-    // 3D Projected Floating Labels Positioning
+    // 3D Projected Floating Labels with Mobile Collision & Priority Filtering
     function updateProjectedLabels() {
         const labelsLayer = document.getElementById("p-labels-layer");
         const viewport = document.getElementById("p-viewport");
@@ -1237,6 +2136,7 @@ Replicates the real architectural building:
 
         const width = viewport.clientWidth;
         const height = viewport.clientHeight;
+        const isMobileScreen = width < 640;
         const activeFloor = state.selectedFloor === "all" ? null : Number(state.selectedFloor);
         const q = state.searchQuery.trim().toLowerCase();
         const tempV = new THREE.Vector3();
@@ -1245,41 +2145,120 @@ Replicates the real architectural building:
         const routeEndFloor = state.activePath ? state.activePath.endRec.floor : null;
         const routeStairCode = state.activePath ? state.activePath.stairCode : null;
 
-        spaceRecords.forEach(rec => {
+        // Project orientation landmarks around the ground plane
+        orientationLandmarks.forEach(lm => {
+            if (isMobileScreen && state.zoom > 88) {
+                lm.el.style.display = "none";
+                return;
+            }
+            tempV.copy(lm.pos).project(camera);
+            if (tempV.z > 1) {
+                lm.el.style.display = "none";
+            } else {
+                const sx = (tempV.x * 0.5 + 0.5) * width;
+                const sy = (-(tempV.y * 0.5) + 0.5) * height;
+                if (sx < 30 || sx > width - 30 || sy < 50 || sy > height - 40) {
+                    lm.el.style.display = "none";
+                } else {
+                    lm.el.style.display = "block";
+                    lm.el.style.left = `${sx}px`;
+                    lm.el.style.top = `${sy}px`;
+                }
+            }
+        });
+
+        // Track placed label boxes on mobile to prevent unreadable overlapping label walls
+        const placedBoxes = [];
+
+        // Order records by priority so active/selected/dome labels always win over generic classrooms
+        const orderedRecords = [...spaceRecords].sort((a, b) => {
+            const prioA = (a.id === state.selectedId || a.id === state.endId || a.id === state.startId) ? 3 : (a.floor >= 4 ? 2 : 1);
+            const prioB = (b.id === state.selectedId || b.id === state.endId || b.id === state.startId) ? 3 : (b.floor >= 4 ? 2 : 1);
+            return prioB - prioA;
+        });
+
+        orderedRecords.forEach(rec => {
             const floorEntry = floorGroups[rec.floor - 1];
             if (!floorEntry || !rec.labelEl) return;
             const floorGroup = floorEntry.group;
             let visibleOnFloor = false;
 
+            const isHighPriority =
+                rec.id === state.selectedId ||
+                rec.id === state.endId ||
+                rec.id === state.startId ||
+                (q.length > 0 && (rec.name.toLowerCase().includes(q) || rec.code.toLowerCase().includes(q)));
+
             if (activeFloor !== null) {
+                // Single floor isolated: show rooms & unified stairwell on that floor
                 visibleOnFloor = rec.floor === activeFloor;
             } else if (state.mode === "visitor" && state.activePath) {
-                visibleOnFloor =
-                    rec.floor === routeEndFloor ||
-                    rec.id === state.startId ||
-                    (rec.floor === routeStartFloor && rec.code === routeStairCode) ||
-                    (q.length > 0 && rec.name.toLowerCase().includes(q));
+                if (isMobileScreen && state.zoom > 68) {
+                    // On mobile when zoomed out in All-Floors mode, show key route milestones + P4/P5
+                    visibleOnFloor =
+                        isHighPriority ||
+                        rec.floor >= 4 ||
+                        (rec.floor === routeStartFloor && rec.code === routeStairCode) ||
+                        (rec.floor === routeEndFloor && rec.code === routeStairCode);
+                } else {
+                    visibleOnFloor =
+                        isHighPriority ||
+                        rec.floor === routeEndFloor ||
+                        rec.floor >= 4 ||
+                        (rec.floor === routeStartFloor && rec.code === routeStairCode);
+                }
             } else {
                 visibleOnFloor =
+                    isHighPriority ||
                     rec.floor === 3 ||
-                    rec.floor >= 4 ||
-                    rec.id === state.selectedId ||
-                    (q.length > 0 && rec.name.toLowerCase().includes(q));
+                    rec.floor >= 4;
             }
 
             if (!visibleOnFloor || !floorGroup.visible) {
                 rec.labelEl.style.display = "none";
-            } else {
-                tempV.copy(rec.localPos).add(floorGroup.position);
-                tempV.project(camera);
-                if (tempV.z > 1) {
-                    rec.labelEl.style.display = "none";
-                } else {
-                    rec.labelEl.style.display = "block";
-                    rec.labelEl.style.left = `${(tempV.x * 0.5 + 0.5) * width}px`;
-                    rec.labelEl.style.top = `${(-(tempV.y * 0.5) + 0.5) * height}px`;
-                }
+                return;
             }
+
+            tempV.copy(rec.localPos).add(floorGroup.position);
+            tempV.project(camera);
+            if (tempV.z > 1) {
+                rec.labelEl.style.display = "none";
+                return;
+            }
+
+            const sx = (tempV.x * 0.5 + 0.5) * width;
+            const sy = (-(tempV.y * 0.5) + 0.5) * height;
+
+            // Keep away from edges
+            if (sx < 16 || sx > width - 16 || sy < 48 || sy > height - 20) {
+                rec.labelEl.style.display = "none";
+                return;
+            }
+
+            // Mobile collision check for non-priority labels so labels never stack on top of each other
+            if (isMobileScreen && !isHighPriority) {
+                const boxW = 48;
+                const boxH = 22;
+                let collides = false;
+                for (let i = 0; i < placedBoxes.length; i++) {
+                    const b = placedBoxes[i];
+                    if (Math.abs(sx - b.x) < boxW && Math.abs(sy - b.y) < boxH) {
+                        collides = true;
+                        break;
+                    }
+                }
+                if (collides) {
+                    rec.labelEl.style.display = "none";
+                    return;
+                }
+                placedBoxes.push({ x: sx, y: sy });
+            } else if (isHighPriority) {
+                placedBoxes.push({ x: sx, y: sy });
+            }
+
+            rec.labelEl.style.display = "block";
+            rec.labelEl.style.left = `${sx}px`;
+            rec.labelEl.style.top = `${sy}px`;
         });
 
         // Floating Start & Destination Pins
@@ -1289,21 +2268,22 @@ Replicates the real architectural building:
             const eg = floorGroups[endRec.floor - 1]?.group;
 
             if (sg && sg.visible) {
-                tempV.set(startRec.x, 2.2, startRec.type === "Acceso" ? 4.8 : startRec.z).add(sg.position).project(camera);
+                tempV.set(startRec.x, 2.3, startRec.type === "Acceso" ? 4.8 : startRec.z).add(sg.position).project(camera);
                 startPinEl.style.display = tempV.z <= 1 ? "block" : "none";
                 startPinEl.style.left = `${(tempV.x * 0.5 + 0.5) * width}px`;
                 startPinEl.style.top = `${(-(tempV.y * 0.5) + 0.5) * height}px`;
+                startPinEl.textContent = `🟢 ORIGEN: ${startRec.code.replace("F1-ENT-W", "ENTRADA OESTE").replace("F1-ENT-E", "ENTRADA ESTE")}`;
             } else {
                 startPinEl.style.display = "none";
             }
 
             if (eg && eg.visible) {
-                const pinY = endRec.floor === 5 ? 5.6 : 2.6;
+                const pinY = endRec.floor === 5 ? 5.8 : 2.7;
                 tempV.set(endRec.x, pinY, endRec.z).add(eg.position).project(camera);
                 endPinEl.style.display = tempV.z <= 1 ? "block" : "none";
                 endPinEl.style.left = `${(tempV.x * 0.5 + 0.5) * width}px`;
                 endPinEl.style.top = `${(-(tempV.y * 0.5) + 0.5) * height}px`;
-                endPinEl.textContent = `DESTINO: ${endRec.code}`;
+                endPinEl.textContent = `🔵 DESTINO: ${endRec.code}`;
             } else {
                 endPinEl.style.display = "none";
             }
@@ -1313,7 +2293,66 @@ Replicates the real architectural building:
         }
     }
 
-    // Initialize Three.js Scene and Handlers
+    // Mobile Bottom Sheet Controller
+    function setMobileSheetState(newState) {
+        const sheet = document.getElementById("p-bottom-sheet");
+        const label = document.getElementById("p-btn-toggle-sheet-label");
+        const icon = document.getElementById("p-btn-toggle-sheet-icon");
+        if (!sheet) return;
+
+        sheet.setAttribute("data-sheet-state", newState);
+        if (label) {
+            label.textContent = newState === "peek" ? "Opciones" : (newState === "half" ? "Más" : "Mapa");
+        }
+        if (icon) {
+            icon.style.transform = newState === "expanded" ? "rotate(180deg)" : "rotate(0deg)";
+        }
+    }
+
+    function initMobileBottomSheetGestures() {
+        const handle = document.getElementById("p-sheet-drag-handle");
+        const btnToggle = document.getElementById("p-btn-toggle-sheet");
+        const sheet = document.getElementById("p-bottom-sheet");
+        if (!handle || !sheet) return;
+
+        if (btnToggle) {
+            btnToggle.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const curr = sheet.getAttribute("data-sheet-state") || "peek";
+                const next = curr === "peek" ? "half" : (curr === "half" ? "expanded" : "peek");
+                setMobileSheetState(next);
+            });
+        }
+
+        let dragStartY = 0;
+        let isSheetDragging = false;
+
+        handle.addEventListener("pointerdown", (e) => {
+            if (e.target.closest("#p-btn-toggle-sheet")) return;
+            isSheetDragging = true;
+            dragStartY = e.clientY;
+        });
+
+        window.addEventListener("pointerup", (e) => {
+            if (!isSheetDragging) return;
+            isSheetDragging = false;
+            const dy = e.clientY - dragStartY;
+            const curr = sheet.getAttribute("data-sheet-state") || "peek";
+
+            if (Math.abs(dy) < 10) {
+                // Tap on header toggles peek <-> half
+                setMobileSheetState(curr === "peek" ? "half" : "peek");
+            } else if (dy < -30) {
+                // Swiped up
+                setMobileSheetState(curr === "peek" ? "half" : "expanded");
+            } else if (dy > 30) {
+                // Swiped down
+                setMobileSheetState(curr === "expanded" ? "half" : "peek");
+            }
+        });
+    }
+
+    // Initialize Three.js Scene and Multi-Touch Controls
     function initThreeEngine() {
         if (isInitialized) return;
         const viewport = document.getElementById("p-viewport");
@@ -1331,7 +2370,7 @@ Replicates the real architectural building:
         const initH = Math.max(viewport.clientHeight || 540, 240);
 
         scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(38, initW / initH, 0.5, 450);
+        camera = new THREE.PerspectiveCamera(38, initW / initH, 0.5, 500);
 
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -1341,10 +2380,10 @@ Replicates the real architectural building:
         viewport.insertBefore(renderer.domElement, labelsLayer);
 
         // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.78);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
         scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.72);
         dirLight.position.set(40, 75, 48);
         dirLight.castShadow = true;
         dirLight.shadow.mapSize.width = 1024;
@@ -1355,8 +2394,8 @@ Replicates the real architectural building:
         fillLight.position.set(-45, 25, -35);
         scene.add(fillLight);
 
-        const groundGrid = new THREE.GridHelper(110, 36, 0x94a3b8, 0xcbd5e1);
-        groundGrid.position.y = -0.2;
+        const groundGrid = new THREE.GridHelper(115, 36, 0x94a3b8, 0xcbd5e1);
+        groundGrid.position.y = -0.13;
         scene.add(groundGrid);
 
         // Route Group
@@ -1366,7 +2405,7 @@ Replicates the real architectural building:
         // Pins
         startPinEl = document.createElement("div");
         startPinEl.className = "p-pin-badge p-pin-start";
-        startPinEl.textContent = "USTED ESTÁ AQUÍ";
+        startPinEl.textContent = "ORIGEN";
         labelsLayer.appendChild(startPinEl);
 
         endPinEl = document.createElement("div");
@@ -1374,61 +2413,110 @@ Replicates the real architectural building:
         endPinEl.textContent = "DESTINO";
         labelsLayer.appendChild(endPinEl);
 
-        // Build 5 Floors
+        // Build 5 Floors & Orientation Landmarks
         for (let f = 1; f <= 5; f++) {
             buildFloor(f);
         }
+        addOrientationLandmarks();
 
-        // Pointer & Orbit Interaction
-        let isDragging = false;
-        let dragButton = 0;
-        let startX = 0;
-        let startY = 0;
-        let movedDist = 0;
+        // ======================================================================
+        // MULTI-TOUCH (1-Finger Orbit, 2-Finger Pinch Zoom & 2-Finger Pan) + Mouse
+        // ======================================================================
+        const activePointers = new Map();
+        let prevPinchDist = 0;
+        let prevMidX = 0;
+        let prevMidY = 0;
+        let pointerDownPos = { x: 0, y: 0 };
+        let totalPointerMove = 0;
+        let mouseButton = 0;
 
         const raycaster = new THREE.Raycaster();
         const pointer = new THREE.Vector2();
 
+        function syncSlidersUI() {
+            const sBearing = document.getElementById("p-slider-bearing");
+            const sPitch = document.getElementById("p-slider-pitch");
+            const vBearing = document.getElementById("p-val-bearing");
+            const vPitch = document.getElementById("p-val-pitch");
+            if (sBearing) sBearing.value = Math.round(state.bearingDeg);
+            if (sPitch) sPitch.value = Math.round(state.pitchDeg);
+            if (vBearing) vBearing.textContent = `${Math.round(state.bearingDeg)}°`;
+            if (vPitch) vPitch.textContent = `${Math.round(state.pitchDeg)}°`;
+        }
+
+        function panByScreenDelta(dx, dy) {
+            const rad = THREE.MathUtils.degToRad(state.bearingDeg);
+            const scale = state.zoom * 0.0022;
+            state.panX = Math.max(-48, Math.min(48, state.panX - (dx * Math.cos(rad) + dy * Math.sin(rad)) * scale));
+            state.panZ = Math.max(-28, Math.min(28, state.panZ - (-dx * Math.sin(rad) + dy * Math.cos(rad)) * scale));
+        }
+
         renderer.domElement.addEventListener("pointerdown", (e) => {
-            isDragging = true;
-            dragButton = e.button;
-            startX = e.clientX;
-            startY = e.clientY;
-            movedDist = 0;
-        });
+            camAnim.active = false;
+            renderer.domElement.setPointerCapture(e.pointerId);
+            activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-        window.addEventListener("pointermove", (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-            movedDist += Math.hypot(dx, dy);
-            startX = e.clientX;
-            startY = e.clientY;
-
-            if (dragButton === 2 || e.shiftKey) {
-                const rad = THREE.MathUtils.degToRad(state.bearingDeg);
-                const scale = state.zoom * 0.002;
-                state.panX -= (dx * Math.cos(rad) + dy * Math.sin(rad)) * scale;
-                state.panZ -= (-dx * Math.sin(rad) + dy * Math.cos(rad)) * scale;
-            } else {
-                state.bearingDeg = ((state.bearingDeg - dx * 0.45 + 180) % 360 + 360) % 360 - 180;
-                state.pitchDeg = Math.max(5, Math.min(82, state.pitchDeg + dy * 0.35));
-                const sBearing = document.getElementById("p-slider-bearing");
-                const sPitch = document.getElementById("p-slider-pitch");
-                const vBearing = document.getElementById("p-val-bearing");
-                const vPitch = document.getElementById("p-val-pitch");
-                if (sBearing) sBearing.value = Math.round(state.bearingDeg);
-                if (sPitch) sPitch.value = Math.round(state.pitchDeg);
-                if (vBearing) vBearing.textContent = `${Math.round(state.bearingDeg)}°`;
-                if (vPitch) vPitch.textContent = `${Math.round(state.pitchDeg)}°`;
+            if (activePointers.size === 1) {
+                pointerDownPos = { x: e.clientX, y: e.clientY };
+                totalPointerMove = 0;
+                mouseButton = e.button;
+            } else if (activePointers.size === 2) {
+                const pts = Array.from(activePointers.values());
+                prevPinchDist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+                prevMidX = (pts[0].x + pts[1].x) / 2;
+                prevMidY = (pts[0].y + pts[1].y) / 2;
             }
-            updateCamera();
         });
 
-        window.addEventListener("pointerup", (e) => {
-            if (!isDragging) return;
-            isDragging = false;
-            if (movedDist < 5 && e.target === renderer.domElement) {
+        renderer.domElement.addEventListener("pointermove", (e) => {
+            if (!activePointers.has(e.pointerId)) return;
+            const prev = activePointers.get(e.pointerId);
+            const curr = { x: e.clientX, y: e.clientY };
+            activePointers.set(e.pointerId, curr);
+
+            if (activePointers.size === 1) {
+                const dx = curr.x - prev.x;
+                const dy = curr.y - prev.y;
+                totalPointerMove += Math.hypot(dx, dy);
+
+                if (mouseButton === 2 || e.shiftKey || state.isTopDown2D) {
+                    panByScreenDelta(dx, dy);
+                } else {
+                    state.bearingDeg = ((state.bearingDeg - dx * 0.45 + 180) % 360 + 360) % 360 - 180;
+                    state.pitchDeg = Math.max(8, Math.min(85, state.pitchDeg + dy * 0.35));
+                    syncSlidersUI();
+                }
+                updateCamera();
+            } else if (activePointers.size >= 2) {
+                totalPointerMove += 20;
+                const pts = Array.from(activePointers.values());
+                const dist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+                const midX = (pts[0].x + pts[1].x) / 2;
+                const midY = (pts[0].y + pts[1].y) / 2;
+
+                // 2-finger pinch zoom
+                if (prevPinchDist > 10 && dist > 10) {
+                    const ratio = prevPinchDist / dist;
+                    state.zoom = Math.max(22, Math.min(145, state.zoom * ratio));
+                }
+                prevPinchDist = dist;
+
+                // 2-finger pan
+                const panDx = midX - prevMidX;
+                const panDy = midY - prevMidY;
+                panByScreenDelta(panDx, panDy);
+                prevMidX = midX;
+                prevMidY = midY;
+
+                updateCamera();
+            }
+        });
+
+        function handlePointerUp(e) {
+            if (!activePointers.has(e.pointerId)) return;
+            activePointers.delete(e.pointerId);
+
+            if (activePointers.size === 0 && totalPointerMove < 8) {
                 const rect = renderer.domElement.getBoundingClientRect();
                 pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
                 pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -1436,27 +2524,36 @@ Replicates the real architectural building:
                 const visibleTargets = interactiveMeshes.filter(m => m.parent && m.parent.visible);
                 const hits = raycaster.intersectObjects(visibleTargets, false);
                 if (hits.length > 0 && hits[0].object.userData.spaceId) {
-                    selectSpace(hits[0].object.userData.spaceId);
+                    selectSpace(hits[0].object.userData.spaceId, { focusCamera: true });
                 }
+            } else if (activePointers.size === 1) {
+                // Reset baseline for remaining finger so it doesn't jump
+                const remaining = Array.from(activePointers.values())[0];
+                pointerDownPos = { x: remaining.x, y: remaining.y };
             }
-        });
+        }
 
+        renderer.domElement.addEventListener("pointerup", handlePointerUp);
+        renderer.domElement.addEventListener("pointercancel", handlePointerUp);
         renderer.domElement.addEventListener("contextmenu", (e) => e.preventDefault());
 
         viewport.addEventListener("wheel", (e) => {
             e.preventDefault();
-            state.zoom = Math.max(24, Math.min(135, state.zoom + e.deltaY * 0.05));
+            camAnim.active = false;
+            state.zoom = Math.max(22, Math.min(145, state.zoom + e.deltaY * 0.05));
             updateCamera();
         }, { passive: false });
 
         // Bind UI Controls
         bindEvents();
+        initMobileBottomSheetGestures();
 
         populateSelectors();
+        state.zoom = getResponsiveDefaultZoom(72);
         updateFloorPositions();
         updateCamera();
         computeRoute(state.startId, state.endId);
-        selectSpace("F5-501");
+        selectSpace("F5-501", { focusCamera: false });
 
         onResize();
         animate();
@@ -1474,19 +2571,68 @@ Replicates the real architectural building:
         const btnV = document.getElementById("p-mode-visitor");
         const btnB = document.getElementById("p-mode-blueprint");
         const panel = document.getElementById("p-wayfinding-panel");
+        const stepsSec = document.getElementById("p-wayfinding-steps-section");
         if (btnV) {
             btnV.className = isVisitor
-                ? "py-1 px-2.5 rounded-md bg-white text-slate-900 shadow-xs transition-all"
-                : "py-1 px-2.5 rounded-md text-slate-600 hover:text-slate-900 transition-all";
+                ? "py-1 px-2.5 rounded-md bg-white text-slate-900 shadow-xs transition-all cursor-pointer"
+                : "py-1 px-2.5 rounded-md text-slate-600 hover:text-slate-900 transition-all cursor-pointer";
         }
         if (btnB) {
             btnB.className = !isVisitor
-                ? "py-1 px-2.5 rounded-md bg-white text-slate-900 shadow-xs transition-all"
-                : "py-1 px-2.5 rounded-md text-slate-600 hover:text-slate-900 transition-all";
+                ? "py-1 px-2.5 rounded-md bg-white text-slate-900 shadow-xs transition-all cursor-pointer"
+                : "py-1 px-2.5 rounded-md text-slate-600 hover:text-slate-900 transition-all cursor-pointer";
         }
         if (panel) panel.style.display = isVisitor ? "block" : "none";
+        if (stepsSec) stepsSec.style.display = isVisitor ? "block" : "none";
         renderRoute3D();
         updateSelectionVisuals();
+    }
+
+    function renderSearchAutocomplete(query) {
+        const box = document.getElementById("p-search-results");
+        const clearBtn = document.getElementById("p-search-clear");
+        if (!box) return;
+
+        const q = query.trim().toLowerCase();
+        if (clearBtn) clearBtn.classList.toggle("hidden", q.length === 0);
+
+        if (q.length === 0) {
+            box.classList.add("hidden");
+            box.innerHTML = "";
+            return;
+        }
+
+        const matches = spaceRecords.filter(r =>
+            r.name.toLowerCase().includes(q) ||
+            r.code.toLowerCase().includes(q) ||
+            r.type.toLowerCase().includes(q) ||
+            r.wing.toLowerCase().includes(q)
+        ).slice(0, 8);
+
+        if (matches.length === 0) {
+            box.innerHTML = `<div class="px-3 py-2 text-slate-400">No se encontró "${query}" en Edificio P</div>`;
+            box.classList.remove("hidden");
+            return;
+        }
+
+        box.innerHTML = matches.map(r => `
+            <button type="button" data-result-id="${r.id}" class="w-full px-3 py-2 text-left hover:bg-sky-50 flex items-center justify-between gap-2 transition-colors cursor-pointer">
+                <div class="min-w-0">
+                    <div class="font-bold text-slate-900 truncate">${r.name}</div>
+                    <div class="text-[10px] text-slate-500 truncate">${r.type} &middot; ${r.wing}</div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold text-[10px] shrink-0">Piso ${r.floor}</span>
+            </button>
+        `).join("");
+        box.classList.remove("hidden");
+
+        box.querySelectorAll("[data-result-id]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const targetId = btn.getAttribute("data-result-id");
+                box.classList.add("hidden");
+                selectSpace(targetId, { focusCamera: true });
+            });
+        });
     }
 
     function bindEvents() {
@@ -1502,7 +2648,20 @@ Replicates the real architectural building:
             state.endId = e.target.value;
             state.selectedId = e.target.value;
             computeRoute(state.startId, state.endId);
-            if (state.endId) selectSpace(state.endId);
+            if (state.endId) selectSpace(state.endId, { focusCamera: true });
+        });
+
+        bind("p-btn-swap-route", "click", () => {
+            if (!state.endId) return;
+            const prevStart = state.startId;
+            state.startId = state.endId;
+            state.endId = prevStart;
+            const startSel = document.getElementById("p-select-start");
+            const endSel = document.getElementById("p-select-end");
+            // Ensure start & end selectors support the swapped values
+            if (startSel) startSel.value = state.startId;
+            if (endSel) endSel.value = state.endId;
+            computeRoute(state.startId, state.endId);
         });
 
         bind("p-btn-clear-route", "click", () => {
@@ -1515,21 +2674,41 @@ Replicates the real architectural building:
             updateSelectionVisuals();
         });
 
+        // Quick Filter Chips at top of canvas
+        document.querySelectorAll(".p-quick-chip").forEach(chip => {
+            chip.addEventListener("click", () => {
+                const destId = chip.getAttribute("data-quick-dest");
+                const floorNum = chip.getAttribute("data-quick-floor");
+                const nearestRestroom = chip.getAttribute("data-quick-restroom");
+
+                if (destId) {
+                    setFloorIsolation("all", { animateCamera: false });
+                    selectSpace(destId, { focusCamera: true });
+                } else if (floorNum) {
+                    setFloorIsolation(floorNum, { animateCamera: true });
+                } else if (nearestRestroom) {
+                    const targetFloor = state.selectedFloor === "all" ? 1 : Math.min(3, Number(state.selectedFloor));
+                    selectSpace(`F${targetFloor}-HOMBRES-${targetFloor}`, { focusCamera: true });
+                }
+            });
+        });
+
+        // Vertical Elevator Floor Buttons
         document.querySelectorAll(".p-floor-btn").forEach(btn => {
             btn.addEventListener("click", () => {
-                state.selectedFloor = btn.dataset.floor;
-                document.querySelectorAll(".p-floor-btn").forEach(b => {
-                    const active = b.dataset.floor === state.selectedFloor;
-                    b.className = active
-                        ? "p-floor-btn py-1.5 text-xs font-bold rounded-lg border border-slate-900 bg-slate-900 text-white shadow-xs"
-                        : "p-floor-btn py-1.5 text-xs font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors";
-                });
-                const badge = document.getElementById("p-floor-badge");
-                if (badge) {
-                    badge.textContent = state.selectedFloor === "all" ? "Todos (5 Pisos)" : `Piso ${state.selectedFloor} Solamente`;
-                }
-                updateFloorPositions();
+                setFloorIsolation(btn.dataset.floor, { animateCamera: true });
             });
+        });
+
+        // 3D Settings Popover Toggle
+        bind("p-btn-toggle-3d-settings", "click", (e) => {
+            e.stopPropagation();
+            const pop = document.getElementById("p-3d-settings-popover");
+            if (pop) pop.classList.toggle("hidden");
+        });
+        bind("p-btn-close-3d-settings", "click", () => {
+            const pop = document.getElementById("p-3d-settings-popover");
+            if (pop) pop.classList.add("hidden");
         });
 
         bind("p-slider-explode", "input", (e) => {
@@ -1572,40 +2751,55 @@ Replicates the real architectural building:
             stairGroups.forEach(g => { g.visible = state.showStairs; });
         });
 
+        // Search input & autocomplete
         bind("p-search-input", "input", (e) => {
             state.searchQuery = e.target.value;
             updateSelectionVisuals();
+            renderSearchAutocomplete(state.searchQuery);
         });
 
-        function setPreset(pitch, bearing, zoom) {
-            state.pitchDeg = pitch;
-            state.bearingDeg = bearing;
-            state.zoom = zoom;
-            state.panX = 0;
-            state.panZ = 0;
-            const sPitch = document.getElementById("p-slider-pitch");
-            const sBearing = document.getElementById("p-slider-bearing");
-            const vPitch = document.getElementById("p-val-pitch");
-            const vBearing = document.getElementById("p-val-bearing");
-            if (sPitch) sPitch.value = pitch;
-            if (sBearing) sBearing.value = bearing;
-            if (vPitch) vPitch.textContent = `${pitch}°`;
-            if (vBearing) vBearing.textContent = `${bearing}°`;
-            updateCamera();
+        bind("p-search-clear", "click", () => {
+            state.searchQuery = "";
+            const inp = document.getElementById("p-search-input");
+            if (inp) inp.value = "";
+            updateSelectionVisuals();
+            renderSearchAutocomplete("");
+        });
+
+        function setPreset(pitch, bearing, baseZoom, is2D) {
+            state.isTopDown2D = Boolean(is2D);
+            const mobile2dBtn = document.getElementById("p-btn-mobile-2d");
+            if (mobile2dBtn) {
+                mobile2dBtn.className = state.isTopDown2D
+                    ? "sm:hidden w-9 h-9 bg-slate-900 text-white border border-slate-900 rounded-xl font-extrabold flex items-center justify-center text-[11px] shadow-md transition-all active:scale-95 cursor-pointer"
+                    : "sm:hidden w-9 h-9 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl text-slate-700 font-extrabold hover:bg-white flex items-center justify-center text-[11px] shadow-md transition-all active:scale-95 cursor-pointer";
+            }
+            animateCameraTo({
+                pitchDeg: pitch,
+                bearingDeg: bearing,
+                zoom: getResponsiveDefaultZoom(baseZoom),
+                panX: 0,
+                panZ: 0
+            }, 400);
         }
 
-        bind("p-btn-iso", "click", () => setPreset(44, 24, 74));
-        bind("p-btn-top", "click", () => setPreset(82, 0, 78));
-        bind("p-btn-side", "click", () => setPreset(14, 0, 74));
-        bind("p-btn-reset-cam", "click", () => setPreset(44, 24, 74));
+        bind("p-btn-iso", "click", () => setPreset(44, 22, 72, false));
+        bind("p-btn-top", "click", () => setPreset(84, 0, 76, true));
+        bind("p-btn-side", "click", () => setPreset(14, 0, 72, false));
+        bind("p-btn-reset-cam", "click", () => setPreset(44, 22, 72, false));
+        bind("p-btn-mobile-2d", "click", () => {
+            if (state.isTopDown2D) {
+                setPreset(44, 22, 72, false);
+            } else {
+                setPreset(84, 0, 76, true);
+            }
+        });
 
         bind("p-btn-zoom-in", "click", () => {
-            state.zoom = Math.max(24, state.zoom - 7);
-            updateCamera();
+            animateCameraTo({ zoom: Math.max(22, state.zoom - 10) }, 220);
         });
         bind("p-btn-zoom-out", "click", () => {
-            state.zoom = Math.min(135, state.zoom + 7);
-            updateCamera();
+            animateCameraTo({ zoom: Math.min(145, state.zoom + 10) }, 220);
         });
 
         bind("p-btn-fullscreen", "click", () => {
@@ -1632,8 +2826,43 @@ Replicates the real architectural building:
 
     window.addEventListener("resize", onResize);
 
-    function animate() {
+    function animate(now) {
         animFrameId = requestAnimationFrame(animate);
+
+        // Process smooth camera lerp animation
+        if (camAnim.active) {
+            const elapsed = (now || performance.now()) - camAnim.startTime;
+            const rawT = Math.min(1, Math.max(0, elapsed / camAnim.duration));
+            // Cubic ease-out
+            const t = 1 - Math.pow(1 - rawT, 3);
+
+            state.pitchDeg = camAnim.from.pitchDeg + (camAnim.to.pitchDeg - camAnim.from.pitchDeg) * t;
+            state.bearingDeg = camAnim.from.bearingDeg + (camAnim.to.bearingDeg - camAnim.from.bearingDeg) * t;
+            state.zoom = camAnim.from.zoom + (camAnim.to.zoom - camAnim.from.zoom) * t;
+            state.panX = camAnim.from.panX + (camAnim.to.panX - camAnim.from.panX) * t;
+            state.panZ = camAnim.from.panZ + (camAnim.to.panZ - camAnim.from.panZ) * t;
+
+            if (Math.abs(camAnim.to.explode - camAnim.from.explode) > 0.01) {
+                state.explode = camAnim.from.explode + (camAnim.to.explode - camAnim.from.explode) * t;
+                updateFloorPositions();
+            }
+
+            updateCamera();
+
+            const sBearing = document.getElementById("p-slider-bearing");
+            const sPitch = document.getElementById("p-slider-pitch");
+            const vBearing = document.getElementById("p-val-bearing");
+            const vPitch = document.getElementById("p-val-pitch");
+            if (sBearing) sBearing.value = Math.round(state.bearingDeg);
+            if (sPitch) sPitch.value = Math.round(state.pitchDeg);
+            if (vBearing) vBearing.textContent = `${Math.round(state.bearingDeg)}°`;
+            if (vPitch) vPitch.textContent = `${Math.round(state.pitchDeg)}°`;
+
+            if (rawT >= 1) {
+                camAnim.active = false;
+            }
+        }
+
         if (renderer && scene && camera) {
             renderer.render(scene, camera);
             updateProjectedLabels();
@@ -1645,7 +2874,6 @@ Replicates the real architectural building:
         const modal = document.getElementById("buildingPModal");
         if (!modal) return;
 
-        // Ensure Three.js is loaded
         if (typeof THREE === "undefined") {
             const script = document.createElement("script");
             script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
@@ -1658,7 +2886,6 @@ Replicates the real architectural building:
         }
 
         modal.classList.remove("hidden");
-        // Force reflow for silky smooth 3D spring transition
         void modal.offsetWidth;
         modal.classList.add("bldg-modal-open");
 
@@ -1666,19 +2893,30 @@ Replicates the real architectural building:
             initThreeEngine();
         }
 
+        // Start mobile bottom sheet in compact peek state so 3D map is front and center
+        setMobileSheetState("peek");
+
         setTimeout(() => {
             onResize();
-            if (targetRoomId) {
-                selectSpace(targetRoomId);
-            }
-            // Default floor separation: 3.2m
-            state.explode = 3.2;
+            state.explode = 3.8;
             const v = document.getElementById("p-val-explode");
             const s = document.getElementById("p-slider-explode");
             if (v) v.textContent = `${state.explode.toFixed(1)}m`;
             if (s) s.value = state.explode;
             updateFloorPositions();
-        }, 100);
+
+            if (targetRoomId) {
+                selectSpace(targetRoomId, { focusCamera: true });
+            } else {
+                animateCameraTo({
+                    pitchDeg: 44,
+                    bearingDeg: 22,
+                    zoom: getResponsiveDefaultZoom(72),
+                    panX: 0,
+                    panZ: 0
+                }, 450);
+            }
+        }, 80);
     }
 
     function closeBuildingPModal() {
@@ -1687,7 +2925,7 @@ Replicates the real architectural building:
         modal.classList.remove("bldg-modal-open");
         setTimeout(() => {
             modal.classList.add("hidden");
-        }, 400);
+        }, 360);
     }
 
     // Close on Escape key
@@ -1700,16 +2938,20 @@ Replicates the real architectural building:
         }
     });
 
-    // Expose global controller functions
-    window.openBuildingPModal = openBuildingPModal;
-    window.closeBuildingPModal = closeBuildingPModal;
-    // Backwards-compatible aliases
-    window.openBuildingPIsometricModal = openBuildingPModal;
-    window.openBuildingMap = function(bldgId, focusId) {
-        if (bldgId === "buildingP" || bldgId === "p" || bldgId === "edificioP") {
-            openBuildingPModal(focusId);
-        }
-    };
+    // Expose global controller functions (and re-assert on DOMContentLoaded so legacy scripts don't override)
+    function registerGlobalControllers() {
+        window.openBuildingPModal = openBuildingPModal;
+        window.closeBuildingPModal = closeBuildingPModal;
+        window.openBuildingPIsometricModal = openBuildingPModal;
+        window.openBuildingMap = function(bldgId, focusId) {
+            if (!bldgId || bldgId === "buildingP" || bldgId === "p" || bldgId === "edificioP") {
+                openBuildingPModal(focusId);
+            }
+        };
+    }
+
+    registerGlobalControllers();
+    document.addEventListener("DOMContentLoaded", registerGlobalControllers);
 
 })();
 </script>
