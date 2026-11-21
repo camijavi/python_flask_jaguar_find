@@ -743,6 +743,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     showBuildingPopover(bldgData, bldgData.anchor);
                 }
 
+                // When clicking on Building P, trigger 3D Isometric View with smooth entrance animation
+                if (nodeId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
+                    setTimeout(() => {
+                        window.openBuildingPIsometricModal();
+                    }, 350);
+                }
+
                 // On small devices, close directory sidebar menu so the focused building is immediately visible
                 if (window.innerWidth < 1024 && typeof window.toggleNavigateMapSidebar === "function") {
                     window.toggleNavigateMapSidebar(false);

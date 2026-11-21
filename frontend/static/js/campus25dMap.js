@@ -200,8 +200,11 @@
 
                 badgeEl.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    if (nodeId === "buildingP" && this.focusedBuildingId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
-                        window.openBuildingPIsometricModal();
+                    if (nodeId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
+                        this.focusBuilding(nodeId, { zoom: 2.85, animate: true });
+                        setTimeout(() => {
+                            window.openBuildingPIsometricModal();
+                        }, 280);
                     } else {
                         this.focusBuilding(nodeId, { zoom: 2.85, animate: true });
                     }
@@ -869,7 +872,23 @@
             if (this.tbtStepInstruction) this.tbtStepInstruction.textContent = `${cleanName} — ${subtitle}`;
             if (this.tbtNextPreview) {
                 this.tbtNextPreview.classList.remove("hidden");
-                this.tbtNextPreview.textContent = "Toca para ver detalles o fijar como destino";
+                if (bldgData.id === "buildingP") {
+                    this.tbtNextPreview.textContent = "Toca para abrir Maqueta Isométrica 3D (3 Pisos)";
+                } else {
+                    this.tbtNextPreview.textContent = "Toca para ver detalles o fijar como destino";
+                }
+            }
+
+            if (bldgData.id === "buildingP") {
+                this.tbtBanner.style.cursor = "pointer";
+                this.tbtBanner.onclick = () => {
+                    if (typeof window.openBuildingPIsometricModal === "function") {
+                        window.openBuildingPIsometricModal();
+                    }
+                };
+            } else {
+                this.tbtBanner.onclick = null;
+                this.tbtBanner.style.cursor = "default";
             }
             if (this.tbtManeuverIcon) {
                 this.tbtManeuverIcon.innerHTML = `

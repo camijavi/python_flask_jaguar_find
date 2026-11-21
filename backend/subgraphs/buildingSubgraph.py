@@ -43,6 +43,11 @@ class BuildingSubgraph:
         self.description = description
         self.graph = DirectedGraph()
         self.router = DijkstraRouter(self.graph)
+        self.roomAliases: Dict[str, str] = {}
+
+    def registerRoomAlias(self, alias: str, targetNodeId: str) -> None:
+        """Maps an alternative room query, code, or alias to a target node ID."""
+        self.roomAliases[alias] = targetNodeId
 
     def addNode(self, node: Node) -> None:
         """Adds an internal room, stairwell, restroom, or POI node."""
@@ -70,6 +75,9 @@ class BuildingSubgraph:
             forwardEdgeKey=forwardEdgeKey,
             backwardEdgeKey=backwardEdgeKey
         )
+
+    # Alias for compatibility with subgraphs calling addBidirectionalWalkway
+    addBidirectionalWalkway = addBidirectionalCorridor
 
     def addVerticalConnection(
         self,
@@ -118,19 +126,30 @@ class BuildingSubgraph:
 
     def resolveRoomQuery(self, query: str) -> Optional[str]:
         """Resolves room code or keyword to a node ID within this building."""
-        clean = (query or "").strip().lower().replace(" ", "").replace("-", "")
+        import unicodedata
+
+        def _normalize(s: str) -> str:
+            s = "".join(c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn")
+            return s.lower().replace(" ", "").replace("-", "").replace("_", "")
+
+        clean = _normalize(query or "")
         if not clean:
             return None
 
+        # 0. Check registered room aliases
+        for alias, targetNodeId in self.roomAliases.items():
+            if _normalize(alias) == clean:
+                return targetNodeId
+
         # 1. Exact node ID match
         for nid in self.graph.nodes:
-            if nid.lower() == clean or nid.lower().replace("_", "") == clean:
+            if _normalize(nid) == clean:
                 return nid
 
         # 2. Check room number or name match
         for nid, node in self.graph.nodes.items():
-            nameClean = node.name.lower().replace(" ", "").replace("-", "")
-            if clean in nameClean or nameClean in clean:
+            nameNorm = _normalize(node.name)
+            if clean in nameNorm or nameNorm in clean:
                 return nid
 
         return None
