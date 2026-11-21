@@ -26,6 +26,9 @@
             this.isSimulating = false;
             this.simInterval = null;
             this.isOverview = false;
+            this.focusedBuildingId = null;
+            this.focusedBuildingAnchor = null;
+            this.targetZoomScale = undefined;
 
             // Camera Vector Animation State
             this.cameraGroup = document.getElementById("mapCameraGroup");
@@ -197,10 +200,10 @@
 
                 badgeEl.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    if (nodeId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
+                    if (nodeId === "buildingP" && this.focusedBuildingId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
                         window.openBuildingPIsometricModal();
-                    } else if (typeof window.showBuildingPopover === "function") {
-                        window.showBuildingPopover(bldgData, anchor);
+                    } else {
+                        this.focusBuilding(nodeId, { zoom: 2.85, animate: true });
                     }
                 });
 
@@ -557,7 +560,7 @@
         /**
          * Toggles between 2D (top-down flat) and 2.5D (perspective tilted) mode
          */
-        setMode(enable25d) {
+        setMode(enable25d, options = {}) {
             this.is25dActive = enable25d;
             if (!this.cameraGroup) {
                 this.cameraGroup = document.getElementById("mapCameraGroup");
@@ -583,9 +586,13 @@
                 // Clear 2D transform on SVG element so #mapCameraGroup controls the viewport
                 if (this.svg) this.svg.style.transform = "none";
 
-                // Waze defaults
-                this.pitch = 48; // Gentle 48° pitch
-                this.zoomScale = 2.2; // Close zoom calculated mathematically inside SVG
+                // Waze defaults or caller options
+                this.pitch = options.pitch !== undefined ? options.pitch : 48; // Gentle 48° pitch
+                this.zoomScale = options.zoom !== undefined ? options.zoom : 2.2;
+
+                if (options.skipDefaultCenter) {
+                    return;
+                }
 
                 if (this.currentRoute) {
                     this.showNavigationBanner();
@@ -622,6 +629,8 @@
                 this.currentUserX = undefined;
                 this.currentUserY = undefined;
                 this.currentHeading = 0;
+                this.focusedBuildingId = null;
+                this.focusedBuildingAnchor = null;
                 this.stage.style.transform = "";
 
                 if (this.cameraGroup) {
@@ -714,18 +723,21 @@
             }
         }
 
-        startCameraTween() {
+        startCameraTween(duration = 500) {
             if (this.tweenAnimId) {
                 cancelAnimationFrame(this.tweenAnimId);
                 this.tweenAnimId = null;
             }
 
-            const startX = this.currentUserX;
-            const startY = this.currentUserY;
-            const startH = this.currentHeading;
+            const startX = this.currentUserX !== undefined ? this.currentUserX : 400;
+            const startY = this.currentUserY !== undefined ? this.currentUserY : 500;
+            const startH = this.currentHeading || 0;
+            const startZ = this.zoomScale || 2.2;
+
             const targetX = this.targetUserX;
             const targetY = this.targetUserY;
             const targetH = this.targetHeading;
+            const targetZ = this.targetZoomScale !== undefined ? this.targetZoomScale : this.zoomScale;
 
             // Shortest turn interpolation
             let diffH = (targetH - startH) % 360;
@@ -733,7 +745,6 @@
             if (diffH > 180) diffH -= 360;
 
             const startTime = performance.now();
-            const duration = 400; // ms
 
             const step = (now) => {
                 const elapsed = now - startTime;
@@ -743,6 +754,7 @@
                 this.currentUserX = startX + (targetX - startX) * ease;
                 this.currentUserY = startY + (targetY - startY) * ease;
                 this.currentHeading = startH + diffH * ease;
+                this.zoomScale = startZ + (targetZ - startZ) * ease;
 
                 this.applyTransform();
                 this.updateOverlays();
@@ -752,10 +764,127 @@
                     this.tweenAnimId = requestAnimationFrame(step);
                 } else {
                     this.tweenAnimId = null;
+                    this.targetZoomScale = undefined;
                 }
             };
 
             this.tweenAnimId = requestAnimationFrame(step);
+        }
+
+        /**
+         * Switches view to 2.5D mode and zooms specifically into the selected building.
+         * @param {string} nodeId - e.g. "buildingA", "buildingB", "buildingP", etc.
+         * @param {object} options - { zoom: 2.85, pitch: 48, showPopover: true, animate: true }
+         */
+        focusBuilding(nodeId, options = {}) {
+            if (!nodeId) return;
+            const anchor = this.buildingAnchors[nodeId];
+            if (!anchor) return;
+
+            const bldgData = this.getBuildingData(nodeId);
+            const targetZoom = options.zoom || 2.85;
+            const targetPitch = options.pitch || 48;
+
+            this.focusedBuildingId = nodeId;
+            this.focusedBuildingAnchor = anchor;
+
+            const was25d = this.is25dActive;
+            if (!this.is25dActive) {
+                // Activate 2.5D mode without resetting camera
+                this.setMode(true, { skipDefaultCenter: true, pitch: targetPitch, zoom: targetZoom });
+            }
+
+            // If transitioning from 2D, seed smooth start position
+            if (!was25d || this.currentUserX === undefined) {
+                this.currentUserX = 400;
+                this.currentUserY = 500;
+                this.currentHeading = 0;
+                this.zoomScale = 1.6;
+            }
+
+            // Set camera targets
+            this.targetUserX = anchor.x;
+            this.targetUserY = anchor.y;
+            this.targetZoomScale = targetZoom;
+            this.targetHeading = 0;
+            this.pitch = targetPitch;
+
+            // Highlight focused badge in 2.5D overlay
+            if (this.badgesContainer) {
+                this.badgesContainer.querySelectorAll(".waze-bldg-badge").forEach(badge => {
+                    badge.classList.remove("waze-badge-focused");
+                });
+                const activeBadge = document.getElementById(`wazeBadge_${nodeId}`);
+                if (activeBadge) {
+                    activeBadge.classList.add("waze-badge-focused");
+                }
+            }
+
+            // Highlight corresponding directory card
+            document.querySelectorAll(".directory-card").forEach(c => {
+                if (c.getAttribute("data-bldg") === nodeId) {
+                    c.classList.add("ring-2", "ring-brand-500", "bg-brand-50/40");
+                    c.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                } else {
+                    c.classList.remove("ring-2", "ring-brand-500", "bg-brand-50/40");
+                }
+            });
+
+            // Update 2.5D Top Turn-by-Turn Banner with Building Focus Info
+            this.showBuildingFocusBanner(bldgData);
+
+            // Animate camera glide to building
+            if (options.animate !== false) {
+                this.startCameraTween(550);
+            } else {
+                this.currentUserX = this.targetUserX;
+                this.currentUserY = this.targetUserY;
+                this.zoomScale = targetZoom;
+                this.applyTransform();
+                this.updateOverlays();
+                this.updateCompass();
+            }
+
+            // Show and position building popover
+            if (options.showPopover !== false && typeof window.showBuildingPopover === "function") {
+                window.showBuildingPopover(bldgData, anchor);
+            }
+
+            // On small devices, close directory sidebar menu so the focused building is immediately visible
+            if (window.innerWidth < 1024 && typeof window.toggleNavigateMapSidebar === "function") {
+                window.toggleNavigateMapSidebar(false);
+            }
+        }
+
+        showBuildingFocusBanner(bldgData) {
+            if (!this.tbtBanner) return;
+            this.tbtBanner.classList.remove("hidden");
+
+            const rawName = bldgData.name || bldgData.id;
+            const cleanName = rawName.includes("•") ? rawName.split("•")[0].trim() : rawName;
+            const subtitle = rawName.includes("•") ? rawName.split("•")[1].trim() : "Campus UAM";
+
+            if (this.tbtStepCounter) this.tbtStepCounter.textContent = "Edificio Enfocado (2.5D)";
+            if (this.tbtStepDistance) this.tbtStepDistance.textContent = bldgData.letter || "UAM";
+            if (this.tbtStepInstruction) this.tbtStepInstruction.textContent = `${cleanName} — ${subtitle}`;
+            if (this.tbtNextPreview) {
+                this.tbtNextPreview.classList.remove("hidden");
+                this.tbtNextPreview.textContent = "Toca para ver detalles o fijar como destino";
+            }
+            if (this.tbtManeuverIcon) {
+                this.tbtManeuverIcon.innerHTML = `
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                `;
+            }
+
+            if (this.wazeBottomBar) {
+                this.wazeBottomBar.classList.remove("hidden");
+                if (this.wazeEtaTime) this.wazeEtaTime.textContent = bldgData.letter || "2.5D";
+                if (this.wazeTripMeta) this.wazeTripMeta.textContent = cleanName;
+                if (this.wazeProgressBar) this.wazeProgressBar.style.width = "100%";
+            }
         }
 
         centerOnCampusLowerThird() {
@@ -891,6 +1020,18 @@
             } else {
                 if (this.wazeDestPin) this.wazeDestPin.style.display = "none";
                 if (this.wazeOriginPin) this.wazeOriginPin.style.display = "none";
+            }
+
+            // 4. Reposition open building popover in real time with 3D camera
+            const bldgPopover = document.getElementById("bldgPopover");
+            if (bldgPopover && !bldgPopover.classList.contains("hidden") && this.focusedBuildingAnchor) {
+                const pos = this.projectToScreen(this.focusedBuildingAnchor.x, this.focusedBuildingAnchor.y);
+                if (pos) {
+                    const maxLeft = vw - 290;
+                    const maxTop = vh - 220;
+                    bldgPopover.style.left = `${Math.max(12, Math.min(pos.x - 100, maxLeft))}px`;
+                    bldgPopover.style.top = `${Math.max(12, Math.min(pos.y - 170, maxTop))}px`;
+                }
             }
         }
 

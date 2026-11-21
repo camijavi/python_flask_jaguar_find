@@ -642,21 +642,32 @@ document.addEventListener("DOMContentLoaded", function () {
         // Position popover relative to wrapper container
         const wRect = wrapper.getBoundingClientRect();
         let clientX, clientY;
-        if (bldgEl) {
-            const bRect = bldgEl.getBoundingClientRect();
-            clientX = bRect.left - wRect.left + (bRect.width / 2);
-            clientY = bRect.top - wRect.top;
-        } else {
-            const rect = svg.getBoundingClientRect();
-            clientX = (anchorCoords.x / 1200) * rect.width;
-            clientY = (anchorCoords.y / 850) * rect.height;
+
+        if (window.campus25dController && window.campus25dController.is25dActive) {
+            const projected = window.campus25dController.projectToScreen(anchorCoords.x, anchorCoords.y);
+            if (projected) {
+                clientX = projected.x;
+                clientY = projected.y;
+            }
+        }
+
+        if (clientX === undefined) {
+            if (bldgEl) {
+                const bRect = bldgEl.getBoundingClientRect();
+                clientX = bRect.left - wRect.left + (bRect.width / 2);
+                clientY = bRect.top - wRect.top;
+            } else {
+                const rect = svg.getBoundingClientRect();
+                clientX = (anchorCoords.x / 1200) * rect.width;
+                clientY = (anchorCoords.y / 850) * rect.height;
+            }
         }
 
         const maxLeft = wRect.width - 290;
         const maxTop = wRect.height - 220;
 
         bldgPopover.style.left = `${Math.max(12, Math.min(clientX - 100, maxLeft))}px`;
-        bldgPopover.style.top = `${Math.max(12, Math.min(clientY - 160, maxTop))}px`;
+        bldgPopover.style.top = `${Math.max(12, Math.min(clientY - 170, maxTop))}px`;
         bldgPopover.classList.remove("hidden");
     }
 
@@ -667,6 +678,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnClosePopover) {
         btnClosePopover.addEventListener("click", () => {
             bldgPopover.classList.add("hidden");
+            if (window.campus25dController) {
+                window.campus25dController.focusedBuildingAnchor = null;
+                window.campus25dController.focusedBuildingId = null;
+                if (window.campus25dController.badgesContainer) {
+                    window.campus25dController.badgesContainer.querySelectorAll(".waze-bldg-badge").forEach(b => {
+                        b.classList.remove("waze-badge-focused");
+                    });
+                }
+            }
             document.querySelectorAll(".bldg-shape").forEach(el => el.classList.remove("active-bldg"));
             document.querySelectorAll(".directory-card").forEach(c => {
                 c.classList.remove("ring-2", "ring-brand-500", "bg-brand-50/40");
@@ -716,9 +736,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const nodeId = el.getAttribute("data-node");
             const bldgData = CAMPUS_BUILDINGS[nodeId];
             if (bldgData) {
-                // When clicking Building P, animate and open the 3D isometric cutaway
-                if (nodeId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
-                    window.openBuildingPIsometricModal();
+                // When clicking on a building, switch view to 2.5D and zoom specifically into that building
+                if (window.campus25dController && typeof window.campus25dController.focusBuilding === "function") {
+                    window.campus25dController.focusBuilding(nodeId, { zoom: 2.85, animate: true });
                 } else {
                     showBuildingPopover(bldgData, bldgData.anchor);
                 }
@@ -739,19 +759,16 @@ document.addEventListener("DOMContentLoaded", function () {
             const nodeId = card.getAttribute("data-bldg");
             const bldgData = CAMPUS_BUILDINGS[nodeId];
             if (bldgData) {
-                // Focus / Pan slightly toward building
-                const centerTargetX = (600 - bldgData.anchor.x) * 0.4;
-                const centerTargetY = (425 - bldgData.anchor.y) * 0.4;
-                translateX = centerTargetX;
-                translateY = centerTargetY;
-                scale = 1.35;
-                applyTransform();
-
-                if (nodeId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
-                    setTimeout(() => {
-                        window.openBuildingPIsometricModal();
-                    }, 250);
+                // When clicking on a building card, switch view to 2.5D and zoom specifically into that building
+                if (window.campus25dController && typeof window.campus25dController.focusBuilding === "function") {
+                    window.campus25dController.focusBuilding(nodeId, { zoom: 2.85, animate: true });
                 } else {
+                    const centerTargetX = (600 - bldgData.anchor.x) * 0.4;
+                    const centerTargetY = (425 - bldgData.anchor.y) * 0.4;
+                    translateX = centerTargetX;
+                    translateY = centerTargetY;
+                    scale = 1.35;
+                    applyTransform();
                     showBuildingPopover(bldgData, bldgData.anchor);
                 }
 
