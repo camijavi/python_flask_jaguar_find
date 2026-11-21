@@ -43,7 +43,7 @@ def buildUamCampusGraph() -> DirectedGraph:
     g.addNode(Node("northeastGate", "Northeast Gate (Sports Access)", CampusCategory.PARKING_LOT, 62.0, 38.0, 12.10841, -86.25697))
     g.addNode(Node("northGate", "North Gate (Copernicus / FIA Access)", CampusCategory.PARKING_LOT, 36.0, 22.0, 12.10895, -86.25786))
 
-    # 2. Walkways / Edges with Physical Distance in Meters and Accessibility (♿)
+    # 2. Walkways / Edges with Physical Distance in Meters and Accessibility
     # Walkways are bidirectional, modeled as symmetric pairs of directed edges (u -> v) and (v -> u)
     g.addBidirectionalWalkway("mainParking", "buildingK", 65.0, isAccessible=True,
                              forwardInstruction="Walk 65m north towards Central Cafeteria (Building K).",

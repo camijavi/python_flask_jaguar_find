@@ -3,7 +3,7 @@ testCampusGraph.py
 ================================================================================
 Interactive & Automated verification script for the UAM Campus Graph Engine.
 Demonstrates Dijkstra route calculation in English and Spanish (i18n),
-accessibility pruning (♿), category filtering, and smart keyword resolution.
+accessibility pruning, category filtering, and smart keyword resolution.
 ================================================================================
 """
 
@@ -24,13 +24,13 @@ def runGraphTestSuite():
     print("  Destination: 'B103' (Classroom B-103)")
     resEng = globalNavigationService.calculateRoute("mainParking", "B103", lang="eng")
     if resEng["success"]:
-        print(f"  ✓ Success! Path: {' -> '.join(resEng['pathNodeIds'])}")
-        print(f"  ✓ Total Walking Distance: {resEng['totalDistanceMeters']} meters (~{resEng['estimatedWalkingMinutes']} min)")
-        print("  ✓ Step Instructions (English):")
+        print(f"  [OK] Success! Path: {' -> '.join(resEng['pathNodeIds'])}")
+        print(f"  [OK] Total Walking Distance: {resEng['totalDistanceMeters']} meters (~{resEng['estimatedWalkingMinutes']} min)")
+        print("  [OK] Step Instructions (English):")
         for idx, step in enumerate(resEng["stepInstructions"], 1):
             print(f"     {idx}. {step}")
     else:
-        print(f"  ✗ Failed: {resEng['error']}")
+        print(f"  [FAIL] Failed: {resEng['error']}")
 
     # 1b. Standard Pedestrian Route in Spanish (via languages/spa.json)
     print("\n[TEST 1B] Calculating Pedestrian Route in Spanish (lang='spa'):")
@@ -38,16 +38,16 @@ def runGraphTestSuite():
     print("  Destination: 'B103' (Aula B-103)")
     resSpa = globalNavigationService.calculateRoute("mainParking", "B103", lang="spa")
     if resSpa["success"]:
-        print(f"  ✓ Success! Path: {' -> '.join(resSpa['pathNodeIds'])}")
-        print(f"  ✓ Total Walking Distance: {resSpa['totalDistanceMeters']} meters (~{resSpa['estimatedWalkingMinutes']} min)")
-        print("  ✓ Step Instructions (Spanish from spa.json):")
+        print(f"  [OK] Success! Path: {' -> '.join(resSpa['pathNodeIds'])}")
+        print(f"  [OK] Total Walking Distance: {resSpa['totalDistanceMeters']} meters (~{resSpa['estimatedWalkingMinutes']} min)")
+        print("  [OK] Step Instructions (Spanish from spa.json):")
         for idx, step in enumerate(resSpa["stepInstructions"], 1):
             print(f"     {idx}. {step}")
     else:
-        print(f"  ✗ Failed: {resSpa['error']}")
+        print(f"  [FAIL] Failed: {resSpa['error']}")
 
-    # 2. Universal Accessibility (♿) Test
-    print("\n[TEST 2] Accessibility (Wheelchair ♿) Pruning Test:")
+    # 2. Universal Accessibility Test
+    print("\n[TEST 2] Accessibility (Wheelchair Pruning) Test:")
     print("  Origin: buildingN (Dental Clinics)")
     print("  Destination: buildingP (Copernicus Observatory)")
     
@@ -59,7 +59,7 @@ def runGraphTestSuite():
     print(f"  • Standard Route (includes stairs): {' -> '.join(resNormal['pathNodeIds'])} ({resNormal['totalDistanceMeters']}m)")
     print(f"  • Accessible Route (ramps only):    {' -> '.join(resAccessible['pathNodeIds'])} ({resAccessible['totalDistanceMeters']}m)")
     if resAccessible["pathNodeIds"] == ["buildingN", "buildingO", "buildingP"]:
-        print("  ✓ Algorithm successfully bypassed stairs and routed through accessible ramps!")
+        print("  [OK] Algorithm successfully bypassed stairs and routed through accessible ramps!")
 
     # 3. Category Queries (Drinking Fountains, Restrooms, Food, Labs)
     print("\n[TEST 3] Category Queries & Facilities Discovery:")
@@ -89,9 +89,9 @@ def runGraphTestSuite():
     nearestEng = globalNavigationService.findNearestGpsNode(userLat, userLng, lang="eng")
     nearestSpa = globalNavigationService.findNearestGpsNode(userLat, userLng, lang="spa")
     print(f"  User GPS: ({userLat}, {userLng})")
-    print(f"  ✓ Nearest Node (English): {nearestEng['nearestNodeId']} ({nearestEng['nodeName']}) - {nearestEng['distanceMeters']}m away")
-    print(f"  ✓ Nearest Node (Spanish): {nearestSpa['nearestNodeId']} ({nearestSpa['nodeName']}) - {nearestSpa['distanceMeters']}m away")
-    print(f"  ✓ Inside Campus: {nearestEng.get('isWithinCampus')}")
+    print(f"  [OK] Nearest Node (English): {nearestEng['nearestNodeId']} ({nearestEng['nodeName']}) - {nearestEng['distanceMeters']}m away")
+    print(f"  [OK] Nearest Node (Spanish): {nearestSpa['nearestNodeId']} ({nearestSpa['nodeName']}) - {nearestSpa['distanceMeters']}m away")
+    print(f"  [OK] Inside Campus: {nearestEng.get('isWithinCampus')}")
     assert nearestEng["isWithinCampus"] is True, "Test 4 Failed: Expected coordinate to be inside campus."
 
     # 5. UAM Campus Perimeter Polygon & Out-of-Bounds Verification (Ray-Casting)
@@ -105,19 +105,19 @@ def runGraphTestSuite():
     # Point A: Inside campus (Building K / Central Cafeteria)
     inLat, inLng = 12.10746, -86.25810
     insideResult = CampusGeoUtils.isWithinCampusPerimeter(inLat, inLng)
-    print(f"  ✓ Test Point A (Inside Cafeteria {inLat}, {inLng}): isInside={insideResult}")
+    print(f"  [OK] Test Point A (Inside Cafeteria {inLat}, {inLng}): isInside={insideResult}")
     assert insideResult is True, "Test 5 Failed: Expected Building K to be inside perimeter."
 
     # Point B: Outside campus (Downtown Managua / Rotonda Metrocentro)
     outLat, outLng = 12.12700, -86.26500
     outsideResult = CampusGeoUtils.isWithinCampusPerimeter(outLat, outLng)
-    print(f"  ✓ Test Point B (Outside Metrocentro {outLat}, {outLng}): isInside={outsideResult}")
+    print(f"  [OK] Test Point B (Outside Metrocentro {outLat}, {outLng}): isInside={outsideResult}")
     assert outsideResult is False, "Test 5 Failed: Expected Metrocentro to be outside perimeter."
 
     # Point C: Far outside campus (Tipitapa / Airport)
     farLat, farLng = 12.14000, -86.17000
     farResult = CampusGeoUtils.isWithinCampusPerimeter(farLat, farLng)
-    print(f"  ✓ Test Point C (Far Outside {farLat}, {farLng}): isInside={farResult}")
+    print(f"  [OK] Test Point C (Far Outside {farLat}, {farLng}): isInside={farResult}")
     assert farResult is False, "Test 5 Failed: Expected far location to be outside perimeter."
 
     # Point D: Buffer tolerance check (12 meters outside south entrance)
@@ -133,7 +133,7 @@ def runGraphTestSuite():
     )
     strictCheck = CampusGeoUtils.isWithinCampusPerimeter(nearEdgeLat, nearEdgeLng, bufferMeters=0.0)
     bufferedCheck = CampusGeoUtils.isWithinCampusPerimeter(nearEdgeLat, nearEdgeLng, bufferMeters=25.0)
-    print(f"  ✓ Test Point D (Near South Boundary: {distToEdge:.1f}m off): strict={strictCheck}, with 25m buffer={bufferedCheck}")
+    print(f"  [OK] Test Point D (Near South Boundary: {distToEdge:.1f}m off): strict={strictCheck}, with 25m buffer={bufferedCheck}")
     assert strictCheck is False and bufferedCheck is True, "Test 5 Failed: Buffer tolerance logic discrepancy."
 
     # 6. Building P Child Graph / Subgraph Indoor Routing Test
@@ -146,7 +146,7 @@ def runGraphTestSuite():
     f1Nodes = len(sgP.getNodesByFloor(1))
     f2Nodes = len(sgP.getNodesByFloor(2))
     f3Nodes = len(sgP.getNodesByFloor(3))
-    print(f"  ✓ Building P Loaded: {sgP.name} ({totalNodes} nodes across {len(sgP.floors)} floors)")
+    print(f"  [OK] Building P Loaded: {sgP.name} ({totalNodes} nodes across {len(sgP.floors)} floors)")
     print(f"     • Floor 1 nodes: {f1Nodes}")
     print(f"     • Floor 2 nodes: {f2Nodes}")
     print(f"     • Floor 3 nodes: {f3Nodes}")
@@ -181,14 +181,14 @@ def runGraphTestSuite():
     assert resF3["success"] is True, "Test 6c Failed: Expected successful route P101 -> P306"
     assert resF3["floorsCrossed"] == [1, 2, 3], "Test 6c Failed: Expected floors [1, 2, 3]"
 
-    # 6d. Accessible Route Verification (♿)
+    # 6d. Accessible Route Verification
     # Ramp from parking to Floor 1: Accessible
     resRamp = sgP.calculateIndoorRoute("p_ramp_parking", "p_room_108", accessibleOnly=True, lang="spa")
     assert resRamp["success"] is True, "Test 6d Failed: Ramp to Floor 1 should be accessible"
     # Climbing stairs to Floor 2: Not accessible (stairs only)
     resNoWheelchairStairs = sgP.calculateIndoorRoute("p_room_101", "p_room_205", accessibleOnly=True, lang="spa")
     assert resNoWheelchairStairs["success"] is False, "Test 6d Failed: Stairs should be blocked for wheelchair routing"
-    print(f"  ✓ Accessibility Check: Ramps allow wheelchair access; stairs are properly blocked when accessibleOnly=True.")
+    print(f"  [OK] Accessibility Check: Ramps allow wheelchair access; stairs are properly blocked when accessibleOnly=True.")
 
     print("\n" + "=" * 80)
     print("  ALL GRAPH, PERIMETER & SUBGRAPH TESTS COMPLETED SUCCESSFULLY!")

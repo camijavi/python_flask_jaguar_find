@@ -72,8 +72,8 @@ CATEGORY_METADATA = {
         "badgeColor": "violet"
     },
     CampusCategory.ACCESSIBLE_RAMP: {
-        "labelSpanish": "Rampas Accesibles ♿",
-        "labelEnglish": "Accessible Ramps ♿",
+        "labelSpanish": "Rampas Accesibles",
+        "labelEnglish": "Accessible Ramps",
         "icon": "wheelchair",
         "badgeColor": "sky"
     },

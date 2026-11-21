@@ -5,7 +5,7 @@ CHILD GRAPH / SUBGRAPH ARCHITECTURE FOR INDOOR CAMPUS NAVIGATION
 ================================================================================
 Encapsulates an indoor, multi-floor directed graph for an individual building
 (e.g. Building P - Copérnico). Provides room-to-room Dijkstra shortest-path
-routing, accessibility filtering (♿), floor-specific node queries, and
+routing, accessibility filtering, floor-specific node queries, and
 vertical floor transitions (stairs, elevators, ramps).
 ================================================================================
 """

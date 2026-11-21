@@ -19,6 +19,7 @@ class CampusCategory:
     ADMINISTRATIVE = "administrative"
     SPORTS = "sports"
     AUDITORIUM = "auditorium"
+    STAIRS = "stairs"
 
 # Metadata dictionary for frontend icons, labels and accessibility tags
 CATEGORY_METADATA = {
@@ -71,8 +72,8 @@ CATEGORY_METADATA = {
         "badgeColor": "violet"
     },
     CampusCategory.ACCESSIBLE_RAMP: {
-        "labelSpanish": "Rampas Accesibles ♿",
-        "labelEnglish": "Accessible Ramps ♿",
+        "labelSpanish": "Rampas Accesibles",
+        "labelEnglish": "Accessible Ramps",
         "icon": "wheelchair",
         "badgeColor": "sky"
     },
@@ -93,5 +94,11 @@ CATEGORY_METADATA = {
         "labelEnglish": "Auditoriums & Events",
         "icon": "users-viewfinder",
         "badgeColor": "orange"
+    },
+    CampusCategory.STAIRS: {
+        "labelSpanish": "Escaleras & Accesos Verticales",
+        "labelEnglish": "Stairs & Vertical Access",
+        "icon": "stairs",
+        "badgeColor": "gray"
     }
 }

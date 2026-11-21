@@ -142,7 +142,7 @@
                 "buildingE": "E", "buildingF": "F", "buildingG": "G", "buildingH": "H",
                 "buildingI": "I", "buildingJ": "J", "buildingK": "K", "buildingL": "L",
                 "buildingM": "M", "buildingN": "N", "buildingO": "O", "buildingP": "P",
-                "sportsZone": "⚽", "jaguarCenter": "JC"
+                "sportsZone": "S", "jaguarCenter": "JC"
             };
             const nameMap = {
                 "buildingA": "Edificio A", "buildingB": "Edificio B", "buildingC": "Edificio C",
@@ -197,7 +197,9 @@
 
                 badgeEl.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    if (typeof window.showBuildingPopover === "function") {
+                    if (nodeId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
+                        window.openBuildingPIsometricModal();
+                    } else if (typeof window.showBuildingPopover === "function") {
                         window.showBuildingPopover(bldgData, anchor);
                     }
                 });

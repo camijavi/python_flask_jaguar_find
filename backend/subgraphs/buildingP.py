@@ -188,7 +188,7 @@ def buildBuildingPSubgraph() -> BuildingSubgraph:
     # Rampa del estacionamiento hacia el P (enfrente del O)
     subgraph.addNode(Node(
         nodeId="p_ramp_parking",
-        name="Rampa del Estacionamiento hacia Edificio P ♿",
+        name="Rampa del Estacionamiento hacia Edificio P",
         category=CampusCategory.ACCESSIBLE_RAMP,
         xPercent=33.0, yPercent=27.0,
         latitude=12.106991, longitude=-86.258233,

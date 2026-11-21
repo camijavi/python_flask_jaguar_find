@@ -333,7 +333,7 @@ PLACES_CATALOG = [
     },
     {
         "placeId": "accessibleRestroomE",
-        "name": "Servicios Sanitarios Mixtos Inclusivos ♿",
+        "name": "Servicios Sanitarios Mixtos Inclusivos",
         "category": CampusCategory.RESTROOM,
         "parentBuildingId": "buildingE",
         "floorLevel": 1,
@@ -441,7 +441,7 @@ PLACES_CATALOG = [
     },
     {
         "placeId": "accessibleRestroomG",
-        "name": "Servicios Sanitarios Mixtos Inclusivos ♿",
+        "name": "Servicios Sanitarios Mixtos Inclusivos",
         "category": CampusCategory.RESTROOM,
         "parentBuildingId": "buildingG",
         "floorLevel": 1,
@@ -703,7 +703,7 @@ PLACES_CATALOG = [
         "locationNotes": "Edificio P, Planta Baja, extremo oeste.", "keywords": ["baños p", "baño p", "baños p1", "sanitarios p1"]
     },
     {
-        "placeId": "rampParkingP", "name": "Rampa Accesible Estacionamiento hacia Edificio P ♿", "category": CampusCategory.ACCESSIBLE_RAMP,
+        "placeId": "rampParkingP", "name": "Rampa Accesible Estacionamiento hacia Edificio P", "category": CampusCategory.ACCESSIBLE_RAMP,
         "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
         "latitude": 12.106991, "longitude": -86.258233,
         "locationNotes": "Rampa desde el estacionamiento hacia el Edificio P, enfrente del Edificio O.", "keywords": ["rampa p", "rampa edificio p", "rampa estacionamiento p"]
@@ -896,11 +896,11 @@ PLACES_CATALOG = [
     },
 
     # -------------------------------------------------------------------------
-    # ACCESSIBLE RAMPS (♿ INCLUSIVITY)
+    # ACCESSIBLE RAMPS (INCLUSIVITY)
     # -------------------------------------------------------------------------
     {
         "placeId": "rampBuildingA",
-        "name": "Rampa de Acceso Edificio A ♿",
+        "name": "Rampa de Acceso Edificio A",
         "category": CampusCategory.ACCESSIBLE_RAMP,
         "parentBuildingId": "buildingA",
         "floorLevel": 1,
@@ -910,7 +910,7 @@ PLACES_CATALOG = [
     },
     {
         "placeId": "rampBuildingB",
-        "name": "Rampa de Acceso Edificio B ♿",
+        "name": "Rampa de Acceso Edificio B",
         "category": CampusCategory.ACCESSIBLE_RAMP,
         "parentBuildingId": "buildingB",
         "floorLevel": 1,
@@ -920,7 +920,7 @@ PLACES_CATALOG = [
     },
     {
         "placeId": "rampBuildingG",
-        "name": "Rampa Auditorio Central Edificio G ♿",
+        "name": "Rampa Auditorio Central Edificio G",
         "category": CampusCategory.ACCESSIBLE_RAMP,
         "parentBuildingId": "buildingG",
         "floorLevel": 1,
@@ -930,7 +930,7 @@ PLACES_CATALOG = [
     },
     {
         "placeId": "rampJaguarCenter",
-        "name": "Rampa de Acceso Jaguar Center ♿",
+        "name": "Rampa de Acceso Jaguar Center",
         "category": CampusCategory.ACCESSIBLE_RAMP,
         "parentBuildingId": "jaguarCenter",
         "floorLevel": 1,

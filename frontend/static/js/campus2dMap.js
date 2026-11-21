@@ -609,6 +609,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     <span class="text-slate-600">${f.rooms}</span>
                 </div>
             `).join("");
+
+            if (bldgData.id === "buildingP") {
+                popoverFacilities.innerHTML += `
+                    <div class="mt-2.5 pt-2 border-t border-slate-100">
+                        <button type="button" onclick="if(typeof window.openBuildingPIsometricModal==='function') window.openBuildingPIsometricModal();" class="w-full py-1.5 px-2 bg-pink-800 hover:bg-pink-900 text-white rounded-lg font-bold text-[11px] shadow-sm flex items-center justify-center gap-1.5 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <span>Ver Vista Isométrica 3D</span>
+                        </button>
+                    </div>
+                `;
+            }
         }
 
         // Highlight shape in SVG
@@ -705,7 +716,12 @@ document.addEventListener("DOMContentLoaded", function () {
             const nodeId = el.getAttribute("data-node");
             const bldgData = CAMPUS_BUILDINGS[nodeId];
             if (bldgData) {
-                showBuildingPopover(bldgData, bldgData.anchor);
+                // When clicking Building P, animate and open the 3D isometric cutaway
+                if (nodeId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
+                    window.openBuildingPIsometricModal();
+                } else {
+                    showBuildingPopover(bldgData, bldgData.anchor);
+                }
 
                 // On small devices, close directory sidebar menu so the focused building is immediately visible
                 if (window.innerWidth < 1024 && typeof window.toggleNavigateMapSidebar === "function") {
@@ -731,7 +747,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 scale = 1.35;
                 applyTransform();
 
-                showBuildingPopover(bldgData, bldgData.anchor);
+                if (nodeId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
+                    setTimeout(() => {
+                        window.openBuildingPIsometricModal();
+                    }, 250);
+                } else {
+                    showBuildingPopover(bldgData, bldgData.anchor);
+                }
 
                 // On small devices, close directory sidebar menu so the focused building is immediately visible
                 if (window.innerWidth < 1024 && typeof window.toggleNavigateMapSidebar === "function") {
