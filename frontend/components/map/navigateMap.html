@@ -845,6 +845,7 @@ document.addEventListener("DOMContentLoaded", function() {
         btnClearOrigin.classList.toggle("hidden", !val);
         state.originQuery = val;
         state.originNodeId = null;
+        state.originPlaceId = null;
 
         if (val.trim().length > 0) {
             const matches = getMatches(val);
@@ -852,6 +853,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 originInput.value = selected.title;
                 state.originQuery = selected.title;
                 state.originNodeId = selected.targetNodeId;
+                state.originPlaceId = selected.id;
                 btnClearOrigin.classList.remove("hidden");
             });
         } else {
@@ -863,6 +865,7 @@ document.addEventListener("DOMContentLoaded", function() {
         originInput.value = "";
         state.originQuery = "";
         state.originNodeId = null;
+        state.originPlaceId = null;
         btnClearOrigin.classList.add("hidden");
         originSuggestions.classList.add("hidden");
     });
@@ -943,6 +946,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 destinationInput.value = selected.title;
                 state.destinationQuery = selected.title;
                 state.destinationNodeId = selected.targetNodeId;
+                state.destinationPlaceId = selected.id;
+                window.currentSelectedDestination = {
+                    placeId: selected.id,
+                    title: selected.title,
+                    nodeId: selected.targetNodeId
+                };
                 btnClearDestination.classList.remove("hidden");
             });
         });
@@ -954,12 +963,20 @@ document.addEventListener("DOMContentLoaded", function() {
         btnClearDestination.classList.toggle("hidden", !val);
         state.destinationQuery = val;
         state.destinationNodeId = null;
+        state.destinationPlaceId = null;
+        window.currentSelectedDestination = { placeId: null, title: val, nodeId: null };
 
         const matches = getMatches(val, state.selectedCategory);
         renderSuggestionsList(destinationSuggestions, matches, (selected) => {
             destinationInput.value = selected.title;
             state.destinationQuery = selected.title;
             state.destinationNodeId = selected.targetNodeId;
+            state.destinationPlaceId = selected.id;
+            window.currentSelectedDestination = {
+                placeId: selected.id,
+                title: selected.title,
+                nodeId: selected.targetNodeId
+            };
             btnClearDestination.classList.remove("hidden");
         });
     });
@@ -970,6 +987,12 @@ document.addEventListener("DOMContentLoaded", function() {
             destinationInput.value = selected.title;
             state.destinationQuery = selected.title;
             state.destinationNodeId = selected.targetNodeId;
+            state.destinationPlaceId = selected.id;
+            window.currentSelectedDestination = {
+                placeId: selected.id,
+                title: selected.title,
+                nodeId: selected.targetNodeId
+            };
             btnClearDestination.classList.remove("hidden");
         });
     });
@@ -978,6 +1001,8 @@ document.addEventListener("DOMContentLoaded", function() {
         destinationInput.value = "";
         state.destinationQuery = "";
         state.destinationNodeId = null;
+        state.destinationPlaceId = null;
+        window.currentSelectedDestination = null;
         btnClearDestination.classList.add("hidden");
         destinationSuggestions.classList.add("hidden");
     });
@@ -996,14 +1021,22 @@ document.addEventListener("DOMContentLoaded", function() {
     function swapLocations() {
         const tempVal = originInput.value;
         const tempId = state.originNodeId;
+        const tempPlaceId = state.originPlaceId;
 
         originInput.value = destinationInput.value;
         state.originQuery = destinationInput.value;
         state.originNodeId = state.destinationNodeId;
+        state.originPlaceId = state.destinationPlaceId;
 
         destinationInput.value = tempVal;
         state.destinationQuery = tempVal;
         state.destinationNodeId = tempId;
+        state.destinationPlaceId = tempPlaceId;
+        window.currentSelectedDestination = {
+            placeId: state.destinationPlaceId,
+            title: state.destinationQuery,
+            nodeId: state.destinationNodeId
+        };
 
         btnClearOrigin.classList.toggle("hidden", !originInput.value);
         btnClearDestination.classList.toggle("hidden", !destinationInput.value);
@@ -1044,7 +1077,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 btnModeWheelchair.classList.add("bg-slate-100", "text-slate-700");
             }
         }
-        if (state.originNodeId && state.destinationNodeId) {
+        if ((state.originPlaceId || state.originNodeId) && (state.destinationPlaceId || state.destinationNodeId)) {
             calculateRoute();
         }
     });
@@ -1059,8 +1092,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 8. Calculate Route via /api/map/route
     async function calculateRoute() {
-        const origin = state.originNodeId || originInput.value.trim();
-        const dest = state.destinationNodeId || destinationInput.value.trim();
+        const origin = state.originPlaceId || originInput.value.trim() || state.originNodeId;
+        const dest = state.destinationPlaceId || destinationInput.value.trim() || state.destinationNodeId;
 
         if (!origin || !dest) {
             alert(window.t('map.missing_inputs', 'Por favor ingresa tu origen y destino.'));
@@ -1088,6 +1121,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const routeData = await res.json();
             if (routeData.success) {
                 state.currentRoute = routeData;
+                window.lastJaguarRouteData = routeData;
                 displayRouteResults(routeData);
 
                 // On mobile, collapse sheet and show floating bottom route card
@@ -1137,13 +1171,24 @@ document.addEventListener("DOMContentLoaded", function() {
         route.stepInstructions.forEach((step, idx) => {
             const li = document.createElement("li");
             li.id = `routeStep_${idx}`;
-            li.className = "p-1.5 rounded-md bg-slate-50 hover:bg-slate-100/80 transition-colors flex items-start gap-1.5 border border-slate-100 text-xs";
+            li.className = "p-1.5 rounded-md bg-slate-50 hover:bg-slate-100/80 transition-colors flex items-start gap-1.5 border border-slate-100 text-xs cursor-pointer";
             li.innerHTML = `
                 <span class="w-4 h-4 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-[9px] shrink-0 mt-0.5">
                     ${idx + 1}
                 </span>
                 <span class="step-text leading-tight text-slate-800">${step}</span>
             `;
+            li.addEventListener("click", () => {
+                if (window.campus25dController) {
+                    window.campus25dController.stopSimulation();
+                    const outdoorLen = (route.pathCoordinates && route.pathCoordinates.length) || 0;
+                    if (idx >= outdoorLen - 1 && window.campus25dController.isBuildingPRoute(route)) {
+                        window.campus25dController.launchBuildingPIndoorWaze();
+                    } else if (idx < outdoorLen) {
+                        window.campus25dController.goToStep(idx);
+                    }
+                }
+            });
             routeStepsList.appendChild(li);
         });
 
@@ -1220,9 +1265,13 @@ document.addEventListener("DOMContentLoaded", function() {
         destinationInput.value = "";
         state.originQuery = "";
         state.originNodeId = null;
+        state.originPlaceId = null;
         state.destinationQuery = "";
         state.destinationNodeId = null;
+        state.destinationPlaceId = null;
         state.currentRoute = null;
+        window.lastJaguarRouteData = null;
+        window.currentSelectedDestination = null;
 
         btnClearOrigin.classList.add("hidden");
         btnClearDestination.classList.add("hidden");

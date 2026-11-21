@@ -113,19 +113,23 @@ Key UX & Mobile Features:
                         <div id="p-search-results" class="hidden absolute left-0 right-0 mt-1 bg-white/98 backdrop-blur-md border border-slate-200 rounded-xl shadow-xl max-h-52 overflow-y-auto z-30 divide-y divide-slate-100 text-xs"></div>
                     </div>
 
-                    <!-- Quick Destination Filter Chips (One-tap mobile shortcuts) -->
+                    <!-- Quick Destination Filter Chips (One-tap mobile shortcuts, SVG Icons Only) -->
                     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pointer-events-auto pb-0.5">
                         <button type="button" data-quick-dest="F5-501" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-pink-900 text-white font-bold text-[11px] shadow-sm flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
-                            <span>🔭</span><span>Observatory Copernico</span>
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3m10-10h-3M5 12H2m15.07-7.07l-2.12 2.12M9.05 14.95l-2.12 2.12m10.14 0l-2.12-2.12M9.05 9.05L6.93 6.93"/></svg>
+                            <span>Observatory Copernico</span>
                         </button>
                         <button type="button" data-quick-dest="F4-401" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
-                            <span>🎤</span><span>P401</span>
+                            <svg class="w-3.5 h-3.5 text-pink-800 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            <span>P401</span>
                         </button>
                         <button type="button" data-quick-restroom="nearest" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
-                            <span>🚻</span><span>Sanitarios</span>
+                            <svg class="w-3.5 h-3.5 text-slate-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="7" r="3" stroke-width="2"/><circle cx="16" cy="7" r="3" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 20v-2a4 4 0 014-4h2a4 4 0 014 4v2m3 0v-2a3.5 3.5 0 013.5-3.5H21"/></svg>
+                            <span>Sanitarios</span>
                         </button>
                         <button type="button" data-quick-fountain="nearest" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs flex items-center gap-1 active:scale-95 transition-transform cursor-pointer">
-                            <span>💧</span><span>Bebedero</span>
+                            <svg class="w-3.5 h-3.5 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+                            <span>Bebedero</span>
                         </button>
                         <button type="button" data-quick-floor="1" class="p-quick-chip shrink-0 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-slate-700 hover:bg-white border border-slate-200/90 font-semibold text-[11px] shadow-xs active:scale-95 transition-transform cursor-pointer">
                             Aulas P101–108
@@ -248,34 +252,62 @@ Key UX & Mobile Features:
                 </div>
 
                 <!-- 6. COMPACT FLOATING GRAPH WAYFINDING HUD (Bottom-Left of 3D Canvas, No Sidebar) -->
-                <div id="p-floating-wayfinding-hud" class="absolute bottom-3 left-3 right-14 sm:right-auto sm:w-96 z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-xl p-2.5 space-y-2">
+                <div id="p-floating-wayfinding-hud" class="absolute bottom-3 left-3 right-14 sm:right-auto sm:w-[410px] z-20 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-xl p-2.5 space-y-2">
+                    <!-- Campus Origin Context Banner (Shown when arriving from outdoor campus route e.g. FCAE -> P305) -->
+                    <div id="p-campus-handoff-bar" class="hidden items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-pink-50 border border-pink-200 text-[10px] font-bold text-pink-950">
+                        <div class="flex items-center gap-1.5 min-w-0">
+                            <svg class="w-3.5 h-3.5 text-pink-800 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                            <span id="p-campus-handoff-text" class="truncate">Ruta desde Campus &rarr; Edificio P</span>
+                        </div>
+                        <button id="p-btn-back-campus" type="button" class="px-2 py-0.5 rounded-lg bg-white hover:bg-pink-100 border border-pink-200 text-pink-900 font-extrabold shrink-0 cursor-pointer">
+                            Ver Campus 2.5D
+                        </button>
+                    </div>
+
                     <!-- Compact Origin -> Destination Selector Row -->
                     <div class="grid grid-cols-2 gap-1.5 items-center">
                         <div>
-                            <label for="p-select-start" class="block text-[9px] font-extrabold uppercase tracking-wider text-emerald-700 mb-0.5">🟢 Origen</label>
+                            <label for="p-select-start" class="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider text-emerald-700 mb-0.5">
+                                <svg class="w-2.5 h-2.5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/></svg>
+                                <span>Origen</span>
+                            </label>
                             <select id="p-select-start" class="w-full px-2 py-1 text-[11px] font-bold border border-slate-200 rounded-lg bg-slate-50/90 text-slate-800 outline-hidden focus:border-sky-600 truncate"></select>
                         </div>
                         <div>
-                            <label for="p-select-end" class="block text-[9px] font-extrabold uppercase tracking-wider text-sky-700 mb-0.5">🔵 Destino</label>
+                            <label for="p-select-end" class="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider text-sky-700 mb-0.5">
+                                <svg class="w-3 h-3 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span>Destino</span>
+                            </label>
                             <select id="p-select-end" class="w-full px-2 py-1 text-[11px] font-bold border border-slate-200 rounded-lg bg-slate-50/90 text-slate-800 outline-hidden focus:border-sky-600 truncate"></select>
                         </div>
                     </div>
 
-                    <!-- Active Route Step & Graph Coordinates Summary -->
-                    <div class="flex items-center justify-between gap-2 bg-slate-900 text-white rounded-xl px-2.5 py-1.5">
-                        <button id="p-btn-prev-step" type="button" class="w-6 h-6 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs font-bold shrink-0 cursor-pointer" title="Paso anterior">
-                            &#9664;
+                    <!-- Active Route Step, Waze Hallway Camera Controls & Graph Coordinates Summary -->
+                    <div class="flex items-center justify-between gap-1.5 bg-slate-900 text-white rounded-xl px-2 py-1.5">
+                        <button id="p-btn-prev-step" type="button" class="w-6 h-6 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs font-bold shrink-0 cursor-pointer" title="Paso anterior (Vista Waze)">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/></svg>
                         </button>
-                        <div class="min-w-0 flex-1 text-center">
-                            <div id="p-hud-step-title" class="text-[11px] font-extrabold truncate text-sky-300">
-                                Selecciona un destino en el mapa
+                        <div class="min-w-0 flex-1 text-center px-1">
+                            <div class="flex items-center justify-center gap-1 min-w-0">
+                                <span id="p-hud-step-icon" class="shrink-0 text-sky-400 flex items-center">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="12 2 19 21 12 17 5 21 12 2" stroke-width="2" stroke-linejoin="round"/></svg>
+                                </span>
+                                <div id="p-hud-step-title" class="text-[11px] font-extrabold truncate text-sky-300">
+                                    Selecciona un destino en el mapa
+                                </div>
                             </div>
                             <div id="p-hud-step-meta" class="text-[10px] text-slate-300 truncate">
                                 Grafo Edificio P &middot; 5 niveles
                             </div>
                         </div>
-                        <button id="p-btn-next-step" type="button" class="w-6 h-6 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs font-bold shrink-0 cursor-pointer" title="Siguiente paso">
-                            &#9654;
+                        <button id="p-btn-next-step" type="button" class="w-6 h-6 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs font-bold shrink-0 cursor-pointer" title="Siguiente paso (Vista Waze)">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/></svg>
+                        </button>
+                        <button id="p-btn-waze-sim" type="button" class="px-2.5 h-6 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-[10px] font-extrabold flex items-center gap-1 shrink-0 cursor-pointer shadow-xs" title="Simular recorrido en vista Waze por pasillos y escaleras">
+                            <span id="p-icon-waze-sim" class="flex items-center">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            </span>
+                            <span id="p-label-waze-sim">Waze</span>
                         </button>
                     </div>
                 </div>
@@ -515,6 +547,7 @@ Key UX & Mobile Features:
     const stairFlightGroups = [];
     const BASE_STAIR_H = 3.8;
     let routeGroup = null;
+    let wazePuckGroup = null;
 
     let startPinEl = null;
     let endPinEl = null;
@@ -528,6 +561,7 @@ Key UX & Mobile Features:
         bearingDeg: 22,
         zoom: 74,
         panX: 0,
+        panY: null,
         panZ: 0,
         showRailings: true,
         showDoors: true,
@@ -542,13 +576,21 @@ Key UX & Mobile Features:
         isTopDown2D: false
     };
 
+    // Continuous 3D Waze Hallway & Staircase Walk Simulation State
+    const wazeSim = {
+        active: false,
+        lastTime: 0,
+        distAlongRoute: 0,
+        speedMetersPerSec: 8.5
+    };
+
     // Smooth Camera Interpolation Target
     const camAnim = {
         active: false,
         startTime: 0,
         duration: 420,
-        from: { pitchDeg: 44, bearingDeg: 22, zoom: 74, panX: 0, panZ: 0, explode: 3.8 },
-        to: { pitchDeg: 44, bearingDeg: 22, zoom: 74, panX: 0, panZ: 0, explode: 3.8 }
+        from: { pitchDeg: 44, bearingDeg: 22, zoom: 74, panX: 0, panY: 6.08, panZ: 0, explode: 3.8 },
+        to: { pitchDeg: 44, bearingDeg: 22, zoom: 74, panX: 0, panY: 6.08, panZ: 0, explode: 3.8 }
     };
 
     function getResponsiveDefaultZoom(baseZoom) {
@@ -565,19 +607,25 @@ Key UX & Mobile Features:
     }
 
     function animateCameraTo(target, durationMs) {
+        const currentTargetY = state.panY !== null ? state.panY : getCameraTargetY();
+        const rawTargetBearing = target.bearingDeg !== undefined ? target.bearingDeg : state.bearingDeg;
+        let diffB = ((rawTargetBearing - state.bearingDeg) % 360 + 540) % 360 - 180;
+
         camAnim.from = {
             pitchDeg: state.pitchDeg,
             bearingDeg: state.bearingDeg,
             zoom: state.zoom,
             panX: state.panX,
+            panY: currentTargetY,
             panZ: state.panZ,
             explode: state.explode
         };
         camAnim.to = {
             pitchDeg: target.pitchDeg !== undefined ? target.pitchDeg : state.pitchDeg,
-            bearingDeg: target.bearingDeg !== undefined ? target.bearingDeg : state.bearingDeg,
+            bearingDeg: state.bearingDeg + diffB,
             zoom: target.zoom !== undefined ? target.zoom : state.zoom,
             panX: target.panX !== undefined ? target.panX : state.panX,
+            panY: target.panY !== undefined ? target.panY : (target.panY === null ? getDefaultFloorTargetY() : currentTargetY),
             panZ: target.panZ !== undefined ? target.panZ : state.panZ,
             explode: target.explode !== undefined ? target.explode : state.explode
         };
@@ -812,12 +860,23 @@ Key UX & Mobile Features:
         railingGroups.push(g);
     }
 
-    function createLabel(text, kind, spaceId) {
+    const LABEL_SVG_ICONS = {
+        restroom: `<svg class="w-3 h-3 inline-block mr-0.5 -mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="7" r="3" stroke-width="2"/><circle cx="16" cy="7" r="3" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 20v-2a4 4 0 014-4h2a4 4 0 014 4v2"/></svg>`,
+        fountain: `<svg class="w-3 h-3 inline-block mr-0.5 -mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>`,
+        access: `<svg class="w-3 h-3 inline-block mr-0.5 -mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>`,
+        ramp: `<svg class="w-3 h-3 inline-block mr-0.5 -mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"/></svg>`
+    };
+
+    function createLabel(text, kind, spaceId, iconType) {
         const labelsLayer = document.getElementById("p-labels-layer");
         const el = document.createElement("button");
         el.type = "button";
         el.className = `p-map-label ${kind}`.trim();
-        el.textContent = text;
+        if (iconType && LABEL_SVG_ICONS[iconType]) {
+            el.innerHTML = `${LABEL_SVG_ICONS[iconType]}<span>${text}</span>`;
+        } else {
+            el.textContent = text;
+        }
         if (spaceId) {
             el.dataset.spaceId = spaceId;
             el.addEventListener("click", (e) => {
@@ -1061,7 +1120,7 @@ Key UX & Mobile Features:
         basin.userData = { spaceId: fullId };
         interactiveMeshes.push(body, basin);
 
-        const el = createLabel(shortLabel, "fountain", fullId);
+        const el = createLabel(shortLabel, "fountain", fullId, "fountain");
         spaceRecords.push({
             id: fullId,
             code: id,
@@ -1397,7 +1456,8 @@ Key UX & Mobile Features:
                     id: "F1-ENT-W",
                     graphNodeId: "p_stairs_f1_ext_left",
                     name: "Escaleras del P (Izquierda / Exterior)",
-                    shortLabel: "🚪 Esc. Ext. Izq.",
+                    shortLabel: "Esc. Ext. Izq.",
+                    iconType: "access",
                     x: -36.5,
                     z: 4.9,
                     lat: 12.107584,
@@ -1409,7 +1469,8 @@ Key UX & Mobile Features:
                     id: "F1-ENT-O",
                     graphNodeId: "p_stairs_to_building_o",
                     name: "Escaleras del P hacia Edificio O",
-                    shortLabel: "🚪 Hacia Edif. O",
+                    shortLabel: "Hacia Edif. O",
+                    iconType: "access",
                     x: 33.8,
                     z: 4.9,
                     lat: 12.107453,
@@ -1421,7 +1482,8 @@ Key UX & Mobile Features:
                     id: "F1-ENT-E",
                     graphNodeId: "p_ramp_parking",
                     name: "Rampa del Estacionamiento (Frente al O)",
-                    shortLabel: "♿ Rampa Parqueo",
+                    shortLabel: "Rampa Parqueo",
+                    iconType: "ramp",
                     x: 38.2,
                     z: 4.9,
                     lat: 12.106991,
@@ -1455,7 +1517,7 @@ Key UX & Mobile Features:
                     notes: ent.notes,
                     mesh: pad,
                     baseMat: MAT.doorPanel,
-                    labelEl: createLabel(ent.shortLabel, "stair", ent.id),
+                    labelEl: createLabel(ent.shortLabel, "stair", ent.id, ent.iconType),
                     localPos: new THREE.Vector3(ent.x, 1.4, ent.z)
                 });
             });
@@ -1590,8 +1652,8 @@ Key UX & Mobile Features:
 
             const labelText = item.kind === "room"
                 ? `P${item.code}`
-                : (item.kind === "restroom-men" ? `🚻 H P${floorNum}` : `🚻 M P${floorNum}`);
-            const el = createLabel(labelText, item.kind === "room" ? "" : "restroom", fullId);
+                : (item.kind === "restroom-men" ? `H P${floorNum}` : `M P${floorNum}`);
+            const el = createLabel(labelText, item.kind === "room" ? "" : "restroom", fullId, item.kind === "room" ? null : "restroom");
 
             const spaceName = item.kind === "room"
                 ? `Salón P-${item.code}`
@@ -1633,7 +1695,7 @@ Key UX & Mobile Features:
                 1,
                 "FOUNTAIN-1",
                 "p_fountain_f1",
-                "💧 P1",
+                "P1",
                 "Bebedero 1er Piso del P",
                 -31.5,
                 1.85,
@@ -1647,7 +1709,7 @@ Key UX & Mobile Features:
                 2,
                 "FOUNTAIN-2E",
                 "p_fountain_f2_east",
-                "💧 P2-E",
+                "P2-E",
                 "2do Bebedero del P (Piso 2 Este)",
                 -25.4,
                 1.85,
@@ -1660,7 +1722,7 @@ Key UX & Mobile Features:
                 2,
                 "FOUNTAIN-2W",
                 "p_fountain_f2_west",
-                "💧 P2-O",
+                "P2-O",
                 "Bebedero del P (Piso 2 Oeste)",
                 20.8,
                 1.85,
@@ -1674,7 +1736,7 @@ Key UX & Mobile Features:
                 3,
                 "FOUNTAIN-3",
                 "p_fountain_f3",
-                "💧 P3",
+                "P3",
                 "1er Bebedero del P (Piso 3)",
                 -27.6,
                 1.85,
@@ -1712,7 +1774,7 @@ Key UX & Mobile Features:
         floorGroups.push({ floorNum, group: floorGroup });
     }
 
-    // Populate Wayfinding Dropdowns with All Graph Nodes (Entrances, Classrooms, Fountains, Restrooms)
+    // Populate Wayfinding Dropdowns with All Graph Nodes (Entrances, Classrooms, Fountains, Restrooms — Zero Emojis)
     function populateSelectors() {
         const startSel = document.getElementById("p-select-start");
         const endSel = document.getElementById("p-select-end");
@@ -1731,8 +1793,7 @@ Key UX & Mobile Features:
         entrances.forEach(r => {
             const opt = document.createElement("option");
             opt.value = r.id;
-            const icon = r.id === "F1-ENT-E" ? "♿" : (r.type === "Escalera" ? "🪜" : "🚪");
-            opt.textContent = `${icon} ${r.name}`;
+            opt.textContent = r.name;
             startSel.appendChild(opt);
         });
         destinations.forEach(r => {
@@ -1883,31 +1944,35 @@ Key UX & Mobile Features:
         }
 
         const clean = raw.toLowerCase().replace(/[\s\-_]/g, "");
-        // Check placeCatalog IDs like classroomP101..306, copernicusObservatoryP, drinkingFountainP1, restroomsP1
-        if (clean.includes("observator") || clean.includes("copernic") || clean.includes("501")) return "F5-501";
-        if (clean.includes("401")) return "F4-401";
-        if (clean.includes("fountainp1") || clean.includes("bebederop1")) return "F1-FOUNTAIN-1";
-        if (clean.includes("fountainp2east") || clean.includes("bebederop2este")) return "F2-FOUNTAIN-2E";
-        if (clean.includes("fountainp2west") || clean.includes("bebederop2oeste")) return "F2-FOUNTAIN-2W";
-        if (clean.includes("fountainp3") || clean.includes("bebederop3")) return "F3-FOUNTAIN-3";
-        if (clean.includes("restroomsp1") || clean.includes("banosp1")) return "F1-HOMBRES-1";
-        if (clean.includes("restroomsp2") || clean.includes("banosp2")) return "F2-HOMBRES-2";
-        if (clean.includes("restroomsp3") || clean.includes("banosp3")) return "F3-HOMBRES-3";
-        if (clean.includes("rampparking") || clean.includes("rampa")) return "F1-ENT-E";
-        if (clean.includes("buildingo") || clean.includes("edificioo")) return "F1-ENT-O";
+        // Do not misidentify the macro building name "Edificio P (Aulas & Observatorio Copérnico)" as a specific room
+        if (clean === "buildingp" || clean === "edificiop" || clean.startsWith("edificiop(") || clean.startsWith("edificiopaulas")) {
+            return null;
+        }
 
+        // 1. Check room numbers first (P101..P108, P201..P208, P301..P306, P401, P501)
         const roomMatch = clean.match(/p?([12345]0[1-8])/);
         if (roomMatch) {
             const code = roomMatch[1];
             const f = code.charAt(0);
-            const candidate = `F${f}-${code}`;
-            if (spaceRecords.some(r => r.id === candidate)) return candidate;
+            return `F${f}-${code}`;
         }
+
+        // 2. Check fountains, restrooms, entrances, and Observatory Copernico
+        if (clean.includes("fountainp1") || clean.includes("bebederop1") || clean.includes("bebedero1")) return "F1-FOUNTAIN-1";
+        if (clean.includes("fountainp2east") || clean.includes("bebederop2este") || clean.includes("2dobebedero")) return "F2-FOUNTAIN-2E";
+        if (clean.includes("fountainp2west") || clean.includes("bebederop2oeste")) return "F2-FOUNTAIN-2W";
+        if (clean.includes("fountainp3") || clean.includes("bebederop3") || clean.includes("1erbebedero")) return "F3-FOUNTAIN-3";
+        if (clean.includes("restroomsp1") || clean.includes("banosp1") || clean.includes("primerpiso")) return "F1-HOMBRES-1";
+        if (clean.includes("restroomsp2") || clean.includes("banosp2") || clean.includes("segundopiso")) return "F2-HOMBRES-2";
+        if (clean.includes("restroomsp3") || clean.includes("banosp3") || clean.includes("tercerpiso")) return "F3-HOMBRES-3";
+        if (clean.includes("rampparking") || clean.includes("rampa")) return "F1-ENT-E";
+        if (clean.includes("buildingo") || clean.includes("edificioo")) return "F1-ENT-O";
+        if (clean === "copernicusobservatoryp" || clean.startsWith("observator") || clean.includes("cupula")) return "F5-501";
 
         const fuzzy = spaceRecords.find(r =>
             r.id.toLowerCase().replace(/[\s\-_]/g, "") === clean ||
             r.code.toLowerCase().replace(/[\s\-_]/g, "") === clean ||
-            r.name.toLowerCase().replace(/[\s\-_]/g, "").includes(clean)
+            r.name.toLowerCase().replace(/[\s\-_]/g, "") === clean
         );
         return fuzzy ? fuzzy.id : null;
     }
@@ -2113,15 +2178,21 @@ Key UX & Mobile Features:
         pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: endHallZ });
         pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
 
-        // 4. Build Turn-by-Turn Graph Steps with GPS coordinates (lat, lng)
+        // 4. Build Turn-by-Turn Graph Steps with GPS coordinates (lat, lng) & Waze Hallway Camera Angles
         const steps = [];
         steps.push({
-            icon: "🟢",
+            iconKey: "origin",
             title: `Origen: ${startRec.name}`,
             detail: `Piso ${startRec.floor} · Nodo ${startNodeId} (${startRec.lat.toFixed(6)}, ${startRec.lng.toFixed(6)})`,
             floor: startRec.floor,
             focusX: startRec.x,
             focusZ: startHallZ,
+            puckX: startRec.x,
+            puckZ: startRec.type === "Acceso" ? 4.8 : startHallZ,
+            puckYaw: startRec.x < 0 ? Math.PI * 0.5 : -Math.PI * 0.5,
+            wazeBearing: startRec.x < 0 ? -38 : 38,
+            wazePitch: 28,
+            wazeZoom: 28,
             nodeId: startNodeId,
             lat: startRec.lat,
             lng: startRec.lng
@@ -2131,15 +2202,24 @@ Key UX & Mobile Features:
         let idx = 0;
         while (idx < edgesUsed.length) {
             const e = edgesUsed[idx];
+            const uStartNode = BUILDING_P_GRAPH_NODES[e.from];
             const vNode = BUILDING_P_GRAPH_NODES[e.to];
             if (e.isVertical) {
+                const goingUp = vNode.floor > uStartNode.floor;
                 steps.push({
-                    icon: vNode.floor > BUILDING_P_GRAPH_NODES[e.from].floor ? "⬆️" : "⬇️",
+                    iconKey: goingUp ? "up" : "down",
                     title: e.instruction,
                     detail: `Piso ${vNode.floor} · ${vNode.name} (${vNode.lat.toFixed(6)}, ${vNode.lng.toFixed(6)})`,
                     floor: vNode.floor,
                     focusX: vNode.hallX,
-                    focusZ: -1.4,
+                    focusZ: -1.2,
+                    puckX: vNode.hallX,
+                    puckZ: 1.25,
+                    puckYaw: goingUp ? Math.PI : 0,
+                    wazeBearing: vNode.hallX < 0 ? -24 : 24,
+                    wazePitch: 32,
+                    wazeZoom: 27,
+                    isVertical: true,
                     nodeId: vNode.id,
                     lat: vNode.lat,
                     lng: vNode.lng
@@ -2162,13 +2242,22 @@ Key UX & Mobile Features:
                     hopCount++;
                 }
                 const targetV = BUILDING_P_GRAPH_NODES[lastEdge.to];
+                const dxHall = targetV.hallX - (uStartNode ? uStartNode.hallX : targetV.hallX);
+                const headingRight = dxHall >= 0;
                 steps.push({
-                    icon: "🚶",
+                    iconKey: "walk",
                     title: lastEdge.instruction,
-                    detail: `Piso ${targetV.floor} · ~${Math.round(segDist)}m hacia ${targetV.name} (${targetV.lat.toFixed(6)}, ${targetV.lng.toFixed(6)})`,
+                    detail: `Pasillo Piso ${targetV.floor} · ~${Math.round(segDist)}m hacia ${targetV.name} (${targetV.lat.toFixed(6)}, ${targetV.lng.toFixed(6)})`,
                     floor: targetV.floor,
                     focusX: targetV.hallX,
-                    focusZ: targetV.hallZ,
+                    focusZ: targetV.hallZ * 0.65,
+                    puckX: targetV.hallX,
+                    puckZ: targetV.hallZ,
+                    puckYaw: headingRight ? Math.PI * 0.5 : -Math.PI * 0.5,
+                    // Waze Hallway Chase Camera: positioned behind the user looking straight down the active hallway
+                    wazeBearing: headingRight ? -68 : 68,
+                    wazePitch: 24,
+                    wazeZoom: 24,
                     nodeId: targetV.id,
                     lat: targetV.lat,
                     lng: targetV.lng
@@ -2179,12 +2268,19 @@ Key UX & Mobile Features:
 
         const destGNode = BUILDING_P_GRAPH_NODES[targetNodeId] || endRec;
         steps.push({
-            icon: "🔵",
-            title: `Destino: ${endRec.name}`,
+            iconKey: "dest",
+            title: `Llegaste a ${endRec.name}`,
             detail: `Piso ${endRec.floor} · Nodo ${targetNodeId} (${destGNode.lat.toFixed(6)}, ${destGNode.lng.toFixed(6)})`,
             floor: endRec.floor,
             focusX: endRec.x,
-            focusZ: endRec.z,
+            focusZ: 0.2,
+            puckX: endEntryX,
+            puckZ: 1.5,
+            puckYaw: Math.PI,
+            // Waze Arrival Camera: turns South to face the destination classroom door head-on
+            wazeBearing: 6,
+            wazePitch: 25,
+            wazeZoom: 21,
             nodeId: targetNodeId,
             lat: destGNode.lat,
             lng: destGNode.lng
@@ -2203,35 +2299,258 @@ Key UX & Mobile Features:
             steps
         };
         state.activeStepIdx = null;
+        stopWazeIndoorSimulation();
         renderRoute3D();
         renderDirectionsUI();
     }
 
+    const STEP_SVG_ICONS = {
+        origin: '<svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="9" stroke-opacity="0.45"></circle></svg>',
+        up: '<svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>',
+        down: '<svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>',
+        walk: '<svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>',
+        dest: '<svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"></path><circle cx="12" cy="11" r="3"></circle></svg>',
+        waze: '<svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>',
+        play: '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>',
+        pause: '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>'
+    };
+
+    function setHudStepIcon(iconKey) {
+        const iconHolder = document.getElementById("p-hud-step-icon");
+        if (iconHolder) {
+            iconHolder.innerHTML = STEP_SVG_ICONS[iconKey] || STEP_SVG_ICONS.waze;
+        }
+    }
+
+    // Create 3D Waze Navigation Puck (Blue-Cyan Directional Chevron + Halo Ring)
+    function createWazePuckMesh() {
+        const g = new THREE.Group();
+
+        const haloGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.05, 24);
+        const haloMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.35 });
+        const halo = new THREE.Mesh(haloGeo, haloMat);
+        halo.position.y = 0.04;
+        g.add(halo);
+
+        const discGeo = new THREE.CylinderGeometry(0.62, 0.62, 0.10, 24);
+        const discMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, emissive: 0x0369a1, emissiveIntensity: 0.45, roughness: 0.2 });
+        const disc = new THREE.Mesh(discGeo, discMat);
+        disc.position.y = 0.09;
+        g.add(disc);
+
+        // White forward-pointing arrow cone on top of the puck (points along +Z in local space when rotated)
+        const arrowGeo = new THREE.ConeGeometry(0.36, 0.78, 4);
+        const arrowMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xe0f2fe, emissiveIntensity: 0.35, roughness: 0.2 });
+        const arrow = new THREE.Mesh(arrowGeo, arrowMat);
+        arrow.rotation.x = Math.PI * 0.5;
+        arrow.rotation.z = Math.PI * 0.25;
+        arrow.position.set(0, 0.24, 0.05);
+        g.add(arrow);
+
+        return g;
+    }
+
     function focusRouteStep(stepIdx) {
         if (!state.activePath || !state.activePath.steps || !state.activePath.steps[stepIdx]) return;
+        stopWazeIndoorSimulation();
+
         const totalSteps = state.activePath.steps.length;
         const clampedIdx = ((stepIdx % totalSteps) + totalSteps) % totalSteps;
         state.activeStepIdx = clampedIdx;
         const step = state.activePath.steps[clampedIdx];
+        const spacing = state.selectedFloor === "all" ? 4.4 : state.explode;
+        const floorY = (step.floor - 1) * spacing;
 
         const hudTitle = document.getElementById("p-hud-step-title");
         const hudMeta = document.getElementById("p-hud-step-meta");
+        setHudStepIcon(step.iconKey || "waze");
         if (hudTitle) {
-            hudTitle.textContent = `${step.icon} Paso ${clampedIdx + 1}/${totalSteps}: ${step.title}`;
+            hudTitle.textContent = `Paso ${clampedIdx + 1}/${totalSteps}: ${step.title}`;
         }
         if (hudMeta) {
             hudMeta.textContent = step.detail;
         }
 
-        // Smoothly fly camera to focus on that graph node's 3D coordinate
-        const targetZoom = getResponsiveDefaultZoom(46);
+        // Move 3D Waze Puck to the active step position & orient along travel direction
+        if (wazePuckGroup) {
+            wazePuckGroup.visible = true;
+            wazePuckGroup.position.set(
+                step.puckX !== undefined ? step.puckX : step.focusX,
+                floorY + 0.48,
+                step.puckZ !== undefined ? step.puckZ : step.focusZ
+            );
+            if (step.puckYaw !== undefined) {
+                wazePuckGroup.rotation.y = step.puckYaw;
+            }
+        }
+
+        // Smoothly fly camera into Waze Hallway / Stairwell / Door Chase Perspective
+        const targetZoom = getResponsiveDefaultZoom(step.wazeZoom || 25);
         animateCameraTo({
-            panX: step.focusX * 0.65,
-            panZ: step.focusZ * 0.4,
+            panX: step.focusX,
+            panY: floorY + 1.25,
+            panZ: step.focusZ,
             zoom: targetZoom,
-            pitchDeg: state.isTopDown2D ? 84 : 46,
-            explode: state.selectedFloor === "all" ? 4.4 : state.explode
-        }, 420);
+            pitchDeg: state.isTopDown2D ? 84 : (step.wazePitch || 25),
+            bearingDeg: state.isTopDown2D ? 0 : (step.wazeBearing !== undefined ? step.wazeBearing : state.bearingDeg),
+            explode: spacing
+        }, 480);
+    }
+
+    // Continuous 3D Waze Walk Simulation along the Hallways & Zig-Zag Stairs
+    function updateWazeSimButtonUI() {
+        const iconEl = document.getElementById("p-icon-waze-sim");
+        const labelEl = document.getElementById("p-label-waze-sim");
+        if (iconEl) iconEl.innerHTML = wazeSim.active ? STEP_SVG_ICONS.pause : STEP_SVG_ICONS.play;
+        if (labelEl) labelEl.textContent = wazeSim.active ? "Pausa" : "Waze";
+    }
+
+    function stopWazeIndoorSimulation() {
+        wazeSim.active = false;
+        updateWazeSimButtonUI();
+    }
+
+    function startWazeIndoorSimulation() {
+        if (!state.activePath || !state.activePath.points || state.activePath.points.length < 2) return;
+        camAnim.active = false;
+        wazeSim.active = true;
+        wazeSim.distAlongRoute = 0;
+        wazeSim.lastTime = performance.now();
+        if (state.selectedFloor === "all" && state.explode < 4.2) {
+            state.explode = 4.4;
+            updateFloorPositions();
+        }
+        updateWazeSimButtonUI();
+    }
+
+    function toggleWazeIndoorSimulation() {
+        if (wazeSim.active) {
+            stopWazeIndoorSimulation();
+        } else {
+            startWazeIndoorSimulation();
+        }
+    }
+
+    function stepWazeIndoorSimulation(now) {
+        if (!wazeSim.active || !state.activePath || !state.activePath.points) return;
+        const dt = Math.min(0.1, Math.max(0.001, (now - wazeSim.lastTime) / 1000));
+        wazeSim.lastTime = now;
+
+        const spacing = state.explode;
+        const pts = state.activePath.points;
+        const vectors = pts.map(p => {
+            const y = ((p.floor - 1) + (p.yFrac || 0)) * spacing + (p.yOffset || 0);
+            return new THREE.Vector3(p.x, y, p.z);
+        });
+
+        // Build cumulative segment lengths
+        let totalLen = 0;
+        const segs = [];
+        for (let i = 0; i < vectors.length - 1; i++) {
+            const a = vectors[i];
+            const b = vectors[i + 1];
+            const len = a.distanceTo(b);
+            if (len > 0.02) {
+                segs.push({ a, b, len, startDist: totalLen, floorA: pts[i].floor, floorB: pts[i + 1].floor, isLast: i === vectors.length - 2 });
+                totalLen += len;
+            }
+        }
+        if (segs.length === 0) {
+            stopWazeIndoorSimulation();
+            return;
+        }
+
+        wazeSim.distAlongRoute += wazeSim.speedMetersPerSec * dt;
+        if (wazeSim.distAlongRoute >= totalLen) {
+            wazeSim.distAlongRoute = totalLen;
+            stopWazeIndoorSimulation();
+            // Snap to final arrival step
+            if (state.activePath.steps && state.activePath.steps.length > 0) {
+                focusRouteStep(state.activePath.steps.length - 1);
+            }
+            return;
+        }
+
+        // Find active 3D segment
+        let activeSeg = segs[segs.length - 1];
+        for (let i = 0; i < segs.length; i++) {
+            if (wazeSim.distAlongRoute <= segs[i].startDist + segs[i].len) {
+                activeSeg = segs[i];
+                break;
+            }
+        }
+
+        const segT = Math.max(0, Math.min(1, (wazeSim.distAlongRoute - activeSeg.startDist) / activeSeg.len));
+        const currPos = activeSeg.a.clone().lerp(activeSeg.b, segT);
+        const dir = activeSeg.b.clone().sub(activeSeg.a).normalize();
+
+        // Update 3D Waze Puck position & heading
+        if (wazePuckGroup) {
+            wazePuckGroup.visible = true;
+            wazePuckGroup.position.copy(currPos).add(new THREE.Vector3(0, 0.06, 0));
+            wazePuckGroup.rotation.y = Math.atan2(dir.x, dir.z);
+        }
+
+        // Determine Waze camera target bearing, pitch, zoom & lookAt for the current segment (Hallway vs Stairs vs Door)
+        const isStairSeg = Math.abs(activeSeg.b.y - activeSeg.a.y) > 0.08 || currPos.z < 1.35;
+        let desiredBearing = state.bearingDeg;
+        let desiredPitch = 25;
+        let desiredZoom = getResponsiveDefaultZoom(24);
+        let desiredPanX = currPos.x;
+        let desiredPanY = currPos.y + 0.95;
+        let desiredPanZ = currPos.z * 0.65;
+
+        if (activeSeg.isLast) {
+            desiredBearing = 6;
+            desiredPitch = 25;
+            desiredZoom = getResponsiveDefaultZoom(21);
+            desiredPanX = state.activePath.endRec.x;
+            desiredPanZ = 0.2;
+        } else if (isStairSeg) {
+            desiredBearing = currPos.x < 0 ? -24 : 24;
+            desiredPitch = 32;
+            desiredZoom = getResponsiveDefaultZoom(27);
+            desiredPanX = currPos.x * 0.92;
+            desiredPanZ = -0.6;
+        } else {
+            // Hallway Waze Chase Camera looking straight down the active corridor
+            const headingRight = dir.x >= 0;
+            desiredBearing = headingRight ? -68 : 68;
+            desiredPitch = 24;
+            desiredZoom = getResponsiveDefaultZoom(24);
+            desiredPanX = currPos.x + (headingRight ? 3.2 : -3.2);
+            desiredPanZ = 2.1;
+        }
+
+        // Smooth exponential damping for Waze Chase Camera
+        const damp = Math.min(1, dt * 6.5);
+        let diffB = ((desiredBearing - state.bearingDeg) % 360 + 540) % 360 - 180;
+        state.bearingDeg = state.bearingDeg + diffB * damp;
+        state.pitchDeg = state.pitchDeg + (desiredPitch - state.pitchDeg) * damp;
+        state.zoom = state.zoom + (desiredZoom - state.zoom) * damp;
+        state.panX = state.panX + (desiredPanX - state.panX) * damp;
+        const currY = state.panY !== null ? state.panY : getCameraTargetY();
+        state.panY = currY + (desiredPanY - currY) * damp;
+        state.panZ = state.panZ + (desiredPanZ - state.panZ) * damp;
+
+        updateCamera();
+
+        // Update HUD banner with nearest step instruction
+        const steps = state.activePath.steps || [];
+        if (steps.length > 0) {
+            const progressRatio = wazeSim.distAlongRoute / Math.max(1, totalLen);
+            const approxIdx = Math.min(steps.length - 1, Math.floor(progressRatio * steps.length));
+            const s = steps[approxIdx];
+            const hudTitle = document.getElementById("p-hud-step-title");
+            const hudMeta = document.getElementById("p-hud-step-meta");
+            setHudStepIcon("waze");
+            if (hudTitle && s) {
+                hudTitle.textContent = `Waze P${activeSeg.floorB}: ${s.title}`;
+            }
+            if (hudMeta && s) {
+                hudMeta.textContent = s.detail;
+            }
+        }
     }
 
     function renderRoute3D() {
@@ -2239,6 +2558,7 @@ Key UX & Mobile Features:
         while (routeGroup.children.length > 0) {
             routeGroup.remove(routeGroup.children[0]);
         }
+        wazePuckGroup = null;
 
         if (!state.activePath || state.mode !== "visitor") {
             if (startPinEl) startPinEl.style.display = "none";
@@ -2288,6 +2608,13 @@ Key UX & Mobile Features:
             endMarker.rotation.x = Math.PI;
             endMarker.position.copy(vectors[vectors.length - 1]).add(new THREE.Vector3(0, 1.0, 0));
             routeGroup.add(endMarker);
+
+            // Add 3D Waze Navigation Puck on the route
+            wazePuckGroup = createWazePuckMesh();
+            const initDir = vectors[1].clone().sub(vectors[0]).normalize();
+            wazePuckGroup.position.copy(vectors[0]).add(new THREE.Vector3(0, 0.06, 0));
+            wazePuckGroup.rotation.y = Math.atan2(initDir.x, initDir.z);
+            routeGroup.add(wazePuckGroup);
         }
     }
 
@@ -2296,22 +2623,24 @@ Key UX & Mobile Features:
         const hudMeta = document.getElementById("p-hud-step-meta");
 
         if (!state.activePath) {
+            setHudStepIcon("waze");
             if (hudTitle) hudTitle.textContent = "Selecciona un destino en el mapa 3D";
             if (hudMeta) hudMeta.textContent = "Grafo Oficial Edificio P · 44 nodos con coordenadas GPS";
             return;
         }
 
-        const { distanceM, estSec, steps, startRec, endRec, targetNodeId, pathNodeIds } = state.activePath;
+        const { distanceM, estSec, startRec, endRec, targetNodeId, pathNodeIds } = state.activePath;
         const mins = Math.floor(estSec / 60);
         const secs = estSec % 60;
         const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
         const destNode = BUILDING_P_GRAPH_NODES[targetNodeId] || endRec;
 
+        setHudStepIcon("dest");
         if (hudTitle) {
-            hudTitle.textContent = `🔵 Hacia ${endRec.name} · ~${distanceM}m (~${timeStr})`;
+            hudTitle.textContent = `Hacia ${endRec.name} · ~${distanceM}m (~${timeStr})`;
         }
         if (hudMeta) {
-            hudMeta.textContent = `P${startRec.floor} → P${endRec.floor} · ${pathNodeIds.length} nodos (${destNode.lat.toFixed(6)}, ${destNode.lng.toFixed(6)}) · Usa ◀ ▶ para guiar`;
+            hudMeta.textContent = `P${startRec.floor} → P${endRec.floor} · ${pathNodeIds.length} nodos (${destNode.lat.toFixed(6)}, ${destNode.lng.toFixed(6)}) · Usa los controles o Waze`;
         }
     }
 
@@ -2335,7 +2664,7 @@ Key UX & Mobile Features:
         updateCamera();
     }
 
-    function getCameraTargetY() {
+    function getDefaultFloorTargetY() {
         const spacing = state.explode;
         const activeFloor = state.selectedFloor === "all" ? null : Number(state.selectedFloor);
         if (activeFloor !== null) {
@@ -2343,6 +2672,13 @@ Key UX & Mobile Features:
         }
         // Vertical center of the building above ground
         return 1.6 * spacing;
+    }
+
+    function getCameraTargetY() {
+        if (state.panY !== null && state.panY !== undefined) {
+            return state.panY;
+        }
+        return getDefaultFloorTargetY();
     }
 
     // Camera Spherical Coordinates
@@ -2402,9 +2738,11 @@ Key UX & Mobile Features:
         updateFloorPositions();
 
         if (options && options.animateCamera) {
+            stopWazeIndoorSimulation();
             const isHighTower = state.selectedFloor === "4" || state.selectedFloor === "5";
             animateCameraTo({
                 panX: isHighTower ? -22 : 0,
+                panY: null,
                 panZ: 0,
                 zoom: getResponsiveDefaultZoom(isHighTower ? 45 : (state.selectedFloor === "all" ? 74 : 64))
             }, 380);
@@ -2474,22 +2812,28 @@ Key UX & Mobile Features:
                 </div>
                 <p class="text-[11px] text-slate-600 pt-1 leading-snug">${rec.notes}</p>
                 <div class="flex items-center gap-1.5 pt-2 border-t border-slate-100 mt-2">
-                    <button type="button" onclick="window.setBuildingPRouteOrigin('${rec.id}')" class="flex-1 py-1.5 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-[11px] transition-colors cursor-pointer">
-                        🟢 Estoy Aquí (Origen)
+                    <button type="button" onclick="window.setBuildingPRouteOrigin('${rec.id}')" class="flex-1 py-1.5 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-[11px] transition-colors cursor-pointer inline-flex items-center justify-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                        <span>Estoy Aquí (Origen)</span>
                     </button>
-                    <button type="button" onclick="window.setBuildingPRouteDest('${rec.id}')" class="flex-1 py-1.5 px-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-[11px] transition-colors shadow-2xs cursor-pointer">
-                        🔵 Ir Aquí (Destino)
+                    <button type="button" onclick="window.setBuildingPRouteDest('${rec.id}')" class="flex-1 py-1.5 px-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-[11px] transition-colors shadow-2xs cursor-pointer inline-flex items-center justify-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-white inline-block"></span>
+                        <span>Ir Aquí (Destino)</span>
                     </button>
                 </div>
             `;
         }
 
         if (opts.focusCamera) {
+            const floorY = (rec.floor - 1) * state.explode;
             animateCameraTo({
-                panX: rec.x * 0.55,
-                panZ: 0,
-                zoom: getResponsiveDefaultZoom(56)
-            }, 400);
+                panX: rec.x * 0.72,
+                panY: floorY + 1.35,
+                panZ: 0.4,
+                pitchDeg: state.isTopDown2D ? 84 : 30,
+                bearingDeg: state.isTopDown2D ? 0 : (rec.x < -12 ? -18 : (rec.x > 12 ? 18 : 8)),
+                zoom: getResponsiveDefaultZoom(38)
+            }, 420);
         }
 
         updateSelectionVisuals();
@@ -2668,7 +3012,7 @@ Key UX & Mobile Features:
                     .replace("F1-ENT-W", "ESC. EXT. IZQ.")
                     .replace("F1-ENT-O", "HACIA EDIF. O")
                     .replace("F1-ENT-E", "RAMPA PARQUEO");
-                startPinEl.textContent = `🟢 ORIGEN: ${originShort}`;
+                startPinEl.textContent = `ORIGEN: ${originShort}`;
             } else {
                 startPinEl.style.display = "none";
             }
@@ -2845,6 +3189,7 @@ Key UX & Mobile Features:
 
         renderer.domElement.addEventListener("pointerdown", (e) => {
             camAnim.active = false;
+            stopWazeIndoorSimulation();
             renderer.domElement.setPointerCapture(e.pointerId);
             activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
@@ -2944,12 +3289,101 @@ Key UX & Mobile Features:
         state.zoom = getResponsiveDefaultZoom(72);
         updateFloorPositions();
         updateCamera();
+
+        const initialCtx = getActiveCampusRouteContext();
+        if (initialCtx.originEntranceId) {
+            state.startId = initialCtx.originEntranceId;
+            state.userLockedOrigin = true;
+            const startSel = document.getElementById("p-select-start");
+            if (startSel) startSel.value = state.startId;
+        }
+        const initialDestId = initialCtx.destinationSpaceId || state.endId || "F5-501";
+        state.endId = initialDestId;
         computeRoute(state.startId, state.endId);
-        selectSpace("F5-501", { focusCamera: false });
+        selectSpace(initialDestId, { focusCamera: false });
 
         onResize();
         animate();
         isInitialized = true;
+    }
+
+    // Inspect active campus route / selected destination from navigateMap.html & campus25dMap.js
+    function getActiveCampusRouteContext() {
+        const routeData = window.lastJaguarRouteData || null;
+        const c25Route = (window.campus25dController && window.campus25dController.currentRoute) || null;
+        const selDest = window.currentSelectedDestination || null;
+        const destInputEl = document.getElementById("destinationInput");
+        const originInputEl = document.getElementById("originInput");
+        const destInputVal = destInputEl && destInputEl.value ? destInputEl.value.trim() : "";
+        const originInputVal = originInputEl && originInputEl.value ? originInputEl.value.trim() : "";
+
+        // Candidate destination strings in priority order (handles both flat /api/map/route payload and nested object)
+        const candidates = [
+            routeData && routeData.destinationPlaceId,
+            routeData && typeof routeData.destination === "string" ? routeData.destination : null,
+            routeData && routeData.destination && routeData.destination.placeId,
+            routeData && routeData.destination && routeData.destination.name,
+            c25Route && c25Route.destinationPlaceId,
+            c25Route && c25Route.destination,
+            selDest && selDest.placeId,
+            selDest && selDest.title,
+            destInputVal
+        ];
+
+        let resolvedDestId = null;
+        for (let i = 0; i < candidates.length; i++) {
+            if (candidates[i]) {
+                const r = resolveSpaceId(candidates[i]);
+                if (r) {
+                    resolvedDestId = r;
+                    break;
+                }
+            }
+        }
+
+        // Check recommended indoor entrance from route calculation or origin building
+        let resolvedOriginId = null;
+        const recEntrance =
+            (routeData && routeData.recommendedIndoorEntrance) ||
+            (routeData && routeData.destination && routeData.destination.recommendedIndoorEntrance) ||
+            (c25Route && c25Route.recommendedIndoorEntrance) ||
+            null;
+        if (recEntrance) {
+            resolvedOriginId = resolveSpaceId(recEntrance) || recEntrance;
+        } else {
+            const pathNodes =
+                (routeData && routeData.pathNodeIds) ||
+                (routeData && routeData.route && routeData.route.nodeIds) ||
+                (c25Route && c25Route.path) ||
+                [];
+            const prevNode = pathNodes.length >= 2 ? pathNodes[pathNodes.length - 2] : "";
+            if (prevNode === "buildingO" || prevNode === "buildingH") {
+                resolvedOriginId = "F1-ENT-O";
+            }
+        }
+
+        const campusOriginName =
+            (routeData && typeof routeData.origin === "string" ? routeData.origin : null) ||
+            (routeData && routeData.origin && routeData.origin.name) ||
+            (c25Route && c25Route.origin) ||
+            originInputVal ||
+            "";
+
+        const destNodeId =
+            (routeData && routeData.destinationNodeId) ||
+            (routeData && routeData.destination && routeData.destination.nodeId) ||
+            (c25Route && c25Route.destinationId) ||
+            (selDest && selDest.nodeId) ||
+            "";
+
+        const hasActiveCampusRoute = Boolean(destNodeId === "buildingP" || resolvedDestId);
+
+        return {
+            destinationSpaceId: resolvedDestId,
+            originEntranceId: resolvedOriginId,
+            campusOriginName,
+            hasActiveCampusRoute
+        };
     }
 
     function bind(id, eventName, handler) {
@@ -3056,6 +3490,15 @@ Key UX & Mobile Features:
             focusRouteStep(nextIdx);
         });
 
+        bind("p-btn-waze-sim", "click", () => {
+            toggleWazeIndoorSimulation();
+        });
+
+        bind("p-btn-back-campus", "click", () => {
+            stopWazeIndoorSimulation();
+            closeBuildingPModal();
+        });
+
         bind("p-btn-swap-route", "click", () => {
             if (!state.endId) return;
             const prevStart = state.startId;
@@ -3103,18 +3546,6 @@ Key UX & Mobile Features:
                     selectSpace(fountainId, { focusCamera: true });
                 }
             });
-        });
-
-        // Listen for global campus navigation route events so Building P automatically guides the user to their destination room
-        window.addEventListener("jaguarMapRouteCalculated", (e) => {
-            const routeData = e.detail;
-            if (!routeData) return;
-            const destRaw = (routeData.destination && (routeData.destination.placeId || routeData.destination.nodeId || routeData.destination.name)) || "";
-            const resolved = resolveSpaceId(destRaw);
-            if (resolved) {
-                state.userLockedOrigin = false;
-                selectSpace(resolved, { focusCamera: true });
-            }
         });
 
         // Vertical Elevator Floor Buttons
@@ -3191,6 +3622,7 @@ Key UX & Mobile Features:
         });
 
         function setPreset(pitch, bearing, baseZoom, is2D) {
+            stopWazeIndoorSimulation();
             state.isTopDown2D = Boolean(is2D);
             const mobile2dBtn = document.getElementById("p-btn-mobile-2d");
             if (mobile2dBtn) {
@@ -3203,6 +3635,7 @@ Key UX & Mobile Features:
                 bearingDeg: bearing,
                 zoom: getResponsiveDefaultZoom(baseZoom),
                 panX: 0,
+                panY: null,
                 panZ: 0
             }, 400);
         }
@@ -3220,7 +3653,7 @@ Key UX & Mobile Features:
         });
 
         bind("p-btn-zoom-in", "click", () => {
-            animateCameraTo({ zoom: Math.max(22, state.zoom - 10) }, 220);
+            animateCameraTo({ zoom: Math.max(18, state.zoom - 10) }, 220);
         });
         bind("p-btn-zoom-out", "click", () => {
             animateCameraTo({ zoom: Math.min(145, state.zoom + 10) }, 220);
@@ -3253,7 +3686,12 @@ Key UX & Mobile Features:
     function animate(now) {
         animFrameId = requestAnimationFrame(animate);
 
-        // Process smooth camera lerp animation
+        // 1. Process continuous 3D Waze Walk Simulation along Hallways & Stairs
+        if (wazeSim.active) {
+            stepWazeIndoorSimulation(now || performance.now());
+        }
+
+        // 2. Process smooth camera lerp animation
         if (camAnim.active) {
             const elapsed = (now || performance.now()) - camAnim.startTime;
             const rawT = Math.min(1, Math.max(0, elapsed / camAnim.duration));
@@ -3261,9 +3699,11 @@ Key UX & Mobile Features:
             const t = 1 - Math.pow(1 - rawT, 3);
 
             state.pitchDeg = camAnim.from.pitchDeg + (camAnim.to.pitchDeg - camAnim.from.pitchDeg) * t;
-            state.bearingDeg = camAnim.from.bearingDeg + (camAnim.to.bearingDeg - camAnim.from.bearingDeg) * t;
+            const interpB = camAnim.from.bearingDeg + (camAnim.to.bearingDeg - camAnim.from.bearingDeg) * t;
+            state.bearingDeg = ((interpB + 180) % 360 + 360) % 360 - 180;
             state.zoom = camAnim.from.zoom + (camAnim.to.zoom - camAnim.from.zoom) * t;
             state.panX = camAnim.from.panX + (camAnim.to.panX - camAnim.from.panX) * t;
+            state.panY = camAnim.from.panY + (camAnim.to.panY - camAnim.from.panY) * t;
             state.panZ = camAnim.from.panZ + (camAnim.to.panZ - camAnim.from.panZ) * t;
 
             if (Math.abs(camAnim.to.explode - camAnim.from.explode) > 0.01) {
@@ -3293,8 +3733,45 @@ Key UX & Mobile Features:
         }
     }
 
-    // Modal Open & Close Controller with Super WOW Animation
-    function openBuildingPModal(targetRoomId) {
+    // Listen globally for campus navigation route events (even before 3D engine initializes)
+    window.addEventListener("jaguarMapRouteCalculated", (e) => {
+        const routeData = e.detail;
+        if (!routeData) return;
+        const destObj = (routeData.destination && typeof routeData.destination === "object") ? routeData.destination : {};
+        const destCandidates = [
+            routeData.destinationPlaceId,
+            typeof routeData.destination === "string" ? routeData.destination : null,
+            destObj.placeId,
+            destObj.name,
+            routeData.destinationNodeId,
+            destObj.nodeId
+        ];
+        let resolved = null;
+        for (let i = 0; i < destCandidates.length; i++) {
+            if (destCandidates[i]) {
+                resolved = resolveSpaceId(destCandidates[i]);
+                if (resolved) break;
+            }
+        }
+        const recEntrance = routeData.recommendedIndoorEntrance || destObj.recommendedIndoorEntrance;
+        if (recEntrance) {
+            const ent = resolveSpaceId(recEntrance) || recEntrance;
+            state.startId = ent;
+            state.userLockedOrigin = true;
+            const startSel = document.getElementById("p-select-start");
+            if (startSel) startSel.value = ent;
+        }
+        if (resolved) {
+            state.endId = resolved;
+            state.selectedId = resolved;
+            if (isInitialized) {
+                selectSpace(resolved, { focusCamera: true });
+            }
+        }
+    });
+
+    // Modal Open & Close Controller with Outdoor-to-Indoor Waze Handoff
+    function openBuildingPModal(targetOrPayload) {
         const modal = document.getElementById("buildingPModal");
         if (!modal) return;
 
@@ -3303,7 +3780,7 @@ Key UX & Mobile Features:
             script.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
             script.onload = () => {
                 initThreeEngine();
-                openBuildingPModal(targetRoomId);
+                openBuildingPModal(targetOrPayload);
             };
             document.head.appendChild(script);
             return;
@@ -3317,33 +3794,99 @@ Key UX & Mobile Features:
             initThreeEngine();
         }
 
-        // Start mobile bottom sheet in compact peek state so 3D map is front and center
         setMobileSheetState("peek");
 
         setTimeout(() => {
             onResize();
-            state.explode = 3.8;
+            state.explode = 4.2;
             const v = document.getElementById("p-val-explode");
             const s = document.getElementById("p-slider-explode");
             if (v) v.textContent = `${state.explode.toFixed(1)}m`;
             if (s) s.value = state.explode;
             updateFloorPositions();
 
-            if (targetRoomId) {
-                selectSpace(targetRoomId, { focusCamera: true });
+            const handoffBar = document.getElementById("p-campus-handoff-bar");
+            const handoffText = document.getElementById("p-campus-handoff-text");
+            const campusCtx = getActiveCampusRouteContext();
+
+            if (targetOrPayload && typeof targetOrPayload === "object") {
+                const { origin, destination, autoStartWaze, fromCampusRoute, campusOriginName } = targetOrPayload;
+                const showHandoff = Boolean(fromCampusRoute || campusCtx.hasActiveCampusRoute);
+                if (handoffBar) {
+                    if (showHandoff) {
+                        handoffBar.classList.remove("hidden");
+                        handoffBar.classList.add("flex");
+                        if (handoffText) {
+                            handoffText.textContent = `Desde ${campusOriginName || campusCtx.campusOriginName || "Campus"} → Interior Edificio P`;
+                        }
+                    } else {
+                        handoffBar.classList.add("hidden");
+                        handoffBar.classList.remove("flex");
+                    }
+                }
+
+                const effOrigin = origin || campusCtx.originEntranceId;
+                if (effOrigin) {
+                    const resolvedOrigin = resolveSpaceId(effOrigin) || effOrigin;
+                    state.startId = resolvedOrigin;
+                    state.userLockedOrigin = true;
+                    const startSel = document.getElementById("p-select-start");
+                    if (startSel) startSel.value = resolvedOrigin;
+                } else {
+                    state.userLockedOrigin = false;
+                }
+
+                const resolvedDest = resolveSpaceId(destination) || campusCtx.destinationSpaceId || state.endId || "F5-501";
+                setFloorIsolation("all", { animateCamera: false });
+                selectSpace(resolvedDest, { focusCamera: !autoStartWaze });
+
+                if (autoStartWaze) {
+                    startWazeIndoorSimulation();
+                }
             } else {
-                animateCameraTo({
-                    pitchDeg: 44,
-                    bearingDeg: 22,
-                    zoom: getResponsiveDefaultZoom(72),
-                    panX: 0,
-                    panZ: 0
-                }, 450);
+                const explicitDest = (typeof targetOrPayload === "string") ? resolveSpaceId(targetOrPayload) : null;
+                const activeDest = explicitDest || campusCtx.destinationSpaceId;
+
+                if (handoffBar) {
+                    if (campusCtx.hasActiveCampusRoute && activeDest) {
+                        handoffBar.classList.remove("hidden");
+                        handoffBar.classList.add("flex");
+                        if (handoffText) {
+                            handoffText.textContent = `Desde ${campusCtx.campusOriginName || "Campus"} → Interior Edificio P`;
+                        }
+                    } else {
+                        handoffBar.classList.add("hidden");
+                        handoffBar.classList.remove("flex");
+                    }
+                }
+
+                if (campusCtx.originEntranceId) {
+                    state.startId = campusCtx.originEntranceId;
+                    state.userLockedOrigin = true;
+                    const startSel = document.getElementById("p-select-start");
+                    if (startSel) startSel.value = state.startId;
+                }
+
+                if (activeDest) {
+                    setFloorIsolation("all", { animateCamera: false });
+                    selectSpace(activeDest, { focusCamera: false });
+                    startWazeIndoorSimulation();
+                } else {
+                    animateCameraTo({
+                        pitchDeg: 44,
+                        bearingDeg: 22,
+                        zoom: getResponsiveDefaultZoom(72),
+                        panX: 0,
+                        panY: null,
+                        panZ: 0
+                    }, 450);
+                }
             }
         }, 80);
     }
 
     function closeBuildingPModal() {
+        stopWazeIndoorSimulation();
         const modal = document.getElementById("buildingPModal");
         if (!modal) return;
         modal.classList.remove("bldg-modal-open");
