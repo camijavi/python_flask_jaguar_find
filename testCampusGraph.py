@@ -324,6 +324,62 @@ def runGraphTestSuite():
     print(f"     Distance: {resO5['totalDistanceMeters']}m")
     print(f"  [OK] Successfully routed via accessible ramp, completely bypassing stairs.")
 
+    # 10. Building C Child Graph / Subgraph Indoor Routing Test (Multi-Floor 3 Levels)
+    print("\n[TEST 10] Building C Child Graph (Aulas, Labs Computación & Tesorería - 3 Floors):")
+    sgC = getBuildingSubgraph("buildingC")
+    assert sgC is not None, "Test 10 Failed: Building C subgraph not found."
+    nodesC = sgC.getAllNodes()
+    assert len(nodesC) == 42, f"Test 10 Failed: Expected 42 nodes in Building C, got {len(nodesC)}"
+    f1_c = sgC.getNodesByFloor(1)
+    f2_c = sgC.getNodesByFloor(2)
+    f3_c = sgC.getNodesByFloor(3)
+    assert len(f1_c) == 15, f"Test 10 Failed: Expected 15 nodes on Floor 1, got {len(f1_c)}"
+    assert len(f2_c) == 15, f"Test 10 Failed: Expected 15 nodes on Floor 2, got {len(f2_c)}"
+    assert len(f3_c) == 12, f"Test 10 Failed: Expected 12 nodes on Floor 3, got {len(f3_c)}"
+    print(f"  [OK] Building C Loaded: {sgC.name} ({len(nodesC)} nodes across 3 floors)")
+    print(f"     • Floor 1 nodes: {len(f1_c)}")
+    print(f"     • Floor 2 nodes: {len(f2_c)}")
+    print(f"     • Floor 3 nodes: {len(f3_c)}")
+
+    # 10a. Route Floor 1: Rampa -> Caja UAM -> Tesorería
+    resC1 = sgC.calculateIndoorRoute("rampa", "tesoreria", lang="spa")
+    assert resC1["success"] is True, f"Test 10a Failed: {resC1}"
+    print(f"\n  • 10a. Route Floor 1 (Rampa -> Tesorería C-105):")
+    print(f"     Path: {' -> '.join(resC1['pathNodeIds'])}")
+    print(f"     Distance: {resC1['totalDistanceMeters']}m")
+
+    # 10b. Route Floor 1: Auditorio C-101 -> Lab ACAI-Erasmus+ (C-108)
+    resC2 = sgC.calculateIndoorRoute("c101", "acai", lang="spa")
+    assert resC2["success"] is True, f"Test 10b Failed: {resC2}"
+    print(f"\n  • 10b. Route Floor 1 (Auditorio C-101 -> Lab ACAI-Erasmus+ C-108):")
+    print(f"     Path: {' -> '.join(resC2['pathNodeIds'])}")
+    print(f"     Distance: {resC2['totalDistanceMeters']}m")
+
+    # 10c. Multi-floor Route: Caja UAM (Piso 1) -> Lab MAC C-203 (Piso 2)
+    resC3 = sgC.calculateIndoorRoute("caja", "mac c203", lang="spa")
+    assert resC3["success"] is True, f"Test 10c Failed: {resC3}"
+    assert resC3["floorsCrossed"] == [1, 2], f"Test 10c Failed floors: {resC3['floorsCrossed']}"
+    print(f"\n  • 10c. Multi-floor Route (Piso 1 -> Piso 2: Caja UAM -> Lab MAC C-203):")
+    print(f"     Path: {' -> '.join(resC3['pathNodeIds'])}")
+    print(f"     Floors crossed: {resC3['floorsCrossed']}")
+    print(f"     Distance: {resC3['totalDistanceMeters']}m")
+
+    # 10d. Multi-floor Route: Caja UAM (Piso 1) -> Estudio Audiovisual A-301 (Piso 3)
+    resC4 = sgC.calculateIndoorRoute("caja", "a-301", lang="spa")
+    assert resC4["success"] is True, f"Test 10d Failed: {resC4}"
+    assert resC4["floorsCrossed"] == [1, 2, 3], f"Test 10d Failed floors: {resC4['floorsCrossed']}"
+    print(f"\n  • 10d. Multi-floor Route (Piso 1 -> Piso 3: Caja UAM -> Estudio A-301):")
+    print(f"     Path: {' -> '.join(resC4['pathNodeIds'])}")
+    print(f"     Floors crossed: {resC4['floorsCrossed']}")
+    print(f"     Distance: {resC4['totalDistanceMeters']}m")
+
+    # 10e. Floor 3 Route: Estudio A-301 -> Coordinación de Compras C-306 -> Aula C-310
+    resC5 = sgC.calculateIndoorRoute("a301", "c310", lang="spa")
+    assert resC5["success"] is True, f"Test 10e Failed: {resC5}"
+    print(f"\n  • 10e. Route Floor 3 (Estudio A-301 -> Aula C-310):")
+    print(f"     Path: {' -> '.join(resC5['pathNodeIds'])}")
+    print(f"     Distance: {resC5['totalDistanceMeters']}m")
+
     print("\n" + "=" * 80)
     print("  ALL GRAPH, PERIMETER & SUBGRAPH TESTS COMPLETED SUCCESSFULLY!")
     print("=" * 80)
