@@ -2257,12 +2257,18 @@ Key UX & Mobile Features:
         pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: endHallZ });
         pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
 
-        // 4. Build Turn-by-Turn Graph Steps with GPS coordinates (lat, lng) & Waze Hallway Camera Angles
+        // 4. Build Turn-by-Turn Graph Steps with Human Landmark Instructions & Waze Hallway Camera Angles
         const steps = [];
+        const isStartEnt = startRec.type === "Acceso";
+        const startTitle = isStartEnt ? `Inicio en ${startRec.name}` : `Salida desde ${startRec.name}`;
+        const startDetail = isStartEnt
+            ? `Entra por la fachada frontal e incorpórate al pasillo principal`
+            : `Sal del aula al pasillo principal (Piso ${startRec.floor})`;
+
         steps.push({
             iconKey: "origin",
-            title: `Origen: ${startRec.name}`,
-            detail: `Piso ${startRec.floor} · Nodo ${startNodeId} (${startRec.lat.toFixed(6)}, ${startRec.lng.toFixed(6)})`,
+            title: startTitle,
+            detail: startDetail,
             floor: startRec.floor,
             focusX: startRec.x,
             focusZ: startHallZ,
@@ -2285,10 +2291,18 @@ Key UX & Mobile Features:
             const vNode = BUILDING_P_GRAPH_NODES[e.to];
             if (e.isVertical) {
                 const goingUp = vNode.floor > uStartNode.floor;
+                const stairSide = (vNode.hallX < 0) ? "Escaleras Este (Izquierda)" : "Escaleras Oeste (Derecha)";
+                const stairTitle = goingUp
+                    ? `Sube al Piso ${vNode.floor} por ${stairSide}`
+                    : `Baja al Piso ${vNode.floor} por ${stairSide}`;
+                const stairDetail = goingUp
+                    ? `Sube el primer tramo, gira en el descanso intermedio y llega al Piso ${vNode.floor}`
+                    : `Baja hacia el descanso y continúa hasta el pasillo del Piso ${vNode.floor}`;
+
                 steps.push({
                     iconKey: goingUp ? "up" : "down",
-                    title: e.instruction,
-                    detail: `Piso ${vNode.floor} · ${vNode.name} (${vNode.lat.toFixed(6)}, ${vNode.lng.toFixed(6)})`,
+                    title: stairTitle,
+                    detail: stairDetail,
                     floor: vNode.floor,
                     focusX: vNode.hallX,
                     focusZ: -1.2,
@@ -2309,6 +2323,7 @@ Key UX & Mobile Features:
                 let segDist = e.dist;
                 let lastEdge = e;
                 let hopCount = 1;
+                const passedNodes = [vNode];
                 while (
                     idx + 1 < edgesUsed.length &&
                     !edgesUsed[idx + 1].isVertical &&
@@ -2319,14 +2334,35 @@ Key UX & Mobile Features:
                     lastEdge = edgesUsed[idx];
                     segDist += lastEdge.dist;
                     hopCount++;
+                    passedNodes.push(BUILDING_P_GRAPH_NODES[lastEdge.to]);
                 }
                 const targetV = BUILDING_P_GRAPH_NODES[lastEdge.to];
                 const dxHall = targetV.hallX - (uStartNode ? uStartNode.hallX : targetV.hallX);
                 const headingRight = dxHall >= 0;
+
+                let landmarkCue = "";
+                const hasFountain = passedNodes.some(n => n.id.includes("fountain"));
+                const hasRestroom = passedNodes.some(n => n.id.includes("restroom"));
+                if (hasFountain && hasRestroom) {
+                    landmarkCue = "Pasa el bebedero y los baños";
+                } else if (hasFountain) {
+                    landmarkCue = "Pasa el bebedero de agua en el pasillo";
+                } else if (hasRestroom) {
+                    landmarkCue = "Pasa la batería de baños";
+                } else if (targetV.floor >= 4) {
+                    landmarkCue = "Sigue por el pasillo del anexo superior";
+                } else {
+                    landmarkCue = headingRight ? "Avanza hacia el ala oeste" : "Avanza hacia el ala este";
+                }
+
+                const walkTitle = `Avanza ~${Math.round(segDist)}m por el pasillo (Piso ${targetV.floor})`;
+                const targetCleanName = targetV.name.replace(/Salón\s*/i, "Aula ");
+                const walkDetail = `${landmarkCue} · Rumbo a ${targetCleanName}`;
+
                 steps.push({
                     iconKey: "walk",
-                    title: lastEdge.instruction,
-                    detail: `Pasillo Piso ${targetV.floor} · ~${Math.round(segDist)}m hacia ${targetV.name} (${targetV.lat.toFixed(6)}, ${targetV.lng.toFixed(6)})`,
+                    title: walkTitle,
+                    detail: walkDetail,
                     floor: targetV.floor,
                     focusX: targetV.hallX,
                     focusZ: targetV.hallZ * 0.65,
@@ -2349,7 +2385,7 @@ Key UX & Mobile Features:
         steps.push({
             iconKey: "dest",
             title: `Llegaste a ${endRec.name}`,
-            detail: `Piso ${endRec.floor} · Nodo ${targetNodeId} (${destGNode.lat.toFixed(6)}, ${destGNode.lng.toFixed(6)})`,
+            detail: `Entra por la puerta señalada en Piso ${endRec.floor} (${endRec.wing})`,
             floor: endRec.floor,
             focusX: endRec.x,
             focusZ: 0.2,
@@ -2442,12 +2478,19 @@ Key UX & Mobile Features:
 
         const hudTitle = document.getElementById("p-hud-step-title");
         const hudMeta = document.getElementById("p-hud-step-meta");
+        const tray = document.getElementById("p-hud-steps-tray");
         setHudStepIcon(step.iconKey || "waze");
         if (hudTitle) {
             hudTitle.textContent = `Paso ${clampedIdx + 1}/${totalSteps}: ${step.title}`;
         }
         if (hudMeta) {
             hudMeta.textContent = step.detail;
+        }
+
+        if (tray) {
+            tray.querySelectorAll(".p-hud-step-item").forEach((el, idx) => {
+                el.classList.toggle("is-active", idx === clampedIdx);
+            });
         }
 
         // Move 3D Waze Puck to the active step position & orient along travel direction
@@ -2700,27 +2743,87 @@ Key UX & Mobile Features:
     function renderDirectionsUI() {
         const hudTitle = document.getElementById("p-hud-step-title");
         const hudMeta = document.getElementById("p-hud-step-meta");
+        const tray = document.getElementById("p-hud-steps-tray");
 
         if (!state.activePath) {
             setHudStepIcon("waze");
             if (hudTitle) hudTitle.textContent = "Selecciona un destino en el mapa 3D";
-            if (hudMeta) hudMeta.textContent = "Grafo Oficial Edificio P · 44 nodos con coordenadas GPS";
+            if (hudMeta) hudMeta.textContent = "Edificio P · 5 pisos · Selecciona aula, baños o bebedero";
+            if (tray) tray.innerHTML = '<p class="text-slate-400 text-[11px] p-1">No hay ninguna ruta activa seleccionada.</p>';
             return;
         }
 
-        const { distanceM, estSec, startRec, endRec, targetNodeId, pathNodeIds } = state.activePath;
+        const { distanceM, estSec, startRec, endRec, steps } = state.activePath;
         const mins = Math.floor(estSec / 60);
         const secs = estSec % 60;
         const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-        const destNode = BUILDING_P_GRAPH_NODES[targetNodeId] || endRec;
 
         setHudStepIcon("dest");
         if (hudTitle) {
             hudTitle.textContent = `Hacia ${endRec.name} · ~${distanceM}m (~${timeStr})`;
         }
         if (hudMeta) {
-            hudMeta.textContent = `P${startRec.floor} → P${endRec.floor} · ${pathNodeIds.length} nodos (${destNode.lat.toFixed(6)}, ${destNode.lng.toFixed(6)}) · Usa los controles o Waze`;
+            const stairInfo = startRec.floor !== endRec.floor
+                ? (state.activePath.stairCode === "ST-E" ? "por Escaleras Oeste" : "por Escaleras Este")
+                : "mismo nivel";
+            hudMeta.textContent = `Piso ${startRec.floor} ➔ Piso ${endRec.floor} (${stairInfo}) · ${steps ? steps.length : 0} pasos · Toca ◀ ▶ o Waze`;
         }
+
+        // Render full turn-by-turn steps inside the tray
+        if (tray && steps && steps.length > 0) {
+            tray.innerHTML = steps.map((s, idx) => {
+                const isActive = (state.activeStepIdx === idx);
+                const iconSvg = STEP_SVG_ICONS[s.iconKey] || STEP_SVG_ICONS.walk;
+                return `
+                    <div data-step-idx="${idx}" class="p-hud-step-item ${isActive ? 'is-active' : ''}">
+                        <div class="shrink-0 mt-0.5">${iconSvg}</div>
+                        <div class="min-w-0 flex-1">
+                            <div class="font-extrabold text-white text-[11px] leading-tight">${idx + 1}. ${s.title}</div>
+                            <div class="text-[10px] text-slate-300 leading-snug mt-0.5">${s.detail}</div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            tray.querySelectorAll("[data-step-idx]").forEach(item => {
+                item.addEventListener("click", () => {
+                    const idx = Number(item.getAttribute("data-step-idx"));
+                    focusRouteStep(idx);
+                });
+            });
+        }
+    }
+
+    // Smart X-Ray Mode: Ghosts/dims floors above the active route or destination to avoid occluding lower levels
+    function updateFloorXRay() {
+        const isAll = state.selectedFloor === "all";
+        let maxRouteFloor = 5;
+        if (state.activePath && state.activePath.endRec) {
+            maxRouteFloor = Math.max(state.activePath.startRec.floor, state.activePath.endRec.floor);
+        } else if (state.selectedId) {
+            const rec = spaceRecords.find(r => r.id === state.selectedId);
+            if (rec) maxRouteFloor = rec.floor;
+        }
+
+        floorGroups.forEach(({ floorNum, group }) => {
+            const shouldGhost = Boolean(state.xrayMode && isAll && (floorNum > maxRouteFloor));
+            group.traverse(obj => {
+                if (obj.isMesh && obj.userData.spaceId === undefined && !obj.userData.isRoute) {
+                    if (shouldGhost) {
+                        if (!obj.userData.origMaterial) obj.userData.origMaterial = obj.material;
+                        if (!obj.userData.ghostMaterial) {
+                            obj.userData.ghostMaterial = obj.material.clone();
+                            obj.userData.ghostMaterial.transparent = true;
+                            obj.userData.ghostMaterial.opacity = 0.12;
+                            obj.userData.ghostMaterial.depthWrite = false;
+                        }
+                        obj.material = obj.userData.ghostMaterial;
+                    } else if (obj.userData.origMaterial) {
+                        obj.material = obj.userData.origMaterial;
+                    }
+                }
+            });
+        });
     }
 
     // Floor Elevation & Position Updates (Floor 1 always sits on the ground y = 0)
@@ -2739,6 +2842,7 @@ Key UX & Mobile Features:
             fg.scale.y = stairScaleY;
         });
 
+        updateFloorXRay();
         renderRoute3D();
         updateCamera();
     }
@@ -2773,6 +2877,11 @@ Key UX & Mobile Features:
         camera.position.y = targetY + r * Math.cos(clampedPhi);
         camera.position.z = state.panZ + r * Math.sin(clampedPhi) * Math.cos(theta);
         camera.lookAt(state.panX, targetY, state.panZ);
+
+        const compassNeedle = document.getElementById("p-compass-needle");
+        if (compassNeedle) {
+            compassNeedle.style.transform = `rotate(${-state.bearingDeg}deg)`;
+        }
     }
 
     // Selection & Highlight Updates
@@ -2916,6 +3025,7 @@ Key UX & Mobile Features:
         }
 
         updateSelectionVisuals();
+        updateFloorXRay();
     }
 
     window.setBuildingPRouteOrigin = function(id) {
@@ -2959,6 +3069,14 @@ Key UX & Mobile Features:
         const routeStartFloor = state.activePath ? state.activePath.startRec.floor : null;
         const routeEndFloor = state.activePath ? state.activePath.endRec.floor : null;
         const routeStairCode = state.activePath ? state.activePath.stairCode : null;
+
+        let maxRouteFloor = 5;
+        if (state.activePath && state.activePath.endRec) {
+            maxRouteFloor = Math.max(state.activePath.startRec.floor, state.activePath.endRec.floor);
+        } else if (state.selectedId) {
+            const selRec = spaceRecords.find(x => x.id === state.selectedId);
+            if (selRec) maxRouteFloor = selRec.floor;
+        }
 
         // Project orientation landmarks around the ground plane
         orientationLandmarks.forEach(lm => {
@@ -3027,6 +3145,11 @@ Key UX & Mobile Features:
                     isHighPriority ||
                     rec.floor === 3 ||
                     rec.floor >= 4;
+            }
+
+            // In Smart X-Ray mode, hide labels on ghosted upper floors so lower classrooms stay clearly readable
+            if (state.xrayMode && activeFloor === null && rec.floor > maxRouteFloor && !isHighPriority) {
+                visibleOnFloor = false;
             }
 
             if (!visibleOnFloor || !floorGroup.visible) {
@@ -3298,8 +3421,17 @@ Key UX & Mobile Features:
                 if (mouseButton === 2 || e.shiftKey || state.isTopDown2D) {
                     panByScreenDelta(dx, dy);
                 } else {
-                    state.bearingDeg = ((state.bearingDeg - dx * 0.45 + 180) % 360 + 360) % 360 - 180;
-                    state.pitchDeg = Math.max(8, Math.min(85, state.pitchDeg + dy * 0.35));
+                    let nextBearing = state.bearingDeg - dx * 0.32;
+                    let nextPitch = state.pitchDeg + dy * 0.28;
+
+                    // In Visitor mode, constrain bearing to [-75°, 75°] so user never flips to the back wall
+                    if (state.mode === "visitor") {
+                        nextBearing = Math.max(-75, Math.min(75, nextBearing));
+                    } else {
+                        nextBearing = ((nextBearing + 180) % 360 + 360) % 360 - 180;
+                    }
+                    state.bearingDeg = nextBearing;
+                    state.pitchDeg = Math.max(12, Math.min(82, nextPitch));
                     syncSlidersUI();
                 }
                 updateCamera();
@@ -3367,6 +3499,8 @@ Key UX & Mobile Features:
         populateSelectors();
         state.zoom = getResponsiveDefaultZoom(72);
         updateFloorPositions();
+        updateWallCutaway();
+        updateFloorXRay();
         updateCamera();
 
         const initialCtx = getActiveCampusRouteContext();
@@ -3491,6 +3625,8 @@ Key UX & Mobile Features:
         if (stepsSec) stepsSec.style.display = isVisitor ? "block" : "none";
         renderRoute3D();
         updateSelectionVisuals();
+        updateWallCutaway();
+        updateFloorXRay();
     }
 
     function renderSearchAutocomplete(query) {
@@ -3684,6 +3820,38 @@ Key UX & Mobile Features:
             state.showStairs = e.target.checked;
             stairGroups.forEach(g => { g.visible = state.showStairs; });
         });
+
+        bind("p-toggle-xray", "change", (e) => {
+            state.xrayMode = e.target.checked;
+            updateFloorXRay();
+        });
+
+        bind("p-toggle-cutaway", "change", (e) => {
+            state.cutawayWalls = e.target.checked;
+            updateWallCutaway();
+        });
+
+        bind("p-btn-compass", "click", () => {
+            stopWazeIndoorSimulation();
+            animateCameraTo({
+                bearingDeg: 0,
+                pitchDeg: 44,
+                zoom: getResponsiveDefaultZoom(72),
+                panX: 0,
+                panY: null,
+                panZ: 0
+            }, 380);
+        });
+
+        const toggleStepsTray = () => {
+            const tray = document.getElementById("p-hud-steps-tray");
+            if (tray) {
+                tray.classList.toggle("hidden");
+                state.showStepsTray = !tray.classList.contains("hidden");
+            }
+        };
+        bind("p-btn-toggle-steps-list", "click", toggleStepsTray);
+        bind("p-hud-step-clickable", "click", toggleStepsTray);
 
         // Search input & autocomplete
         bind("p-search-input", "input", (e) => {
@@ -3882,6 +4050,11 @@ Key UX & Mobile Features:
             const s = document.getElementById("p-slider-explode");
             if (v) v.textContent = `${state.explode.toFixed(1)}m`;
             if (s) s.value = state.explode;
+            const tXray = document.getElementById("p-toggle-xray");
+            if (tXray) tXray.checked = state.xrayMode;
+            const tCut = document.getElementById("p-toggle-cutaway");
+            if (tCut) tCut.checked = state.cutawayWalls;
+            updateWallCutaway();
             updateFloorPositions();
 
             const handoffBar = document.getElementById("p-campus-handoff-bar");
