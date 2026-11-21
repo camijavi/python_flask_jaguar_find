@@ -1,13 +1,5 @@
 """
 placesCatalog.py
-================================================================================
-Comprehensive catalog of all campus rooms, labs, faculties, food areas, 
-drinking fountains, restrooms, and parking spaces extracted from buildings.txt.
-Linked hierarchically to parent buildings with floor level and accessibility.
-================================================================================
-"""
-
-from data.campusCategories import CampusCategory
 
 # Master list of all internal and external campus points of interest
 PLACES_CATALOG = [

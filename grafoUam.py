@@ -18,6 +18,11 @@ from backend.graph import (
     PLACES_CATALOG,
     I18nManager,
     t,
+    BuildingSubgraph,
+    buildingPSubgraph,
+    getBuildingSubgraph,
+    getAllBuildingSubgraphs,
+    BUILDING_SUBGRAPHS,
 )
 from backend.subgraphs import (
     BuildingSubgraph,

@@ -12,6 +12,13 @@ from .navigationService import NavigationService, globalNavigationService
 from .campusCategories import CampusCategory, CATEGORY_METADATA
 from .placesCatalog import PLACES_CATALOG
 from .i18n import I18nManager, t
+from backend.subgraphs import (
+    BuildingSubgraph,
+    buildingPSubgraph,
+    getBuildingSubgraph,
+    getAllBuildingSubgraphs,
+    BUILDING_SUBGRAPHS,
+)
 
 __all__ = [
     "DirectedEdge",
@@ -27,4 +34,9 @@ __all__ = [
     "PLACES_CATALOG",
     "I18nManager",
     "t",
+    "BuildingSubgraph",
+    "buildingPSubgraph",
+    "getBuildingSubgraph",
+    "getAllBuildingSubgraphs",
+    "BUILDING_SUBGRAPHS",
 ]
