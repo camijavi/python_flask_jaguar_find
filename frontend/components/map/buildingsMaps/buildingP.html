@@ -680,6 +680,44 @@ Key UX & Mobile Features:
         doorGroups.push(g);
     }
 
+    function addLouveredDoor(parent, x, z, doorW, doorH, yBottom) {
+        const g = new THREE.Group();
+        const w = doorW || 1.72;
+        const h = doorH || 1.18;
+        const baseY = yBottom !== undefined ? yBottom : 0.28;
+
+        // Only vertical side stiles/jambs holding the louver blades (no handle, no bottom threshold)
+        const sideStileGeo = new THREE.BoxGeometry(0.10, h, 0.22);
+        const stileL = new THREE.Mesh(sideStileGeo, MAT.doorFrame);
+        stileL.position.set(-w / 2 + 0.05, h / 2, 0);
+        const stileR = new THREE.Mesh(sideStileGeo, MAT.doorFrame);
+        stileR.position.set(w / 2 - 0.05, h / 2, 0);
+        g.add(stileL, stileR);
+
+        // Recessed dark core behind the louver slats for contrast
+        const coreGeo = new THREE.BoxGeometry(w - 0.16, h - 0.06, 0.06);
+        const core = new THREE.Mesh(coreGeo, MAT.doorFrame);
+        core.position.set(0, h / 2, -0.01);
+        g.add(core);
+
+        // Horizontal angled grey louver slats (persianas) across the wider-than-tall door
+        const slatCount = 9;
+        const slatW = w - 0.14;
+        const slatStep = (h - 0.08) / slatCount;
+        const slatGeo = new THREE.BoxGeometry(slatW, slatStep * 0.72, 0.14);
+        for (let i = 0; i < slatCount; i++) {
+            const slat = new THREE.Mesh(slatGeo, MAT.doorPanel);
+            slat.position.set(0, 0.06 + (i + 0.5) * slatStep, 0.02);
+            slat.rotation.x = 0.36;
+            slat.castShadow = true;
+            g.add(slat);
+        }
+
+        g.position.set(x, 0.12 + baseY, z);
+        parent.add(g);
+        doorGroups.push(g);
+    }
+
     function addWallWithTwoDoors(parent, xStart, xEnd, z, wallH, swingDirZ) {
         const totalW = xEnd - xStart;
         const doorW = 1.2;
@@ -1315,12 +1353,23 @@ Key UX & Mobile Features:
             if (item.kind === "room") {
                 doorXs = addWallWithTwoDoors(floorGroup, x1, x2, zHallWall, wallH, -1);
             } else {
-                const doorW = 1.2;
-                const segW = (item.w - doorW) / 2;
-                addWallBox(floorGroup, x1 + segW / 2, 0.12, zHallWall, segW, wallH, 0.22);
-                addWallBox(floorGroup, x2 - segW / 2, 0.12, zHallWall, segW, wallH, 0.22);
-                addWallBox(floorGroup, cx, 0.12 + 2.05, zHallWall, doorW, Math.max(0.25, wallH - 2.05), 0.22);
-                addDoor(floorGroup, cx, zHallWall, -1, true);
+                // Restroom louvered doors: smaller height, wider than tall (width > height), grey, placed on the outer side of each restroom
+                const doorW = 1.72;
+                const doorH = 1.18;
+                const yBottom = 0.26;
+                const isMen = item.kind === "restroom-men";
+                const doorCenter = isMen ? (x1 + 1.55) : (x2 - 1.55);
+                doorXs = [doorCenter];
+
+                const segLeftW = (doorCenter - doorW / 2) - x1;
+                const segRightW = x2 - (doorCenter + doorW / 2);
+                if (segLeftW > 0.05) addWallBox(floorGroup, x1 + segLeftW / 2, 0.12, zHallWall, segLeftW, wallH, 0.22);
+                if (segRightW > 0.05) addWallBox(floorGroup, (doorCenter + doorW / 2) + segRightW / 2, 0.12, zHallWall, segRightW, wallH, 0.22);
+
+                const lintelY = yBottom + doorH;
+                const lintelH = Math.max(0.2, wallH - lintelY);
+                addWallBox(floorGroup, doorCenter, 0.12 + lintelY, zHallWall, doorW, lintelH, 0.22);
+                addLouveredDoor(floorGroup, doorCenter, zHallWall, doorW, doorH, yBottom);
             }
 
             const fullId = `F${floorNum}-${item.code}`;
