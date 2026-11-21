@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio D • Odontología Digital",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 351, y: 335 },
+            anchor: { x: 351, y: 290 },
             floors: [
                 { floor: "Piso 1", rooms: "Aula D102, Laboratorio de Odontología Digital CAM-CAM, Oficina de Servicio al Cliente, Sala de Reunión." }
             ]
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio J • Laboratorios Odontología",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 297, y: 332 },
+            anchor: { x: 297, y: 287 },
             floors: [
                 { floor: "Piso 1", rooms: "Laboratorio de Simulación y Práctica Preclínica Odontológica J101-J102, Depósito de Instrumental, SS Hombres / Mujeres." }
             ]
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio N • Clínicas Odontológicas",
             badgeClass: "badge-magenta",
             badgeBg: "#be185d",
-            anchor: { x: 350, y: 262 },
+            anchor: { x: 350, y: 217 },
             floors: [
                 { floor: "Piso 1", rooms: "Recepción de Pacientes, Módulo de Triaje, Clínicas Odontológicas Integrales, Quirófano Ambulatorio, Central de Esterilización." }
             ]
@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Plaza Chilamates (Kioskos & Fast Food)",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 225, y: 332 },
+            anchor: { x: 225, y: 287 },
             floors: [
                 { floor: "Plaza", rooms: "Kioskos de Comida Rápida, Puntos de Café, Mesas al Aire Libre, Espacio de Recreación Estudiantil." }
             ]

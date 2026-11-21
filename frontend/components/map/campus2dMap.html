@@ -86,13 +86,13 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 <rect x="475" y="280" width="45" height="26" />
             </clipPath>
             <clipPath id="clipBldgN">
-                <path d="M 275 240 L 425 240 L 425 360 L 380 360 L 380 285 L 275 285 Z" />
+                <path d="M 275 195 L 425 195 L 425 315 L 380 315 L 380 240 L 275 240 Z" />
             </clipPath>
             <clipPath id="clipBldgJ">
-                <rect x="275" y="315" width="45" height="35" />
+                <rect x="275" y="270" width="45" height="35" />
             </clipPath>
             <clipPath id="clipBldgD">
-                <path d="M 330 315 L 372 315 L 372 350 L 365 350 L 365 362 L 337 362 L 337 350 L 330 350 Z" />
+                <path d="M 330 270 L 372 270 L 372 305 L 365 305 L 365 317 L 337 317 L 337 305 L 330 305 Z" />
             </clipPath>
             <clipPath id="clipBldgA">
                 <rect x="230" y="390" width="40" height="130" />
@@ -161,6 +161,8 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <path d="M 520 220 L 880 220 L 880 720 L 520 720" stroke-width="18" />
             <!-- Road between C/B and E/F/G -->
             <path d="M 410 440 L 410 650 L 660 650" stroke-width="14" />
+            <!-- Driveway access to Central Parking Lot between C and J/D -->
+            <path d="M 120 355 L 260 355" stroke-width="16" />
         </g>
 
         <!-- ================================================================== -->
@@ -175,6 +177,89 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <rect x="270" y="90" width="150" height="40" rx="6" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
             <!-- North Parking (near Baseball Stadium) -->
             <rect x="580" y="90" width="130" height="40" rx="6" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
+
+            <!-- Central Parking Lot (Between Building C and Buildings J & D / N) -->
+            <g id="parkingLotCentralCD">
+                <!-- Asphalt Base Bay with Northwest Chamfered Driveway Entrance -->
+                <path d="M 258 355 L 278 322 L 512 322 L 512 388 L 258 388 Z" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
+                <!-- Sidewalk Curb Strip along Building C -->
+                <rect x="258" y="384" width="254" height="4" fill="#cbd5e1" />
+
+                <!-- Top Angled Stalls (Diagonal White Lines) -->
+                <g stroke="#ffffff" stroke-width="1.8" stroke-linecap="round">
+                    <line x1="288" y1="324" x2="276" y2="340" />
+                    <line x1="302" y1="324" x2="290" y2="340" />
+                    <line x1="316" y1="324" x2="304" y2="340" />
+                    <line x1="330" y1="324" x2="318" y2="340" />
+                    <line x1="344" y1="324" x2="332" y2="340" />
+                    <line x1="358" y1="324" x2="346" y2="340" />
+                    <line x1="372" y1="324" x2="360" y2="340" />
+                    <line x1="386" y1="324" x2="374" y2="340" />
+                    <line x1="400" y1="324" x2="388" y2="340" />
+                    <line x1="414" y1="324" x2="402" y2="340" />
+                    <line x1="428" y1="324" x2="416" y2="340" />
+                    <line x1="442" y1="324" x2="430" y2="340" />
+                    <line x1="456" y1="324" x2="444" y2="340" />
+                    <line x1="470" y1="324" x2="458" y2="340" />
+                    <line x1="484" y1="324" x2="472" y2="340" />
+                    <line x1="498" y1="324" x2="486" y2="340" />
+                </g>
+                <line x1="276" y1="340" x2="486" y2="340" stroke="#ffffff" stroke-width="1" stroke-dasharray="3,3" opacity="0.6" />
+
+                <!-- Bottom Perpendicular Stalls (Vertical White Lines facing Building C) -->
+                <g stroke="#ffffff" stroke-width="1.8" stroke-linecap="round">
+                    <line x1="280" y1="368" x2="280" y2="384" />
+                    <line x1="292" y1="368" x2="292" y2="384" />
+                    <line x1="304" y1="368" x2="304" y2="384" />
+                    <line x1="316" y1="368" x2="316" y2="384" />
+                    <line x1="328" y1="368" x2="328" y2="384" />
+                    <line x1="340" y1="368" x2="340" y2="384" />
+                    <line x1="352" y1="368" x2="352" y2="384" />
+                    <line x1="364" y1="368" x2="364" y2="384" />
+                    <line x1="376" y1="368" x2="376" y2="384" />
+                    <line x1="388" y1="368" x2="388" y2="384" />
+                    <line x1="400" y1="368" x2="400" y2="384" />
+                    <line x1="412" y1="368" x2="412" y2="384" />
+                    <line x1="424" y1="368" x2="424" y2="384" />
+                    <line x1="436" y1="368" x2="436" y2="384" />
+                    <line x1="448" y1="368" x2="448" y2="384" />
+                    <line x1="460" y1="368" x2="460" y2="384" />
+                    <line x1="472" y1="368" x2="472" y2="384" />
+                    <line x1="484" y1="368" x2="484" y2="384" />
+                    <line x1="496" y1="368" x2="496" y2="384" />
+                    <line x1="508" y1="368" x2="508" y2="384" />
+                </g>
+                <line x1="280" y1="368" x2="508" y2="368" stroke="#ffffff" stroke-width="1" stroke-dasharray="3,3" opacity="0.6" />
+
+                <!-- Central Driving Lane Centerline -->
+                <line x1="268" y1="354" x2="495" y2="354" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6,6" opacity="0.5" />
+
+                <!-- East Landscaping Tree Column -->
+                <g fill="#475569" opacity="0.85">
+                    <circle cx="517" cy="328" r="4.5" />
+                    <circle cx="517" cy="341" r="4.5" />
+                    <circle cx="517" cy="354" r="4.5" />
+                    <circle cx="517" cy="367" r="4.5" />
+                    <circle cx="517" cy="380" r="4.5" />
+                </g>
+            </g>
+
+            <!-- Pedestrian Path & Crosswalk Between Plaza Chilamates and Building A -->
+            <g id="pedestrianChilamatesToA">
+                <rect x="238" y="315" width="24" height="75" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.2" />
+                <!-- Zebra Crosswalk Rungs -->
+                <g stroke="#ffffff" stroke-width="3.5" stroke-linecap="butt">
+                    <line x1="240" y1="323" x2="260" y2="323" />
+                    <line x1="240" y1="331" x2="260" y2="331" />
+                    <line x1="240" y1="339" x2="260" y2="339" />
+                    <line x1="240" y1="347" x2="260" y2="347" />
+                    <line x1="240" y1="355" x2="260" y2="355" />
+                    <line x1="240" y1="363" x2="260" y2="363" />
+                    <line x1="240" y1="371" x2="260" y2="371" />
+                    <line x1="240" y1="379" x2="260" y2="379" />
+                    <line x1="240" y1="387" x2="260" y2="387" />
+                </g>
+            </g>
 
             <!-- Parking Row Stripes -->
             <g stroke="#94a3b8" stroke-width="1" stroke-dasharray="8,6" opacity="0.6">
@@ -358,20 +443,20 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <g class="bldg-shape" data-node="buildingN" data-bldg="N" filter="url(#bldgShadow)">
                 <g clip-path="url(#clipBldgN)">
                     <!-- Base: #1da495 -->
-                    <path d="M 275 240 L 425 240 L 425 360 L 380 360 L 380 285 L 275 285 Z" fill="#1da495" />
+                    <path d="M 275 195 L 425 195 L 425 315 L 380 315 L 380 240 L 275 240 Z" fill="#1da495" />
                     <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="275,240 425,240 402,262 275,262" fill="#48b2a9" />
-                    <polygon points="425,240 425,360 402,337 402,262" fill="#48b2a9" />
+                    <polygon points="275,195 425,195 402,217 275,217" fill="#48b2a9" />
+                    <polygon points="425,195 425,315 402,292 402,217" fill="#48b2a9" />
                     <!-- Shadow Triangles: #1f8383 -->
-                    <polygon points="275,240 275,285 297,262" fill="#1f8383" />
-                    <polygon points="380,360 425,360 402,337" fill="#1f8383" />
+                    <polygon points="275,195 275,240 297,217" fill="#1f8383" />
+                    <polygon points="380,315 425,315 402,292" fill="#1f8383" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
-                <path d="M 275 240 L 425 240 L 425 360 L 380 360 L 380 285 L 275 285 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <path d="M 275 195 L 425 195 L 425 315 L 380 315 L 380 240 L 275 240 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <!-- Badge N (Magenta) -->
                 <g class="billboard-badge">
-                    <rect x="290" y="251" width="22" height="22" class="badge-magenta" />
-                    <text x="301" y="262" class="badge-text">N</text>
+                    <rect x="290" y="206" width="22" height="22" class="badge-magenta" />
+                    <text x="301" y="217" class="badge-text">N</text>
                 </g>
             </g>
 
@@ -379,17 +464,17 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <g class="bldg-shape" data-node="buildingJ" data-bldg="J" filter="url(#bldgShadow)">
                 <g clip-path="url(#clipBldgJ)">
                     <!-- Base: #1da495 -->
-                    <rect x="275" y="315" width="45" height="35" fill="#1da495" />
+                    <rect x="275" y="270" width="45" height="35" fill="#1da495" />
                     <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="275,315 320,315 320,332 275,332" fill="#48b2a9" />
+                    <polygon points="275,270 320,270 320,287 275,287" fill="#48b2a9" />
                     <!-- Shadow Left Triangle: #1f8383 -->
-                    <polygon points="275,315 275,350 292,332" fill="#1f8383" />
+                    <polygon points="275,270 275,305 292,287" fill="#1f8383" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="275" y="315" width="45" height="35" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="275" y="270" width="45" height="35" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <g class="billboard-badge">
-                    <rect x="286" y="321" width="22" height="22" class="badge-cyan" />
-                    <text x="297" y="332" class="badge-text">J</text>
+                    <rect x="286" y="276" width="22" height="22" class="badge-cyan" />
+                    <text x="297" y="287" class="badge-text">J</text>
                 </g>
             </g>
 
@@ -397,24 +482,24 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <g class="bldg-shape" data-node="buildingD" data-bldg="D" filter="url(#bldgShadow)">
                 <g clip-path="url(#clipBldgD)">
                     <!-- Base: #1da495 -->
-                    <path d="M 330 315 L 372 315 L 372 350 L 365 350 L 365 362 L 337 362 L 337 350 L 330 350 Z" fill="#1da495" />
+                    <path d="M 330 270 L 372 270 L 372 305 L 365 305 L 365 317 L 337 317 L 337 305 L 330 305 Z" fill="#1da495" />
                     <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="330,315 372,315 372,332 330,332" fill="#48b2a9" />
+                    <polygon points="330,270 372,270 372,287 330,287" fill="#48b2a9" />
                     <!-- Shadow Left Triangle: #1f8383 -->
-                    <polygon points="330,315 330,350 348,332" fill="#1f8383" />
+                    <polygon points="330,270 330,305 348,287" fill="#1f8383" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
-                <path d="M 330 315 L 372 315 L 372 350 L 365 350 L 365 362 L 337 362 L 337 350 L 330 350 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <path d="M 330 270 L 372 270 L 372 305 L 365 305 L 365 317 L 337 317 L 337 305 L 330 305 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <g class="billboard-badge">
-                    <rect x="340" y="321" width="22" height="22" class="badge-green" />
-                    <text x="351" y="332" class="badge-text">D</text>
+                    <rect x="340" y="276" width="22" height="22" class="badge-green" />
+                    <text x="351" y="287" class="badge-text">D</text>
                 </g>
             </g>
 
             <!-- Plaza Chilamates -->
             <g class="bldg-shape" data-node="chilamatesPlaza" data-bldg="CHILAMATES">
-                <rect x="195" y="305" width="60" height="55" fill="#cbd5e1" stroke="#253452" stroke-width="2.5" />
-                <circle cx="225" cy="330" r="12" fill="#10b981" opacity="0.6" />
+                <rect x="195" y="260" width="60" height="55" fill="#cbd5e1" stroke="#253452" stroke-width="2.5" />
+                <circle cx="225" cy="287" r="12" fill="#10b981" opacity="0.6" />
             </g>
 
             <!-- 4A. EDIFICIO A (ATENCIÓN AL ESTUDIANTE CAE / WEST CONNECTOR) -->
@@ -456,15 +541,6 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                     <rect x="372" y="378" width="24" height="24" rx="5" fill="#4c1d95" stroke="#ffffff" stroke-width="2" />
                     <text x="384" y="390" class="badge-text" font-size="12" font-weight="800">C</text>
                 </g>
-            </g>
-
-            <!-- Official You Are Here Campus Signage Marker above Building C -->
-            <g class="official-you-are-here-pin" pointer-events="none">
-                <ellipse cx="330" cy="389" rx="5" ry="2.5" fill="#0f172a" opacity="0.25" />
-                <path d="M 323 375 C 323 371 337 371 337 375 C 337 380 330 388 330 388 C 330 388 323 380 323 375 Z" fill="#991b1b" stroke="#ffffff" stroke-width="1" />
-                <circle cx="330" cy="375" r="2.5" fill="#ffffff" />
-                <rect x="306" y="363" width="48" height="9" rx="2" fill="#7f1d1d" stroke="#ffffff" stroke-width="0.8" />
-                <text x="330" y="369.5" font-family="'Plus Jakarta Sans', sans-serif" font-size="4.2" font-weight="800" fill="#ffffff" text-anchor="middle">USTED ESTÁ AQUÍ</text>
             </g>
 
             <!-- Central Courtyard Walkway & Fountain Plaza between Buildings B & C -->
@@ -689,11 +765,11 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <!-- Walkways connecting Parking -> K -> A -> B/C -> E/G/F -> I -> Sports -->
             <path d="M 340 785 L 340 620 L 280 580" />
             <path d="M 280 545 L 250 520 L 250 500" />
-            <path d="M 250 500 L 250 410 L 250 262 L 275 262" />
+            <path d="M 250 500 L 250 390 L 250 315 L 225 287 L 275 287 L 330 287" />
+            <path d="M 250 287 L 250 217 L 350 217 L 350 128" />
             <path d="M 250 410 L 515 410" />
             <path d="M 250 500 L 515 500" />
             <path d="M 384 410 L 384 500" />
-            <path d="M 350 240 L 350 128" />
             <path d="M 515 410 L 545 410 L 570 425 L 510 255 L 440 128" />
             <path d="M 515 500 L 545 500 L 605 459" />
             <path d="M 458 520 L 458 725" />
