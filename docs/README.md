@@ -3,39 +3,39 @@
 
 ---
 
-Bienvenido al centro de documentación oficial del proyecto **JaguarFind**.  
+Bienvenido al centro de documentación oficial del proyecto **JaguarFind**. 
 Para mantener la máxima simplicidad y orden, cada archivo posee su título en **Inglés** y contiene su información completa tanto en **Español** como en **Inglés** mediante bloques desplegables interactivos.
 
-Welcome to the official **JaguarFind** documentation portal.  
+Welcome to the official **JaguarFind** documentation portal. 
 Each file has its title in **English** and contains the full information in both **Spanish** and **English** using interactive toggleable blocks.
 
 ---
 
-### 📑 Project Documentation Files / Archivos de Documentación
+### Project Documentation Files / Archivos de Documentación
 
 1. **[GENERAL_JAGUARFIND.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/GENERAL_JAGUARFIND.md)**
-   * **ES:** Visión general, contexto institucional UAM (semestres, eventos, visitantes, clínicas y facultades), planteamiento de los dos problemas, modelo matemático del Grafo y justificación de Dijkstra.
-   * **EN:** System overview, UAM institutional dynamics (semesters, visitor profiles, clinics, and faculties), the two core problems, and mathematical graph modeling.
+ * **ES:** Visión general, contexto institucional UAM (semestres, eventos, visitantes, clínicas y facultades), planteamiento de los dos problemas, modelo matemático del Grafo y justificación de Dijkstra.
+ * **EN:** System overview, UAM institutional dynamics (semesters, visitor profiles, clinics, and faculties), the two core problems, and mathematical graph modeling.
 
 2. **[CAMPUS_MAP.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/CAMPUS_MAP.md)**
-   * **ES:** Módulo de navegación peatonal (Google Maps UAM), acceso público sin registro, Códigos QR en las 3 entradas al campus, aulas piso por piso (B-101 a B-106 de izquierda a derecha), baños en pasillo, rampas accesibles ♿ y síntesis de voz con Web Speech API nativa.
-   * **EN:** Campus wayfinding subsystem, public access, QR codes at all 3 campus gates, floor-by-floor classrooms (B-101 to B-106), corridor restrooms, accessible ramps ♿, and native browser Web Speech API.
+ * **ES:** Módulo de navegación peatonal (Google Maps UAM), acceso público sin registro, Códigos QR en las 3 entradas al campus, aulas piso por piso (B-101 a B-106 de izquierda a derecha), baños en pasillo, rampas accesibles y síntesis de voz con Web Speech API nativa.
+ * **EN:** Campus wayfinding subsystem, public access, QR codes at all 3 campus gates, floor-by-floor classrooms (B-101 to B-106), corridor restrooms, accessible ramps , and native browser Web Speech API.
 
 3. **[LOST_AND_FOUND.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/LOST_AND_FOUND.md)**
-   * **ES:** Módulo de objetos perdidos, autenticación institucional con correo `@uamv.edu.ni`, roles (**Estudiante** con soporte para doble titulación, **Colaborador** con cédula, **Administrador** con panel de delegación y creación de usuarios), ciclo de 3 estados, regla antifraude y SQLite3.
-   * **EN:** Lost & Found management, institutional authentication (`@uamv.edu.ni`), user roles (Student with double degree support, Collaborator, Admin with delegation panel), 3-state custody lifecycle, anti-fraud secret rule, and SQLite3 schema.
+ * **ES:** Módulo de objetos perdidos, autenticación institucional con correo `@uamv.edu.ni`, roles (**Estudiante** con soporte para doble titulación, **Colaborador** con cédula, **Administrador** con panel de delegación y creación de usuarios), ciclo de 3 estados, regla antifraude y SQLite3.
+ * **EN:** Lost & Found management, institutional authentication (`@uamv.edu.ni`), user roles (Student with double degree support, Collaborator, Admin with delegation panel), 3-state custody lifecycle, anti-fraud secret rule, and SQLite3 schema.
 
 4. **[TEAM_PLANNING.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/TEAM_PLANNING.md)**
-   * **ES:** Organización del equipo (Camila, Francis, James y Elias), paquetes de trabajo, matriz RACI y cronograma de desarrollo día a día de 12 días en formato tabular y diagrama de flujo.
-   * **EN:** Team role allocation, WBS work packages, RACI matrix, and 12-day day-by-day development roadmap.
+ * **ES:** Organización del equipo (Camila, Francis, James y Elias), paquetes de trabajo, matriz RACI y cronograma de desarrollo día a día de 12 días en formato tabular y diagrama de flujo.
+ * **EN:** Team role allocation, WBS work packages, RACI matrix, and 12-day day-by-day development roadmap.
 
 5. **[GRAPH_MAPPING_RULES.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/GRAPH_MAPPING_RULES.md)**
-   * **ES:** Reglas y criterios oficiales de modelado topológico: abstracción de perímetro en áreas restringidas (Gateway Pattern para Edificio N Odontología y laboratorios), política de 1 sola puerta en aulas vs. accesos múltiples en auditorios, modelo híbrido (GPS exterior vs. plano cartesiano/pisos interior) y argumentos de defensa ante el jurado.
-   * **EN:** Official topological modeling rules: perimeter abstraction in restricted zones (Gateway Pattern for Building N Dental Clinics & labs), single-door vs. multi-door policy, hybrid navigation model (outdoor GPS vs. indoor Cartesian canvas/floors), and defense talking points.
+ * **ES:** Reglas y criterios oficiales de modelado topológico: abstracción de perímetro en áreas restringidas (Gateway Pattern para Edificio N Odontología y laboratorios), política de 1 sola puerta en aulas vs. accesos múltiples en auditorios, modelo híbrido (GPS exterior vs. plano cartesiano/pisos interior) y argumentos de defensa ante el jurado.
+ * **EN:** Official topological modeling rules: perimeter abstraction in restricted zones (Gateway Pattern for Building N Dental Clinics & labs), single-door vs. multi-door policy, hybrid navigation model (outdoor GPS vs. indoor Cartesian canvas/floors), and defense talking points.
 
 ---
 
-### 🏛️ Modular Codebase Architecture / Estructura Modular del Proyecto
+### Modular Codebase Architecture / Estructura Modular del Proyecto
 
 La aplicación Flask se encuentra subdividida en paquetes independientes y modulares:
 

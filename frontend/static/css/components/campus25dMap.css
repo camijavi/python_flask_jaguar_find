@@ -208,6 +208,25 @@
     box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(15, 23, 42, 0.28);
 }
 
+/* 5B-1. Focused Building Badge in 2.5D Mode */
+.waze-bldg-badge.waze-badge-focused {
+    z-index: 35 !important;
+}
+
+.waze-bldg-badge.waze-badge-focused .waze-bldg-letter {
+    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #0284c7, 0 8px 22px rgba(2, 132, 199, 0.65) !important;
+    animation: wazeBadgePulse 1.8s infinite ease-in-out;
+}
+
+@keyframes wazeBadgePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
 /* 5C. Floating 3D Pins */
 .waze-pin-dest {
     position: absolute;

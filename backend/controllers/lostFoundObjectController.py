@@ -19,6 +19,7 @@ from backend.database import (
     getCustodyStates,
 )
 from backend.graph.navigationService import globalNavigationService
+from backend.graph.geoUtils import CampusGeoUtils
 
 lostFoundObjectController = Blueprint(
     "lostFoundObjectController",
@@ -161,6 +162,37 @@ def reportItem():
         return jsonify({"success": False, "error": "Location (campus node) is required."}), 400
     if not description:
         return jsonify({"success": False, "error": "Description is required."}), 400
+
+    # Validate coordinates against campus perimeter (if GPS or coordinate pair is provided)
+    lat = payload.get("latitude")
+    lng = payload.get("longitude")
+    if lat is not None and lng is not None and str(lat).strip() != "" and str(lng).strip() != "":
+        try:
+            latF = float(lat)
+            lngF = float(lng)
+            if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=20.0):
+                return jsonify({
+                    "success": False,
+                    "error": "La ubicación seleccionada está fuera del perímetro del campus UAM."
+                }), 400
+        except (ValueError, TypeError):
+            return jsonify({
+                "success": False,
+                "error": "Coordenadas GPS de ubicación inválidas."
+            }), 400
+    elif "," in location:
+        parts = [p.strip() for p in location.split(",")]
+        if len(parts) == 2:
+            try:
+                latF = float(parts[0])
+                lngF = float(parts[1])
+                if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=20.0):
+                    return jsonify({
+                        "success": False,
+                        "error": "La ubicación indicada está fuera del perímetro del campus UAM."
+                    }), 400
+            except ValueError:
+                pass
 
     # Resolve reporter userId
     currentUser = session.get("user")

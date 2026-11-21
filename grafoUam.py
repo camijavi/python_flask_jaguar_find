@@ -19,6 +19,16 @@ from backend.graph import (
     I18nManager,
     t,
 )
+from backend.subgraphs import (
+    BuildingSubgraph,
+    buildingPSubgraph,
+    buildingDSubgraph,
+    buildingJSubgraph,
+    buildingOSubgraph,
+    getBuildingSubgraph,
+    getAllBuildingSubgraphs,
+    BUILDING_SUBGRAPHS,
+)
 
 __all__ = [
     "DirectedEdge",
@@ -34,4 +44,12 @@ __all__ = [
     "PLACES_CATALOG",
     "I18nManager",
     "t",
+    "BuildingSubgraph",
+    "buildingPSubgraph",
+    "buildingDSubgraph",
+    "buildingJSubgraph",
+    "buildingOSubgraph",
+    "getBuildingSubgraph",
+    "getAllBuildingSubgraphs",
+    "BUILDING_SUBGRAPHS",
 ]

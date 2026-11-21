@@ -8,13 +8,13 @@
  * Orquesta la interactividad del lienzo vectorial SVG en la página principal (/mapa).
  * Gestiona la selección de nodos de origen/destino, el consumo asíncrono de la API
  * de Dijkstra (/api/ruta), el dibujo animado de polilíneas peatonales, la integración
- * con la Web Speech API (ttsHelper.js) y el renderizado interactivo de pines (📍)
+ * con la Web Speech API (ttsHelper.js) y el renderizado interactivo de pines
  * de pertenencias extraviadas sobre el plano de la UAM.
  * 
  * Funciones y Módulos que van en este archivo:
  * --------------------------------------------
  * 1. Inicialización y Event Listeners:
- *    - Captura elementos del DOM: selects de origen/destino, toggle de accesibilidad ♿,
+ *    - Captura elementos del DOM: selects de origen/destino, toggle de accesibilidad,
  *      contenedor SVG del mapa, lista de instrucciones y panel de métricas.
  *    - Lee parámetros de URL (ej. ?origen=GATE_1 o ?origen=GATE_2) para activar
  *      automáticamente rutas cuando el usuario escanea un Código QR físico en una entrada.
@@ -33,7 +33,7 @@
  *    - centrarVistaEnNodo(nodoId):
  *      * Ajusta el viewBox del SVG para enfocar el origen o el destino seleccionado.
  * 
- * 4. Capa de Pines Georreferenciados de Objetos Perdidos (📍):
+ * 4. Capa de Pines Georreferenciados de Objetos Perdidos:
  *    - cargarPinesDeObjetos():
  *      * Realiza petición GET a '/api/pines-mapa' para obtener los artículos bajo custodia activa.
  *      * Inserta elementos <g class="pin-objeto"> en las coordenadas (x, y) de los nodos correspondientes.

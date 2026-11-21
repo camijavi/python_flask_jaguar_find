@@ -284,7 +284,9 @@ PLACES_CATALOG = [
         "parentBuildingId": "buildingD",
         "floorLevel": 1,
         "isAccessible": True,
-        "locationNotes": "Ground floor.",
+        "latitude": 12.108046,
+        "longitude": -86.256819,
+        "locationNotes": "Edificio D, Planta Única, laboratorio odontológico este.",
         "keywords": ["cam cam", "odontologia digital", "cad cam", "lab d"]
     },
     {
@@ -294,8 +296,46 @@ PLACES_CATALOG = [
         "parentBuildingId": "buildingD",
         "floorLevel": 1,
         "isAccessible": True,
-        "locationNotes": "Ground floor.",
-        "keywords": ["d102", "aula d"]
+        "latitude": 12.108029,
+        "longitude": -86.256911,
+        "locationNotes": "Edificio D, Planta Única, aula central sur.",
+        "keywords": ["d102", "d 102", "aula d102", "salon d102", "aula d"]
+    },
+    {
+        "placeId": "customerServiceD",
+        "name": "Oficina de Servicio al Cliente",
+        "category": CampusCategory.ADMINISTRATIVE,
+        "parentBuildingId": "buildingD",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "latitude": 12.108128,
+        "longitude": -86.256945,
+        "locationNotes": "Edificio D, Planta Única, área de atención en lobby.",
+        "keywords": ["servicio al cliente", "atencion d", "oficina d", "servicio d"]
+    },
+    {
+        "placeId": "meetingRoomD",
+        "name": "Sala de Reunión (Edificio D)",
+        "category": CampusCategory.ADMINISTRATIVE,
+        "parentBuildingId": "buildingD",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "latitude": 12.108128,
+        "longitude": -86.256945,
+        "locationNotes": "Edificio D, Planta Única, sala de reuniones en lobby.",
+        "keywords": ["sala de reunion", "sala de reuniones", "reunion d", "sala d"]
+    },
+    {
+        "placeId": "uamMapD",
+        "name": "Mapa UAM (Entrada Edificio D)",
+        "category": CampusCategory.ADMINISTRATIVE,
+        "parentBuildingId": "buildingD",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "latitude": 12.108128,
+        "longitude": -86.256945,
+        "locationNotes": "Edificio D, Entrada exterior, panel y directorio del Mapa UAM.",
+        "keywords": ["mapa uam", "mapa d", "directorio d", "entrada d"]
     },
 
     # -------------------------------------------------------------------------
@@ -333,7 +373,7 @@ PLACES_CATALOG = [
     },
     {
         "placeId": "accessibleRestroomE",
-        "name": "Servicios Sanitarios Mixtos Inclusivos ♿",
+        "name": "Servicios Sanitarios Mixtos Inclusivos",
         "category": CampusCategory.RESTROOM,
         "parentBuildingId": "buildingE",
         "floorLevel": 1,
@@ -441,7 +481,7 @@ PLACES_CATALOG = [
     },
     {
         "placeId": "accessibleRestroomG",
-        "name": "Servicios Sanitarios Mixtos Inclusivos ♿",
+        "name": "Servicios Sanitarios Mixtos Inclusivos",
         "category": CampusCategory.RESTROOM,
         "parentBuildingId": "buildingG",
         "floorLevel": 1,
@@ -503,8 +543,10 @@ PLACES_CATALOG = [
         "parentBuildingId": "buildingJ",
         "floorLevel": 1,
         "isAccessible": True,
-        "locationNotes": "Ground floor pre-clinical simulation lab.",
-        "keywords": ["j101", "lab odonto j", "simulacion dental"]
+        "latitude": 12.108126,
+        "longitude": -86.256780,
+        "locationNotes": "Edificio J, Planta Única, laboratorio norte.",
+        "keywords": ["j101", "j 101", "lab odonto j", "lab j101", "simulacion dental"]
     },
     {
         "placeId": "dentalLabJ102",
@@ -513,8 +555,46 @@ PLACES_CATALOG = [
         "parentBuildingId": "buildingJ",
         "floorLevel": 1,
         "isAccessible": True,
-        "locationNotes": "Ground floor.",
-        "keywords": ["j102", "lab odonto j102"]
+        "latitude": 12.108094,
+        "longitude": -86.256756,
+        "locationNotes": "Edificio J, Planta Única, laboratorio sureste.",
+        "keywords": ["j102", "j 102", "lab odonto j102", "lab j102"]
+    },
+    {
+        "placeId": "restroomsWomenJ",
+        "name": "Servicios Sanitarios Mujeres (Edificio J)",
+        "category": CampusCategory.RESTROOM,
+        "parentBuildingId": "buildingJ",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "latitude": 12.108070,
+        "longitude": -86.256815,
+        "locationNotes": "Edificio J, Planta Única, pasillo oeste.",
+        "keywords": ["baño mujeres j", "baños mujeres j", "sanitarios mujeres j", "baños j"]
+    },
+    {
+        "placeId": "restroomsMenJ",
+        "name": "Servicios Sanitarios Hombres (Edificio J)",
+        "category": CampusCategory.RESTROOM,
+        "parentBuildingId": "buildingJ",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "latitude": 12.108030,
+        "longitude": -86.256830,
+        "locationNotes": "Edificio J, Planta Única, pasillo suroeste.",
+        "keywords": ["baño hombres j", "baños hombres j", "sanitarios hombres j", "baño j"]
+    },
+    {
+        "placeId": "entranceJ",
+        "name": "Entrada Principal Edificio J",
+        "category": CampusCategory.DENTAL_LAB,
+        "parentBuildingId": "buildingJ",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "latitude": 12.108126,
+        "longitude": -86.256780,
+        "locationNotes": "Edificio J, Acceso principal exterior.",
+        "keywords": ["entrada j", "acceso j", "edificio j"]
     },
 
     # -------------------------------------------------------------------------
@@ -595,81 +675,468 @@ PLACES_CATALOG = [
     },
 
     # -------------------------------------------------------------------------
-    # BUILDING O: Engineering & Architecture (FIA)
+    # BUILDING O: Engineering & Architecture (FIA) - Floors 1 & 2
     # -------------------------------------------------------------------------
     {
         "placeId": "facultyEngineeringO",
-        "name": "Facultad de Ingeniería y Arquitectura (FIA)",
+        "name": "Facultad de Ingeniería y Arquitectura (O-101)",
         "category": CampusCategory.FACULTY,
         "parentBuildingId": "buildingO",
         "floorLevel": 1,
         "isAccessible": True,
-        "locationNotes": "Ground floor entrance.",
-        "keywords": ["fia", "ingenieria", "arquitectura", "facultad de ingenieria"]
+        "locationNotes": "Planta baja, Decanatura FIA.",
+        "latitude": 12.107664,
+        "longitude": -86.257761,
+        "keywords": ["fia", "ingenieria", "arquitectura", "facultad de ingenieria", "decanatura fia", "o-101", "o101"]
     },
     {
         "placeId": "soilMechanicsLabO",
-        "name": "Laboratorio de Mecánica de Suelos",
-        "category": CampusCategory.CLASSROOM,
+        "name": "Laboratorio de Mecánica de Suelos (O-102)",
+        "category": CampusCategory.FACULTY,
         "parentBuildingId": "buildingO",
         "floorLevel": 1,
         "isAccessible": True,
-        "locationNotes": "Ground floor heavy labs wing.",
-        "keywords": ["suelos", "mecanica de suelos", "laboratorio civil"]
+        "locationNotes": "Planta baja, ala de laboratorios pesados.",
+        "latitude": 12.107535,
+        "longitude": -86.257643,
+        "keywords": ["suelos", "mecanica de suelos", "laboratorio civil", "o-102", "o102"]
     },
     {
-        "placeId": "roboticsLabO",
-        "name": "Centro de Inteligencia Artificial y Robótica (CIAR)",
+        "placeId": "exhibitionAreaO",
+        "name": "Área de Exhibición (Edificio O)",
+        "category": CampusCategory.FACULTY,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Planta baja, área central de exhibición de proyectos.",
+        "latitude": 12.107518,
+        "longitude": -86.257615,
+        "keywords": ["exhibicion", "area de exhibicion", "exposicion"]
+    },
+    {
+        "placeId": "materialsLabO",
+        "name": "Laboratorio de Resistencia de Materiales (O-104)",
+        "category": CampusCategory.FACULTY,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Planta baja, laboratorio de ensaye de materiales.",
+        "latitude": 12.107502,
+        "longitude": -86.257586,
+        "keywords": ["materiales", "resistencia de materiales", "lab materiales", "o-104", "o104"]
+    },
+    {
+        "placeId": "mixingAreaO",
+        "name": "Área de Mezclado (Lab Materiales)",
+        "category": CampusCategory.FACULTY,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Planta baja, área anexa a materiales.",
+        "latitude": 12.107490,
+        "longitude": -86.257570,
+        "keywords": ["mezclado", "area de mezclado"]
+    },
+    {
+        "placeId": "curingAreaO",
+        "name": "Área de Curado (Lab Materiales)",
+        "category": CampusCategory.FACULTY,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Planta baja, área de curado de probetas de concreto.",
+        "latitude": 12.107485,
+        "longitude": -86.257560,
+        "keywords": ["curado", "area de curado", "curado de probetas"]
+    },
+    {
+        "placeId": "labTechniciansO",
+        "name": "Oficina de Técnicos de Laboratorio",
+        "category": CampusCategory.ADMINISTRATIVE,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Planta baja, oficina de soporte técnico de laboratorios.",
+        "latitude": 12.107510,
+        "longitude": -86.257575,
+        "keywords": ["tecnicos", "tecnicos de lab", "oficina tecnicos"]
+    },
+    {
+        "placeId": "fluidMechanicsLabO",
+        "name": "Laboratorio de Mecánica de Fluidos",
+        "category": CampusCategory.FACULTY,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Planta baja, laboratorio hidráulica y fluidos.",
+        "latitude": 12.107515,
+        "longitude": -86.257550,
+        "keywords": ["fluidos", "mecanica de fluidos", "lab fluidos"]
+    },
+    {
+        "placeId": "disasterRiskCoordO",
+        "name": "Coordinación de Gestión Integral de Riesgos de Desastres (O-105)",
+        "category": CampusCategory.ADMINISTRATIVE,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Planta baja, oficina de gestión de riesgos.",
+        "latitude": 12.107545,
+        "longitude": -86.257437,
+        "keywords": ["riesgos", "gestion de riesgos", "desastres", "o-105", "o105"]
+    },
+    {
+        "placeId": "mapUamO",
+        "name": "Mapa UAM (Entrada Edificio O)",
+        "category": CampusCategory.ADMINISTRATIVE,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Entrada principal y directorio del Edificio O.",
+        "latitude": 12.107478,
+        "longitude": -86.257555,
+        "keywords": ["mapa", "mapa uam", "directorio edificio o", "directorio"]
+    },
+    {
+        "placeId": "restroomsMenO",
+        "name": "Servicios Sanitarios Hombres (Anexo FIA)",
+        "category": CampusCategory.RESTROOM,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Anexo norte FIA.",
+        "latitude": 12.108151,
+        "longitude": -86.257888,
+        "keywords": ["baños hombres", "banos hombres", "sanitarios hombres fia", "wc hombres"]
+    },
+    {
+        "placeId": "restroomsWomenO",
+        "name": "Servicios Sanitarios Mujeres (Anexo FIA)",
+        "category": CampusCategory.RESTROOM,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Anexo norte FIA.",
+        "latitude": 12.108151,
+        "longitude": -86.257888,
+        "keywords": ["baños mujeres", "banos mujeres", "sanitarios mujeres fia", "wc mujeres"]
+    },
+    {
+        "placeId": "teachersLoungeO",
+        "name": "Sala de Maestros FIA (Anexo Norte)",
+        "category": CampusCategory.FACULTY,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Anexo norte FIA.",
+        "latitude": 12.108229,
+        "longitude": -86.257948,
+        "keywords": ["sala de maestros", "maestros fia", "profesores fia", "anexo norte"]
+    },
+    {
+        "placeId": "rampParkingO",
+        "name": "Rampa Accesible del Edificio O al Parqueo",
+        "category": CampusCategory.ACCESSIBLE_RAMP,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Conexión accesible entre Edificio O y acera de estacionamiento.",
+        "latitude": 12.107612,
+        "longitude": -86.257442,
+        "keywords": ["rampa", "rampa o", "rampa parqueo o", "rampa accesible fia"]
+    },
+    {
+        "placeId": "networksLabO",
+        "name": "Laboratorio de Redes (O-201)",
         "category": CampusCategory.CLASSROOM,
         "parentBuildingId": "buildingO",
         "floorLevel": 2,
         "isAccessible": False,
-        "locationNotes": "Second floor specialized technology lab.",
-        "keywords": ["ciar", "robotica", "inteligencia artificial", "redes", "o201"]
+        "locationNotes": "Segundo piso, laboratorio de redes y conectividad.",
+        "latitude": 12.107520,
+        "longitude": -86.257586,
+        "keywords": ["redes", "lab redes", "o-201", "o201"]
+    },
+    {
+        "placeId": "networksCenterO",
+        "name": "Centro de Redes (Edificio O)",
+        "category": CampusCategory.ADMINISTRATIVE,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 2,
+        "isAccessible": False,
+        "locationNotes": "Segundo piso, infraestructura de redes.",
+        "latitude": 12.107550,
+        "longitude": -86.257575,
+        "keywords": ["centro de redes", "redes uam"]
+    },
+    {
+        "placeId": "ciarLabO",
+        "name": "Centro de Inteligencia Artificial y Robótica (CIAR)",
+        "category": CampusCategory.FACULTY,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 2,
+        "isAccessible": False,
+        "locationNotes": "Segundo piso, centro tecnológico de IA y Robótica.",
+        "latitude": 12.107599,
+        "longitude": -86.257561,
+        "keywords": ["ciar", "inteligencia artificial", "centro de inteligencia artificial"]
+    },
+    {
+        "placeId": "roboticsAreaO",
+        "name": "Área de Robótica (CIAR)",
+        "category": CampusCategory.FACULTY,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 2,
+        "isAccessible": False,
+        "locationNotes": "Segundo piso, área de hardware y prototipado robótico.",
+        "latitude": 12.107585,
+        "longitude": -86.257567,
+        "keywords": ["robotica", "lab robotica", "area de robotica"]
+    },
+    {
+        "placeId": "drinkingFountainO_F2",
+        "name": "Bebedero de Agua (Edificio O - Piso 2)",
+        "category": CampusCategory.DRINKING_FOUNTAIN,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 2,
+        "isAccessible": False,
+        "locationNotes": "Segundo piso, junto a robótica.",
+        "latitude": 12.107585,
+        "longitude": -86.257567,
+        "keywords": ["bebedero", "bebedero o", "agua piso 2"]
+    },
+    {
+        "placeId": "tutoringRoomO",
+        "name": "Sala de Tutoría FIA",
+        "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 2,
+        "isAccessible": False,
+        "locationNotes": "Segundo piso, asesorías académicas FIA.",
+        "latitude": 12.107632,
+        "longitude": -86.257548,
+        "keywords": ["tutoria", "sala de tutoria", "tutorias fia"]
+    },
+    {
+        "placeId": "classroomO202",
+        "name": "Aula O-202",
+        "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingO",
+        "floorLevel": 2,
+        "isAccessible": False,
+        "locationNotes": "Segundo piso, aula teórica O-202.",
+        "latitude": 12.107741,
+        "longitude": -86.257507,
+        "keywords": ["o-202", "o202", "aula o202"]
     },
 
     # -------------------------------------------------------------------------
-    # BUILDING P: Copernicus Observatory & Classrooms
+    # BUILDING P: Copernicus Observatory, Classrooms & Indoor Facilities
     # -------------------------------------------------------------------------
     {
         "placeId": "copernicusObservatoryP",
         "name": "Observatorio Astronómico Copérnico",
-        "category": CampusCategory.ACADEMIC if hasattr(CampusCategory, 'ACADEMIC') else CampusCategory.CLASSROOM,
+        "category": CampusCategory.CLASSROOM,
         "parentBuildingId": "buildingP",
         "floorLevel": 5,
         "isAccessible": False,
         "locationNotes": "Fifth floor dome / rooftop.",
         "keywords": ["copernico", "observatorio", "telescopio", "estacion meteorologica", "piso 5"]
     },
+    # --- Floor 1 ---
     {
-        "placeId": "drinkingFountainP1",
-        "name": "Bebedero de Agua (Edificio P - Piso 1)",
-        "category": CampusCategory.DRINKING_FOUNTAIN,
-        "parentBuildingId": "buildingP",
-        "floorLevel": 1,
-        "isAccessible": True,
-        "locationNotes": "First floor central corridor.",
-        "keywords": ["bebedero p", "bebedero p1", "agua p"]
-    },
-    {
-        "placeId": "drinkingFountainP2",
-        "name": "Bebedero de Agua (Edificio P - Piso 2)",
-        "category": CampusCategory.DRINKING_FOUNTAIN,
-        "parentBuildingId": "buildingP",
-        "floorLevel": 2,
-        "isAccessible": False,
-        "locationNotes": "Second floor corridor.",
-        "keywords": ["bebedero p2", "agua p2"]
-    },
-    {
-        "placeId": "classroomP101", "name": "Aula P-101", "category": CampusCategory.CLASSROOM,
+        "placeId": "classroomP101", "name": "Salón P-101", "category": CampusCategory.CLASSROOM,
         "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
-        "locationNotes": "Ground floor corridor.", "keywords": ["p101", "aula p101"]
+        "latitude": 12.107460, "longitude": -86.256743,
+        "locationNotes": "Edificio P, Planta Baja, pasillo este.", "keywords": ["p101", "p 101", "salon 101", "aula p101"]
     },
     {
-        "placeId": "classroomP201", "name": "Aula P-201", "category": CampusCategory.CLASSROOM,
+        "placeId": "drinkingFountainP1", "name": "Bebedero de Agua (Edificio P - Piso 1)", "category": CampusCategory.DRINKING_FOUNTAIN,
+        "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
+        "latitude": 12.107460, "longitude": -86.256743,
+        "locationNotes": "Edificio P, Planta Baja, junto a Salón P-101.", "keywords": ["bebedero p", "bebedero p1", "agua p1"]
+    },
+    {
+        "placeId": "classroomP102", "name": "Salón P-102", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
+        "latitude": 12.107431, "longitude": -86.256783,
+        "locationNotes": "Edificio P, Planta Baja.", "keywords": ["p102", "p 102", "salon 102", "aula p102"]
+    },
+    {
+        "placeId": "classroomP103", "name": "Salón P-103", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
+        "latitude": 12.107439, "longitude": -86.256947,
+        "locationNotes": "Edificio P, Planta Baja.", "keywords": ["p103", "p 103", "salon 103", "aula p103"]
+    },
+    {
+        "placeId": "classroomP104", "name": "Salón P-104", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
+        "latitude": 12.107455, "longitude": -86.256981,
+        "locationNotes": "Edificio P, Planta Baja.", "keywords": ["p104", "p 104", "salon 104", "aula p104"]
+    },
+    {
+        "placeId": "classroomP105", "name": "Salón P-105", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
+        "latitude": 12.107453, "longitude": -86.257149,
+        "locationNotes": "Edificio P, Planta Baja central.", "keywords": ["p105", "p 105", "salon 105", "aula p105"]
+    },
+    {
+        "placeId": "classroomP106", "name": "Salón P-106", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
+        "latitude": 12.107467, "longitude": -86.257202,
+        "locationNotes": "Edificio P, Planta Baja.", "keywords": ["p106", "p 106", "salon 106", "aula p106"]
+    },
+    {
+        "placeId": "classroomP107", "name": "Salón P-107", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
+        "latitude": 12.107450, "longitude": -86.257270,
+        "locationNotes": "Edificio P, Planta Baja.", "keywords": ["p107", "p 107", "salon 107", "aula p107"]
+    },
+    {
+        "placeId": "classroomP108", "name": "Salón P-108", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
+        "latitude": 12.107477, "longitude": -86.257206,
+        "locationNotes": "Edificio P, Planta Baja oeste.", "keywords": ["p108", "p 108", "salon 108", "aula p108"]
+    },
+    {
+        "placeId": "restroomsP1", "name": "Servicios Sanitarios (Edificio P - Piso 1)", "category": CampusCategory.RESTROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
+        "latitude": 12.107441, "longitude": -86.257422,
+        "locationNotes": "Edificio P, Planta Baja, extremo oeste.", "keywords": ["baños p", "baño p", "baños p1", "sanitarios p1"]
+    },
+    {
+        "placeId": "rampParkingP", "name": "Rampa Accesible Estacionamiento hacia Edificio P", "category": CampusCategory.ACCESSIBLE_RAMP,
+        "parentBuildingId": "buildingP", "floorLevel": 1, "isAccessible": True,
+        "latitude": 12.106991, "longitude": -86.258233,
+        "locationNotes": "Rampa desde el estacionamiento hacia el Edificio P, enfrente del Edificio O.", "keywords": ["rampa p", "rampa edificio p", "rampa estacionamiento p"]
+    },
+    # --- Floor 2 ---
+    {
+        "placeId": "classroomP201", "name": "Salón P-201", "category": CampusCategory.CLASSROOM,
         "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
-        "locationNotes": "Second floor.", "keywords": ["p201", "aula p201"]
+        "latitude": 12.107484, "longitude": -86.256721,
+        "locationNotes": "Edificio P, Piso 2 este.", "keywords": ["p201", "p 201", "salon 201", "aula p201"]
+    },
+    {
+        "placeId": "drinkingFountainP2East", "name": "2do Bebedero de Agua (Edificio P - Piso 2 Este)", "category": CampusCategory.DRINKING_FOUNTAIN,
+        "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
+        "latitude": 12.107434, "longitude": -86.256781,
+        "locationNotes": "Edificio P, Piso 2, pasillo este.", "keywords": ["bebedero p2", "agua p2", "bebedero p2 este"]
+    },
+    {
+        "placeId": "classroomP202", "name": "Salón P-202", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
+        "latitude": 12.107428, "longitude": -86.256817,
+        "locationNotes": "Edificio P, Piso 2.", "keywords": ["p202", "p 202", "salon 202", "aula p202"]
+    },
+    {
+        "placeId": "classroomP203", "name": "Salón P-203", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
+        "latitude": 12.107447, "longitude": -86.256957,
+        "locationNotes": "Edificio P, Piso 2.", "keywords": ["p203", "p 203", "salon 203", "aula p203"]
+    },
+    {
+        "placeId": "classroomP204", "name": "Salón P-204", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
+        "latitude": 12.107434, "longitude": -86.257043,
+        "locationNotes": "Edificio P, Piso 2 central.", "keywords": ["p204", "p 204", "salon 204", "aula p204"]
+    },
+    {
+        "placeId": "classroomP205", "name": "Salón P-205", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
+        "latitude": 12.107492, "longitude": -86.257090,
+        "locationNotes": "Edificio P, Piso 2 central.", "keywords": ["p205", "p 205", "salon 205", "aula p205"]
+    },
+    {
+        "placeId": "classroomP206", "name": "Salón P-206", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
+        "latitude": 12.107413, "longitude": -86.257153,
+        "locationNotes": "Edificio P, Piso 2.", "keywords": ["p206", "p 206", "salon 206", "aula p206"]
+    },
+    {
+        "placeId": "classroomP207", "name": "Salón P-207", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
+        "latitude": 12.107427, "longitude": -86.257217,
+        "locationNotes": "Edificio P, Piso 2.", "keywords": ["p207", "p 207", "salon 207", "aula p207"]
+    },
+    {
+        "placeId": "classroomP208", "name": "Salón P-208", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
+        "latitude": 12.107402, "longitude": -86.257297,
+        "locationNotes": "Edificio P, Piso 2 oeste.", "keywords": ["p208", "p 208", "salon 208", "aula p208"]
+    },
+    {
+        "placeId": "drinkingFountainP2West", "name": "Bebedero de Agua (Edificio P - Piso 2 Oeste)", "category": CampusCategory.DRINKING_FOUNTAIN,
+        "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
+        "latitude": 12.107407, "longitude": -86.257298,
+        "locationNotes": "Edificio P, Piso 2 junto a Salón P-208.", "keywords": ["bebedero p2 oeste", "bebedero p2"]
+    },
+    {
+        "placeId": "restroomsP2", "name": "Servicios Sanitarios (Edificio P - Piso 2)", "category": CampusCategory.RESTROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 2, "isAccessible": False,
+        "latitude": 12.107480, "longitude": -86.257337,
+        "locationNotes": "Edificio P, Piso 2 oeste.", "keywords": ["baños p2", "sanitarios p2"]
+    },
+    # --- Floor 3 ---
+    {
+        "placeId": "classroomP301", "name": "Salón P-301", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 3, "isAccessible": False,
+        "latitude": 12.107461, "longitude": -86.256717,
+        "locationNotes": "Edificio P, Piso 3 este.", "keywords": ["p301", "p 301", "salon 301", "aula p301"]
+    },
+    {
+        "placeId": "drinkingFountainP3", "name": "1er Bebedero de Agua (Edificio P - Piso 3)", "category": CampusCategory.DRINKING_FOUNTAIN,
+        "parentBuildingId": "buildingP", "floorLevel": 3, "isAccessible": False,
+        "latitude": 12.107434, "longitude": -86.256751,
+        "locationNotes": "Edificio P, Piso 3 este.", "keywords": ["bebedero p3", "agua p3"]
+    },
+    {
+        "placeId": "classroomP301B", "name": "Salón P-301 (Acceso 2)", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 3, "isAccessible": False,
+        "latitude": 12.107462, "longitude": -86.256862,
+        "locationNotes": "Edificio P, Piso 3.", "keywords": ["p301b", "p 301 2", "p301 segundo"]
+    },
+    {
+        "placeId": "classroomP302", "name": "Salón P-302", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 3, "isAccessible": False,
+        "latitude": 12.107443, "longitude": -86.256934,
+        "locationNotes": "Edificio P, Piso 3.", "keywords": ["p302", "p 302", "salon 302", "aula p302"]
+    },
+    {
+        "placeId": "classroomP303", "name": "Salón P-303", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 3, "isAccessible": False,
+        "latitude": 12.107442, "longitude": -86.256936,
+        "locationNotes": "Edificio P, Piso 3.", "keywords": ["p303", "p 303", "salon 303", "aula p303"]
+    },
+    {
+        "placeId": "classroomP304", "name": "Salón P-304", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 3, "isAccessible": False,
+        "latitude": 12.107443, "longitude": -86.256999,
+        "locationNotes": "Edificio P, Piso 3.", "keywords": ["p304", "p 304", "salon 304", "aula p304"]
+    },
+    {
+        "placeId": "classroomP305", "name": "Salón P-305", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 3, "isAccessible": False,
+        "latitude": 12.107454, "longitude": -86.257114,
+        "locationNotes": "Edificio P, Piso 3 central.", "keywords": ["p305", "p 305", "salon 305", "aula p305"]
+    },
+    {
+        "placeId": "classroomP306", "name": "Salón P-306", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 3, "isAccessible": False,
+        "latitude": 12.107461, "longitude": -86.257145,
+        "locationNotes": "Edificio P, Piso 3.", "keywords": ["p306", "p 306", "salon 306", "aula p306"]
+    },
+    {
+        "placeId": "classroomP306B", "name": "Salón P-306 (Acceso 2)", "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 3, "isAccessible": False,
+        "latitude": 12.107435, "longitude": -86.257136,
+        "locationNotes": "Edificio P, Piso 3.", "keywords": ["p306b", "p 306 2", "p306 segundo"]
+    },
+    {
+        "placeId": "restroomsP3", "name": "Servicios Sanitarios (Edificio P - Piso 3)", "category": CampusCategory.RESTROOM,
+        "parentBuildingId": "buildingP", "floorLevel": 3, "isAccessible": False,
+        "latitude": 12.107468, "longitude": -86.257189,
+        "locationNotes": "Edificio P, Piso 3 oeste.", "keywords": ["baños p3", "sanitarios p3", "baño p3"]
     },
 
     # -------------------------------------------------------------------------
@@ -731,11 +1198,11 @@ PLACES_CATALOG = [
     },
 
     # -------------------------------------------------------------------------
-    # ACCESSIBLE RAMPS (♿ INCLUSIVITY)
+    # ACCESSIBLE RAMPS (INCLUSIVITY)
     # -------------------------------------------------------------------------
     {
         "placeId": "rampBuildingA",
-        "name": "Rampa de Acceso Edificio A ♿",
+        "name": "Rampa de Acceso Edificio A",
         "category": CampusCategory.ACCESSIBLE_RAMP,
         "parentBuildingId": "buildingA",
         "floorLevel": 1,
@@ -745,7 +1212,7 @@ PLACES_CATALOG = [
     },
     {
         "placeId": "rampBuildingB",
-        "name": "Rampa de Acceso Edificio B ♿",
+        "name": "Rampa de Acceso Edificio B",
         "category": CampusCategory.ACCESSIBLE_RAMP,
         "parentBuildingId": "buildingB",
         "floorLevel": 1,
@@ -755,7 +1222,7 @@ PLACES_CATALOG = [
     },
     {
         "placeId": "rampBuildingG",
-        "name": "Rampa Auditorio Central Edificio G ♿",
+        "name": "Rampa Auditorio Central Edificio G",
         "category": CampusCategory.ACCESSIBLE_RAMP,
         "parentBuildingId": "buildingG",
         "floorLevel": 1,
@@ -765,7 +1232,7 @@ PLACES_CATALOG = [
     },
     {
         "placeId": "rampJaguarCenter",
-        "name": "Rampa de Acceso Jaguar Center ♿",
+        "name": "Rampa de Acceso Jaguar Center",
         "category": CampusCategory.ACCESSIBLE_RAMP,
         "parentBuildingId": "jaguarCenter",
         "floorLevel": 1,
