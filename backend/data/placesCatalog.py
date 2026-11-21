@@ -1295,8 +1295,22 @@ PLACES_CATALOG = [
         "parentBuildingId": "buildingP",
         "floorLevel": 5,
         "isAccessible": False,
+        "latitude": 12.107461,
+        "longitude": -86.256743,
         "locationNotes": "Fifth floor dome / rooftop.",
-        "keywords": ["copernico", "observatorio", "telescopio", "estacion meteorologica", "piso 5"]
+        "keywords": ["copernico", "observatorio", "telescopio", "estacion meteorologica", "piso 5", "p501"]
+    },
+    {
+        "placeId": "classroomP401",
+        "name": "Salón P-401 (Anexo Superior)",
+        "category": CampusCategory.CLASSROOM,
+        "parentBuildingId": "buildingP",
+        "floorLevel": 4,
+        "isAccessible": False,
+        "latitude": 12.107461,
+        "longitude": -86.256743,
+        "locationNotes": "Edificio P, Piso 4 (Anexo Superior).",
+        "keywords": ["p401", "p 401", "salon 401", "aula p401", "anexo p401"]
     },
     # --- Floor 1 ---
     {

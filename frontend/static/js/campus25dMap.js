@@ -74,16 +74,22 @@
             this.tbtNextPreview = document.getElementById("tbtNextPreview");
             this.tbtManeuverIcon = document.getElementById("tbtManeuverIcon");
             this.btnCloseTbt = document.getElementById("btnCloseTbtBanner");
+            this.tbtIndoorActionRow = document.getElementById("tbtIndoorActionRow");
+            this.btnTbtEnterBuildingP = document.getElementById("btnTbtEnterBuildingP");
+            this.labelTbtEnterBuildingP = document.getElementById("labelTbtEnterBuildingP");
 
             // Waze Bottom Trip Summary Elements
             this.wazeBottomBar = document.getElementById("wazeBottomBar");
             this.wazeEtaTime = document.getElementById("wazeEtaTime");
             this.wazeTripMeta = document.getElementById("wazeTripMeta");
             this.wazeProgressBar = document.getElementById("wazeProgressBar");
+            this.btnTbtPrevStep = document.getElementById("btnTbtPrevStep");
+            this.btnTbtNextStep = document.getElementById("btnTbtNextStep");
             this.btnWazeRecenter = document.getElementById("btnWazeRecenter");
             this.btnWazeOverview = document.getElementById("btnWazeOverview");
             this.btnTbtPlay = document.getElementById("btnTbtPlaySimulation");
             this.labelSimPlay = document.getElementById("labelSimPlay");
+            this.indoorHandoffTimer = null;
 
             // Map building coordinates lookup (matches campus2dMap.js)
             this.buildingAnchors = {
@@ -200,13 +206,15 @@
 
                 badgeEl.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    if (nodeId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
-                        this.focusBuilding(nodeId, { zoom: 2.85, animate: true });
+                    this.focusBuilding(nodeId, { zoom: 2.85, animate: true });
+                    if (nodeId === "buildingP") {
                         setTimeout(() => {
-                            window.openBuildingPIsometricModal();
-                        }, 280);
-                    } else {
-                        this.focusBuilding(nodeId, { zoom: 2.85, animate: true });
+                            if (typeof window.openBuildingMap === "function") {
+                                window.openBuildingMap("buildingP");
+                            } else if (typeof window.openBuildingPModal === "function") {
+                                window.openBuildingPModal();
+                            }
+                        }, 380);
                     }
                 });
 
@@ -306,6 +314,28 @@
                             this.centerOnCampusLowerThird();
                         }
                     }
+                });
+            }
+
+            // Step Prev / Next buttons
+            if (this.btnTbtPrevStep) {
+                this.btnTbtPrevStep.addEventListener("click", () => {
+                    this.stopSimulation();
+                    this.prevStep();
+                });
+            }
+            if (this.btnTbtNextStep) {
+                this.btnTbtNextStep.addEventListener("click", () => {
+                    this.stopSimulation();
+                    this.nextStep({ triggerIndoorIfAtEnd: true });
+                });
+            }
+
+            // Indoor Building P 3D Waze Handoff Button
+            if (this.btnTbtEnterBuildingP) {
+                this.btnTbtEnterBuildingP.addEventListener("click", () => {
+                    this.stopSimulation();
+                    this.launchBuildingPIndoorWaze();
                 });
             }
 
@@ -1128,24 +1158,117 @@
         }
 
         /**
+         * Checks whether the calculated route targets Building P or a classroom/facility inside Building P
+         */
+        isBuildingPRoute(routeData) {
+            if (!routeData) return false;
+            const pathIds = routeData.pathNodeIds || [];
+            const lastNodeId = pathIds.length > 0 ? pathIds[pathIds.length - 1] : null;
+            if (routeData.destinationNodeId === "buildingP" || lastNodeId === "buildingP") {
+                return true;
+            }
+            const destStr = String(routeData.destinationPlaceId || routeData.destination || "").toLowerCase();
+            return (
+                destStr.includes("classroomp") ||
+                destStr.includes("salón p-") ||
+                destStr.includes("salon p-") ||
+                destStr.includes("aula p") ||
+                destStr.includes("copernic") ||
+                destStr.includes("observator") ||
+                destStr.includes("edificio p")
+            );
+        }
+
+        /**
+         * Launches the 3D Building P Indoor Map in Waze Hallway Navigation Mode
+         */
+        launchBuildingPIndoorWaze() {
+            if (!this.currentRoute) return;
+            if (this.indoorHandoffTimer) {
+                clearTimeout(this.indoorHandoffTimer);
+                this.indoorHandoffTimer = null;
+            }
+
+            const route = this.currentRoute;
+            const pathIds = route.pathNodeIds || [];
+            let recommendedEntrance = route.recommendedIndoorEntrance;
+            if (!recommendedEntrance) {
+                if (route.isAccessibleRoute) {
+                    recommendedEntrance = "F1-ENT-E";
+                } else if (pathIds.length >= 2 && (pathIds[pathIds.length - 2] === "buildingO" || pathIds[pathIds.length - 2] === "buildingH")) {
+                    recommendedEntrance = "F1-ENT-O";
+                } else {
+                    recommendedEntrance = "F1-ENT-W";
+                }
+            }
+
+            const selDest = window.currentSelectedDestination || {};
+            const targetQuery = route.destinationPlaceId || selDest.placeId || route.destination || selDest.title || "F5-501";
+            const payload = {
+                origin: recommendedEntrance,
+                destination: targetQuery,
+                autoStartWaze: true,
+                fromCampusRoute: true,
+                campusOriginName: route.origin || "Campus UAM"
+            };
+
+            if (typeof window.openBuildingPModal === "function") {
+                window.openBuildingPModal(payload);
+            } else if (typeof window.openBuildingMap === "function") {
+                window.openBuildingMap("buildingP", payload);
+            }
+        }
+
+        /**
          * Global Route Calculated Handler
          */
         onRouteCalculated(routeData) {
+            if (this.indoorHandoffTimer) {
+                clearTimeout(this.indoorHandoffTimer);
+                this.indoorHandoffTimer = null;
+            }
+
             this.currentRoute = routeData;
             this.currentStepIndex = 0;
 
-            if (!routeData || !routeData.pathCoordinates || routeData.pathCoordinates.length < 2) return;
+            if (!routeData || !routeData.pathCoordinates || routeData.pathCoordinates.length < 2) {
+                // If user routed within Building P alone (single macro node buildingP), open Building P directly in Waze mode
+                if (this.isBuildingPRoute(routeData)) {
+                    this.launchBuildingPIndoorWaze();
+                }
+                return;
+            }
 
             // Ensure route polyline points are populated in SVG
             this.drawRoutePolylines(routeData);
 
-            // Automatically switch to Waze-style 2.5D navigation view
+            // Automatically switch to Waze-style 2.5D navigation view (52° Waze perspective, Heading-Up)
+            this.isHeadingUp = true;
+            this.updateHeadingControls();
             if (!this.is25dActive) {
-                this.setMode(true);
+                this.setMode(true, { pitch: 52, zoom: 2.35, skipDefaultCenter: true });
+            } else {
+                this.pitch = 52;
+                this.zoomScale = 2.35;
+            }
+
+            // Reveal Indoor Building P Waze 3D button if destination is inside Building P
+            if (this.tbtIndoorActionRow) {
+                if (this.isBuildingPRoute(routeData)) {
+                    this.tbtIndoorActionRow.classList.remove("hidden");
+                    if (this.labelTbtEnterBuildingP) {
+                        this.labelTbtEnterBuildingP.textContent = `Navegar Dentro de Edificio P → ${routeData.destination || "Salón"}`;
+                    }
+                } else {
+                    this.tbtIndoorActionRow.classList.add("hidden");
+                }
             }
 
             this.showNavigationBanner();
             this.goToStep(0);
+
+            // Automatically animate the outdoor Waze journey building-by-building and hand off to Building P on arrival!
+            this.startSimulation({ autoOpenIndoorOnArrival: true });
         }
 
         drawRoutePolylines(routeData) {
@@ -1162,10 +1285,17 @@
         }
 
         onRouteCleared() {
+            if (this.indoorHandoffTimer) {
+                clearTimeout(this.indoorHandoffTimer);
+                this.indoorHandoffTimer = null;
+            }
             this.currentRoute = null;
             this.currentStepIndex = 0;
             this.stopSimulation();
             this.hideNavigationBanner();
+            if (this.tbtIndoorActionRow) {
+                this.tbtIndoorActionRow.classList.add("hidden");
+            }
 
             const glow = document.getElementById("route2dGlowPolyline");
             const main = document.getElementById("route2dPolyline");
@@ -1195,6 +1325,7 @@
                 if (this.tbtStepDistance) this.tbtStepDistance.textContent = "Waze";
                 if (this.tbtStepInstruction) this.tbtStepInstruction.textContent = "Explorando Campus UAM • Rumbo al frente";
                 if (this.tbtNextPreview) this.tbtNextPreview.classList.add("hidden");
+                if (this.tbtIndoorActionRow) this.tbtIndoorActionRow.classList.add("hidden");
                 if (this.tbtManeuverIcon) {
                     this.tbtManeuverIcon.innerHTML = `<polygon points="12 2 19 21 12 17 5 21 12 2" stroke-width="2" stroke-linejoin="round"/>`;
                 }
@@ -1215,7 +1346,7 @@
         }
 
         /**
-         * Navigates to a specific step along the route
+         * Navigates to a specific step along the outdoor campus route, adjusting Waze camera bearing & zoom per building
          */
         goToStep(stepIndex) {
             if (!this.currentRoute || !this.currentRoute.pathCoordinates) return;
@@ -1226,12 +1357,13 @@
             if (stepIndex >= coords.length) stepIndex = coords.length - 1;
             this.currentStepIndex = stepIndex;
 
-            const currentPt = this.resolveSvgPoint(coords[stepIndex]);
+            const currentCoord = coords[stepIndex];
+            const currentPt = this.resolveSvgPoint(currentCoord);
             const nextPt = stepIndex < coords.length - 1
                 ? this.resolveSvgPoint(coords[stepIndex + 1])
                 : (coords.length > 1 ? this.resolveSvgPoint(coords[stepIndex - 1]) : currentPt);
 
-            // Compute segment bearing
+            // Compute segment bearing so Waze camera looks straight down the active campus walkway
             let headingDeg = 0;
             if (stepIndex < coords.length - 1) {
                 headingDeg = this.calculateHeadingAngle(currentPt, nextPt);
@@ -1240,26 +1372,68 @@
                 headingDeg = this.calculateHeadingAngle(prevPt, currentPt);
             }
 
+            // Adjust Waze zoom & pitch per building segment (closer zoom as we reach destination building)
+            const isFinalOutdoorBuilding = stepIndex === coords.length - 1;
+            this.pitch = isFinalOutdoorBuilding ? 50 : 52;
+            this.targetZoomScale = isFinalOutdoorBuilding ? 2.75 : 2.42;
+
+            // Highlight active building badge along the route
+            if (this.badgesContainer && currentCoord && currentCoord.nodeId) {
+                this.badgesContainer.querySelectorAll(".waze-bldg-badge").forEach(badge => {
+                    badge.classList.toggle("waze-badge-focused", badge.id === `wazeBadge_${currentCoord.nodeId}`);
+                });
+            }
+
+            // Highlight corresponding step in the directions panel
+            document.querySelectorAll("#routeStepsList li").forEach((li, idx) => {
+                if (idx === stepIndex) {
+                    li.classList.add("ring-2", "ring-brand-500", "bg-brand-50/80");
+                } else {
+                    li.classList.remove("ring-2", "ring-brand-500", "bg-brand-50/80");
+                }
+            });
+
             // Anchor current step in lower third (70% down)
             this.anchorToLowerThird(currentPt.x, currentPt.y, headingDeg);
 
             // Update Turn-by-Turn Banner & Bottom Trip Summary
-            const instructionText = instructions[stepIndex] || `Avanza hacia ${coords[stepIndex].name || "el punto de ruta"}`;
+            let instructionText = instructions[stepIndex] || `Avanza hacia ${currentCoord.name || "el siguiente edificio"}`;
+            if (isFinalOutdoorBuilding && this.isBuildingPRoute(this.currentRoute)) {
+                instructionText = `Llegaste a Edificio P • Entrando a navegación interior 3D hacia ${this.currentRoute.destination}...`;
+            }
             const nextInstruction = stepIndex < instructions.length - 1 ? instructions[stepIndex + 1] : null;
             this.updateBannerUI(stepIndex, coords.length, instructionText, nextInstruction);
         }
 
-        nextStep() {
+        nextStep(options = {}) {
             if (!this.currentRoute) return;
-            if (this.currentStepIndex < this.currentRoute.pathCoordinates.length - 1) {
+            const totalOutdoor = this.currentRoute.pathCoordinates.length;
+            if (this.currentStepIndex < totalOutdoor - 1) {
                 this.goToStep(this.currentStepIndex + 1);
+                // If we just arrived at the final outdoor node (e.g. buildingP) during auto-simulation or step click, hand off to indoor 3D Waze view
+                if (this.currentStepIndex === totalOutdoor - 1 && this.isBuildingPRoute(this.currentRoute)) {
+                    if (this.autoOpenIndoorOnArrival || options.triggerIndoorIfAtEnd) {
+                        this.stopSimulation();
+                        if (this.indoorHandoffTimer) clearTimeout(this.indoorHandoffTimer);
+                        this.indoorHandoffTimer = setTimeout(() => {
+                            this.launchBuildingPIndoorWaze();
+                        }, 1100);
+                    }
+                }
             } else {
                 this.stopSimulation();
+                if (options.triggerIndoorIfAtEnd && this.isBuildingPRoute(this.currentRoute)) {
+                    this.launchBuildingPIndoorWaze();
+                }
             }
         }
 
         prevStep() {
             if (!this.currentRoute) return;
+            if (this.indoorHandoffTimer) {
+                clearTimeout(this.indoorHandoffTimer);
+                this.indoorHandoffTimer = null;
+            }
             if (this.currentStepIndex > 0) {
                 this.goToStep(this.currentStepIndex - 1);
             }
@@ -1267,7 +1441,11 @@
 
         updateBannerUI(stepIdx, totalSteps, instruction, nextInstruction) {
             if (this.tbtStepCounter) {
-                this.tbtStepCounter.textContent = `Paso ${stepIdx + 1} de ${totalSteps}`;
+                const currentCoord = this.currentRoute && this.currentRoute.pathCoordinates
+                    ? this.currentRoute.pathCoordinates[stepIdx]
+                    : null;
+                const bldgTag = currentCoord && currentCoord.name ? ` • ${currentCoord.name.split("(")[0].trim()}` : "";
+                this.tbtStepCounter.textContent = `Paso ${stepIdx + 1} de ${totalSteps}${bldgTag}`;
             }
             if (this.tbtStepInstruction) {
                 this.tbtStepInstruction.textContent = instruction;
@@ -1279,12 +1457,12 @@
 
             if (this.tbtStepDistance) {
                 const approxStepM = Math.max(15, Math.round(totalMeters / Math.max(1, totalSteps - 1)));
-                this.tbtStepDistance.textContent = stepIdx === totalSteps - 1 ? "Meta" : `${approxStepM} m`;
+                this.tbtStepDistance.textContent = stepIdx === totalSteps - 1 ? "Edificio P" : `${approxStepM} m`;
             }
 
             if (this.tbtNextPreview) {
                 if (nextInstruction) {
-                    this.tbtNextPreview.textContent = `Luego: ${nextInstruction.replace(/^(\d+\.\s*)/, '').slice(0, 42)}...`;
+                    this.tbtNextPreview.textContent = `Luego: ${nextInstruction.replace(/^(\d+\.\s*)/, '').slice(0, 48)}...`;
                     this.tbtNextPreview.classList.remove("hidden");
                 } else {
                     this.tbtNextPreview.classList.add("hidden");
@@ -1294,13 +1472,13 @@
             // Determine Turn Maneuver Icon
             if (this.tbtManeuverIcon) {
                 const lower = instruction.toLowerCase();
-                if (stepIdx === totalSteps - 1 || lower.includes("llegado") || lower.includes("destino") || lower.includes("arrived")) {
+                if (stepIdx === totalSteps - 1 || lower.includes("llegado") || lower.includes("llegaste") || lower.includes("destino") || lower.includes("arrived")) {
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>`;
                 } else if (lower.includes("derecha") || lower.includes("right") || lower.includes("este") || lower.includes("east")) {
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>`;
                 } else if (lower.includes("izquierda") || lower.includes("left") || lower.includes("oeste") || lower.includes("west")) {
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>`;
-                } else if (lower.includes("escalera") || lower.includes("stairs")) {
+                } else if (lower.includes("escalera") || lower.includes("gradas") || lower.includes("stairs")) {
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19h4v-4h4v-4h4V7h5"/>`;
                 } else {
                     this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-5 5m5-5l5 5"/>`;
@@ -1310,7 +1488,7 @@
             // Update Waze Bottom Trip Summary Bar
             if (this.wazeEtaTime) {
                 const estMinutes = Math.max(1, Math.ceil(remainingMeters / 50));
-                this.wazeEtaTime.textContent = stepIdx === totalSteps - 1 ? "Llegaste" : `${estMinutes} min`;
+                this.wazeEtaTime.textContent = stepIdx === totalSteps - 1 ? "En Edificio" : `${estMinutes} min`;
             }
 
             if (this.wazeTripMeta) {
@@ -1330,13 +1508,14 @@
             if (this.isSimulating) {
                 this.stopSimulation();
             } else {
-                this.startSimulation();
+                this.startSimulation({ autoOpenIndoorOnArrival: true });
             }
         }
 
-        startSimulation() {
-            if (!this.currentRoute) return;
+        startSimulation(options = {}) {
+            if (!this.currentRoute || !this.currentRoute.pathCoordinates) return;
             this.isSimulating = true;
+            this.autoOpenIndoorOnArrival = options.autoOpenIndoorOnArrival !== false;
             if (this.labelSimPlay) this.labelSimPlay.textContent = "Pausa";
 
             if (this.currentStepIndex >= this.currentRoute.pathCoordinates.length - 1) {
@@ -1355,7 +1534,7 @@
                 } else {
                     this.stopSimulation();
                 }
-            }, 3000);
+            }, 1350);
         }
 
         stopSimulation() {

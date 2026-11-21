@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/campus25dMap.css') }}">
 <!-- 2.5D Isometric Multi-Floor Building P Stylesheet -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/buildingPIsometric.css') }}">
+<!-- Three.js WebGL Engine for 2.5D Building Models -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
     /* Prevent outer window scrolling on map screen to provide full-viewport app feel */
     body {
@@ -70,8 +72,8 @@
 
     </div>
 
-    <!-- Official Building P 2.5D Isometric Multi-Floor Cutaway Modal -->
-    {% include "components/map/buildingPIsometricModal.html" %}
+    <!-- Official Building P 2.5D Multi-Floor Building Map (buildingsMaps/buildingP.html) -->
+    {% include "components/buildingsMaps/buildingP.html" %}
 
 </div>
 {% endblock %}

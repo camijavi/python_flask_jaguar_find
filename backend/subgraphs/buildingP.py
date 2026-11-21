@@ -31,7 +31,7 @@ def buildBuildingPSubgraph() -> BuildingSubgraph:
         buildingId="buildingP",
         name="Edificio P (Copérnico)",
         code="P",
-        floors=[1, 2, 3],
+        floors=[1, 2, 3, 4, 5],
         macroNodeId="buildingP",
         entranceNodeIds=[
             "p_stairs_f1_east",
@@ -452,6 +452,48 @@ def buildBuildingPSubgraph() -> BuildingSubgraph:
     ))
 
     # =========================================================================
+    # FLOOR 4 (CUARTO PISO - ANEXO SUPERIOR P401)
+    # =========================================================================
+    subgraph.addNode(Node(
+        nodeId="p_stairs_f4_east",
+        name="Escaleras del Anexo del P (Piso 4)",
+        category=CampusCategory.STAIRS,
+        xPercent=33.0, yPercent=27.0,
+        latitude=12.107470, longitude=-86.256753,
+        floorLevel=4, isOutdoorAccessPoint=False
+    ))
+
+    subgraph.addNode(Node(
+        nodeId="p_room_401",
+        name="Salón P-401",
+        category=CampusCategory.CLASSROOM,
+        xPercent=33.0, yPercent=27.0,
+        latitude=12.107461, longitude=-86.256743,
+        floorLevel=4, isOutdoorAccessPoint=False
+    ))
+
+    # =========================================================================
+    # FLOOR 5 (QUINTO PISO - OBSERVATORIO ASTRONÓMICO COPÉRNICO)
+    # =========================================================================
+    subgraph.addNode(Node(
+        nodeId="p_stairs_f5_east",
+        name="Escaleras del Observatorio del P (Piso 5)",
+        category=CampusCategory.STAIRS,
+        xPercent=33.0, yPercent=27.0,
+        latitude=12.107470, longitude=-86.256753,
+        floorLevel=5, isOutdoorAccessPoint=False
+    ))
+
+    subgraph.addNode(Node(
+        nodeId="p_observatory_501",
+        name="Observatory Copernico (P-501)",
+        category=CampusCategory.CLASSROOM,
+        xPercent=33.0, yPercent=27.0,
+        latitude=12.107461, longitude=-86.256743,
+        floorLevel=5, isOutdoorAccessPoint=False
+    ))
+
+    # =========================================================================
     # CORRIDOR WALKWAYS & EDGES: FLOOR 1
     # =========================================================================
     subgraph.addBidirectionalCorridor(
@@ -674,6 +716,40 @@ def buildBuildingPSubgraph() -> BuildingSubgraph:
         isAccessible=False,
         upInstruction="Sube por las escaleras este hacia el Piso 3 del Edificio P.",
         downInstruction="Baja por las escaleras este hacia el Piso 2 del Edificio P."
+    )
+
+    # Annex Narrow Stairwell: Piso 3 <-> Piso 4
+    subgraph.addVerticalConnection(
+        lowerNodeId="p_stairs_f3_east",
+        upperNodeId="p_stairs_f4_east",
+        distanceMeters=10.5,
+        isAccessible=False,
+        upInstruction="Sube por las escaleras estrechas hacia el Piso 4 (Anexo P401).",
+        downInstruction="Baja por las escaleras estrechas hacia el Piso 3."
+    )
+
+    # Annex Narrow Stairwell: Piso 4 <-> Piso 5 (Observatory)
+    subgraph.addVerticalConnection(
+        lowerNodeId="p_stairs_f4_east",
+        upperNodeId="p_stairs_f5_east",
+        distanceMeters=10.5,
+        isAccessible=False,
+        upInstruction="Sube por las escaleras estrechas hacia el Piso 5 (Observatory Copernico).",
+        downInstruction="Baja por las escaleras estrechas hacia el Piso 4 (P401)."
+    )
+
+    # Corridor Floor 4: Stairs <-> P401
+    subgraph.addBidirectionalCorridor(
+        "p_stairs_f4_east", "p_room_401", 4.0, isAccessible=False,
+        forwardInstruction="Entra al Salón P-401 por la puerta izquierda.",
+        backwardInstruction="Sal del Salón P-401 hacia las escaleras del 4to piso."
+    )
+
+    # Corridor Floor 5: Stairs <-> Observatory Copernico
+    subgraph.addBidirectionalCorridor(
+        "p_stairs_f5_east", "p_observatory_501", 4.0, isAccessible=False,
+        forwardInstruction="Entra al Observatory Copernico (P-501) por la puerta izquierda.",
+        backwardInstruction="Sal del Observatory Copernico hacia las escaleras del 5to piso."
     )
 
     # West Stairwell: Piso 1 <-> Piso 2

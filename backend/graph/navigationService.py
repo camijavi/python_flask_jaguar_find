@@ -34,6 +34,7 @@ class NavigationService:
             node = self.graph.nodes[cleaned]
             return {
                 "targetNodeId": node.nodeId,
+                "placeId": node.nodeId,
                 "displayName": node.getName(lang),
                 "category": node.category,
                 "floorLevel": node.floorLevel,
@@ -46,6 +47,7 @@ class NavigationService:
             if place["placeId"].lower() == cleaned or place["name"].lower() == cleaned:
                 return {
                     "targetNodeId": place["parentBuildingId"],
+                    "placeId": place["placeId"],
                     "displayName": place["name"],
                     "category": place["category"],
                     "floorLevel": place["floorLevel"],
@@ -56,6 +58,7 @@ class NavigationService:
                 if kw in cleaned:
                     return {
                         "targetNodeId": place["parentBuildingId"],
+                        "placeId": place["placeId"],
                         "displayName": place["name"],
                         "category": place["category"],
                         "floorLevel": place["floorLevel"],
@@ -69,6 +72,7 @@ class NavigationService:
             if nodeId.lower() in cleaned or node.name.lower() in cleaned or localizedName in cleaned:
                 return {
                     "targetNodeId": nodeId,
+                    "placeId": nodeId,
                     "displayName": node.getName(lang),
                     "category": node.category,
                     "floorLevel": node.floorLevel,
@@ -138,10 +142,25 @@ class NavigationService:
             for nId in pathNodes
         ]
 
+        recommendedIndoorEntrance = None
+        if targetNodeId == "buildingP":
+            if accessibleOnly:
+                recommendedIndoorEntrance = "F1-ENT-E"
+            elif len(pathNodes) >= 2 and pathNodes[-2] in ("buildingO", "buildingH", "northeastGate"):
+                recommendedIndoorEntrance = "F1-ENT-O"
+            else:
+                recommendedIndoorEntrance = "F1-ENT-W"
+
         return {
             "success": True,
             "origin": originDest["displayName"],
             "destination": targetDest["displayName"],
+            "originNodeId": sourceNodeId,
+            "destinationNodeId": targetNodeId,
+            "originPlaceId": originDest.get("placeId"),
+            "destinationPlaceId": targetDest.get("placeId"),
+            "isSubPlace": targetDest.get("isSubPlace", False),
+            "recommendedIndoorEntrance": recommendedIndoorEntrance,
             "category": targetDest["category"],
             "floorLevel": targetDest["floorLevel"],
             "pathNodeIds": pathNodes,

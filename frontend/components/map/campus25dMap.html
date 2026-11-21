@@ -66,6 +66,15 @@ Waze-Style 3D Navigation HUD & Cockpit Controls:
             <div id="tbtNextPreview" class="text-[11px] text-slate-500 font-medium truncate mt-0.5 hidden">
                 Luego continúa recto
             </div>
+            <!-- Indoor Building P Waze 3D Handoff Button (Shown when route targets Building P) -->
+            <div id="tbtIndoorActionRow" class="mt-2 hidden">
+                <button id="btnTbtEnterBuildingP" type="button" class="w-full py-1.5 px-3 rounded-xl bg-pink-800 hover:bg-pink-900 text-white font-extrabold text-[11px] flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <span id="labelTbtEnterBuildingP">Entrar a Edificio P • Vista Waze 3D</span>
+                </button>
+            </div>
         </div>
 
         <!-- Close / Exit 2.5D Turn-by-Turn Banner -->
@@ -79,7 +88,7 @@ Waze-Style 3D Navigation HUD & Cockpit Controls:
 
 <!-- 3. Waze Bottom Trip Summary Bar (Anchors Bottom Center in 2.5D Mode) -->
 <div id="wazeBottomBar" class="waze-bottom-bar hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 w-[94%] max-w-lg bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-2xl p-3 sm:p-3.5 pointer-events-auto">
-    <div class="flex items-center justify-between gap-3">
+    <div class="flex items-center justify-between gap-2.5">
         <!-- Trip ETA & Progress Info -->
         <div class="flex-1 min-w-0">
             <div class="flex items-baseline gap-2">
@@ -92,10 +101,20 @@ Waze-Style 3D Navigation HUD & Cockpit Controls:
             </div>
         </div>
 
-        <!-- Cockpit Quick Actions: Re-center, Overview & Simulation Controls -->
-        <div class="flex items-center gap-1.5 shrink-0">
+        <!-- Cockpit Quick Actions: Prev/Next Step, Re-center, Overview & Simulation Controls -->
+        <div class="flex items-center gap-1 shrink-0">
+            <!-- Previous Step -->
+            <button id="btnTbtPrevStep" type="button" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs flex items-center justify-center transition-colors cursor-pointer" title="Paso anterior">
+                &#9664;
+            </button>
+
+            <!-- Next Step -->
+            <button id="btnTbtNextStep" type="button" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs flex items-center justify-center transition-colors cursor-pointer" title="Siguiente paso">
+                &#9654;
+            </button>
+
             <!-- Re-center Camera on User Puck -->
-            <button id="btnWazeRecenter" type="button" class="py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors" title="Re-centrar en el cursor de navegación">
+            <button id="btnWazeRecenter" type="button" class="py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer" title="Re-centrar en el cursor de navegación">
                 <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="8" stroke-width="2"></circle>
                     <line x1="12" y1="2" x2="12" y2="6" stroke-width="2"></line>
@@ -107,7 +126,7 @@ Waze-Style 3D Navigation HUD & Cockpit Controls:
             </button>
 
             <!-- Overview Toggle (Follow mode vs Full-route Overview) -->
-            <button id="btnWazeOverview" type="button" class="py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors" title="Vista General del Campus">
+            <button id="btnWazeOverview" type="button" class="py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer" title="Vista General del Campus">
                 <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                 </svg>
@@ -115,7 +134,7 @@ Waze-Style 3D Navigation HUD & Cockpit Controls:
             </button>
 
             <!-- Simulation Step Control -->
-            <button id="btnTbtPlaySimulation" type="button" class="py-1.5 px-2.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold text-xs flex items-center gap-1 transition-colors" title="Reproducir simulación paso a paso">
+            <button id="btnTbtPlaySimulation" type="button" class="py-1.5 px-2.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer" title="Reproducir simulación paso a paso">
                 <svg id="iconSimPlay" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 <span id="labelSimPlay" class="hidden sm:inline">Simular</span>
             </button>
