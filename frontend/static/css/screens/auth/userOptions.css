@@ -1,0 +1,56 @@
+body{
+    font-family: Arial;
+}
+
+.user_options {
+    display: flex;
+    gap: 30px;
+    width: 90%;
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 2px 4px;
+    box-sizing: border-box;
+}
+
+.student,
+.collaborator,
+.visitor {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 30px;
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 5px;
+    transition: transform 0.2s ease;
+}
+
+.user_options button {
+    margin-top: auto;        
+    align-self: center;      
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    background-color: #0099A8;
+    border: none;
+    border-radius: 5px;
+}
+
+
+.user_options button:hover {
+    background-color: #007a86;
+}
+
+.student:hover {
+    transform: scale(1.05);
+}
+
+.collaborator:hover {
+    transform: scale(1.05);
+}
+
+.visitor:hover {
+    transform: scale(1.05);
+}
