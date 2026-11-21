@@ -200,10 +200,15 @@
 
                 badgeEl.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    if (nodeId === "buildingP" && this.focusedBuildingId === "buildingP" && typeof window.openBuildingPIsometricModal === "function") {
-                        window.openBuildingPIsometricModal();
-                    } else {
-                        this.focusBuilding(nodeId, { zoom: 2.85, animate: true });
+                    this.focusBuilding(nodeId, { zoom: 2.85, animate: true });
+                    if (nodeId === "buildingP") {
+                        setTimeout(() => {
+                            if (typeof window.openBuildingMap === "function") {
+                                window.openBuildingMap("buildingP");
+                            } else if (typeof window.openBuildingPModal === "function") {
+                                window.openBuildingPModal();
+                            }
+                        }, 380);
                     }
                 });
 
