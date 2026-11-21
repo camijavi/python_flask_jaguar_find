@@ -136,8 +136,62 @@ def runGraphTestSuite():
     print(f"  ✓ Test Point D (Near South Boundary: {distToEdge:.1f}m off): strict={strictCheck}, with 25m buffer={bufferedCheck}")
     assert strictCheck is False and bufferedCheck is True, "Test 5 Failed: Buffer tolerance logic discrepancy."
 
+    # 6. Building P Child Graph / Subgraph Indoor Routing Test
+    print("\n[TEST 6] Building P Child Graph (Indoor Multi-Floor Navigation):")
+    from backend.subgraphs import getBuildingSubgraph
+    sgP = getBuildingSubgraph("buildingP")
+    assert sgP is not None, "Test 6 Failed: Building P subgraph not found."
+
+    totalNodes = len(sgP.getAllNodes())
+    f1Nodes = len(sgP.getNodesByFloor(1))
+    f2Nodes = len(sgP.getNodesByFloor(2))
+    f3Nodes = len(sgP.getNodesByFloor(3))
+    print(f"  ✓ Building P Loaded: {sgP.name} ({totalNodes} nodes across {len(sgP.floors)} floors)")
+    print(f"     • Floor 1 nodes: {f1Nodes}")
+    print(f"     • Floor 2 nodes: {f2Nodes}")
+    print(f"     • Floor 3 nodes: {f3Nodes}")
+    assert f1Nodes >= 14, f"Test 6 Failed: Expected >= 14 nodes on Floor 1, got {f1Nodes}"
+    assert f2Nodes >= 12, f"Test 6 Failed: Expected >= 12 nodes on Floor 2, got {f2Nodes}"
+    assert f3Nodes >= 11, f"Test 6 Failed: Expected >= 11 nodes on Floor 3, got {f3Nodes}"
+
+    # 6a. Single-Floor Indoor Route (P101 -> P108)
+    resF1 = sgP.calculateIndoorRoute("p_room_101", "p_room_108", accessibleOnly=False, lang="spa")
+    print(f"\n  • 6a. Route Floor 1 (P-101 -> P-108):")
+    print(f"     Path: {' -> '.join(resF1['pathNodeIds'])}")
+    print(f"     Distance: {resF1['totalDistanceMeters']}m (~{resF1['estimatedWalkingMinutes']} min)")
+    assert resF1["success"] is True, "Test 6a Failed: Expected successful route P101 -> P108"
+    assert "p_room_108" in resF1["pathNodeIds"], "Test 6a Failed: Target node not reached"
+
+    # 6b. Multi-Floor Vertical Route (P101 -> P205 via East Stairs)
+    resF2 = sgP.calculateIndoorRoute("p_room_101", "p_room_205", accessibleOnly=False, lang="spa")
+    print(f"\n  • 6b. Route Floor 1 -> Floor 2 (P-101 -> P-205 via Escaleras Este):")
+    print(f"     Path: {' -> '.join(resF2['pathNodeIds'])}")
+    print(f"     Floors crossed: {resF2['floorsCrossed']}")
+    print(f"     Distance: {resF2['totalDistanceMeters']}m")
+    assert resF2["success"] is True, "Test 6b Failed: Expected successful route P101 -> P205"
+    assert resF2["floorsCrossed"] == [1, 2], "Test 6b Failed: Expected floors [1, 2]"
+    assert "p_stairs_f1_east" in resF2["pathNodeIds"] and "p_stairs_f2_east" in resF2["pathNodeIds"]
+
+    # 6c. Multi-Floor Route to Top Floor (P101 -> P306 via Stairs)
+    resF3 = sgP.calculateIndoorRoute("p_room_101", "p_room_306", accessibleOnly=False, lang="spa")
+    print(f"\n  • 6c. Route Floor 1 -> Floor 3 (P-101 -> P-306):")
+    print(f"     Path: {' -> '.join(resF3['pathNodeIds'])}")
+    print(f"     Floors crossed: {resF3['floorsCrossed']}")
+    print(f"     Distance: {resF3['totalDistanceMeters']}m")
+    assert resF3["success"] is True, "Test 6c Failed: Expected successful route P101 -> P306"
+    assert resF3["floorsCrossed"] == [1, 2, 3], "Test 6c Failed: Expected floors [1, 2, 3]"
+
+    # 6d. Accessible Route Verification (♿)
+    # Ramp from parking to Floor 1: Accessible
+    resRamp = sgP.calculateIndoorRoute("p_ramp_parking", "p_room_108", accessibleOnly=True, lang="spa")
+    assert resRamp["success"] is True, "Test 6d Failed: Ramp to Floor 1 should be accessible"
+    # Climbing stairs to Floor 2: Not accessible (stairs only)
+    resNoWheelchairStairs = sgP.calculateIndoorRoute("p_room_101", "p_room_205", accessibleOnly=True, lang="spa")
+    assert resNoWheelchairStairs["success"] is False, "Test 6d Failed: Stairs should be blocked for wheelchair routing"
+    print(f"  ✓ Accessibility Check: Ramps allow wheelchair access; stairs are properly blocked when accessibleOnly=True.")
+
     print("\n" + "=" * 80)
-    print("  ALL GRAPH & PERIMETER TESTS COMPLETED SUCCESSFULLY! READY FOR FLASK / UI CONSUMPTION.")
+    print("  ALL GRAPH, PERIMETER & SUBGRAPH TESTS COMPLETED SUCCESSFULLY!")
     print("=" * 80)
 
 if __name__ == "__main__":
