@@ -6,7 +6,9 @@ body {
     min-height: 100vh;
     margin: 0;
 }
-p { font-family: Arial;
+p { 
+    font-size: 50px;
+    font-family: Arial;
     font-weight: 300; 
 }
 
@@ -24,12 +26,14 @@ p { font-family: Arial;
     margin: 50px auto;
 }
 
-.options button {
+.btn{
+    text-decoration: none;
+    font-size: 30px;
     cursor: pointer;
     color:white;
     background-color: #0099A8;
-    border: none
+    border-radius: 5px;
 }
-.options button:hover {
+.options .btn:hover {
     transform: scale(1.05);
 }

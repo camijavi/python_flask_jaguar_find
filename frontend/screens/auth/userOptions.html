@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,29 +8,25 @@
 </head>
 <body>
     <section class="user_options">
-        <div class="student">
-            <h1>Estudiante</h1>
-            <p> Con tu correo @uamv.edu.ni y tu CIF</p>
-            <button>Acceder</button>
+    <div class="student">
+        <h1>Estudiante</h1>
+        <p>Con tu correo @uamv.edu.ni y tu CIF</p>
+        <a class="btn" href="/auth/signup?rol=estudiante">Acceder</a>
+    </div>
 
-        </div>
+    <div class="collaborator">
+        <h1>Colaborador</h1>
+        <p>Docentes, administrativos y servicios generales</p>
+        <a class="btn" href="/auth/signup?rol=colaborador">Acceder</a>
+    </div>
 
-        <div class="collaborator">
-            <h1>Colaborador</h1>
-            <p>
-                Docentes, administrativos y servicios generales</p>
+    <div class="visitor">
+        <h1>Visitante</h1>
+        <p>Sin contraseña, solo correo y cédula</p>
+        <a class="btn" href="/auth/signup?rol=visitante">Acceder</a>
+    </div>
+</section>
 
-            <button>Acceder</button>
-
-        </div>
-
-        <div class="visitor">
-            <h1>Visitante</h1>
-            <p>Sin contraseña, solo correo y cédula</p>
-            <button>Acceder</button>
-
-        </div>
-    </section>
     
 </body>
 </html>

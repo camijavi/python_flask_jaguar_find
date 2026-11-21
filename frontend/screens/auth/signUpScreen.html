@@ -1,11 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>crear_una_cuenta</title>
+    <link rel="stylesheet" href="../../static/css/screens/auth/signUpScreen.css"/>
+    <form class="options" method="post" action="/api/auth/signup">
 </head>
 <body>
-    
+    <form class="options" method="post" action="/api/auth/register">>
+    <input type="hidden" name="rol" id="rol" value="{{ rol }}">>
+
+    <div class="campo">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" name="nombre" required>
+    </div>
+
+    <div class="campo" data-rol="estudiante colaborador">
+        <label for="correo">Correo institucional</label>
+        <input type="email" id="correo" name="correo" placeholder="usuario@uamv.edu.ni">
+    </div>
+
+    <div class="campo" data-rol="visitante">
+        <label for="correoPersonal">Correo electrónico</label>
+        <input type="email" id="correoPersonal" name="correoPersonal">
+    </div>
+
+    <div class="campo" data-rol="estudiante colaborador">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" minlength="6">
+    </div>
+
+    <div class="campo" data-rol="estudiante">
+        <label for="cif">Número CIF</label>
+        <input type="text" id="cif" name="cif" pattern="\d{8}" maxlength="8" placeholder="8 dígitos">
+    </div>
+
+    <div class="campo" data-rol="colaborador visitante">
+        <label for="cedula">Cédula de identidad</label>
+        <input type="text" id="cedula" name="cedula">
+    </div>
+
+    <div class="campo" data-rol="estudiante">
+        <label for="facultad">Facultad</label>
+        <select id="facultad" name="facultad">
+            <option value="FIA">Ingeniería y Arquitectura</option>
+            <option value="FODO">Odontología</option>
+            <option value="FCM">Ciencias Médicas</option>
+            <option value="FCE">Ciencias Económicas y Administrativas</option>
+            <option value="FCJ">Ciencias Jurídicas</option>
+        </select>
+    </div>
+
+    <div class="campo" data-rol="estudiante">
+        <label for="carrera">Carrera</label>
+        <input type="text" id="carrera" name="carrera">
+    </div>
+
+    <button type="submit">Registrarme</button>
+</form>
+
 </body>
 </html>

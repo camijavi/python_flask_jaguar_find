@@ -72,6 +72,30 @@ def createApp(configClass=Config) -> Flask:
         """Renders the main interactive JaguarMaps navigation interface."""
         return render_template("mapScreen.html")
 
+    @app.route("/auth")
+    def renderLogInScreen():
+        """Pantalla de entrada: sign up or signIn."""
+        return render_template("screens/auth/logInScreen.html")
+
+    @app.route("/auth/options")
+    def renderUserOptions():
+        """Selección de rol (Estudiante / Colaborador / Visitante)."""
+        return render_template("screens/auth/userOptions.html")
+
+    @app.route("/auth/signup")
+    def renderSigUp():
+        """Formulario de registro, filtrado por el rol elegido."""
+        rol = request.args.get("rol", "estudiante")
+        if rol not in ("estudiante", "colaborador", "visitante"):
+            rol = "estudiante"
+        return render_template("screens/auth/signUpScreen.html", rol=rol)
+
+    @app.route("/auth/signin")
+    def renderSignIn():
+        """Formulario de inicio de sesión."""
+        return render_template("screens/auth/signInScreen.html")
+
+
     @app.route("/set-language/<lang>", methods=["GET", "POST"])
     def setLanguage(lang: str):
         """Web route to switch language and redirect user back to previous page."""

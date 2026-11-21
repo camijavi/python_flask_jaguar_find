@@ -1,0 +1,2 @@
+[data-rol] { display: none; }
+[data-rol].visible { display: flex; flex-direction: column; gap: 6px; }
