@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio I • Rectoría & Biblioteca Central",
             badgeClass: "badge-navy",
             badgeBg: "#1e3a8a",
-            anchor: { x: 635, y: 715 },
+            anchor: { x: 653, y: 724 },
             floors: [
                 { floor: "Piso 1", rooms: "SS Hombres / Mujeres, Vicepresidencia, Sala de Reunión de Consejo, Dirección Académica, Rectoría, Gerencia General, Secretaría General, Biblioteca Central UAM, Dirección de RR.PP." }
             ]

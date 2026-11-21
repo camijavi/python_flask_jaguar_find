@@ -101,7 +101,7 @@
                 "buildingF": { x: 517, y: 628 },
                 "buildingG": { x: 517, y: 558 },
                 "buildingH": { x: 572, y: 383 },
-                "buildingI": { x: 635, y: 715 },
+                "buildingI": { x: 653, y: 724 },
                 "buildingJ": { x: 297, y: 332 },
                 "buildingK": { x: 285, y: 582 },
                 "buildingL": { x: 842, y: 502 },

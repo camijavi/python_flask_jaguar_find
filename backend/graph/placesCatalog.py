@@ -1,5 +1,8 @@
 """
 placesCatalog.py
+"""
+
+from data.campusCategories import CampusCategory
 
 # Master list of all internal and external campus points of interest
 PLACES_CATALOG = [
