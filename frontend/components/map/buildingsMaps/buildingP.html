@@ -894,15 +894,16 @@ Key UX & Mobile Features:
         railingGroups.push(g);
     }
 
-    // Unified North-to-South Zig-Zag Switchback Stairwell:
-    // Starts at the North (front hallway z = 1.25), climbs toward the South (z = -3.15) to the mid-floor landing (z = -4.25),
-    // turns 180°, and climbs from South back to North (z = 1.25) arriving at the upper floor's North hallway.
-    // Supports narrower flights (isNarrow = true) for the P3 -> P4 stair transition.
+    // Unified North-to-South Zig-Zag Switchback Stairwell (NO railings on any stairs):
+    // - Starts at the North (front hallway z = 1.25), climbs toward the South to the mid-floor landing,
+    //   turns 180°, and climbs from South back to North arriving at the upper floor.
+    // - Floors 1 -> 3 (isNarrow = false): Thick, wide concrete stairs without railings.
+    // - Floors 3 -> 5 (isNarrow = true): Narrower stairs in the exact same location (cx = -36), without railings.
     function addStairwell(parent, floorNum, id, label, cx, cz, sideLabel, hasUpwardFlights, isNarrow) {
         const g = new THREE.Group();
 
-        const flightW = isNarrow ? 1.22 : 1.85;
-        const laneGap = isNarrow ? 0.22 : 0.32;
+        const flightW = isNarrow ? 1.32 : 2.12;
+        const laneGap = isNarrow ? 0.20 : 0.28;
         const laneOffset = flightW * 0.5 + laneGap * 0.5;
         // Inner lane (closer to classrooms) starts at North and climbs South; outer lane climbs South back to North
         const innerSign = cx < 0 ? 1 : -1;
@@ -911,26 +912,22 @@ Key UX & Mobile Features:
 
         const zNorth = 1.25;
         const zSouth = isNarrow ? -2.85 : -3.25;
-        const midLandDepth = isNarrow ? 1.9 : 2.3;
+        const midLandDepth = isNarrow ? 1.95 : 2.45;
         const zMidLand = zSouth - midLandDepth * 0.5 + 0.08;
-        const totalStairW = flightW * 2 + laneGap + 0.4;
+        const totalStairW = flightW * 2 + laneGap + (isNarrow ? 0.25 : 0.45);
+        const slabThick = isNarrow ? 0.22 : 0.34;
 
-        // 1. North floor-level threshold platform connecting the front hallway (z = 1.5) to the stair flights
-        const northPlatGeo = new THREE.BoxGeometry(totalStairW + 0.6, 0.22, 1.35);
+        // 1. North floor-level threshold platform connecting the front hallway (or P5 annex entry) to the stair flights
+        const northPlatW = (floorNum === 5) ? (totalStairW + 2.6) : (totalStairW + 0.6);
+        const northPlatX = (floorNum === 5) ? (cx + 1.1) : cx;
+        const northPlatGeo = new THREE.BoxGeometry(northPlatW, slabThick, 1.5);
         const northPlat = new THREE.Mesh(northPlatGeo, MAT.stairFloor.clone());
-        northPlat.position.set(cx, 0.02, 1.35);
+        northPlat.position.set(northPlatX, 0.02, 1.25);
         northPlat.receiveShadow = true;
         northPlat.castShadow = true;
         g.add(northPlat);
 
-        // If this is a top-arrival floor with no upward flights (e.g., P4 terrace or P3 East), add a safety guardrail around the shaft opening
-        if (!hasUpwardFlights) {
-            addHorizontalRailing(g, cx - totalStairW * 0.52, -4.4, cx + totalStairW * 0.52, -4.4);
-            addHorizontalRailing(g, cx - totalStairW * 0.52, -4.4, cx - totalStairW * 0.52, 0.85);
-            addHorizontalRailing(g, cx + totalStairW * 0.52, -4.4, cx + totalStairW * 0.52, 0.85);
-        }
-
-        // 2. Upward North -> South -> North Zig-Zag Flights connecting Floor N -> Floor N+1
+        // 2. Upward North -> South -> North Zig-Zag Flights connecting Floor N -> Floor N+1 (NO RAILINGS)
         if (hasUpwardFlights) {
             const flightGroup = new THREE.Group();
             const numSteps = 8;
@@ -939,98 +936,67 @@ Key UX & Mobile Features:
             const yTop = BASE_STAIR_H;
 
             const spanZ = Math.abs(zNorth - zSouth);
-            const stepD = (spanZ / numSteps) + 0.05;
+            const stepD = (spanZ / numSteps) + 0.06;
             const stepH1 = (yMid - yStart1) / numSteps;
             const stepH2 = (yTop - yMid) / numSteps;
+            const stepThicknessMult = isNarrow ? 1.45 : 1.85;
+            const stringerThick = isNarrow ? 0.20 : 0.36;
 
-            // --- TRAMO 1 (Inferior): Empieza en el Norte (pasillo) y sube hacia el Sur (-Z) ---
+            // --- TRAMO 1 (Inferior): Empieza en el Norte y sube hacia el Sur (-Z) ---
             for (let s = 0; s < numSteps; s++) {
                 const t = (s + 0.5) / numSteps;
                 const sz = zNorth - t * spanZ;
                 const sy = yStart1 + (s + 0.5) * stepH1;
-                const blockH = stepH1 * 1.45;
+                const blockH = stepH1 * stepThicknessMult;
                 const stepGeo = new THREE.BoxGeometry(flightW, blockH, stepD);
                 const stepMesh = new THREE.Mesh(stepGeo, MAT.stairStep);
-                stepMesh.position.set(xFlight1, sy - blockH * 0.15, sz);
+                stepMesh.position.set(xFlight1, sy - blockH * 0.18, sz);
                 stepMesh.castShadow = true;
                 stepMesh.receiveShadow = true;
                 flightGroup.add(stepMesh);
             }
 
-            // Inclined carriage/stringer beam under Tramo 1 (North -> South)
-            const s1Start = new THREE.Vector3(xFlight1, yStart1 - 0.08, zNorth);
-            const s1End = new THREE.Vector3(xFlight1, yMid - 0.08, zSouth);
+            // Thick inclined concrete carriage slab under Tramo 1 (North -> South)
+            const s1Start = new THREE.Vector3(xFlight1, yStart1 - 0.1, zNorth);
+            const s1End = new THREE.Vector3(xFlight1, yMid - 0.1, zSouth);
             const s1Len = s1Start.distanceTo(s1End);
-            const stringer1Geo = new THREE.BoxGeometry(flightW - 0.22, s1Len, 0.18);
+            const stringer1Geo = new THREE.BoxGeometry(flightW - 0.1, s1Len, stringerThick);
             const stringer1 = new THREE.Mesh(stringer1Geo, MAT.stairFloor);
             stringer1.position.copy(s1Start).add(s1End).multiplyScalar(0.5);
             stringer1.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), s1End.clone().sub(s1Start).normalize());
             flightGroup.add(stringer1);
 
-            // Handrail along Tramo 1
-            addInclinedRailing(
-                flightGroup,
-                xFlight1 + innerSign * flightW * 0.46,
-                yStart1,
-                zNorth,
-                xFlight1 + innerSign * flightW * 0.46,
-                yMid,
-                zSouth
-            );
-
             // --- DESCANSO INTERMEDIO EN EL SUR (Mid-Floor Landing at South end z = zMidLand, y = 0.5 * H) ---
-            const midLandGeo = new THREE.BoxGeometry(totalStairW, 0.2, midLandDepth);
+            const midLandGeo = new THREE.BoxGeometry(totalStairW, slabThick, midLandDepth);
             const midLand = new THREE.Mesh(midLandGeo, MAT.stairFloor);
-            midLand.position.set(cx, yMid - 0.06, zMidLand);
+            midLand.position.set(cx, yMid - 0.08, zMidLand);
             midLand.castShadow = true;
             midLand.receiveShadow = true;
             flightGroup.add(midLand);
-
-            // Guardrail on the southern outer edge of the mid-landing
-            addInclinedRailing(
-                flightGroup,
-                cx - totalStairW * 0.47,
-                yMid,
-                zMidLand - midLandDepth * 0.46,
-                cx + totalStairW * 0.47,
-                yMid,
-                zMidLand - midLandDepth * 0.46
-            );
 
             // --- TRAMO 2 (Superior): Sube desde el Descanso Sur de regreso hacia el Norte (+Z) ---
             for (let s = 0; s < numSteps; s++) {
                 const t = (s + 0.5) / numSteps;
                 const sz = zSouth + t * spanZ;
                 const sy = yMid + (s + 0.5) * stepH2;
-                const blockH = stepH2 * 1.45;
+                const blockH = stepH2 * stepThicknessMult;
                 const stepGeo = new THREE.BoxGeometry(flightW, blockH, stepD);
                 const stepMesh = new THREE.Mesh(stepGeo, MAT.stairStep);
-                stepMesh.position.set(xFlight2, sy - blockH * 0.15, sz);
+                stepMesh.position.set(xFlight2, sy - blockH * 0.18, sz);
                 stepMesh.castShadow = true;
                 stepMesh.receiveShadow = true;
                 flightGroup.add(stepMesh);
             }
 
-            // Inclined carriage/stringer beam under Tramo 2 (South -> North)
-            const s2Start = new THREE.Vector3(xFlight2, yMid - 0.08, zSouth);
-            const s2End = new THREE.Vector3(xFlight2, yTop - 0.08, zNorth);
+            // Thick inclined concrete carriage slab under Tramo 2 (South -> North)
+            const s2Start = new THREE.Vector3(xFlight2, yMid - 0.1, zSouth);
+            const s2End = new THREE.Vector3(xFlight2, yTop - 0.1, zNorth);
             const s2Len = s2Start.distanceTo(s2End);
-            const stringer2Geo = new THREE.BoxGeometry(flightW - 0.22, s2Len, 0.18);
+            const stringer2Geo = new THREE.BoxGeometry(flightW - 0.1, s2Len, stringerThick);
             const stringer2 = new THREE.Mesh(stringer2Geo, MAT.stairFloor);
             stringer2.position.copy(s2Start).add(s2End).multiplyScalar(0.5);
             stringer2.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), s2End.clone().sub(s2Start).normalize());
             flightGroup.add(stringer2);
-
-            // Handrail along Tramo 2
-            addInclinedRailing(
-                flightGroup,
-                xFlight2 - innerSign * flightW * 0.46,
-                yMid,
-                zSouth,
-                xFlight2 - innerSign * flightW * 0.46,
-                yTop,
-                zNorth
-            );
 
             g.add(flightGroup);
             stairFlightGroups.push(flightGroup);
@@ -1052,51 +1018,20 @@ Key UX & Mobile Features:
             name: `${label} (Piso ${floorNum})`,
             wing: sideLabel,
             doors: 1,
-            area: isNarrow ? "24 m² (Estrecha)" : "34 m²",
+            area: isNarrow ? "24 m² (Estrecha)" : "38 m² (Gruesa)",
             x: cx,
             z: cz,
             doorX: xFlight1,
             notes: cx < 0
-                ? (floorNum === 3
-                    ? "Tramo de escalera Oeste más estrecho (orientado de Norte a Sur) que sube del 3er piso a la terraza del Anexo en el 4to piso."
-                    : "Escalera principal Oeste en zig-zag Norte-Sur (inicia en el pasillo Norte, sube hacia el descanso Sur y regresa al pasillo Norte superior).")
-                : "Escalera Este en zig-zag Norte-Sur (inicia en el pasillo Norte, sube hacia el descanso Sur y regresa al pasillo Norte superior): conecta pisos 1 a 3.",
+                ? (isNarrow
+                    ? "Tramo de escalera Oeste más estrecho (sin barandas, en el mismo núcleo Oeste) que conecta hacia el Anexo Superior."
+                    : "Escalera principal Oeste gruesa sin barandas (orientada de Norte a Sur con descanso intermedio).")
+                : "Escalera Este gruesa sin barandas (orientada de Norte a Sur con descanso intermedio): conecta pisos 1 a 3.",
             mesh: northPlat,
             baseMat: MAT.stairFloor,
             labelEl: el,
             localPos: new THREE.Vector3(cx, 1.8, 0.4)
         });
-    }
-
-    // Internal compact staircase inside the Annex connecting Piso 4 (P401) -> Piso 5 (P501 Observatory)
-    function addInternalAnnexStair(parent) {
-        const g = new THREE.Group();
-        const flightGroup = new THREE.Group();
-        const numSteps = 9;
-        const xPos = -30.5;
-        const zStart = 0.2;
-        const zEnd = -4.2;
-        const spanZ = Math.abs(zEnd - zStart);
-        const stepD = (spanZ / numSteps) + 0.04;
-        const stepH = (BASE_STAIR_H - 0.15) / numSteps;
-        const flightW = 1.05;
-
-        for (let s = 0; s < numSteps; s++) {
-            const t = (s + 0.5) / numSteps;
-            const sz = zStart - t * spanZ;
-            const sy = 0.15 + (s + 0.5) * stepH;
-            const stepGeo = new THREE.BoxGeometry(flightW, stepH * 1.4, stepD);
-            const stepMesh = new THREE.Mesh(stepGeo, MAT.stairStep);
-            stepMesh.position.set(xPos, sy, sz);
-            stepMesh.castShadow = true;
-            flightGroup.add(stepMesh);
-        }
-
-        addInclinedRailing(flightGroup, xPos + 0.5, 0.15, zStart, xPos + 0.5, BASE_STAIR_H, zEnd);
-        g.add(flightGroup);
-        stairFlightGroups.push(flightGroup);
-        stairGroups.push(g);
-        parent.add(g);
     }
 
     // Helper to add architectural annex facade pilasters, top trim band & dark glass windows (as seen in the real photo)
@@ -1192,9 +1127,6 @@ Key UX & Mobile Features:
             tile.receiveShadow = true;
             floorGroup.add(tile);
 
-            // Internal guardrail around the interior stair arrival from Piso 4
-            addHorizontalRailing(floorGroup, -29.8, -4.4, -29.8, 0.3);
-
             // Annex flat roof with slight perimeter parapet + Metallic Observatory Dome
             const roofGeo = new THREE.BoxGeometry(roomW + 0.4, 0.24, 8.4);
             const roof = new THREE.Mesh(roofGeo, MAT.roofDeck);
@@ -1242,13 +1174,16 @@ Key UX & Mobile Features:
                 area: "105.6 m²",
                 x: cx,
                 z: zCenter,
-                doorX: -30.5,
-                notes: "Segundo nivel del anexo superior coronado por la cúpula metálica del Observatorio UAM. No tiene pasillo exterior; se accede internamente desde el 4to piso.",
+                doorX: -32,
+                notes: "Segundo nivel del anexo superior coronado por la cúpula metálica del Observatorio UAM. No tiene pasillo exterior; se accede por el núcleo de escaleras Oeste.",
                 mesh: tile,
                 baseMat: MAT.roomFloor,
                 labelEl: el,
                 localPos: new THREE.Vector3(cx, 4.4, zCenter)
             });
+
+            // Arrival platform of the narrow West stairs at the exact same location (cx = -36), without railings
+            addStairwell(floorGroup, 5, "ST-W", "Llegada Esc. P5", -36, -1.4, "Núcleo Oeste", false, true);
 
             scene.add(floorGroup);
             floorGroups.push({ floorNum, group: floorGroup });
@@ -1272,7 +1207,7 @@ Key UX & Mobile Features:
             const zHallWall = 1.5;
             const zCenter = -2.5;
 
-            // Annex room slab (x = -32.2 to -18.4) leaving the P3->P4 narrow stair arrival shaft open on the left
+            // Annex room slab (x = -32.2 to -18.4) leaving the West stairwell shaft (cx = -36) open
             const roomSlabW = -18.4 - (-32.2);
             const roomSlabCx = (-32.2 + -18.4) / 2;
             const roomSlabGeo = new THREE.BoxGeometry(roomSlabW, 0.24, 8.2);
@@ -1294,9 +1229,9 @@ Key UX & Mobile Features:
             hallMesh.receiveShadow = true;
             floorGroup.add(hallMesh);
 
-            // Perimeter grey horizontal-bar railing around the P4 terrace & stair arrival (as seen in the real photo)
+            // Front balcony railing on Floor 4 (no railings on the stairs themselves)
             addHorizontalRailing(floorGroup, -39.6, 4.55, -18.6, 4.55);
-            addHorizontalRailing(floorGroup, -39.6, -4.4, -39.6, 4.55);
+            addHorizontalRailing(floorGroup, -39.6, 1.6, -39.6, 4.55);
             addHorizontalRailing(floorGroup, -18.6, 1.6, -18.6, 4.55);
 
             // Annex 4th-floor walls (flush with the 5th-floor annex above)
@@ -1316,9 +1251,6 @@ Key UX & Mobile Features:
 
             // Photo-accurate grey pilasters, trim & windows on P4 annex facade
             addAnnexFacadeDetails(floorGroup, x1, x2, zBack, zHallWall, wallH, false);
-
-            // Internal stair climbing inside the Annex from P4 (P401) -> P5 (P501 Observatory)
-            addInternalAnnexStair(floorGroup);
 
             const tileGeo = new THREE.BoxGeometry(roomW - 0.3, 0.06, 7.75);
             const tile = new THREE.Mesh(tileGeo, MAT.roomFloor.clone());
@@ -1343,15 +1275,15 @@ Key UX & Mobile Features:
                 x: cx,
                 z: zCenter,
                 doorX,
-                notes: "Primer nivel del anexo superior en el extremo oeste. Se accede subiendo la escalera estrecha desde el 3er piso y conecta internamente con el 5to piso (Observatorio).",
+                notes: "Primer nivel del anexo superior en el extremo oeste. Se accede por la escalera estrecha en el núcleo Oeste.",
                 mesh: tile,
                 baseMat: MAT.roomFloor,
                 labelEl: el,
                 localPos: new THREE.Vector3(cx, 1.5, zCenter)
             });
 
-            // Arrival platform of the narrow P3->P4 stairs on the P4 terrace (NO exterior upward flights from P4 to P5!)
-            addStairwell(floorGroup, 4, "ST-W", "Llegada Esc. P4", -36, -1.4, "Terraza Anexo P4", false, true);
+            // Narrower zig-zag stairs in the exact same West stairwell location (cx = -36) climbing from P4 -> P5, without railings
+            addStairwell(floorGroup, 4, "ST-W", "Esc. Oeste (Estrecha)", -36, -1.4, "Núcleo Oeste", true, true);
 
             scene.add(floorGroup);
             floorGroups.push({ floorNum, group: floorGroup });
@@ -1640,43 +1572,24 @@ Key UX & Mobile Features:
             stairChoiceCode = useWest ? "ST-W" : "ST-E";
 
             const innerSign = useWest ? 1 : -1;
-            const annexDoorX = -20.9;
-            const annexInternalStairX = -30.5;
 
             totalDist = (useWest ? westCost : eastCost) + Math.abs(endRec.floor - startRec.floor) * 6.5 + 4;
 
-            // 1. Starting point -> exterior stairwell North entrance (or internal annex stair if starting on Floor 5)
-            const extStartFloor = Math.min(startRec.floor, 4);
-            const extEndFloor = Math.min(endRec.floor, 4);
+            // 1. Walk from starting point to the stairwell North entrance
+            const startHallZ = startRec.floor === 5 ? 1.25 : (startRec.floor === 4 ? 3.05 : hallZ);
+            pts.push({ floor: startRec.floor, x: startRec.x, yOffset: 0.45, z: startRec.type === "Acceso" ? 4.8 : startRec.z });
+            pts.push({ floor: startRec.floor, x: startEntryX, yOffset: 0.45, z: startHallZ });
+            pts.push({ floor: startRec.floor, x: stairX, yOffset: 0.45, z: startHallZ });
 
-            if (startRec.floor === 5) {
-                // Start inside P5 Observatory -> descend internal annex stair to P4 -> exit P4 annex door
-                pts.push({ floor: 5, x: startRec.x, yOffset: 0.45, z: startRec.z });
-                pts.push({ floor: 5, x: annexInternalStairX, yOffset: 0.35, z: -4.2 });
-                pts.push({ floor: 4, x: annexInternalStairX, yOffset: 0.35, z: 0.2 });
-                pts.push({ floor: 4, x: annexDoorX, yOffset: 0.45, z: 0.2 });
-                pts.push({ floor: 4, x: annexDoorX, yOffset: 0.45, z: 3.05 });
-                if (endRec.floor < 4) {
-                    pts.push({ floor: 4, x: stairX, yOffset: 0.45, z: 3.05 });
-                }
-            } else {
-                const startHallZ = startRec.floor === 4 ? 3.05 : hallZ;
-                pts.push({ floor: startRec.floor, x: startRec.x, yOffset: 0.45, z: startRec.type === "Acceso" ? 4.8 : startRec.z });
-                pts.push({ floor: startRec.floor, x: startEntryX, yOffset: 0.45, z: startHallZ });
-                if (extStartFloor !== extEndFloor) {
-                    pts.push({ floor: startRec.floor, x: stairX, yOffset: 0.45, z: startHallZ });
-                }
-            }
-
-            // 2. Traverse exterior North-to-South zig-zag stairs between extStartFloor and extEndFloor (P1..P4)
-            if (extEndFloor > extStartFloor) {
-                for (let f = extStartFloor; f < extEndFloor; f++) {
-                    const isNarrowFlight = (f === 3);
-                    const laneOffset = isNarrowFlight ? 0.72 : 1.08;
+            // 2. Traverse North-to-South zig-zag stairs in the exact same stairwell column (narrower for f >= 3)
+            if (endRec.floor > startRec.floor) {
+                for (let f = startRec.floor; f < endRec.floor; f++) {
+                    const isNarrowFlight = (f >= 3);
+                    const laneOffset = isNarrowFlight ? 0.76 : 1.20;
                     const xF1 = stairX + innerSign * laneOffset;
                     const xF2 = stairX - innerSign * laneOffset;
                     const zNorth = 1.25;
-                    const zSouthLand = isNarrowFlight ? -3.65 : -4.25;
+                    const zSouthLand = isNarrowFlight ? -3.75 : -4.40;
 
                     // Start at North entrance of Tramo 1
                     pts.push({ floor: f, yFrac: 0, x: xF1, yOffset: 0.35, z: zNorth });
@@ -1684,47 +1597,34 @@ Key UX & Mobile Features:
                     pts.push({ floor: f, yFrac: 0.5, x: xF1, yOffset: 0.3, z: zSouthLand });
                     // Turn 180° on South mid-floor landing
                     pts.push({ floor: f, yFrac: 0.5, x: xF2, yOffset: 0.3, z: zSouthLand });
-                    // Climb Tramo 2 from South back to North upper floor hallway
+                    // Climb Tramo 2 from South back to North upper floor landing
                     pts.push({ floor: f + 1, yFrac: 0, x: xF2, yOffset: 0.35, z: zNorth });
                 }
-            } else if (extEndFloor < extStartFloor) {
-                for (let f = extStartFloor; f > extEndFloor; f--) {
-                    const isNarrowFlight = (f - 1 === 3);
-                    const laneOffset = isNarrowFlight ? 0.72 : 1.08;
+            } else {
+                for (let f = startRec.floor; f > endRec.floor; f--) {
+                    const isNarrowFlight = (f - 1 >= 3);
+                    const laneOffset = isNarrowFlight ? 0.76 : 1.20;
                     const xF1 = stairX + innerSign * laneOffset;
                     const xF2 = stairX - innerSign * laneOffset;
                     const zNorth = 1.25;
-                    const zSouthLand = isNarrowFlight ? -3.65 : -4.25;
+                    const zSouthLand = isNarrowFlight ? -3.75 : -4.40;
 
-                    // Enter top of Tramo 2 at North hallway
+                    // Enter top of Tramo 2 at North landing
                     pts.push({ floor: f, yFrac: 0, x: xF2, yOffset: 0.35, z: zNorth });
                     // Descend Tramo 2 from North to South mid-floor landing
                     pts.push({ floor: f - 1, yFrac: 0.5, x: xF2, yOffset: 0.3, z: zSouthLand });
                     // Turn 180° on South mid-floor landing
                     pts.push({ floor: f - 1, yFrac: 0.5, x: xF1, yOffset: 0.3, z: zSouthLand });
-                    // Descend Tramo 1 from South back to North lower floor hallway
+                    // Descend Tramo 1 from South back to North lower floor landing
                     pts.push({ floor: f - 1, yFrac: 0, x: xF1, yOffset: 0.35, z: zNorth });
                 }
             }
 
-            // 3. Arrival at destination floor (if destination is Floor 5, enter P4 Annex and climb internal stair)
-            if (endRec.floor === 5) {
-                if (startRec.floor < 4) {
-                    pts.push({ floor: 4, x: stairX, yOffset: 0.45, z: 3.05 });
-                }
-                pts.push({ floor: 4, x: annexDoorX, yOffset: 0.45, z: 3.05 });
-                pts.push({ floor: 4, x: annexDoorX, yOffset: 0.45, z: 0.2 });
-                pts.push({ floor: 4, x: annexInternalStairX, yOffset: 0.35, z: 0.2 });
-                pts.push({ floor: 5, x: annexInternalStairX, yOffset: 0.35, z: -4.2 });
-                pts.push({ floor: 5, x: endRec.x, yOffset: 0.45, z: endRec.z });
-            } else {
-                const endHallZ = endRec.floor === 4 ? 3.05 : hallZ;
-                if (extStartFloor !== extEndFloor) {
-                    pts.push({ floor: endRec.floor, x: stairX, yOffset: 0.45, z: endHallZ });
-                }
-                pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: endHallZ });
-                pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
-            }
+            // 3. Exit stairwell at destination floor into the destination space
+            const endHallZ = endRec.floor === 5 ? 1.25 : (endRec.floor === 4 ? 3.05 : hallZ);
+            pts.push({ floor: endRec.floor, x: stairX, yOffset: 0.45, z: endHallZ });
+            pts.push({ floor: endRec.floor, x: endEntryX, yOffset: 0.45, z: endHallZ });
+            pts.push({ floor: endRec.floor, x: endRec.x, yOffset: 0.45, z: endRec.z });
 
             const floorDiff = Math.abs(endRec.floor - startRec.floor);
             const climbWord = endRec.floor > startRec.floor ? "Sube" : "Baja";
@@ -1737,63 +1637,42 @@ Key UX & Mobile Features:
                 detail: `Punto de partida en Piso ${startRec.floor}`,
                 floor: startRec.floor,
                 focusX: startRec.x,
-                focusZ: hallZ
+                focusZ: startHallZ
             });
             steps.push({
                 icon: "🪜",
                 title: `Ve a las ${stairName}`,
-                detail: mustUseWest ? "Núcleo Oeste que sube hacia el Anexo Superior" : `En el extremo ${useWest ? "Oeste" : "Este"} del Piso ${startRec.floor}`,
+                detail: mustUseWest ? "Núcleo Oeste (tramos gruesos P1–P3 y más estrechos hacia el Anexo P4–P5)" : `En el extremo ${useWest ? "Oeste" : "Este"} del Piso ${startRec.floor}`,
                 floor: startRec.floor,
                 focusX: stairX,
                 focusZ: -1.4
             });
-            if (endRec.floor === 5) {
+            steps.push({
+                icon: endRec.floor > startRec.floor ? "⬆️" : "⬇️",
+                title: `${climbWord} ${floorDiff} nivel${floorDiff > 1 ? "es" : ""} en zig-zag al Piso ${endRec.floor}`,
+                detail: `Por ${stairName} de Norte a Sur con descanso intermedio (Piso ${startRec.floor} → Piso ${endRec.floor})`,
+                floor: endRec.floor,
+                focusX: stairX,
+                focusZ: -1.4
+            });
+            if (walkDist > 2 && endRec.floor < 5) {
                 steps.push({
-                    icon: "⬆️",
-                    title: "Sube al Piso 4 (Terraza del Anexo)",
-                    detail: "Del 3er al 4to piso usa el tramo de escalera más estrecho",
-                    floor: 4,
-                    focusX: stairX,
-                    focusZ: -1.4
-                });
-                steps.push({
-                    icon: "🔭",
-                    title: "Entra al Anexo P401 y sube al Observatorio (P5)",
-                    detail: "El 5to piso no tiene pasillo exterior; se sube por dentro del anexo",
-                    floor: 5,
-                    focusX: endRec.x,
-                    focusZ: endRec.z
-                });
-            } else {
-                steps.push({
-                    icon: endRec.floor > startRec.floor ? "⬆️" : "⬇️",
-                    title: `${climbWord} ${floorDiff} nivel${floorDiff > 1 ? "es" : ""} en zig-zag al Piso ${endRec.floor}`,
-                    detail: endRec.floor === 4
-                        ? "Del Piso 3 al Piso 4 sube por la escalera más estrecha hacia el Anexo"
-                        : `Por ${stairName} con descanso intermedio (Piso ${startRec.floor} → Piso ${endRec.floor})`,
+                    icon: "🚶",
+                    title: `Camina ~${walkDist}m hacia ${walkDir}`,
+                    detail: `Por el pasillo del Piso ${endRec.floor}`,
                     floor: endRec.floor,
-                    focusX: stairX,
-                    focusZ: -1.4
-                });
-                if (walkDist > 2) {
-                    steps.push({
-                        icon: "🚶",
-                        title: `Camina ~${walkDist}m hacia ${walkDir}`,
-                        detail: `Por el pasillo del Piso ${endRec.floor}`,
-                        floor: endRec.floor,
-                        focusX: (stairX + endEntryX) / 2,
-                        focusZ: endRec.floor === 4 ? 3.05 : hallZ
-                    });
-                }
-                steps.push({
-                    icon: "🔵",
-                    title: `Llegaste a ${endRec.name}`,
-                    detail: `${endRec.wing} · Piso ${endRec.floor}`,
-                    floor: endRec.floor,
-                    focusX: endRec.x,
-                    focusZ: endRec.z
+                    focusX: (stairX + endEntryX) / 2,
+                    focusZ: endHallZ
                 });
             }
+            steps.push({
+                icon: "🔵",
+                title: `Llegaste a ${endRec.name}`,
+                detail: `${endRec.wing} · Piso ${endRec.floor}`,
+                floor: endRec.floor,
+                focusX: endRec.x,
+                focusZ: endRec.z
+            });
         }
 
         state.activePath = {
