@@ -198,51 +198,54 @@
     overflow: hidden;
 }
 
-/* 5A. Waze-style 3D Elevated Navigation Arrow Puck */
+/* 5A. Waze-style 3D Elevated Glossy Cyan Navigation Arrow Puck + Purple Road Pill */
 .waze-puck-container {
     position: absolute;
     left: 50%;
-    top: 70%;
+    top: 68%;
     transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
+    width: 82px;
+    height: 82px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     pointer-events: none;
     z-index: 25;
 }
 
-.waze-puck-shadow {
+.waze-puck-halo {
     position: absolute;
-    width: 44px;
-    height: 44px;
+    width: 72px;
+    height: 54px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(2, 132, 199, 0.45) 0%, rgba(15, 23, 42, 0.25) 55%, transparent 75%);
-    transform: scaleY(0.45) translateY(20px);
+    background: radial-gradient(circle, rgba(15, 23, 42, 0.17) 0%, rgba(15, 23, 42, 0.08) 65%, transparent 100%);
+    border: 1.5px solid rgba(255, 255, 255, 0.65);
+    transform: translateY(4px);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
 }
 
 .waze-puck-pulse {
     position: absolute;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    border: 2px solid #38bdf8;
-    animation: wazePulse 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+    border: 2px solid #22d3ee;
+    animation: wazePulse 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
 }
 
 @keyframes wazePulse {
-    0% { transform: scale(0.6); opacity: 0.95; }
-    75% { transform: scale(2.4); opacity: 0; }
-    100% { transform: scale(2.4); opacity: 0; }
+    0% { transform: scale(0.65); opacity: 0.9; }
+    75% { transform: scale(2.15); opacity: 0; }
+    100% { transform: scale(2.15); opacity: 0; }
 }
 
 .waze-puck-cone {
     position: absolute;
-    top: -32px;
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(to top, rgba(2, 132, 199, 0.35) 0%, transparent 100%);
+    top: -24px;
+    width: 52px;
+    height: 46px;
+    background: linear-gradient(to top, rgba(34, 211, 238, 0.32) 0%, transparent 100%);
     clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
     pointer-events: none;
     transform-origin: 50% 100%;
@@ -250,10 +253,29 @@
 
 .waze-puck-arrow {
     position: relative;
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    filter: drop-shadow(0 6px 12px rgba(2, 132, 199, 0.45));
+    filter: drop-shadow(0 5px 10px rgba(8, 145, 178, 0.42));
+}
+
+.waze-road-pill {
+    position: absolute;
+    bottom: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 3px 11px;
+    border-radius: 9999px;
+    background: #6d28d9;
+    color: #ffffff;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    border: 2px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.45);
+    z-index: 26;
 }
 
 /* 5B. Floating Upright Building Badges (Decoupled HTML Overlay - Letters Only) */
@@ -328,36 +350,114 @@
 }
 
 /* ================================================================================
- * 6. WAZE NAVIGATION HUD: TOP TURN-BY-TURN & BOTTOM TRIP SUMMARY BARS
+ * 6. WAZE NAVIGATION HUD: JET-BLACK TOP BANNER, FLOATING DIALS & WHITE BOTTOM DOCK
  * ================================================================================
  */
 .turn-by-turn-banner {
-    animation: slideDownBanner 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideDownBanner 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.waze-bottom-bar {
-    animation: slideUpBottomBar 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.waze-action-tray {
+    animation: slideUpTray 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideDownBanner {
     from {
-        transform: translate(-50%, -36px);
+        transform: translateY(-28px);
         opacity: 0;
     }
     to {
-        transform: translate(-50%, 0);
+        transform: translateY(0);
         opacity: 1;
     }
 }
 
-@keyframes slideUpBottomBar {
+@media (min-width: 1024px) {
+    @keyframes slideDownBanner {
+        from {
+            transform: translate(-50%, -28px);
+            opacity: 0;
+        }
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    }
+}
+
+@keyframes slideUpTray {
     from {
-        transform: translate(-50%, 48px);
+        transform: translateY(16px);
         opacity: 0;
     }
     to {
-        transform: translate(-50%, 0);
+        transform: translateY(0);
         opacity: 1;
+    }
+}
+
+/* Iconic Waze Dark Circular Gauge / Mode Dial (Bottom-Left above Bottom Dock) */
+.waze-speed-dial {
+    background: radial-gradient(circle at 35% 30%, #334155 0%, #1e293b 58%, #0f172a 100%);
+    border: 3px solid #ffffff;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.34), inset 0 1px 2px rgba(255, 255, 255, 0.16);
+}
+
+/* Iconic Waze Vibrant Orange Circular Action FAB (Bottom-Right above Bottom Dock) */
+.waze-orange-fab {
+    background: linear-gradient(145deg, #fbbf24 0%, #f97316 58%, #ea580c 100%);
+    border: 3.5px solid #ffffff;
+    box-shadow: 0 8px 22px rgba(249, 115, 22, 0.42), 0 2px 6px rgba(15, 23, 42, 0.18);
+}
+
+/* Zero-Collision Offset Rules when Waze Black Turn-by-Turn Banner is Visible */
+.campus-tbt-active .waze-right-stack {
+    top: 108px !important;
+}
+
+@media (min-width: 640px) {
+    .campus-tbt-active .waze-right-stack {
+        top: 112px !important;
+    }
+}
+
+/* On mobile/tablet (< 1024px), hide top-left pill while full-width black Waze header is active to prevent overlap */
+@media (max-width: 1023px) {
+    .campus-tbt-active .waze-mode-pill {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-10px);
+    }
+    .waze-puck-container {
+        top: 66%;
+    }
+    .campus-25d-viewport {
+        perspective-origin: 50% 66%;
+    }
+    .campus-3d-stage {
+        transform-origin: 50% 66%;
+    }
+}
+
+/* On desktop (>= 1024px), top banner is centered max-w-xl so right toolbar stays cleanly at top-4 */
+@media (min-width: 1024px) {
+    .campus-tbt-active .waze-right-stack {
+        top: 16px !important;
+    }
+}
+
+/* Lift bottom-left dial & bottom-right orange FAB cleanly above the open Action Tray on mobile/tablet */
+@media (max-width: 1023px) {
+    .waze-tray-open .waze-speed-dial,
+    .waze-tray-open .waze-orange-fab {
+        bottom: 138px !important;
+    }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+    .waze-tray-open .waze-speed-dial,
+    .waze-tray-open .waze-orange-fab {
+        bottom: 144px !important;
     }
 }
 

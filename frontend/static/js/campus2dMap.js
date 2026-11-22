@@ -335,9 +335,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // ----------------------------------------------------------------------------
     // 3. Pan, Zoom & Real Responsive Compass Canvas Controller
     // ----------------------------------------------------------------------------
-    let scale = 1;
-    let translateX = 0;
-    let translateY = 0;
+    function getDefault2dScale() {
+        const w = wrapper.clientWidth || window.innerWidth;
+        const h = wrapper.clientHeight || window.innerHeight;
+        // On portrait mobile phones, zoom slightly in so the horizontal campus fills the screen readably
+        if (w < 640 && h > w) return 1.75;
+        if (w < 1024 && h > w) return 1.3;
+        return 1;
+    }
+
+    let scale = getDefault2dScale();
+    let translateX = (wrapper.clientWidth || window.innerWidth) < 640 ? 18 : 0;
+    let translateY = (wrapper.clientWidth || window.innerWidth) < 640 ? -12 : 0;
     let rotation = 0; // View rotation angle in degrees (0° = South Up)
     let isDragging = false;
     let isRotating = false;
@@ -385,7 +394,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         svg.style.transition = animate ? "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
-        svg.style.transformOrigin = "600px 425px";
+        svg.style.transformOrigin = "50% 50%";
         svg.style.transform = `translate(${translateX.toFixed(2)}px, ${translateY.toFixed(2)}px) scale(${scale.toFixed(3)}) rotate(${rotation.toFixed(2)}deg)`;
         
         // Compass rotates with the 2D view to remain locked onto map direction
@@ -398,7 +407,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.campus25dController.zoomIn();
                 return;
             }
-            scale = Math.min(scale + 0.25, 2.8);
+            scale = Math.min(scale + 0.3, 3.8);
             applyTransform(true);
         });
     }
@@ -409,7 +418,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.campus25dController.zoomOut();
                 return;
             }
-            scale = Math.max(scale - 0.25, 0.75);
+            scale = Math.max(scale - 0.3, 0.75);
             applyTransform(true);
         });
     }
@@ -417,16 +426,16 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnResetView) {
         btnResetView.addEventListener("click", () => {
             if (window.campus25dController && window.campus25dController.is25dActive) {
-                window.campus25dController.zoomScale = 2.2;
+                window.campus25dController.zoomScale = window.campus25dController.getResponsiveZoom(2.2);
                 window.campus25dController.heading = 0;
                 window.campus25dController.currentHeading = 0;
                 window.campus25dController.centerOnCampusLowerThird();
                 window.campus25dController.updateCompass(true);
                 return;
             }
-            scale = 1;
-            translateX = 0;
-            translateY = 0;
+            scale = getDefault2dScale();
+            translateX = (wrapper.clientWidth || window.innerWidth) < 640 ? 18 : 0;
+            translateY = (wrapper.clientWidth || window.innerWidth) < 640 ? -12 : 0;
             rotation = 0;
             applyTransform(true);
         });
@@ -595,7 +604,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const currentAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180 / Math.PI;
 
             if (initialPinchDist > 0) {
-                scale = Math.max(0.75, Math.min(initialPinchScale * (currentDist / initialPinchDist), 2.8));
+                scale = Math.max(0.75, Math.min(initialPinchScale * (currentDist / initialPinchDist), 3.8));
             }
             const angleDiff = currentAngle - initialPinchAngle;
             rotation = (initialPinchRotation + angleDiff) % 360;
@@ -692,11 +701,20 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        const maxLeft = wRect.width - 290;
-        const maxTop = wRect.height - 220;
-
-        bldgPopover.style.left = `${Math.max(12, Math.min(clientX - 100, maxLeft))}px`;
-        bldgPopover.style.top = `${Math.max(12, Math.min(clientY - 170, maxTop))}px`;
+        if (wRect.width < 640) {
+            // On mobile phones, anchor building popover cleanly centered above the Waze bottom dock
+            bldgPopover.style.left = "50%";
+            bldgPopover.style.top = "auto";
+            bldgPopover.style.bottom = "80px";
+            bldgPopover.style.transform = "translateX(-50%)";
+        } else {
+            const maxLeft = wRect.width - 310;
+            const maxTop = wRect.height - 250;
+            bldgPopover.style.bottom = "auto";
+            bldgPopover.style.transform = "none";
+            bldgPopover.style.left = `${Math.max(12, Math.min(clientX - 120, maxLeft))}px`;
+            bldgPopover.style.top = `${Math.max(84, Math.min(clientY - 170, maxTop))}px`;
+        }
         bldgPopover.classList.remove("hidden");
     }
 
