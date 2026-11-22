@@ -118,8 +118,8 @@
                 "jaguarCenter": { x: 900, y: 623 },
                 "jaguarGym": { x: 969, y: 726 },
                 "physiotherapy": { x: 978, y: 677 },
-                "northGate": { x: 218, y: 74 },
-                "northeastGate": { x: 659, y: 16 }
+                "northGate": { x: 184, y: 74 },
+                "northeastGate": { x: 906, y: 14 }
             };
 
             this.init();

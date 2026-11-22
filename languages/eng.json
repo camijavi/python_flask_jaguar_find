@@ -100,8 +100,8 @@
     "jaguarGym": "Jaguar Gym",
     "physiotherapy": "Physiotherapy Building",
     "buildingL": "Building L (Culture & Music)",
-    "northeastGate": "Northeast Gate (Sports Access)",
-    "northGate": "North Gate (Copernicus / FIA Access)"
+    "northeastGate": "Second Access (Jaguar Stadium Road)",
+    "northGate": "Third Access (Copernicus Gate)"
   },
   "access_notices": {
     "buildingN": "Clinics Reception. Access to clinical areas and operating rooms requires sterile uniform and faculty authorization."
@@ -129,8 +129,14 @@
     "buildingO_buildingP": "Walk 45m west towards Building P.",
     "buildingO_buildingN": "Descend the ramp 55m southwest towards Building N.",
     "buildingN_buildingO": "Ascend the ramp 55m northeast towards Building O.",
-    "buildingP_northGate": "Walk 40m north towards Copernicus Gate (North Gate).",
-    "northGate_buildingP": "Enter through North Gate 40m south towards Building P.",
+    "buildingP_northGate": "Walk 40m west along the northern road towards Third Access (Copernicus Gate).",
+    "northGate_buildingP": "Enter through Third Access and proceed 40m east towards Building P (Copernicus).",
+    "northGate_chilamatesPlaza": "Follow West Main Avenue 85m south from Third Access towards Chilamates Plaza.",
+    "chilamatesPlaza_northGate": "Follow West Main Avenue 85m north from Chilamates Plaza towards Third Access.",
+    "northGate_northeastGate": "Follow the northern perimeter road 140m east past Building P towards Second Access (Jaguar Stadium Road).",
+    "northeastGate_northGate": "Follow the northern perimeter road 140m west from Second Access (Jaguar Stadium Road) towards Third Access.",
+    "buildingO_northeastGate": "Follow the main spine road 75m north past Building O parking towards Second Access (Jaguar Stadium Road).",
+    "northeastGate_buildingO": "Enter via Second Access (Jaguar Stadium Road) and follow the main spine road 75m south towards Building O.",
     "buildingB_buildingM": "Advance 40m east towards Building M.",
     "buildingM_buildingB": "Advance 40m west towards Building B.",
     "buildingM_buildingG": "Walk 35m south towards Building G (Central Auditorium / Law).",
@@ -157,8 +163,8 @@
     "buildingL_jaguarCenter": "Walk 30m west towards Jaguar Center.",
     "jaguarCenter_sportsZone": "Advance 80m north towards the Sports Fields.",
     "sportsZone_jaguarCenter": "Walk 80m south towards Jaguar Center.",
-    "sportsZone_northeastGate": "Walk 45m east towards Northeast Sports Gate.",
-    "northeastGate_sportsZone": "Enter through Northeast Gate 45m west towards the sports fields.",
+    "sportsZone_northeastGate": "Follow the north sports parking path 45m north towards Second Access (Jaguar Stadium Road).",
+    "northeastGate_sportsZone": "Enter via Second Access (Jaguar Stadium Road) and advance 45m south towards Jaguar Baseball Stadium and Sports Fields.",
     "buildingC_buildingH": "Walk 40m east towards Medical Labs (Building H).",
     "buildingH_buildingC": "Walk 40m west towards Building C.",
     "buildingM_buildingH": "Walk 35m northeast towards Building H.",

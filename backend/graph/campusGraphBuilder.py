@@ -42,8 +42,8 @@ def buildUamCampusGraph() -> DirectedGraph:
     g.addNode(Node("jaguarGym", "Jaguar Gym", CampusCategory.SPORTS, 79.0, 85.0, 12.10712, -86.25665))
     g.addNode(Node("physiotherapy", "Physiotherapy Building", CampusCategory.MEDICAL_LAB, 80.0, 79.0, 12.10718, -86.25662))
     g.addNode(Node("buildingL", "Building L (Culture & Music)", CampusCategory.CLASSROOM, 69.0, 72.0, 12.10725, -86.25673))
-    g.addNode(Node("northeastGate", "Northeast Gate (Sports Access)", CampusCategory.PARKING_LOT, 62.0, 38.0, 12.10841, -86.25697))
-    g.addNode(Node("northGate", "North Gate (Copernicus / FIA Access)", CampusCategory.PARKING_LOT, 36.0, 22.0, 12.10895, -86.25786))
+    g.addNode(Node("northeastGate", "Second Access (Jaguar Stadium Road)", CampusCategory.PARKING_LOT, 75.5, 2.0, 12.10885, -86.25697))
+    g.addNode(Node("northGate", "Third Access (Copernicus / West Avenue Gate)", CampusCategory.PARKING_LOT, 15.5, 9.0, 12.10895, -86.25818))
 
     # 2. Walkways / Edges with Physical Distance in Meters and Accessibility
     # Walkways are bidirectional, modeled as symmetric pairs of directed edges (u -> v) and (v -> u)
@@ -93,8 +93,20 @@ def buildUamCampusGraph() -> DirectedGraph:
                              backwardInstruction="Ascend the ramp 55m northeast towards Building O.")
 
     g.addBidirectionalWalkway("buildingP", "northGate", 40.0, isAccessible=True,
-                             forwardInstruction="Walk 40m north towards Copernicus Gate (North Gate).",
-                             backwardInstruction="Enter through North Gate 40m south towards Building P.")
+                             forwardInstruction="Walk 40m west along the northern road towards Third Access (Copernicus Gate).",
+                             backwardInstruction="Enter through Third Access and proceed 40m east towards Building P (Copernicus).")
+
+    g.addBidirectionalWalkway("northGate", "chilamatesPlaza", 85.0, isAccessible=True,
+                             forwardInstruction="Follow the West Main Avenue 85m south from Third Access towards Chilamates Plaza.",
+                             backwardInstruction="Follow the West Main Avenue 85m north from Chilamates Plaza towards Third Access.")
+
+    g.addBidirectionalWalkway("northGate", "northeastGate", 140.0, isAccessible=True,
+                             forwardInstruction="Follow the northern perimeter road 140m east past Building P towards Second Access (Jaguar Stadium Road).",
+                             backwardInstruction="Follow the northern perimeter road 140m west from Second Access (Jaguar Stadium Road) towards Third Access.")
+
+    g.addBidirectionalWalkway("buildingO", "northeastGate", 75.0, isAccessible=True,
+                             forwardInstruction="Follow the internal main road 75m north past Building O parking towards Second Access (Jaguar Stadium Road).",
+                             backwardInstruction="Enter via Second Access (Jaguar Stadium Road) and follow the main spine road 75m south towards Building O.")
 
     g.addBidirectionalWalkway("buildingB", "buildingM", 40.0, isAccessible=True,
                              forwardInstruction="Advance 40m east towards Building M.",
@@ -149,8 +161,8 @@ def buildUamCampusGraph() -> DirectedGraph:
                              backwardInstruction="Walk 80m south towards Jaguar Center.")
 
     g.addBidirectionalWalkway("sportsZone", "northeastGate", 45.0, isAccessible=True,
-                             forwardInstruction="Walk 45m east towards Northeast Sports Gate.",
-                             backwardInstruction="Enter through Northeast Gate 45m west towards the sports fields.")
+                             forwardInstruction="Follow the north sports parking path 45m north towards Second Access (Jaguar Stadium Road).",
+                             backwardInstruction="Enter via Second Access (Jaguar Stadium Road) and advance 45m south towards Jaguar Baseball Stadium and Sports Fields.")
 
     g.addBidirectionalWalkway("buildingC", "buildingH", 40.0, isAccessible=True,
                              forwardInstruction="Walk 40m east towards Medical Labs (Building H).",

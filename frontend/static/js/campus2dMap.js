@@ -301,24 +301,24 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         "northGate": {
             id: "northGate",
-            letter: "ACC",
-            name: "Acceso Norte (Copérnico / FIA)",
+            letter: "3°",
+            name: "Tercer Acceso • Third Access (Copérnico)",
             badgeClass: "badge-navy",
-            badgeBg: "#64748b",
-            anchor: { x: 218, y: 74 },
+            badgeBg: "#475569",
+            anchor: { x: 184, y: 74 },
             floors: [
-                { floor: "Acceso", rooms: "Caseta de Vigilancia Norte, Acceso Vehicular Segundo Camino hacia Edificios P y O." }
+                { floor: "Acceso Vehicular y Peatonal", rooms: "Tercer Acceso (Caseta Oeste junto a Estación Meteorológica y Edificio P - Copérnico). Conecta directamente con la Avenida Principal Oeste y Parqueos Oeste." }
             ]
         },
         "northeastGate": {
             id: "northeastGate",
-            letter: "ACC",
-            name: "Acceso Noreste (Deportes)",
+            letter: "2°",
+            name: "Segundo Acceso • Camino Estadio Jaguar",
             badgeClass: "badge-navy",
-            badgeBg: "#64748b",
-            anchor: { x: 720, y: 11 },
+            badgeBg: "#0f766e",
+            anchor: { x: 906, y: 14 },
             floors: [
-                { floor: "Acceso", rooms: "Portón de Ingreso a Complejo Deportivo y Parqueo de Deportes." }
+                { floor: "Acceso Vehicular y Peatonal", rooms: "Camino Segundo Acceso (Vía Estadio de Béisbol Jaguar). Conecta directamente con el Complejo Deportivo, Parqueo Norte Deportes, Edificio O y vía perimetral norte." }
             ]
         }
     };

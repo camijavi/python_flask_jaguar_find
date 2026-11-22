@@ -100,8 +100,8 @@
     "jaguarGym": "Jaguar Gym (Gimnasio Universitario)",
     "physiotherapy": "Edificio de Fisioterapia",
     "buildingL": "Edificio L (Cultura & Música)",
-    "northeastGate": "Caseta Noreste (Acceso Deportivo)",
-    "northGate": "Caseta Norte (Acceso Copérnico / FIA)"
+    "northeastGate": "Segundo Acceso (Camino Estadio Jaguar)",
+    "northGate": "Tercer Acceso (Portón Copérnico)"
   },
   "access_notices": {
     "buildingN": "Recepción de Clínicas. El ingreso a áreas clínicas y quirófanos requiere uniforme estéril y autorización docente."
@@ -129,8 +129,14 @@
     "buildingO_buildingP": "Camina 45m al oeste hacia el Edificio P.",
     "buildingO_buildingN": "Desciende por la rampa 55m al suroeste hacia el Edificio N.",
     "buildingN_buildingO": "Sube por la rampa 55m al noreste hacia el Edificio O.",
-    "buildingP_northGate": "Camina 40m al norte hacia el Portón Copérnico (Caseta Norte).",
-    "northGate_buildingP": "Ingresa por el Portón Norte 40m al sur hacia el Edificio P.",
+    "buildingP_northGate": "Avanza 40m al oeste por la vía norte hacia el Tercer Acceso (Portón Copérnico).",
+    "northGate_buildingP": "Ingresa por el Tercer Acceso y avanza 40m al este hacia el Edificio P (Copérnico).",
+    "northGate_chilamatesPlaza": "Sigue por la Avenida Principal Oeste 85m al sur desde el Tercer Acceso hacia Plaza Chilamates.",
+    "chilamatesPlaza_northGate": "Sigue por la Avenida Principal Oeste 85m al norte desde Plaza Chilamates hacia el Tercer Acceso.",
+    "northGate_northeastGate": "Recorre la vía perimetral norte 140m al este pasando el Edificio P hacia el Segundo Acceso (Camino Estadio Jaguar).",
+    "northeastGate_northGate": "Recorre la vía perimetral norte 140m al oeste desde el Segundo Acceso (Camino Estadio Jaguar) hacia el Tercer Acceso.",
+    "buildingO_northeastGate": "Avanza 75m al norte por la vía principal junto al parqueo del Edificio O hacia el Segundo Acceso (Camino Estadio Jaguar).",
+    "northeastGate_buildingO": "Ingresa por el Segundo Acceso (Camino Estadio Jaguar) y sigue 75m al sur por la vía principal hacia el Edificio O.",
     "buildingB_buildingM": "Avanza 40m al este hacia el Edificio M.",
     "buildingM_buildingB": "Avanza 40m al oeste hacia el Edificio B.",
     "buildingM_buildingG": "Camina 35m al sur hacia el Edificio G (Auditorio Central / Derecho).",
@@ -157,8 +163,8 @@
     "buildingL_jaguarCenter": "Camina 30m al oeste hacia Jaguar Center.",
     "jaguarCenter_sportsZone": "Avanza 80m al norte hacia los Campos Deportivos.",
     "sportsZone_jaguarCenter": "Camina 80m al sur hacia Jaguar Center.",
-    "sportsZone_northeastGate": "Camina 45m al este hacia la Caseta Noreste de Deportes.",
-    "northeastGate_sportsZone": "Ingresa por la Caseta Noreste 45m al oeste hacia los campos deportivos.",
+    "sportsZone_northeastGate": "Avanza 45m al norte por el acceso del parqueo deportivo hacia el Segundo Acceso (Camino Estadio Jaguar).",
+    "northeastGate_sportsZone": "Ingresa por el Segundo Acceso (Camino Estadio Jaguar) y avanza 45m al sur hacia el Estadio de Béisbol y Campos Deportivos.",
     "buildingC_buildingH": "Camina 40m al este hacia los Laboratorios de Medicina (Edificio H).",
     "buildingH_buildingC": "Camina 40m al oeste hacia el Edificio C.",
     "buildingM_buildingH": "Camina 35m al noreste hacia el Edificio H.",

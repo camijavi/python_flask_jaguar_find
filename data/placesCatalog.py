@@ -1575,6 +1575,26 @@ PLACES_CATALOG = [
         "locationNotes": "Main southern vehicle and pedestrian gate.",
         "keywords": ["parqueo principal", "estacionamiento", "caseta sur", "entrada principal", "porton sur"]
     },
+    {
+        "placeId": "thirdAccessRoad",
+        "name": "Tercer Acceso / Third Access (Portón Copérnico)",
+        "category": CampusCategory.PARKING_LOT,
+        "parentBuildingId": "northGate",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Northwest vehicle & pedestrian access gate beside Weather Station and Building P (Copernicus).",
+        "keywords": ["tercer acceso", "third access", "third access road", "acceso 3", "3er acceso", "entrada 3", "porton norte", "caseta norte", "acceso copernico"]
+    },
+    {
+        "placeId": "secondAccessRoad",
+        "name": "Segundo Acceso / Camino Estadio Jaguar (Second Access Road)",
+        "category": CampusCategory.PARKING_LOT,
+        "parentBuildingId": "northeastGate",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Northern vehicle & pedestrian road past Jaguar Baseball Stadium connecting Sports Parking and Building O.",
+        "keywords": ["segundo acceso", "second access", "camino segundo acceso", "second access road", "jaguar stadium road", "camino estadio jaguar", "acceso 2", "2do acceso", "entrada 2", "acceso deportivo", "porton deportes", "caseta noreste"]
+    },
 
     # -------------------------------------------------------------------------
     # ACCESSIBLE RAMPS (INCLUSIVITY)

@@ -46,8 +46,8 @@
         jaguarCenter: { x: 900, y: 623 },
         jaguarGym: { x: 969, y: 726 },
         physiotherapy: { x: 978, y: 677 },
-        northGate: { x: 218, y: 74 },
-        northeastGate: { x: 659, y: 16 }
+        northGate: { x: 184, y: 74 },
+        northeastGate: { x: 906, y: 14 }
     };
 
     // ----------------------------------------------------------------------------
@@ -208,8 +208,6 @@
     function renderRoads(layer) {
         // 1A. Secondary walkways & pedestrian concourses (flat pale slate, no lane dashes)
         const connectors = [
-            // North Sports Parking entry apron connecting down from Camino Segundo Acceso
-            { d: "M 822 16 L 822 46", w: 24, color: "#dfe5ec" },
             // Pedestrian sports concourse between Baseball Stadium and Soccer Field
             { d: "M 722 338 L 1154 338", w: 22, color: "#dce2ec" },
             // Pedestrian corridor cleanly running between Building L/Jaguar Gym and Courts/East Complex
@@ -221,23 +219,26 @@
         }
 
         // 1B. Main Campus Vehicle Road Network
-        // Wide boulevard from Entrada Principal (south) up to Tercer Acceso (north-west)
-        const westAvenuePath = "M 274 762 L 274 702 C 270 595, 256 465, 240 340 C 228 242, 220 164, 218 92";
-        // Smooth tapered transition around Tercer Acceso into the northern perimeter arch
-        const northArchPath = "M 218 92 L 218 74 C 218 42, 258 22, 376 17 L 659 15";
+        // Wide boulevard from Entrada Principal (south) straight up into the smooth NW bend
+        const westAvenuePath = "M 274 762 L 274 702 C 270 595, 256 465, 240 340 C 228 242, 220 164, 218 106";
+        // Seamless single-piece tapered NW bend (40px curb -> 28px curb, zero notch & zero seam)
+        const nwBendCurb = "M 198 108 C 198 44, 240 6, 376 3 L 376 31 C 266 34, 236 56, 238 108 Z";
+        const nwBendFill = "M 200 108 C 200 46, 242 8, 376 5 L 376 29 C 264 32, 234 54, 236 108 Z";
+        const nwBendDash = "M 218 108 C 218 46, 256 20, 376 17";
+        // Northern straight perimeter road (Behind P -> Top T-Junction) & Camino Segundo Acceso (Jaguar Stadium Road)
+        const northStraightPath = "M 374 17 L 659 15";
+        const secondAccessRoadPath = "M 659 15 L 1138 14";
+        // Tercer Acceso (clean flat-ended rectangular security access stub branching west — zero rounded nub)
         const tercerAccesoPath = "M 218 74 L 156 74";
-        const otherMainPaths = [
-            // Camino Segundo Acceso (continuing east from Top T-Junction)
-            "M 659 15 L 1140 12",
-            // South Internal Ring (Dead-horizontal South Avenue -> SE rounded curve -> Central Spine North -> Top T-Junction)
-            "M 274 702 Q 274 696 292 696 L 692 696 Q 720 696 720 668 L 720 430 C 722 345, 692 270, 676 185 L 659 15",
-            // SE Branch connecting SE Curve -> Building I Parking Lot -> Jaguar Center Parking
-            "M 708 696 Q 724 742 756 744 L 850 744"
-        ];
+        // South Avenue + lower Spine Road (up to y=430 where the widened Building O Spine Road begins)
+        const southRingPath = "M 274 702 Q 274 696 292 696 L 692 696 Q 720 696 720 668 L 720 430";
+        // SE Branch connecting SE Curve -> Building I Parking Lot -> Jaguar Center Parking
+        const seBranchPath = "M 708 696 Q 724 742 756 744 L 850 744";
 
-        // Smooth tapered collar joining the 36px West Avenue cleanly into the 24px North Arch at Tercer Acceso (no round-cap bump)
-        const nwTaperCurb = "M 198 92 C 198 72, 200 54, 212 40 L 228 50 C 232 62, 236 76, 238 92 Z";
-        const nwTaperFill = "M 200 92 C 200 72, 202 55, 214 42 L 226 51 C 230 63, 234 77, 236 92 Z";
+        // Widened Central Spine Road past Building O (curves closely along O's east facade & swells gracefully east for integrated 14-stall parking bay)
+        const spineOCurb = "M 647 15 L 646 92 C 644 148, 645 206, 656 262 C 668 312, 704 355, 708 432 L 732 432 C 730 355, 708 302, 706 250 C 704 185, 696 125, 675 75 L 671 15 Z";
+        const spineOFill = "M 649 15 L 648 92 C 646 148, 647 206, 658 262 C 670 312, 706 355, 710 432 L 730 432 C 728 355, 706 302, 704 250 C 702 185, 694 125, 673 75 L 669 15 Z";
+        const spineODash = "M 659 15 L 660 95 C 659 155, 661 212, 672 270 C 685 320, 718 365, 720 430";
 
         // Smooth concave-filleted driveway aprons opening the road curb cleanly into every adjacent parking lot & drop-off bay
         const flaredAprons = [
@@ -251,6 +252,8 @@
             "M 228 179 Q 238 179 237 170 L 240 179 L 254 179 L 254 214 L 244 214 Q 234 214 234 224 L 226 218 Z",
             // Behind Building P Parking open NW throat off North Arch
             "M 344 16 L 434 15 L 434 30 L 344 28 Z",
+            // North Sports Parking open driveway off Camino Segundo Acceso (Jaguar Stadium Road)
+            "M 806 14 L 838 14 Q 832 22 832 46 L 812 46 Q 812 22 806 14 Z",
             // Central Parking & Crosswalk wide driveway throat between Plaza Chilamates and Building A drop-off
             "M 244 344 L 332 344 L 332 394 L 252 394 Z",
             // Building A curved drive-through drop-off bay seamless connection to West Avenue
@@ -265,45 +268,57 @@
         ];
 
         // Pass 1: Continuous outer road & driveway curb casing (#9aa8be)
-        const roadCurb = el("g", { class: "main-road-curb", fill: "none", stroke: "#9aa8be", "stroke-linecap": "round", "stroke-linejoin": "round" }, layer);
-        el("path", { d: westAvenuePath, "stroke-width": 40, "stroke-linecap": "butt" }, roadCurb);
-        el("path", { d: northArchPath, "stroke-width": 28 }, roadCurb);
+        const roadCurb = el("g", { class: "main-road-curb", fill: "none", stroke: "#9aa8be", "stroke-linecap": "butt", "stroke-linejoin": "round" }, layer);
+        el("path", { d: westAvenuePath, "stroke-width": 40 }, roadCurb);
+        el("path", { d: nwBendCurb, fill: "#9aa8be", stroke: "none" }, roadCurb);
+        el("path", { d: northStraightPath, "stroke-width": 28 }, roadCurb);
+        el("path", { d: secondAccessRoadPath, "stroke-width": 28 }, roadCurb);
         el("path", { d: tercerAccesoPath, "stroke-width": 26 }, roadCurb);
-        el("path", { d: nwTaperCurb, fill: "#9aa8be", stroke: "none" }, roadCurb);
-        for (const d of otherMainPaths) {
-            el("path", { d, "stroke-width": 24 }, roadCurb);
-        }
-        // Subtle curb border around flared driveway throats (broken cleanly inside by Pass 2 asphalt fill)
+        el("path", { d: southRingPath, "stroke-width": 24 }, roadCurb);
+        el("path", { d: seBranchPath, "stroke-width": 24, "stroke-linecap": "round" }, roadCurb);
+        el("path", { d: spineOCurb, fill: "#9aa8be", stroke: "none" }, roadCurb);
         for (const d of flaredAprons) {
             el("path", { d, fill: "#9aa8be", stroke: "#9aa8be", "stroke-width": 3, "stroke-linejoin": "round" }, roadCurb);
         }
 
         // Pass 2: Seamless road & driveway asphalt fill (#bcc6d6) — automatically opens every intersection & parking mouth
-        const roadFill = el("g", { class: "main-road-asphalt", fill: "none", stroke: "#bcc6d6", "stroke-linecap": "round", "stroke-linejoin": "round" }, layer);
-        el("path", { d: westAvenuePath, "stroke-width": 36, "stroke-linecap": "butt" }, roadFill);
-        el("path", { d: northArchPath, "stroke-width": 24 }, roadFill);
+        const roadFill = el("g", { class: "main-road-asphalt", fill: "none", stroke: "#bcc6d6", "stroke-linecap": "butt", "stroke-linejoin": "round" }, layer);
+        el("path", { d: westAvenuePath, "stroke-width": 36 }, roadFill);
+        el("path", { d: nwBendFill, fill: "#bcc6d6", stroke: "none" }, roadFill);
+        el("path", { d: northStraightPath, "stroke-width": 24 }, roadFill);
+        el("path", { d: secondAccessRoadPath, "stroke-width": 24 }, roadFill);
         el("path", { d: tercerAccesoPath, "stroke-width": 22 }, roadFill);
-        el("path", { d: nwTaperFill, fill: "#bcc6d6", stroke: "none" }, roadFill);
-        for (const d of otherMainPaths) {
-            el("path", { d, "stroke-width": 20 }, roadFill);
-        }
+        el("path", { d: southRingPath, "stroke-width": 20 }, roadFill);
+        el("path", { d: seBranchPath, "stroke-width": 20, "stroke-linecap": "round" }, roadFill);
+        el("path", { d: spineOFill, fill: "#bcc6d6", stroke: "none" }, roadFill);
         for (const d of flaredAprons) {
             el("path", { d, fill: "#bcc6d6", stroke: "none" }, roadFill);
         }
 
+        // Integrated Building O Roadside Parking Stalls (14 perpendicular stalls painted directly inside the widened Spine Road east belly)
+        const oStalls = el("g", { id: "parkingLotEastO", class: "parking-lines", stroke: "#ffffff", "stroke-width": 1.35, "stroke-linecap": "round", fill: "none" }, layer);
+        const oRailPts = [];
+        const oCount = 14;
+        for (let i = 0; i <= oCount; i++) {
+            const t = i / oCount;
+            const y = 136 + t * 136; // y = 136..272 along widened east shoulder
+            // Subtle convex east rail hugging 3-4px inside the widened Spine Road east curb
+            const xRight = 691 + 10 * Math.sin(t * Math.PI * 0.68) + 2.5 * t;
+            oRailPts.push(`${xRight.toFixed(1)},${y.toFixed(1)}`);
+            el("line", { x1: (xRight - 15).toFixed(1), y1: y.toFixed(1), x2: xRight.toFixed(1), y2: y.toFixed(1) }, oStalls);
+        }
+        el("polyline", { points: oRailPts.join(" ") }, oStalls);
+
         // Smooth paved shoulder & curved drop-off entry blending Building A's front bay + Bus Lay-By seamlessly into West Avenue
         const layBy = el("g", { id: "mainEntranceLayBy" }, layer);
-        // Continuous paved shoulder along east side of West Avenue from Building A drop-off down to Main Entrance
         el("path", {
             d: "M 262 476 L 296 476 L 318 686 L 284 686 Z",
             fill: "#bcc6d6"
         }, layBy);
-        // Darker asphalt pull-out bus/passenger lay-by bay cleanly beside the wider through-lane
         el("path", {
             d: "M 307 570 L 296 570 Q 289 570 290 579 L 298 675 Q 299 684 308 684 L 318 684 Z",
             fill: "#9faec4"
         }, layBy);
-        // Crisp white pull-out bay border + vertical curb line continuing straight north to Building A's drop-off exit
         el("path", {
             d: "M 294 475 L 307 570 L 296 570 Q 289 570 290 579 L 298 675 Q 299 684 308 684 L 318 684 L 307 570",
             fill: "none", stroke: "#ffffff", "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round"
@@ -312,17 +327,13 @@
         // Pass 3: Crisp white dashed road centerlines (drawn above asphalt & aprons so lanes read clearly)
         const roadDash = el("g", { class: "main-road-centerline", fill: "none", stroke: "#ffffff", "stroke-width": 1.35, "stroke-dasharray": "7,6", "stroke-linecap": "round", opacity: 0.78 }, layer);
         el("path", { d: westAvenuePath }, roadDash);
-        el("path", { d: northArchPath }, roadDash);
-        el("path", { d: tercerAccesoPath }, roadDash);
-        for (const d of otherMainPaths) {
-            el("path", { d }, roadDash);
-        }
-
-        // Tercer Acceso divided gatehouse island + crosswalk stripes
-        el("rect", { x: 166, y: 71, width: 22, height: 6, rx: 3, fill: "#e2e8f0", stroke: "#ffffff", "stroke-width": 1.2 }, layer);
-        el("rect", { x: 154, y: 61, width: 7, height: 26, rx: 1, fill: ROOF_BASE, stroke: ROOF_BORDER, "stroke-width": 1.4 }, layer);
-        el("line", { x1: 163, y1: 64, x2: 163, y2: 71, stroke: "#ffffff", "stroke-width": 1.4, "stroke-dasharray": "2,2" }, layer);
-        el("line", { x1: 163, y1: 77, x2: 163, y2: 84, stroke: "#ffffff", "stroke-width": 1.4, "stroke-dasharray": "2,2" }, layer);
+        el("path", { d: nwBendDash }, roadDash);
+        el("path", { d: northStraightPath }, roadDash);
+        el("path", { d: secondAccessRoadPath }, roadDash);
+        el("path", { d: "M 216 74 L 190 74" }, roadDash); // Short entry guide into Tercer Acceso divider
+        el("path", { d: southRingPath }, roadDash);
+        el("path", { d: seBranchPath }, roadDash);
+        el("path", { d: spineODash }, roadDash);
     }
 
     // ----------------------------------------------------------------------------
@@ -454,12 +465,7 @@
             addStallRow(l, 768, 90, 876, 90, 12, 0, -14, true);
         });
 
-        // 2.8 East & Central-Spine Parking Lots (Shifted +14px cleanly alongside spine road)
-        makeLot("parkingLotEastO", "path", {
-            d: "M 678 138 L 696 138 L 708 274 L 690 274 Z"
-        }, (_, l) => {
-            addStallRow(l, 693, 144, 705, 268, 14, -13, 0, true);
-        });
+        // 2.8 East & Central-Spine Parking Lots (Building O roadside stalls are now integrated directly into the widened Spine Road)
         // Parking Lot on Right (Compass-West) Side of Buildings G & F (shifted +12px)
         makeLot("parkingLotWestGF", "path", {
             d: "M 630 486 L 686 476 L 708 476 L 708 562 L 692 578 L 630 578 Z"
@@ -697,8 +703,10 @@
         // 4C-end: restore pool line right before 4D terrace pads
         el("line", { x1: 391, y1: 489, x2: 419, y2: 489, stroke: "#ffffff", "stroke-width": 0.8, opacity: 0.75 }, pool);
 
-        // 4D. Architectural Paved Courtyard Pads (Building M patio, E-to-G/F terrace, Building I apron — shifted with east campus)
+        // 4D. Architectural Paved Courtyard Pads (Building O roadside walkway, Building M patio, E-to-G/F terrace, Building I apron)
         const pads = el("g", { id: "campusTerracePads", "pointer-events": "none" }, layer);
+        // Paved pedestrian terrace directly connecting Building O's east facade & north CIAR front to the widened Spine Road
+        el("path", { d: "M 586 146 L 647 146 C 646 184, 648 222, 656 260 L 608 260 L 608 240 L 586 240 Z", fill: "#dfe5ec", stroke: "#cbd5e1", "stroke-width": 1 }, pads);
         el("rect", { x: 584, y: 400, width: 72, height: 72, rx: 2, fill: "#cbd5e1", opacity: 0.6 }, pads);  // Behind M
         el("rect", { x: 548, y: 488, width: 32, height: 92, rx: 2, fill: "#cbd5e1", opacity: 0.65 }, pads); // Between E & G/F
         el("rect", { x: 752, y: 584, width: 68, height: 118, rx: 2, fill: "#cbd5e1", opacity: 0.55 }, pads); // Around Building I
@@ -924,6 +932,27 @@
         // Main South Gate (Entrada Principal — centered on wider West Avenue)
         const gate = el("g", { class: "bldg-shape", "data-node": "mainParking", "data-bldg": "ENTRADA" }, layer);
         el("rect", { x: 248, y: 760, width: 52, height: 18, fill: ROOF_BORDER, stroke: ROOF_BORDER, "stroke-width": 2, filter: "url(#bldgShadow)" }, gate);
+
+        // Third Access Gatehouse (Tercer Acceso — clean squared-off security checkpoint, clickable navigation node)
+        const thirdGate = el("g", { id: "thirdAccessGate", class: "bldg-shape", "data-node": "northGate", "data-bldg": "3° ACCESO" }, layer);
+        // Transparent clickable hit target covering the full Tercer Acceso entry stub
+        el("rect", { x: 148, y: 58, width: 68, height: 32, fill: "transparent" }, thirdGate);
+        // Clean squared rectangular security gatehouse canopy flush with the flat road end (zero rounded protrusion)
+        el("rect", { x: 150, y: 59, width: 10, height: 30, fill: ROOF_BASE, stroke: ROOF_BORDER, "stroke-width": 2, filter: "url(#bldgShadow)" }, thirdGate);
+        el("rect", { x: 150, y: 59, width: 5, height: 30, fill: ROOF_LIGHT }, thirdGate);
+        el("rect", { x: 150, y: 59, width: 10, height: 30, fill: "none", stroke: ROOF_BORDER, "stroke-width": 2 }, thirdGate);
+        // Crisp rectangular center security divider island & stop bars
+        el("rect", { x: 168, y: 71.5, width: 20, height: 5, rx: 1, fill: "#e2e8f0", stroke: "#64748b", "stroke-width": 1 }, thirdGate);
+        el("line", { x1: 164, y1: 63, x2: 164, y2: 70, stroke: "#ffffff", "stroke-width": 1.5, "stroke-dasharray": "2,2" }, thirdGate);
+        el("line", { x1: 164, y1: 78, x2: 164, y2: 85, stroke: "#ffffff", "stroke-width": 1.5, "stroke-dasharray": "2,2" }, thirdGate);
+
+        // Second Access / Camino Estadio Jaguar (Jaguar Stadium Road — clickable navigation node + clean squared end gate)
+        const secondGate = el("g", { id: "secondAccessGate", class: "bldg-shape", "data-node": "northeastGate", "data-bldg": "2° ACCESO" }, layer);
+        // Wide clickable hit zone spanning Jaguar Stadium Road (Camino Segundo Acceso) above Baseball Stadium
+        el("rect", { x: 740, y: 0, width: 406, height: 26, fill: "transparent" }, secondGate);
+        // Crisp squared access gatehouse bar flush at the eastern end of Camino Segundo Acceso
+        el("rect", { x: 1130, y: 1, width: 12, height: 26, fill: ROOF_BORDER, stroke: ROOF_BORDER, "stroke-width": 1.8, filter: "url(#bldgShadow)" }, secondGate);
+        el("line", { x1: 1126, y1: 5, x2: 1126, y2: 23, stroke: "#ffffff", "stroke-width": 1.4, "stroke-dasharray": "2,2" }, secondGate);
     }
 
     // ----------------------------------------------------------------------------
@@ -1029,7 +1058,7 @@
             "M 442 226 L 442 198",
             "M 538 294 L 526 294 L 526 222 L 534 222 L 534 198",
             "M 574 148 L 574 184 L 474 186",
-            "M 638 200 L 670 200",
+            "M 638 206 L 668 206",
 
             // Zone Central (A, B, C, K, E -> Meeting Point 4 in Plaza Central Ruben Dario)
             "M 352 472 L 352 484 L 440 484 L 444 494",
@@ -1104,7 +1133,7 @@
         const pointsGroup = el("g", { id: "emergencySafePointsGroup" }, layer);
         const safePoints = [
             { cx: 880, cy: 194, r: 18 },   // Baseball Stadium Outfield
-            { cx: 686, cy: 200, r: 10.5 }, // East of Building O (on roadside parking bay)
+            { cx: 684, cy: 206, r: 10.5 }, // East of Building O (on integrated roadside parking bay)
             { cx: 918, cy: 446, r: 21 },   // Soccer Field Center
             { cx: 448, cy: 514, r: 18 },   // Plaza Central Ruben Dario
             { cx: 663, cy: 518, r: 10.5 }  // G/F Parking Aisle (West of Pill Median)
