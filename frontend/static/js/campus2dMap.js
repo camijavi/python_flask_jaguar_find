@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio K • Cafetería Central & Terrazas",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 285, y: 582 },
+            anchor: { x: 243, y: 598 },
             floors: [
                 { floor: "Piso 1", rooms: "Comedor Estudiantil Central, Kioscos Gourmet, Terrazas Techadas, Cajeros Automáticos Banpro / BAC." }
             ]

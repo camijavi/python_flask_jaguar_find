@@ -103,7 +103,7 @@
                 "buildingH": { x: 572, y: 383 },
                 "buildingI": { x: 653, y: 724 },
                 "buildingJ": { x: 297, y: 287 },
-                "buildingK": { x: 285, y: 582 },
+                "buildingK": { x: 243, y: 598 },
                 "buildingL": { x: 842, y: 502 },
                 "buildingM": { x: 567, y: 460 },
                 "buildingN": { x: 350, y: 217 },

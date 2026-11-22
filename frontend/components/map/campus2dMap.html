@@ -125,7 +125,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 <rect x="514" y="605" width="54" height="46" />
             </clipPath>
             <clipPath id="clipBldgK">
-                <polygon points="250,545 305,545 330,590 315,620 250,620 250,580" />
+                <polygon points="220,575 266,575 266,583 296,627 296,653 272,653 272,630 267,630 267,653 220,653" />
             </clipPath>
             <clipPath id="clipBldgI">
                 <path d="M 633 640 L 695 640 L 695 785 L 615 785 L 615 692 L 645 692 L 645 756 L 661 756 L 661 672 L 633 672 Z" />
@@ -175,7 +175,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <!-- West Parking Bay -->
             <rect x="75" y="270" width="125" height="340" rx="8" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
             <!-- South Main Parking -->
-            <rect x="250" y="660" width="360" height="95" rx="8" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
+            <rect x="220" y="675" width="390" height="80" rx="8" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
             <!-- North Parking (near Copernicus P) -->
             <rect x="270" y="90" width="150" height="40" rx="6" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
             <!-- North Parking (near Baseball Stadium) -->
@@ -271,7 +271,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 <line x1="90" y1="440" x2="180" y2="440" />
                 <line x1="90" y1="500" x2="180" y2="500" />
                 <line x1="90" y1="560" x2="180" y2="560" />
-                <line x1="280" y1="710" x2="580" y2="710" />
+                <line x1="240" y1="715" x2="580" y2="715" />
             </g>
 
             <!-- Circular Landscape Trees (Matching Official Signage Rows) -->
@@ -731,23 +731,33 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <!-- 4K. EDIFICIO K (CAFETERÍA CENTRAL & PLAZA RUBÉN DARÍO) -->
             <g class="bldg-shape" data-node="buildingK" data-bldg="K" filter="url(#bldgShadow)">
                 <!-- Plaza Central Circular Lawn -->
-                <circle cx="360" cy="580" r="38" fill="#22c55e" stroke="#16a34a" stroke-width="2" />
-                <circle cx="360" cy="580" r="15" fill="#15803d" />
-                <!-- Cafeteria K (Angled Polygon) -->
+                <circle cx="348" cy="614" r="32" fill="#22c55e" stroke="#16a34a" stroke-width="2" />
+                <circle cx="348" cy="614" r="13" fill="#15803d" />
+                <!-- Cafeteria K (Dogleg Footprint with Angled Annex matching official signage) -->
                 <g clip-path="url(#clipBldgK)">
-                    <!-- Base: #1da495 -->
-                    <polygon points="250,545 305,545 330,590 315,620 250,620 250,580" fill="#1da495" />
-                    <!-- Lightning slope: #48b2a9 -->
-                    <polygon points="250,545 305,545 330,590 280,575" fill="#48b2a9" />
-                    <!-- Shadow Triangle: #1f8383 -->
-                    <polygon points="250,545 250,620 280,575" fill="#1f8383" />
+                    <!-- Base Teal Roof: #1da495 -->
+                    <polygon points="220,575 266,575 266,583 296,627 296,653 272,653 272,630 267,630 267,653 220,653" fill="#1da495" />
+                    <!-- Lightning / Light Roof Slopes: #48b2a9 -->
+                    <!-- Main block left slope -->
+                    <polygon points="220,575 243,588 243,635 220,653" fill="#48b2a9" />
+                    <!-- Right wing outer northeast slope -->
+                    <polygon points="266,583 296,627 296,653 284,643 284,627 266,605" fill="#48b2a9" />
+                    <!-- Shadow / Hip Roof Facets: #1f8383 -->
+                    <!-- Main block top hip triangle -->
+                    <polygon points="220,575 266,575 243,588" fill="#1f8383" />
+                    <!-- Main block bottom inverted-V hip triangle -->
+                    <polygon points="220,653 267,653 243,635" fill="#1f8383" />
+                    <!-- Right wing bottom inverted-V hip triangle -->
+                    <polygon points="272,653 296,653 284,643" fill="#1f8383" />
+                    <!-- Green Corridor Walkway through right wing matching official map signage -->
+                    <line x1="266" y1="606" x2="296" y2="606" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.85" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
-                <polygon points="250,545 305,545 330,590 315,620 250,620 250,580" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <polygon points="220,575 266,575 266,583 296,627 296,653 272,653 272,630 267,630 267,653 220,653" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <!-- Badge K (Amber) -->
                 <g class="billboard-badge">
-                    <rect x="265" y="560" width="22" height="22" class="badge-amber" />
-                    <text x="276" y="571" class="badge-text">K</text>
+                    <rect x="232" y="587" width="22" height="22" class="badge-amber" />
+                    <text x="243" y="598" class="badge-text">K</text>
                 </g>
             </g>
 
@@ -786,8 +796,8 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
         <!-- ================================================================== -->
         <g id="campus2dWalkways" fill="none" stroke="#64748b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6,4" opacity="0.65">
             <!-- Walkways connecting Parking -> K -> A -> B/C -> E/G/F -> I -> Sports -->
-            <path d="M 340 785 L 340 620 L 280 580" />
-            <path d="M 280 545 L 250 520 L 250 500" />
+            <path d="M 340 785 L 340 606 L 243 606" />
+            <path d="M 243 575 L 250 520 L 250 500" />
             <path d="M 250 500 L 250 390 L 250 315 L 225 287 L 275 287 L 330 287" />
             <path d="M 250 287 L 250 217 L 350 217 L 350 128" />
             <path d="M 250 410 L 515 410" />
