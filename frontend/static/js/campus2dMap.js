@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio F • FACEE (Ciencias Económicas)",
             badgeClass: "badge-magenta",
             badgeBg: "#be185d",
-            anchor: { x: 541, y: 628 },
+            anchor: { x: 541, y: 661 },
             floors: [
                 { floor: "Piso 1", rooms: "Salón de Profesores FACEE, Dirección de Postgrado y Formación Continua, Decanatura FACEE, Aulas F101-F104." }
             ]
@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio G • Derecho & Auditorio",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 541, y: 558 },
+            anchor: { x: 541, y: 591 },
             floors: [
                 { floor: "Piso 1", rooms: "Decanatura FCJ, Centro de Mediación, Language Center, UAM College, Dirección de Relaciones Internacionales." },
                 { floor: "Piso 2", rooms: "Auditorio Central Rubén Darío, Sala de Juicios Orales Simulados." }
@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio K • Cafetería Central & Terrazas",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 243, y: 598 },
+            anchor: { x: 293, y: 598 },
             floors: [
                 { floor: "Piso 1", rooms: "Comedor Estudiantil Central, Kioscos Gourmet, Terrazas Techadas, Cajeros Automáticos Banpro / BAC." }
             ]
