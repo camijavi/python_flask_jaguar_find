@@ -2,62 +2,37 @@
 ================================================================================
 CAMPUS ORIENTATION COMPASS COMPONENT (COMPASS.HTML)
 ================================================================================
-Official UAM Campus Orientation Compass Rose:
-- Positioned on the bottom-left of the 2D / 2.5D Vector Campus Map
-- Features clean rounded frosted card housing with subtle elevation shadow
-- Matches official campus reference: South-facing primary axis (blue pointer & 's' badge)
-- True responsive compass behavior: dynamically adjusts in real time when user rotates,
-  pans, pinches, or changes perspective in 2D / 2.5D mode
-- Fully interactive: clicking reorients & centers map; dragging allows manual rotation
+JaguarFind Circular Campus Orientation Compass:
+- Floats cleanly inside the right-edge map control rail across all screen sizes
+- Official UAM Ocean Blue & Jaguar Gold pointer with crisp teal tick dial
+- Dynamically rotates in real time with 2D rotation & 2.5D Heading-Up camera
+- Interactive: tap to reorient smoothly to 0°; drag to manually rotate map
 ================================================================================
 -->
 
 <div id="campusCompass"
-     class="campus-compass absolute bottom-4 left-4 z-20 flex items-center justify-center p-2 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-md shadow-slate-900/10 transition-transform duration-200 hover:scale-105 pointer-events-auto select-none cursor-pointer"
+     class="campus-compass w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/95 backdrop-blur-md border border-brand-200/80 shadow-lg shadow-brand-900/12 flex items-center justify-center transition-transform duration-200 hover:scale-105 active:scale-95 pointer-events-auto select-none cursor-pointer"
      title="{{ t('map.compass_orientation', default='Orientación del campus • Clic para centrar y reorientar') }}"
      aria-label="{{ t('map.compass_orientation', default='Orientación del campus') }}"
      role="button"
      tabindex="0">
-    <svg id="compassRose" class="w-14 h-14 sm:w-16 sm:h-16 compass-rose overflow-visible" viewBox="-36 -36 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <!-- Elevation drop shadow filter for circular compass dial -->
-            <filter id="compassSubtleShadow" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#0f172a" flood-opacity="0.08" />
-            </filter>
-        </defs>
+    <svg id="compassRose" class="w-9 h-9 sm:w-10 sm:h-10 compass-rose overflow-visible" viewBox="-34 -34 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Subtle outer UAM teal-tinted dial tick ring -->
+        <circle cx="0" cy="0" r="29" fill="#ffffff" stroke="#bae6fd" stroke-width="1.3" />
+        <circle cx="0" cy="0" r="25" fill="none" stroke="#99f6e4" stroke-width="2.2" stroke-dasharray="1.5 5.04" />
 
-        <!-- Base Fixed Circular Housing Rings -->
-        <circle cx="0" cy="0" r="31" fill="#ffffff" filter="url(#compassSubtleShadow)" />
-        <circle cx="0" cy="0" r="28" fill="none" stroke="#e2e8f0" stroke-width="1.2" />
-        <circle cx="0" cy="0" r="23" fill="none" stroke="#f1f5f9" stroke-width="1" />
-
-        <!-- Rotating Compass Dial Assembly (Needle + Cardinal Labels rotate together like a real compass card) -->
+        <!-- Rotating Compass Dial Assembly -->
         <g id="compassDial" style="transform-origin: 0px 0px; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
-            <!-- South Pointer (Official UAM Primary Axis - Vibrant Sky/Ocean Blue) -->
-            <polygon points="0,-19 -3.5,-3.5 0,0" fill="#0284c7" />
-            <polygon points="0,-19 3.5,-3.5 0,0" fill="#0369a1" />
-
-            <!-- North Pointer (Muted Silver / Slate) -->
-            <polygon points="0,19 -3.5,3.5 0,0" fill="#e2e8f0" />
-            <polygon points="0,19 3.5,3.5 0,0" fill="#94a3b8" />
-
-            <!-- East Pointer (Muted Silver / Slate) -->
-            <polygon points="-19,0 -3.5,-3.5 0,0" fill="#e2e8f0" />
-            <polygon points="-19,0 -3.5,3.5 0,0" fill="#94a3b8" />
-
-            <!-- West Pointer (Muted Silver / Slate) -->
-            <polygon points="19,0 3.5,-3.5 0,0" fill="#e2e8f0" />
-            <polygon points="19,0 3.5,3.5 0,0" fill="#94a3b8" />
-
-            <!-- Center Pivot Hub -->
-            <circle cx="0" cy="0" r="3.2" fill="#0284c7" stroke="#ffffff" stroke-width="1.2" />
-            <circle cx="0" cy="0" r="1.2" fill="#ffffff" />
-
-            <!-- Cardinal Direction Letter Labels (Lowercase, rotating in sync with needle) -->
-            <text x="0" y="-23.5" fill="#0284c7" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="800" text-anchor="middle" dominant-baseline="central">s</text>
-            <text x="0" y="24" fill="#64748b" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="800" text-anchor="middle" dominant-baseline="central">n</text>
-            <text x="-24" y="0" fill="#64748b" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="800" text-anchor="middle" dominant-baseline="central">e</text>
-            <text x="24" y="0" fill="#64748b" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="8.5" font-weight="800" text-anchor="middle" dominant-baseline="central">w</text>
+            <!-- Primary Campus South Axis Pointer (Official UAM Ocean Blue) -->
+            <polygon points="0,-18 -4.4,-2 0,-5" fill="#0284c7" />
+            <polygon points="0,-18 4.4,-2 0,-5" fill="#1e3a8a" />
+            <!-- Opposite Pointer (Campus Teal) -->
+            <polygon points="0,16 -3.5,2 0,5" fill="#5eead4" />
+            <polygon points="0,16 3.5,2 0,5" fill="#0f766e" />
+            <!-- Center Jaguar Gold Jewel Hub -->
+            <circle cx="0" cy="0" r="3.2" fill="#f59e0b" stroke="#ffffff" stroke-width="1.3" />
+            <!-- Compact Cardinal South Marker -->
+            <text x="0" y="-22.5" fill="#1e3a8a" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="7.8" font-weight="900" text-anchor="middle" dominant-baseline="central">S</text>
         </g>
     </svg>
 </div>

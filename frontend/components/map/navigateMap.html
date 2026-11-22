@@ -208,17 +208,12 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
 </style>
 
 <!-- ====================================================================== -->
-<!-- 1. MOBILE FLOATING DIRECTIONS BUTTON (Shows/Hides Navigation Sheet)    -->
-<!-- Replaces text bar with the iconic Directions Arrow button               -->
+<!-- 1. LEGACY MOBILE DIRECTIONS FAB (Superseded by Waze Orange FAB + Dock) -->
 <!-- ====================================================================== -->
 <button id="btnToggleDirections" type="button" 
-        class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 active:scale-95 text-white w-16 h-16 sm:w-18 sm:h-18 rounded-full shadow-2xl shadow-brand-900/35 border-2 border-white/30 flex items-center justify-center transition-all cursor-pointer pointer-events-auto lg:hidden directions-btn-animated group" 
-        title="{{ t('map.directions', default='Cómo llegar / Indicaciones') }}" 
-        aria-label="{{ t('map.directions', default='Cómo llegar / Indicaciones') }}">
-    <!-- Directions Diamond Turn Arrow SVG (Universal Google Maps / Navigation icon) -->
-    <svg class="w-9 h-9 sm:w-10 sm:h-10 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/>
-    </svg>
+        class="hidden" 
+        aria-hidden="true"
+        tabindex="-1">
 </button>
 
 <!-- ====================================================================== -->
@@ -442,8 +437,8 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
         <div class="pt-2 border-t border-slate-100">
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin text-xs" id="categoryChipsContainer">
                 
-                <!-- Walking mode pill (Active Google Maps style mode indicator) -->
-                <button type="button" id="btnModeWalking" class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-brand-900 text-white shadow-xs inline-flex items-center gap-1.5 shrink-0" title="{{ t('map.standard_route', default='Ruta peatonal óptima') }}">
+                <!-- Walking mode pill (Active Light-Theme Sky-Blue mode indicator) -->
+                <button type="button" id="btnModeWalking" class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-sky-500 text-white shadow-xs inline-flex items-center gap-1.5 shrink-0" title="{{ t('map.standard_route', default='Ruta peatonal óptima') }}">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 10l2 2 2-2m-2 2v6m-4 2l4-2 4 2"></path></svg>
                     <span>{{ t('map.mode_walking', default='A pie') }}</span>
                 </button>
@@ -455,7 +450,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                 </button>
 
                 <!-- Category Chips -->
-                <button type="button" data-category="" class="category-chip active whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-brand-900 text-white shadow-2xs inline-flex items-center gap-1 shrink-0">
+                <button type="button" data-category="" class="category-chip active whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-sky-500 text-white shadow-2xs inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span>{{ t('map.categories.all', default='All') }}</span>
                 </button>
@@ -495,7 +490,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
         <!-- ================================================================== -->
         <div class="pt-1.5">
             <button id="btnCalculateRoute" type="button" 
-                    class="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-900 via-brand-700 to-brand-600 hover:from-brand-800 text-white font-bold text-xs shadow-md shadow-brand-900/15 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer">
+                    class="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 hover:from-sky-600 hover:via-blue-600 hover:to-sky-700 text-white font-bold text-xs shadow-md shadow-sky-500/25 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer">
                 <!-- Navigation Route Arrow Icon -->
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                 <span>{{ t('map.calculate_route', default='Find Optimal Route') }}</span>
@@ -509,10 +504,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
 <!-- ====================================================================== -->
 <!-- 3. ROUTE RESULTS CARD                                                  -->
 <!-- Desktop: Rendered below form in custom scroller                        -->
-<!-- Mobile: Floating Google Maps Bottom Sheet                              -->
+<!-- Mobile: Opens cleanly ABOVE the Waze Bottom Dock when tapping "Pasos"  -->
 <!-- ====================================================================== -->
 <div id="routeResultsCard" 
-     class="fixed bottom-3 inset-x-3 sm:inset-x-6 max-w-lg mx-auto z-40 bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-slate-200/90 p-3.5 pointer-events-auto gmaps-slide-up lg:static lg:inset-auto lg:max-w-none lg:mt-3 lg:bg-white lg:rounded-2xl lg:shadow-md lg:border lg:border-slate-200/80 lg:p-4.5 hidden">
+     class="fixed bottom-[72px] inset-x-2.5 sm:inset-x-6 max-w-lg mx-auto z-40 bg-white rounded-2xl shadow-[0_10px_34px_rgba(15,23,42,0.18)] border border-slate-200/90 p-3.5 pointer-events-auto gmaps-slide-up lg:static lg:inset-auto lg:max-w-none lg:mt-3 lg:bg-white lg:rounded-2xl lg:shadow-md lg:border lg:border-slate-200/80 lg:p-4.5 hidden">
     
     <!-- Summary Metrics Banner (Tap to re-expand search/planner on mobile) -->
     <div id="routeSummaryBanner" class="p-3 bg-brand-50/80 border border-brand-100 rounded-xl flex items-center justify-between mb-2 shadow-2xs cursor-pointer lg:cursor-default" title="Toca para editar ruta">
@@ -653,10 +648,14 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!navComponent) return;
         navComponent.classList.remove("bottom-sheet-expanded");
         navComponent.classList.add("bottom-sheet-collapsed");
-        
-        // Restore directions button only if route results card is NOT currently displayed
-        if (btnToggleDirections && (!routeResultsCard || routeResultsCard.classList.contains("hidden"))) {
-            btnToggleDirections.classList.remove("hidden");
+    }
+
+    function toggleMobileStepsCard(forceOpen) {
+        if (!routeResultsCard || !state.currentRoute) return;
+        const shouldOpen = forceOpen !== undefined ? forceOpen : routeResultsCard.classList.contains("hidden");
+        routeResultsCard.classList.toggle("hidden", !shouldOpen);
+        if (shouldOpen && routeStepsWrapper) {
+            routeStepsWrapper.classList.remove("hidden");
         }
     }
 
@@ -670,10 +669,11 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Expose helpers globally so other components (e.g. 2D map popover) can trigger them
+    // Expose helpers globally so other components (e.g. 2D map popover & Waze HUD) can trigger them
     window.openMobileBottomSheet = openMobileBottomSheet;
     window.closeMobileBottomSheet = closeMobileBottomSheet;
     window.toggleMobileNavigation = toggleMobileNavigation;
+    window.toggleMobileStepsCard = toggleMobileStepsCard;
 
     // Toggle button opens/hides navigation sheet on small devices
     if (btnToggleDirections) {
@@ -697,7 +697,11 @@ document.addEventListener("DOMContentLoaded", function() {
                         !e.target.closest("#btnSetBldgOrigin") && 
                         !e.target.closest("#btnSetBldgDestination") &&
                         !e.target.closest("#navSidebarToggle") &&
-                        !e.target.closest("#mapSidebarColumn")) {
+                        !e.target.closest("#mapSidebarColumn") &&
+                        !e.target.closest("#wazeOrangeFab") &&
+                        !e.target.closest("#btnWazeSearch") &&
+                        !e.target.closest("#wazeBottomCenter") &&
+                        !e.target.closest("#wazeActionTray")) {
                         closeMobileBottomSheet();
                     }
                 }
@@ -931,11 +935,11 @@ document.addEventListener("DOMContentLoaded", function() {
     categoryChips.forEach(chip => {
         chip.addEventListener("click", function() {
             categoryChips.forEach(c => {
-                c.classList.remove("bg-brand-900", "text-white");
+                c.classList.remove("bg-sky-500", "text-white");
                 c.classList.add("bg-slate-100", "text-slate-700");
             });
             this.classList.remove("bg-slate-100", "text-slate-700");
-            this.classList.add("bg-brand-900", "text-white");
+            this.classList.add("bg-sky-500", "text-white");
 
             const category = this.getAttribute("data-category");
             state.selectedCategory = category;
@@ -1092,8 +1096,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 8. Calculate Route via /api/map/route
     async function calculateRoute() {
-        const origin = state.originPlaceId || originInput.value.trim() || state.originNodeId;
-        const dest = state.destinationPlaceId || destinationInput.value.trim() || state.destinationNodeId;
+        // Smart fallback: if user typed a building/place name without clicking autocomplete, resolve top match automatically
+        let origin = state.originPlaceId || state.originNodeId || originInput.value.trim();
+        if (!state.originPlaceId && !state.originNodeId && originInput.value.trim()) {
+            const oMatches = getMatches(originInput.value.trim(), "");
+            if (oMatches.length > 0) {
+                origin = oMatches[0].id || oMatches[0].targetNodeId || origin;
+            }
+        }
+        let dest = state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim();
+        if (!state.destinationPlaceId && !state.destinationNodeId && destinationInput.value.trim()) {
+            const dMatches = getMatches(destinationInput.value.trim(), state.selectedCategory);
+            if (dMatches.length > 0) {
+                dest = dMatches[0].id || dMatches[0].targetNodeId || dest;
+            }
+        }
 
         if (!origin || !dest) {
             alert(window.t('map.missing_inputs', 'Por favor ingresa tu origen y destino.'));
@@ -1124,10 +1141,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 window.lastJaguarRouteData = routeData;
                 displayRouteResults(routeData);
 
-                // On mobile, collapse sheet and show floating bottom route card
+                // On mobile, collapse planner sheet and keep the floating steps card tucked cleanly away
+                // so the unified Waze bottom dock handles live ETA, audio, and step tray without overlap
                 if (window.innerWidth < 1024) {
                     closeMobileBottomSheet();
-                    if (btnToggleDirections) btnToggleDirections.classList.add("hidden");
+                    if (routeResultsCard) routeResultsCard.classList.add("hidden");
                 }
 
                 // Dispatch global event so the interactive SVG map draws the polyline!

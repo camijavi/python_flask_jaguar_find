@@ -1,5 +1,8 @@
 """
 placesCatalog.py
+"""
+
+from data.campusCategories import CampusCategory
 
 # Master list of all internal and external campus points of interest
 PLACES_CATALOG = [
@@ -1493,11 +1496,21 @@ PLACES_CATALOG = [
         "placeId": "jaguarGym",
         "name": "Gimnasio JAGUAR GYM",
         "category": CampusCategory.SPORTS,
-        "parentBuildingId": "jaguarCenter",
+        "parentBuildingId": "jaguarGym",
         "floorLevel": 1,
         "isAccessible": True,
-        "locationNotes": "Jaguar Center ground level.",
+        "locationNotes": "Jaguar Gym building, southeast of Jaguar Center.",
         "keywords": ["gimnasio", "gym", "pesas", "jaguar gym", "entrenar"]
+    },
+    {
+        "placeId": "physiotherapyClinic",
+        "name": "Fisioterapia / Physiotherapy",
+        "category": CampusCategory.MEDICAL_LAB,
+        "parentBuildingId": "physiotherapy",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Physiotherapy building, north of Jaguar Gym.",
+        "keywords": ["fisioterapia", "physiotherapy", "fisio", "terapia fisica", "rehabilitacion", "clinica fisioterapia"]
     },
     {
         "placeId": "baseballStadium",
@@ -1529,6 +1542,46 @@ PLACES_CATALOG = [
         "locationNotes": "Outdoor central plaza.",
         "keywords": ["chilamates", "fast point", "kiosko chilamates", "almuerzo aire libre"]
     },
+    {
+        "placeId": "jaguarJungleGarden",
+        "name": "Jaguar Jungle (Jardín & Senderos Centrales)",
+        "category": CampusCategory.FOOD_AREA,
+        "parentBuildingId": "jaguarJungle",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Shaded green garden area with walkways connecting Building O, Mi Ranchito, Building H, and the main internal road.",
+        "keywords": ["jaguar jungle", "jungle", "jungla", "jardin jaguar", "area verde", "sendero o h"]
+    },
+    {
+        "placeId": "miRanchitoPavilion",
+        "name": "Mi Ranchito (Ranchón Universitario)",
+        "category": CampusCategory.FOOD_AREA,
+        "parentBuildingId": "miRanchito",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Open-air rest and dining pavilion beside Jaguar Jungle, Building N, and Lab Digital FIA.",
+        "keywords": ["mi ranchito", "ranchito", "ranchon", "ranch", "kiosko ranchon", "descanso"]
+    },
+    {
+        "placeId": "labDigitalFiaRoom",
+        "name": "Lab Digital FIA (Laboratorio Digital de Ingeniería)",
+        "category": CampusCategory.FACULTY,
+        "parentBuildingId": "labDigitalFia",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "FIA Digital Laboratory located beside Building N, near Mi Ranchito and Área de Mesas.",
+        "keywords": ["lab digital fia", "laboratorio digital fia", "lab fia", "digital fia", "digital laboratory fia"]
+    },
+    {
+        "placeId": "areaDeMesasTerrace",
+        "name": "Área de Mesas (Terraza Exterior de Estudio)",
+        "category": CampusCategory.FOOD_AREA,
+        "parentBuildingId": "areaDeMesas",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Shaded outdoor tables and study terrace between Lab Digital FIA, Central Parking, and Building C.",
+        "keywords": ["area de mesas", "área de mesas", "mesas", "mesas exteriores", "outdoor tables", "terraza mesas"]
+    },
 
     # -------------------------------------------------------------------------
     # PARKING LOTS & MAIN GATES
@@ -1542,6 +1595,26 @@ PLACES_CATALOG = [
         "isAccessible": True,
         "locationNotes": "Main southern vehicle and pedestrian gate.",
         "keywords": ["parqueo principal", "estacionamiento", "caseta sur", "entrada principal", "porton sur"]
+    },
+    {
+        "placeId": "thirdAccessRoad",
+        "name": "Tercer Acceso / Third Access (Portón Copérnico)",
+        "category": CampusCategory.PARKING_LOT,
+        "parentBuildingId": "northGate",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Northwest vehicle & pedestrian access gate beside Weather Station and Building P (Copernicus).",
+        "keywords": ["tercer acceso", "third access", "third access road", "acceso 3", "3er acceso", "entrada 3", "porton norte", "caseta norte", "acceso copernico"]
+    },
+    {
+        "placeId": "secondAccessRoad",
+        "name": "Segundo Acceso / Camino Estadio Jaguar (Second Access Road)",
+        "category": CampusCategory.PARKING_LOT,
+        "parentBuildingId": "northeastGate",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Northern vehicle & pedestrian road past Jaguar Baseball Stadium connecting Sports Parking and Building O.",
+        "keywords": ["segundo acceso", "second access", "camino segundo acceso", "second access road", "jaguar stadium road", "camino estadio jaguar", "acceso 2", "2do acceso", "entrada 2", "acceso deportivo", "porton deportes", "caseta noreste"]
     },
 
     # -------------------------------------------------------------------------

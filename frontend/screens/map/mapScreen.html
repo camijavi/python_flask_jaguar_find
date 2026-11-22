@@ -79,6 +79,8 @@
 {% endblock %}
 
 {% block scripts %}
+<!-- Declarative 2D Vector Map Renderer (Roads, Parking, Buildings, Landscaping, Emergency Layer) -->
+<script src="{{ url_for('static', filename='js/campusMapRenderer.js') }}"></script>
 <!-- Official 2D Vector Map and Directory Logic -->
 <script src="{{ url_for('static', filename='js/campus2dMap.js') }}"></script>
 <!-- 2.5D Perspective View and Turn-by-Turn Controller -->
