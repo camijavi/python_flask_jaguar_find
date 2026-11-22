@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Acceso Norte (Copérnico / FIA)",
             badgeClass: "badge-navy",
             badgeBg: "#64748b",
-            anchor: { x: 340, y: 60 },
+            anchor: { x: 240, y: 11 },
             floors: [
                 { floor: "Acceso", rooms: "Caseta de Vigilancia Norte, Acceso Vehicular Segundo Camino hacia Edificios P y O." }
             ]
@@ -294,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Acceso Noreste (Deportes)",
             badgeClass: "badge-navy",
             badgeBg: "#64748b",
-            anchor: { x: 720, y: 60 },
+            anchor: { x: 720, y: 11 },
             floors: [
                 { floor: "Acceso", rooms: "Portón de Ingreso a Complejo Deportivo y Parqueo de Deportes." }
             ]

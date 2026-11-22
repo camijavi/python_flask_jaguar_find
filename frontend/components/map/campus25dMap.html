@@ -24,10 +24,10 @@ Waze-Style 3D Navigation HUD & Cockpit Controls:
 
     <!-- Pitch / Tilt Angle Selector (Visible in 2.5D Mode) -->
     <div id="pitchControlGroup" class="hidden items-center border-l border-slate-200 pl-1.5 pr-0.5 gap-1">
-        <button id="btnPitch45" type="button" class="px-2 py-1 rounded-md text-[11px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors" title="Inclinación 45° (Vista aérea oblicua)">
+        <button id="btnPitch45" type="button" class="px-2 py-1 rounded-md text-[11px] font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors" title="Inclinación 45° (Vista aérea oblicua)">
             45°
         </button>
-        <button id="btnPitch52" type="button" class="px-2 py-1 rounded-md text-[11px] font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors" title="Inclinación 52° (Perspectiva Waze inmersiva)">
+        <button id="btnPitch52" type="button" class="px-2 py-1 rounded-md text-[11px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors" title="Inclinación 52° (Perspectiva Waze inmersiva)">
             52°
         </button>
     </div>
@@ -39,6 +39,14 @@ Waze-Style 3D Navigation HUD & Cockpit Controls:
                 <polygon points="12 2 19 21 12 17 5 21 12 2" stroke-width="2" stroke-linejoin="round"/>
             </svg>
             <span id="labelHeadingMode" class="hidden sm:inline">Rumbo</span>
+        </button>
+    </div>
+
+    <!-- Parking Lots Visibility Highlight Toggle (Visible in 2.5D Mode) -->
+    <div id="parkingControlGroup" class="hidden items-center border-l border-slate-200 pl-1.5">
+        <button id="btnToggleParkingHighlight" type="button" class="px-1.5 py-1 rounded-md text-slate-600 hover:bg-slate-100 hover:text-sky-600 transition-colors flex items-center gap-1 text-[11px] font-bold" title="Resaltar estacionamientos del campus en vista 2.5D">
+            <span class="w-4 h-4 rounded bg-sky-600 text-white text-[10px] font-black flex items-center justify-center leading-none">P</span>
+            <span class="hidden sm:inline">Parqueos</span>
         </button>
     </div>
 

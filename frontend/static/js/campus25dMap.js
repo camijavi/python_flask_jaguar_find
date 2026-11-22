@@ -17,7 +17,7 @@
         constructor() {
             // Waze-Style Navigation State
             this.is25dActive = false;
-            this.pitch = 48; // Gentle 48° pitch, authentic Waze perspective
+            this.pitch = 45; // Crisp 45° default (52° selectable via pill)
             this.heading = 0; // Rotation around Z axis (degrees)
             this.isHeadingUp = true;
             this.zoomScale = 2.2; // Mathematical close zoom so canvas edges bleed off-screen
@@ -65,6 +65,9 @@
             this.headingGroup = document.getElementById("headingControlGroup");
             this.btnToggleHeadingUp = document.getElementById("btnToggleHeadingUp");
             this.iconHeadingMode = document.getElementById("iconHeadingMode");
+            this.parkingGroup = document.getElementById("parkingControlGroup");
+            this.btnToggleParking = document.getElementById("btnToggleParkingHighlight");
+            this.isParkingHighlighted = false;
 
             // Waze Top Banner Elements
             this.tbtBanner = document.getElementById("turnByTurnBanner");
@@ -113,8 +116,8 @@
                 "chilamatesPlaza": { x: 225, y: 287 },
                 "sportsZone": { x: 762, y: 357 },
                 "jaguarCenter": { x: 735, y: 510 },
-                "northGate": { x: 340, y: 60 },
-                "northeastGate": { x: 720, y: 60 }
+                "northGate": { x: 240, y: 11 },
+                "northeastGate": { x: 720, y: 11 }
             };
 
             this.init();
@@ -188,7 +191,8 @@
             for (const [nodeId, anchor] of Object.entries(this.buildingAnchors)) {
                 const bldgData = this.getBuildingData(nodeId);
                 const badgeEl = document.createElement("div");
-                badgeEl.className = "waze-bldg-badge";
+                const isGate = nodeId === "northGate" || nodeId === "northeastGate";
+                badgeEl.className = isGate ? "waze-bldg-badge waze-gate-badge" : "waze-bldg-badge";
                 badgeEl.id = `wazeBadge_${nodeId}`;
                 badgeEl.style.display = "none";
 
@@ -283,11 +287,19 @@
                 });
             }
 
+            // Parking Lots highlight toggle
+            if (this.btnToggleParking) {
+                this.btnToggleParking.addEventListener("click", () => {
+                    this.toggleParkingHighlight();
+                });
+            }
+
             // Waze Re-center button (anchors camera back to user lower third)
             if (this.btnWazeRecenter) {
                 this.btnWazeRecenter.addEventListener("click", () => {
                     this.isOverview = false;
-                    this.pitch = 48;
+                    this.pitch = this.pitch >= 50 ? 52 : 45;
+                    this.updatePitchControls(this.pitch);
                     this.zoomScale = 2.2;
                     if (this.currentRoute) {
                         this.goToStep(this.currentStepIndex);
@@ -303,10 +315,12 @@
                     this.isOverview = !this.isOverview;
                     if (this.isOverview) {
                         this.pitch = 35;
+                        this.updatePitchControls(this.pitch);
                         this.zoomScale = 1.15;
                         this.anchorToLowerThird(500, 430, 0, true);
                     } else {
-                        this.pitch = 48;
+                        this.pitch = 45;
+                        this.updatePitchControls(this.pitch);
                         this.zoomScale = 2.2;
                         if (this.currentRoute) {
                             this.goToStep(this.currentStepIndex);
@@ -450,7 +464,7 @@
                 const vh = this.viewport.clientHeight || 700;
                 const s = Math.min(vw / 1200, vh / 850);
                 const zoom = this.zoomScale || 2.2;
-                const pitchRad = ((this.pitch || 48) * Math.PI) / 180;
+                const pitchRad = ((this.pitch || 45) * Math.PI) / 180;
                 const cosPitch = Math.cos(pitchRad);
 
                 const deltaRx = deltaX / (zoom * s);
@@ -615,13 +629,15 @@
                 }
                 if (this.pitchGroup) this.pitchGroup.classList.remove("hidden");
                 if (this.headingGroup) this.headingGroup.classList.remove("hidden");
+                if (this.parkingGroup) this.parkingGroup.classList.remove("hidden");
 
                 // Clear 2D transform on SVG element so #mapCameraGroup controls the viewport
                 if (this.svg) this.svg.style.transform = "none";
 
                 // Waze defaults or caller options
-                this.pitch = options.pitch !== undefined ? options.pitch : 48; // Gentle 48° pitch
+                this.pitch = options.pitch !== undefined ? options.pitch : 45; // Crisp 45° default (52° available via pill)
                 this.zoomScale = options.zoom !== undefined ? options.zoom : 2.2;
+                this.updatePitchControls(this.pitch);
 
                 if (options.skipDefaultCenter) {
                     return;
@@ -640,7 +656,9 @@
                     cancelAnimationFrame(this.tweenAnimId);
                     this.tweenAnimId = null;
                 }
-                this.viewport.classList.remove("campus-25d-active");
+                this.viewport.classList.remove("campus-25d-active", "campus-25d-steep", "campus-25d-highlight-parking");
+                this.isParkingHighlighted = false;
+                this.updateParkingControl();
                 if (this.overlayLayer) this.overlayLayer.classList.add("hidden");
                 if (this.wazeBottomBar) this.wazeBottomBar.classList.add("hidden");
                 if (this.tbtBanner) this.tbtBanner.classList.add("hidden");
@@ -655,6 +673,7 @@
                 }
                 if (this.pitchGroup) this.pitchGroup.classList.add("hidden");
                 if (this.headingGroup) this.headingGroup.classList.add("hidden");
+                if (this.parkingGroup) this.parkingGroup.classList.add("hidden");
 
                 this.pitch = 0;
                 this.heading = 0;
@@ -679,25 +698,51 @@
         }
 
         /**
+         * Updates active styling on the 45° / 52° pitch buttons
+         */
+        updatePitchControls(degrees) {
+            if (!this.btnPitch45 || !this.btnPitch52) return;
+            if (degrees <= 48) {
+                this.btnPitch45.classList.add("bg-brand-50", "text-brand-600");
+                this.btnPitch45.classList.remove("text-slate-600");
+                this.btnPitch52.classList.remove("bg-brand-50", "text-brand-600");
+                this.btnPitch52.classList.add("text-slate-600");
+            } else {
+                this.btnPitch52.classList.add("bg-brand-50", "text-brand-600");
+                this.btnPitch52.classList.remove("text-slate-600");
+                this.btnPitch45.classList.remove("bg-brand-50", "text-brand-600");
+                this.btnPitch45.classList.add("text-slate-600");
+            }
+        }
+
+        /**
+         * Toggles high-visibility sky-blue emphasis on all campus parking lots in 2.5D mode
+         */
+        toggleParkingHighlight() {
+            if (!this.is25dActive || !this.viewport) return;
+            this.isParkingHighlighted = !this.isParkingHighlighted;
+            this.viewport.classList.toggle("campus-25d-highlight-parking", this.isParkingHighlighted);
+            this.updateParkingControl();
+        }
+
+        updateParkingControl() {
+            if (!this.btnToggleParking) return;
+            if (this.isParkingHighlighted) {
+                this.btnToggleParking.classList.add("bg-sky-50", "text-sky-700");
+                this.btnToggleParking.classList.remove("text-slate-600");
+            } else {
+                this.btnToggleParking.classList.remove("bg-sky-50", "text-sky-700");
+                this.btnToggleParking.classList.add("text-slate-600");
+            }
+        }
+
+        /**
          * Sets camera pitch angle (45° or 52°)
          */
         setPitch(degrees) {
-            if (!this.is25dActive) this.setMode(true);
+            if (!this.is25dActive) this.setMode(true, { pitch: degrees });
             this.pitch = degrees;
-
-            if (this.btnPitch45 && this.btnPitch52) {
-                if (degrees === 45) {
-                    this.btnPitch45.classList.add("bg-brand-50", "text-brand-600");
-                    this.btnPitch45.classList.remove("text-slate-600");
-                    this.btnPitch52.classList.remove("bg-brand-50", "text-brand-600");
-                    this.btnPitch52.classList.add("text-slate-600");
-                } else {
-                    this.btnPitch52.classList.add("bg-brand-50", "text-brand-600");
-                    this.btnPitch52.classList.remove("text-slate-600");
-                    this.btnPitch45.classList.remove("bg-brand-50", "text-brand-600");
-                    this.btnPitch45.classList.add("text-slate-600");
-                }
-            }
+            this.updatePitchControls(degrees);
 
             this.applyTransform();
             this.updateOverlays();
@@ -816,7 +861,7 @@
 
             const bldgData = this.getBuildingData(nodeId);
             const targetZoom = options.zoom || 2.85;
-            const targetPitch = options.pitch || 48;
+            const targetPitch = options.pitch !== undefined ? options.pitch : (this.is25dActive && this.pitch >= 50 ? 52 : 45);
 
             this.focusedBuildingId = nodeId;
             this.focusedBuildingAnchor = anchor;
@@ -841,6 +886,7 @@
             this.targetZoomScale = targetZoom;
             this.targetHeading = 0;
             this.pitch = targetPitch;
+            this.updatePitchControls(targetPitch);
 
             // Highlight focused badge in 2.5D overlay
             if (this.badgesContainer) {
@@ -961,7 +1007,7 @@
             const uY = this.currentUserY !== undefined ? this.currentUserY : 500;
             const bearing = this.isHeadingUp ? (this.currentHeading || 0) : 0;
             const zoom = this.zoomScale || 2.2;
-            const pitch = this.pitch || 48;
+            const pitch = this.pitch || 45;
 
             // 1. Camera transform in SVG vector space
             const dx = x - uX;
@@ -989,7 +1035,7 @@
             const Y_prime = Y * Math.cos(phi);
             const Z_prime = Y * Math.sin(phi); // negative into screen for Y < 0
 
-            const d = 1000.0;
+            const d = 1300.0;
             const denom = d - Z_prime;
             if (denom <= 60) return null; // Horizon culling
 
@@ -1009,19 +1055,22 @@
             const vh = this.viewport.clientHeight || 700;
             const vw = this.viewport.clientWidth || 1000;
 
-            // 1. Position Upright Building Badges
+            // 1. Position Upright Building Badges (aligned with lifted 3D building roofs)
+            const flatNodes = new Set(["northGate", "northeastGate", "mainParking", "chilamatesPlaza", "sportsZone"]);
+            const roofLift = (this.pitch || 45) >= 50 ? 2.5 : 3.0;
             for (const [nodeId, anchor] of Object.entries(this.buildingAnchors)) {
                 const badgeEl = document.getElementById(`wazeBadge_${nodeId}`);
                 if (!badgeEl) continue;
 
-                const pos = this.projectToScreen(anchor.x, anchor.y);
-                if (pos && pos.y >= 30 && pos.y <= vh - 20 && pos.x >= -60 && pos.x <= vw + 60) {
+                const projY = flatNodes.has(nodeId) ? anchor.y : (anchor.y - roofLift);
+                const pos = this.projectToScreen(anchor.x, projY);
+                if (pos && pos.y >= 18 && pos.y <= vh - 20 && pos.x >= -60 && pos.x <= vw + 60) {
                     badgeEl.style.display = "inline-flex";
                     badgeEl.style.left = `${pos.x.toFixed(1)}px`;
                     badgeEl.style.top = `${pos.y.toFixed(1)}px`;
                     const scaleFactor = Math.min(1.05, Math.max(0.68, pos.k * 0.95));
                     badgeEl.style.transform = `translate(-50%, -50%) scale(${scaleFactor.toFixed(3)})`;
-                    const horizonFade = Math.min(1.0, Math.max(0.0, (pos.y - 25) / 50));
+                    const horizonFade = Math.min(1.0, Math.max(0.0, (pos.y - 14) / 36));
                     badgeEl.style.opacity = horizonFade.toFixed(2);
                 } else {
                     badgeEl.style.display = "none";
@@ -1101,11 +1150,15 @@
                 return;
             }
 
-            const pitch = this.pitch || 48;
+            const pitch = this.pitch || 45;
             const bearing = this.isHeadingUp ? (this.currentHeading || 0) : 0;
             const zoom = this.zoomScale || 2.2;
             const uX = this.currentUserX !== undefined ? this.currentUserX : 400;
             const uY = this.currentUserY !== undefined ? this.currentUserY : 500;
+
+            if (this.viewport) {
+                this.viewport.classList.toggle("campus-25d-steep", pitch >= 50);
+            }
 
             const vw = this.viewport ? (this.viewport.clientWidth || 1000) : 1000;
             const vh = this.viewport ? (this.viewport.clientHeight || 700) : 700;
