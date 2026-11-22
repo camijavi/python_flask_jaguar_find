@@ -80,10 +80,10 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 <rect x="250" y="80" width="220" height="48" />
             </clipPath>
             <clipPath id="clipBldgO">
-                <path d="M 485 145 L 535 145 L 535 180 L 555 180 L 555 220 L 535 220 L 535 255 L 485 255 L 485 220 L 465 220 L 465 180 L 485 180 Z" />
+                <path d="M 482 145 L 538 145 L 538 233 L 482 233 L 482 221 L 467 221 L 467 171 L 482 171 Z" />
             </clipPath>
-            <clipPath id="clipRanchon">
-                <rect x="475" y="280" width="45" height="26" />
+            <clipPath id="clipBldgOAnnex">
+                <rect x="512" y="249" width="26" height="25" />
             </clipPath>
             <clipPath id="clipBldgN">
                 <path d="M 275 195 L 425 195 L 425 315 L 380 315 L 380 240 L 275 240 Z" />
@@ -415,34 +415,41 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 </g>
             </g>
 
-            <!-- 4O. EDIFICIO O (FACULTAD DE INGENIERÍA Y ARQUITECTURA - FIA) -->
+            <!-- 4O. EDIFICIO O (FACULTAD DE INGENIERÍA Y ARQUITECTURA - FIA & ANEXOS) -->
             <g class="bldg-shape" data-node="buildingO" data-bldg="O" filter="url(#bldgShadow)">
+                <!-- Main Building + West Rectangle Annex -->
                 <g clip-path="url(#clipBldgO)">
-                    <!-- Base: #1da495 -->
-                    <path d="M 485 145 L 535 145 L 535 180 L 555 180 L 555 220 L 535 220 L 535 255 L 485 255 L 485 220 L 465 220 L 465 180 L 485 180 Z" fill="#1da495" />
-                    <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="465,145 555,145 555,200 465,200" fill="#48b2a9" />
-                    <!-- Shadow Triangles: #1f8383 -->
-                    <polygon points="465,180 465,220 485,200" fill="#1f8383" />
-                    <polygon points="485,255 535,255 510,235" fill="#1f8383" />
+                    <!-- Base Teal: #1da495 -->
+                    <path d="M 482 145 L 538 145 L 538 233 L 482 233 L 482 221 L 467 221 L 467 171 L 482 171 Z" fill="#1da495" />
+                    <!-- Right slope: #48b2a9 -->
+                    <polygon points="538,145 510,165 510,210 538,233" fill="#48b2a9" />
+                    <!-- Top shadow triangle: #1f8383 -->
+                    <polygon points="482,145 538,145 510,165" fill="#1f8383" />
+                    <!-- Bottom shadow triangle: #1f8383 -->
+                    <polygon points="482,233 538,233 510,210" fill="#1f8383" />
+                    <!-- West annex: left shadow triangle + top slope -->
+                    <polygon points="467,171 467,221 482,196" fill="#1f8383" />
+                    <polygon points="467,171 482,171 482,196" fill="#48b2a9" />
                 </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <path d="M 485 145 L 535 145 L 535 180 L 555 180 L 555 220 L 535 220 L 535 255 L 485 255 L 485 220 L 465 220 L 465 180 L 485 180 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <line x1="482" y1="171" x2="482" y2="221" stroke="#253452" stroke-width="1.8" stroke-opacity="0.6" />
+                <!-- Navy Outer Border -->
+                <path d="M 482 145 L 538 145 L 538 233 L 482 233 L 482 221 L 467 221 L 467 171 L 482 171 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+
+                <!-- South Square Annex (separate from main building, with a gap) -->
+                <g clip-path="url(#clipBldgOAnnex)">
+                    <rect x="512" y="249" width="26" height="25" fill="#48b2a9" />
+                    <!-- Bottom shadow triangle: #1f8383 -->
+                    <polygon points="512,274 538,274 525,259" fill="#1f8383" />
+                    <!-- Left slope: #1da495 -->
+                    <polygon points="512,249 525,259 512,274" fill="#1da495" />
+                </g>
+                <rect x="512" y="249" width="26" height="25" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+
                 <!-- Badge O (Amber) -->
                 <g class="billboard-badge">
-                    <rect x="499" y="168" width="22" height="22" class="badge-amber" />
-                    <text x="510" y="179" class="badge-text">O</text>
+                    <rect x="499" y="166" width="22" height="22" class="badge-amber" />
+                    <text x="510" y="177" class="badge-text">O</text>
                 </g>
-            </g>
-
-            <!-- Ranchón (Pavilion near O) -->
-            <g class="bldg-shape" data-node="buildingO" data-bldg="RANCHON" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipRanchon)">
-                    <rect x="475" y="280" width="45" height="26" fill="#1da495" />
-                    <polygon points="475,280 520,280 520,293 475,293" fill="#48b2a9" />
-                    <polygon points="475,280 475,306 488,293" fill="#1f8383" />
-                </g>
-                <rect x="475" y="280" width="45" height="26" fill="none" stroke="#253452" stroke-width="3" stroke-linejoin="miter" />
             </g>
 
             <!-- 4N. EDIFICIO N (CLÍNICAS MÉDICAS ODONTOLÓGICAS) -->
@@ -728,11 +735,17 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 </g>
             </g>
 
-            <!-- 4K. EDIFICIO K (CAFETERÍA CENTRAL & PLAZA RUBÉN DARÍO) -->
-            <g class="bldg-shape" data-node="buildingK" data-bldg="K" filter="url(#bldgShadow)">
+            <!-- Ground features near K (outside the building group so they are never highlighted on hover/tap) -->
+            <g id="groundFeaturesK" pointer-events="none">
                 <!-- Plaza Central Circular Lawn -->
                 <circle cx="348" cy="614" r="32" fill="#22c55e" stroke="#16a34a" stroke-width="2" />
                 <circle cx="348" cy="614" r="13" fill="#15803d" />
+                <!-- Grey Area (Área Gris Oeste del Edificio K) -->
+                <rect id="greenAreaWestK" x="194" y="575" width="26" height="78" rx="2" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
+            </g>
+
+            <!-- 4K. EDIFICIO K (CAFETERÍA CENTRAL) -->
+            <g class="bldg-shape" data-node="buildingK" data-bldg="K" filter="url(#bldgShadow)">
                 <!-- Cafeteria K (Dogleg Footprint with Angled Annex matching official signage) -->
                 <g clip-path="url(#clipBldgK)">
                     <!-- Base Teal Roof: #1da495 -->
