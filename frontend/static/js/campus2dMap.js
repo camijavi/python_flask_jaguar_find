@@ -239,7 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Entrada Principal & Parqueo Sur",
             badgeClass: "badge-navy",
             badgeBg: "#0f172a",
-            anchor: { x: 340, y: 800 },
+            anchor: { x: 274, y: 766 },
             floors: [
                 { floor: "Exterior", rooms: "Caseta de Seguridad Sur, Bahías de Parqueo Estudiantil y Docente, Rampa Peatonal Principal hacia Edificio K." }
             ]
@@ -305,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Acceso Norte (Copérnico / FIA)",
             badgeClass: "badge-navy",
             badgeBg: "#64748b",
-            anchor: { x: 240, y: 11 },
+            anchor: { x: 218, y: 74 },
             floors: [
                 { floor: "Acceso", rooms: "Caseta de Vigilancia Norte, Acceso Vehicular Segundo Camino hacia Edificios P y O." }
             ]

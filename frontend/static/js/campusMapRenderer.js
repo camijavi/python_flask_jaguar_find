@@ -40,13 +40,13 @@
         buildingN: { x: 442, y: 260 },
         buildingO: { x: 611, y: 196 },
         buildingP: { x: 456, y: 115 },
-        mainParking: { x: 282, y: 766 },
+        mainParking: { x: 274, y: 766 },
         chilamatesPlaza: { x: 294, y: 292 },
         sportsZone: { x: 938, y: 447 },
         jaguarCenter: { x: 900, y: 623 },
         jaguarGym: { x: 969, y: 726 },
         physiotherapy: { x: 978, y: 677 },
-        northGate: { x: 224, y: 74 },
+        northGate: { x: 218, y: 74 },
         northeastGate: { x: 659, y: 16 }
     };
 
@@ -206,19 +206,10 @@
     // 2. Layer 1: Campus Perimeter & Internal Vehicle Roads
     // ----------------------------------------------------------------------------
     function renderRoads(layer) {
-        // 1A. Secondary walkways & parking driveways (flat pale slate, no lane dashes)
+        // 1A. Secondary walkways & pedestrian concourses (flat pale slate, no lane dashes)
         const connectors = [
-            // Wide seamless asphalt throat connecting West Main Avenue across crosswalk into Central CD Parking
-            { d: "M 248 369 L 336 369", w: 50, color: "#dfe5ec" },
-            // Wide seamless asphalt throat connecting West Main Avenue into Upper & Lower West Parking
-            { d: "M 226 266 L 246 266", w: 120, color: "#dfe5ec" },
-            { d: "M 236 432 L 260 432", w: 132, color: "#dfe5ec" },
             // North Sports Parking entry apron connecting down from Camino Segundo Acceso
             { d: "M 822 16 L 822 46", w: 24, color: "#dfe5ec" },
-            // Driveways from South Main Avenue into upper parking bays & center entry into North/Main-Entrance lot
-            { d: "M 646 676 L 646 696", w: 13, color: "#cbd5e1" },
-            { d: "M 484 696 L 484 734", w: 16, color: "#cbd5e1" },
-            { d: "M 692 696 L 692 742", w: 16, color: "#cbd5e1" },
             // Pedestrian sports concourse between Baseball Stadium and Soccer Field
             { d: "M 722 338 L 1154 338", w: 22, color: "#dce2ec" },
             // Pedestrian corridor cleanly running between Building L/Jaguar Gym and Courts/East Complex
@@ -229,57 +220,109 @@
             el("path", { d: r.d, "stroke-width": r.w, stroke: r.color }, layer);
         }
 
-        // 1B. Main Campus Vehicle Road Network (balanced uniform boulevard width, zero corner step)
-        const westMainPath = "M 282 766 L 282 702 C 278 600, 264 470, 248 340 C 236 245, 226 165, 224 92 C 222 46, 260 24, 380 17 L 659 15";
+        // 1B. Main Campus Vehicle Road Network
+        // Wide boulevard from Entrada Principal (south) up to Tercer Acceso (north-west)
+        const westAvenuePath = "M 274 762 L 274 702 C 270 595, 256 465, 240 340 C 228 242, 220 164, 218 92";
+        // Smooth tapered transition around Tercer Acceso into the northern perimeter arch
+        const northArchPath = "M 218 92 L 218 74 C 218 42, 258 22, 376 17 L 659 15";
+        const tercerAccesoPath = "M 218 74 L 156 74";
         const otherMainPaths = [
-            // Tercer Acceso (NW gate stub branching west)
-            "M 224 74 L 164 74",
             // Camino Segundo Acceso (continuing east from Top T-Junction)
             "M 659 15 L 1140 12",
             // South Internal Ring (Dead-horizontal South Avenue -> SE rounded curve -> Central Spine North -> Top T-Junction)
-            "M 282 702 Q 282 696 298 696 L 692 696 Q 720 696 720 668 L 720 430 C 722 345, 692 270, 676 185 L 659 15",
+            "M 274 702 Q 274 696 292 696 L 692 696 Q 720 696 720 668 L 720 430 C 722 345, 692 270, 676 185 L 659 15",
             // SE Branch connecting SE Curve -> Building I Parking Lot -> Jaguar Center Parking
             "M 708 696 Q 724 742 756 744 L 850 744"
         ];
 
+        // Smooth tapered collar joining the 36px West Avenue cleanly into the 24px North Arch at Tercer Acceso (no round-cap bump)
+        const nwTaperCurb = "M 198 92 C 198 72, 200 54, 212 40 L 228 50 C 232 62, 236 76, 238 92 Z";
+        const nwTaperFill = "M 200 92 C 200 72, 202 55, 214 42 L 226 51 C 230 63, 234 77, 236 92 Z";
+
+        // Smooth concave-filleted driveway aprons opening the road curb cleanly into every adjacent parking lot & drop-off bay
+        const flaredAprons = [
+            // Upper West Parking seamless curved mouth off West Avenue
+            "M 202 202 Q 214 202 214 192 L 222 192 L 234 340 L 224 340 Q 222 330 212 330 L 198 330 L 194 202 Z",
+            // Lower West Parking seamless curved mouth off West Avenue
+            "M 216 360 Q 228 360 227 350 L 236 350 L 254 514 L 245 514 Q 243 504 233 504 L 216 504 L 206 360 Z",
+            // Side P Parking seamless open throat above Weather Station
+            "M 224 96 L 252 96 L 252 146 L 226 146 Z",
+            // North PON Parking seamless flared throat below Weather Station
+            "M 228 179 Q 238 179 237 170 L 240 179 L 254 179 L 254 214 L 244 214 Q 234 214 234 224 L 226 218 Z",
+            // Behind Building P Parking open NW throat off North Arch
+            "M 344 16 L 434 15 L 434 30 L 344 28 Z",
+            // Central Parking & Crosswalk wide driveway throat between Plaza Chilamates and Building A drop-off
+            "M 244 344 L 332 344 L 332 394 L 252 394 Z",
+            // Building A curved drive-through drop-off bay seamless connection to West Avenue
+            "M 250 388 L 304 394 L 304 476 L 258 486 Z",
+            // South Main Parking left & right driveway connections to South Avenue
+            "M 332 676 L 358 676 Q 358 686 366 686 L 366 696 L 324 696 L 324 686 Q 332 686 332 676 Z",
+            "M 472 676 L 498 676 Q 498 686 506 686 L 506 696 L 464 696 L 464 686 Q 472 686 472 676 Z",
+            // South Lower Parking & SE Parking driveway connections to South Avenue
+            "M 466 696 L 502 696 L 502 706 Q 494 706 494 716 L 474 716 Q 474 706 466 706 Z",
+            "M 636 678 L 656 678 Q 656 686 664 686 L 664 696 L 628 696 L 628 686 Q 636 686 636 678 Z",
+            "M 674 696 L 710 696 L 710 706 Q 702 706 702 720 L 682 720 Q 682 706 674 706 Z"
+        ];
+
+        // Pass 1: Continuous outer road & driveway curb casing (#9aa8be)
         const roadCurb = el("g", { class: "main-road-curb", fill: "none", stroke: "#9aa8be", "stroke-linecap": "round", "stroke-linejoin": "round" }, layer);
-        const roadFill = el("g", { class: "main-road-asphalt", fill: "none", stroke: "#bcc6d6", "stroke-linecap": "round", "stroke-linejoin": "round" }, layer);
-        const roadDash = el("g", { class: "main-road-centerline", fill: "none", stroke: "#ffffff", "stroke-width": 1.3, "stroke-dasharray": "7,6", "stroke-linecap": "round", opacity: 0.72 }, layer);
-
-        // Balanced Main Vehicle Loop (West boulevard slightly fuller 24px asphalt, rest 20px asphalt)
-        el("path", { d: westMainPath, "stroke-width": 28 }, roadCurb);
-        el("path", { d: westMainPath, "stroke-width": 24 }, roadFill);
-        el("path", { d: westMainPath }, roadDash);
-
+        el("path", { d: westAvenuePath, "stroke-width": 40, "stroke-linecap": "butt" }, roadCurb);
+        el("path", { d: northArchPath, "stroke-width": 28 }, roadCurb);
+        el("path", { d: tercerAccesoPath, "stroke-width": 26 }, roadCurb);
+        el("path", { d: nwTaperCurb, fill: "#9aa8be", stroke: "none" }, roadCurb);
         for (const d of otherMainPaths) {
             el("path", { d, "stroke-width": 24 }, roadCurb);
+        }
+        // Subtle curb border around flared driveway throats (broken cleanly inside by Pass 2 asphalt fill)
+        for (const d of flaredAprons) {
+            el("path", { d, fill: "#9aa8be", stroke: "#9aa8be", "stroke-width": 3, "stroke-linejoin": "round" }, roadCurb);
+        }
+
+        // Pass 2: Seamless road & driveway asphalt fill (#bcc6d6) — automatically opens every intersection & parking mouth
+        const roadFill = el("g", { class: "main-road-asphalt", fill: "none", stroke: "#bcc6d6", "stroke-linecap": "round", "stroke-linejoin": "round" }, layer);
+        el("path", { d: westAvenuePath, "stroke-width": 36, "stroke-linecap": "butt" }, roadFill);
+        el("path", { d: northArchPath, "stroke-width": 24 }, roadFill);
+        el("path", { d: tercerAccesoPath, "stroke-width": 22 }, roadFill);
+        el("path", { d: nwTaperFill, fill: "#bcc6d6", stroke: "none" }, roadFill);
+        for (const d of otherMainPaths) {
             el("path", { d, "stroke-width": 20 }, roadFill);
+        }
+        for (const d of flaredAprons) {
+            el("path", { d, fill: "#bcc6d6", stroke: "none" }, roadFill);
+        }
+
+        // Smooth paved shoulder & curved drop-off entry blending Building A's front bay + Bus Lay-By seamlessly into West Avenue
+        const layBy = el("g", { id: "mainEntranceLayBy" }, layer);
+        // Continuous paved shoulder along east side of West Avenue from Building A drop-off down to Main Entrance
+        el("path", {
+            d: "M 262 476 L 296 476 L 318 686 L 284 686 Z",
+            fill: "#bcc6d6"
+        }, layBy);
+        // Darker asphalt pull-out bus/passenger lay-by bay cleanly beside the wider through-lane
+        el("path", {
+            d: "M 307 570 L 296 570 Q 289 570 290 579 L 298 675 Q 299 684 308 684 L 318 684 Z",
+            fill: "#9faec4"
+        }, layBy);
+        // Crisp white pull-out bay border + vertical curb line continuing straight north to Building A's drop-off exit
+        el("path", {
+            d: "M 294 475 L 307 570 L 296 570 Q 289 570 290 579 L 298 675 Q 299 684 308 684 L 318 684 L 307 570",
+            fill: "none", stroke: "#ffffff", "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round"
+        }, layBy);
+
+        // Pass 3: Crisp white dashed road centerlines (drawn above asphalt & aprons so lanes read clearly)
+        const roadDash = el("g", { class: "main-road-centerline", fill: "none", stroke: "#ffffff", "stroke-width": 1.35, "stroke-dasharray": "7,6", "stroke-linecap": "round", opacity: 0.78 }, layer);
+        el("path", { d: westAvenuePath }, roadDash);
+        el("path", { d: northArchPath }, roadDash);
+        el("path", { d: tercerAccesoPath }, roadDash);
+        for (const d of otherMainPaths) {
             el("path", { d }, roadDash);
         }
 
-        // Tercer Acceso divided gatehouse island + crosswalk stripes (matching Photo 1 & 9)
-        el("rect", { x: 174, y: 71, width: 22, height: 6, rx: 3, fill: "#e2e8f0", stroke: "#ffffff", "stroke-width": 1.2 }, layer);
-        el("rect", { x: 162, y: 61, width: 7, height: 26, rx: 1, fill: ROOF_BASE, stroke: ROOF_BORDER, "stroke-width": 1.4 }, layer);
-        el("line", { x1: 171, y1: 64, x2: 171, y2: 71, stroke: "#ffffff", "stroke-width": 1.4, "stroke-dasharray": "2,2" }, layer);
-        el("line", { x1: 171, y1: 77, x2: 171, y2: 84, stroke: "#ffffff", "stroke-width": 1.4, "stroke-dasharray": "2,2" }, layer);
-
-        // 1C. Designated Bus / Passenger Pull-Out Bay (Lay-By) Beside the East Curb of West Main Avenue
-        const layBy = el("g", { id: "mainEntranceLayBy" }, layer);
-        // Paved shoulder joining the east edge of West Main Avenue cleanly to the lay-by & 12-tree curb
-        el("path", {
-            d: "M 282 480 L 298 480 L 318 688 L 292 688 Z",
-            fill: "#bcc6d6"
-        }, layBy);
-        // Darker asphalt lay-by bay pocket cleanly beside the through-lane (zero overlap with road centerline)
-        el("path", {
-            d: "M 307 572 L 298 572 Q 292 572 292 580 L 300 675 Q 301 684 309 684 L 318 684 Z",
-            fill: "#9faec4"
-        }, layBy);
-        // Crisp white pull-out bay border + vertical curb line continuing straight north past Building K
-        el("path", {
-            d: "M 297 480 L 307 572 L 298 572 Q 292 572 292 580 L 300 675 Q 301 684 309 684 L 318 684 L 307 572",
-            fill: "none", stroke: "#ffffff", "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round"
-        }, layBy);
+        // Tercer Acceso divided gatehouse island + crosswalk stripes
+        el("rect", { x: 166, y: 71, width: 22, height: 6, rx: 3, fill: "#e2e8f0", stroke: "#ffffff", "stroke-width": 1.2 }, layer);
+        el("rect", { x: 154, y: 61, width: 7, height: 26, rx: 1, fill: ROOF_BASE, stroke: ROOF_BORDER, "stroke-width": 1.4 }, layer);
+        el("line", { x1: 163, y1: 64, x2: 163, y2: 71, stroke: "#ffffff", "stroke-width": 1.4, "stroke-dasharray": "2,2" }, layer);
+        el("line", { x1: 163, y1: 77, x2: 163, y2: 84, stroke: "#ffffff", "stroke-width": 1.4, "stroke-dasharray": "2,2" }, layer);
     }
 
     // ----------------------------------------------------------------------------
@@ -316,72 +359,74 @@
             addStallRow(l, 539, 35, 539, 72, 6, -11, 0, true);    // East column
         });
 
-        // 2.2 West Side of Building P (extends down behind Weather Station on its east column, matching Photo 1 & 9)
-        makeLot("parkingLotSideP", "rect", { x: 244, y: 96, width: 48, height: 68, rx: 4 }, (_, l) => {
+        // 2.2 West Side of Building P (opens cleanly off wider West Avenue above Weather Station)
+        makeLot("parkingLotSideP", "path", {
+            d: "M 238 96 L 288 96 A 4 4 0 0 1 292 100 L 292 160 A 4 4 0 0 1 288 164 L 246 164 L 246 146 L 238 146 Z"
+        }, (_, l) => {
             addStallRow(l, 248, 101, 248, 144, 5, 11, 0, true);   // Left column above Weather Station
             addStallRow(l, 288, 101, 288, 159, 7, -11, 0, true);  // Right column running beside Weather Station
         });
 
-        // 2.3 North Parking (Between P & N — full apron to West Main Avenue + 3 south curb tabs & NW tree notch)
+        // 2.3 North Parking (Between P & N — seamless apron meeting wider West Avenue + 3 south curb tabs & NW tree notch)
         makeLot("parkingLotNorthPON", "path", {
-            d: "M 244 179 L 324 179 L 324 164 L 354 164 L 354 158 L 546 158 L 546 214 L 536 214 L 536 221 L 528 221 L 528 214 L 420 214 L 420 221 L 412 221 L 412 214 L 340 214 L 340 221 L 332 221 L 332 214 L 248 214 Z"
+            d: "M 240 179 L 324 179 L 324 164 L 354 164 L 354 158 L 546 158 L 546 214 L 536 214 L 536 221 L 528 221 L 528 214 L 420 214 L 420 221 L 412 221 L 412 214 L 340 214 L 340 221 L 332 221 L 332 214 L 244 214 Z"
         }, (_, l) => {
             addStallRow(l, 336, 160, 540, 160, 26, 0, 14);
             addStallRow(l, 336, 212, 540, 212, 26, 0, -14);
         });
 
-        // 2.4 Upper West Parking Lot (Seamless connection to West Main Avenue, 4 structured stall rows)
+        // 2.4 Upper West Parking Lot (Seamless flared east mouth joining wider West Avenue, 4 structured stall rows)
         makeLot("parkingLotWestUpper", "path", {
-            d: "M 66 202 L 228 202 L 236 330 L 72 330 L 72 304 L 66 202 Z"
+            d: "M 56 202 L 207 202 L 220 330 L 62 330 L 62 304 L 56 202 Z"
         }, (_, l) => {
-            addStallRow(l, 76, 206, 200, 206, 15, 0, 14, true);    // Top perimeter row
-            addStallRow(l, 76, 244, 198, 244, 15, 0, -13, true);   // Upper center island (north)
-            addStallRow(l, 76, 246, 198, 246, 15, 0, 13);          // Upper center island (south)
-            addStallRow(l, 78, 288, 196, 288, 14, 0, -13, true);   // Lower center island (north)
-            addStallRow(l, 78, 290, 196, 290, 14, 0, 13);          // Lower center island (south)
-            addStallRow(l, 80, 326, 196, 326, 14, 0, -13, true);   // Bottom perimeter row
+            addStallRow(l, 66, 206, 190, 206, 15, 0, 14, true);    // Top perimeter row
+            addStallRow(l, 66, 244, 188, 244, 15, 0, -13, true);   // Upper center island (north)
+            addStallRow(l, 66, 246, 188, 246, 15, 0, 13);          // Upper center island (south)
+            addStallRow(l, 68, 288, 186, 288, 14, 0, -13, true);   // Lower center island (north)
+            addStallRow(l, 68, 290, 186, 290, 14, 0, 13);          // Lower center island (south)
+            addStallRow(l, 70, 326, 186, 326, 14, 0, -13, true);   // Bottom perimeter row
         });
 
-        // 2.5 Lower West Parking Lot (Exact close-up layout: solar-panel strip, T-cap medians, dark corner pad & seamless road entry)
+        // 2.5 Lower West Parking Lot (Solar-panel strip, T-cap medians, dark corner pad & seamless connection to wider West Avenue)
         makeLot("parkingLotWestLower", "path", {
-            d: "M 64 360 L 244 360 L 254 504 L 72 504 L 72 496 L 64 496 Z"
+            d: "M 54 360 L 224 360 L 241 504 L 62 504 L 62 496 L 54 496 Z"
         }, (g, l) => {
             // Far-west Solar Panel Canopy strip along left perimeter
-            el("rect", { x: 52, y: 366, width: 12, height: 124, fill: "#cbd5e1", stroke: "#94a3b8", "stroke-width": 1.1 }, g);
+            el("rect", { x: 42, y: 366, width: 12, height: 124, fill: "#cbd5e1", stroke: "#94a3b8", "stroke-width": 1.1 }, g);
             for (let sy = 372; sy < 488; sy += 6) {
-                el("line", { x1: 52, y1: sy, x2: 64, y2: sy, stroke: "#ffffff", "stroke-width": 0.9 }, g);
+                el("line", { x1: 42, y1: sy, x2: 54, y2: sy, stroke: "#ffffff", "stroke-width": 0.9 }, g);
             }
 
-            // Far-west vertical perimeter stalls along solar-panel edge (matching Photo 10 & 11)
-            addStallRow(l, 66, 372, 66, 488, 12, 11, 0);
+            // Far-west vertical perimeter stalls along solar-panel edge
+            addStallRow(l, 56, 372, 56, 488, 12, 11, 0);
 
             // Top & bottom perimeter stall rows
-            addStallRow(l, 80, 363, 214, 363, 15, 0, 13);
-            addStallRow(l, 80, 500, 200, 500, 14, 0, -13);
+            addStallRow(l, 70, 363, 204, 363, 15, 0, 13);
+            addStallRow(l, 70, 500, 190, 500, 14, 0, -13);
 
             // Upper T-capped median island (y=398) + perpendicular stalls above & below
             el("path", {
-                d: "M 88 391 A 4 4 0 0 0 84 395 L 84 401 A 4 4 0 0 0 88 405 M 84 398 L 208 398 M 204 391 A 4 4 0 0 1 208 395 L 208 401 A 4 4 0 0 1 204 405",
+                d: "M 78 391 A 4 4 0 0 0 74 395 L 74 401 A 4 4 0 0 0 78 405 M 74 398 L 198 398 M 194 391 A 4 4 0 0 1 198 395 L 198 401 A 4 4 0 0 1 194 405",
                 fill: "none", stroke: "#ffffff", "stroke-width": 1.6, "stroke-linecap": "round"
             }, g);
-            addStallRow(l, 90, 396, 202, 396, 13, 0, -12);
-            addStallRow(l, 90, 400, 202, 400, 13, 0, 12);
+            addStallRow(l, 80, 396, 192, 396, 13, 0, -12);
+            addStallRow(l, 80, 400, 192, 400, 13, 0, 12);
             // Small entrance traffic bollard island
-            el("rect", { x: 222, y: 393, width: 4, height: 12, rx: 1.5, fill: "#b4c0cf", stroke: "#ffffff", "stroke-width": 1 }, g);
+            el("rect", { x: 212, y: 393, width: 4, height: 12, rx: 1.5, fill: "#b4c0cf", stroke: "#ffffff", "stroke-width": 1 }, g);
 
             // Lower median island (y=446) leading into rounded dark corner planter/service pad
             el("path", {
-                d: "M 88 439 A 4 4 0 0 0 84 443 L 84 449 A 4 4 0 0 0 88 453 M 84 446 L 198 446",
+                d: "M 78 439 A 4 4 0 0 0 74 443 L 74 449 A 4 4 0 0 0 78 453 M 74 446 L 188 446",
                 fill: "none", stroke: "#ffffff", "stroke-width": 1.6, "stroke-linecap": "round"
             }, g);
             el("rect", {
-                x: 198, y: 432, width: 32, height: 32, rx: 5,
+                x: 188, y: 432, width: 32, height: 32, rx: 5,
                 fill: "#aeb9ca", stroke: "#ffffff", "stroke-width": 1.3, class: "parking-island"
             }, g);
-            addStallRow(l, 90, 444, 194, 444, 12, 0, -12);
-            addStallRow(l, 90, 448, 194, 448, 12, 0, 12);
+            addStallRow(l, 80, 444, 184, 444, 12, 0, -12);
+            addStallRow(l, 80, 448, 184, 448, 12, 0, 12);
             // Small stalls below the dark corner pad
-            addStallRow(l, 202, 466, 224, 466, 3, 0, 11);
+            addStallRow(l, 192, 466, 214, 466, 3, 0, 11);
         });
 
         // 2.6 Central Parking Lot (Starts cleanly east of the moved crosswalk at x=329, ends at x=514 aligned with N & C dormer)
@@ -565,10 +610,10 @@
     // 5. Layer 4: Plazas & Courtyards
     // ----------------------------------------------------------------------------
     function renderPlazas(layer) {
-        // 4A. Plaza Chilamates (Paved plaza west of J/N with iconic giant Chilamate tree & corner Kiosk)
+        // 4A. Plaza Chilamates (Paved plaza west of J/N with slanted edge parallel to wider West Avenue)
         const ch = el("g", { class: "bldg-shape", "data-node": "chilamatesPlaza", "data-bldg": "CHILAMATES" }, layer);
         el("path", {
-            d: "M 256 226 L 329 226 L 329 344 L 256 344 Z",
+            d: "M 248 226 L 329 226 L 329 344 L 260 344 Z",
             fill: "#e2e8f0", stroke: "#cbd5e1", "stroke-width": 1.3, "stroke-linejoin": "round"
         }, ch);
         // Iconic large Chilamate specimen canopy & smaller north companion canopy
@@ -577,28 +622,43 @@
         el("circle", { cx: 298, cy: 251, r: 8.5, fill: "#3b5e54", stroke: "#28423b", "stroke-width": 0.9 }, ch);
         el("circle", { cx: 296, cy: 249, r: 3.5, fill: "#527d70", opacity: 0.7 }, ch);
 
-        // 4A-2. Front Entrance Plaza & Curved Steps in Front (Left / Compass-East Side) of Building A
+        // 4A-2. Building A Drive-Through Drop-Off Bay & Curved Entrance Steps (Seamlessly connected to West Avenue)
         const frontA = el("g", { id: "buildingAFrontPlaza", "pointer-events": "none" }, layer);
-        // Outer rounded drop-off / pedestrian terrace apron wrapping the front of Building A
+        // Smooth open-mouth U-shaped drive-through drop-off lane curving seamlessly out of & back into West Avenue
         el("path", {
-            d: "M 310 394 L 290 394 Q 277 394 277 410 L 277 460 Q 277 476 290 476 L 310 476 Z",
-            fill: "#e2e8f0", stroke: "#94a3b8", "stroke-width": 1.4
+            d: "M 258 389 Q 282 390 292 400 L 310 400 L 310 470 L 294 470 Q 286 480 268 482 L 270 469 Q 282 468 282 458 L 279 412 Q 278 402 260 401 Z",
+            fill: "#e2e8f0", stroke: "none"
         }, frontA);
-        // Inner architectural dark-slate curved planter frames (top & bottom L-brackets)
+        // Subtle outer curb guide lines only along top & bottom edges (leaving both road mouths 100% open)
         el("path", {
-            d: "M 308 400 L 290 400 Q 282 400 282 408 L 282 418 L 292 418 L 292 408 L 308 408 Z",
-            fill: "#94a3b8", stroke: "#475569", "stroke-width": 1
+            d: "M 262 390 Q 282 391 292 400 L 310 400 M 310 470 L 294 470 Q 286 479 272 481",
+            fill: "none", stroke: "#94a3b8", "stroke-width": 1.2, "stroke-linecap": "round"
+        }, frontA);
+        // Flared outer median island separating West Avenue through-lane from the Building A drop-off bay
+        el("path", {
+            d: "M 266 402 Q 274 404 275 412 L 279 458 Q 280 466 273 469 L 269 464 Q 273 462 272 456 L 269 414 Q 268 408 263 406 Z",
+            fill: "#8f9eb3", stroke: "#ffffff", "stroke-width": 1.1, "stroke-linejoin": "round"
+        }, frontA);
+        // Inner rounded pedestrian entrance platform flush with Building A's front wall
+        el("path", {
+            d: "M 310 400 L 297 400 Q 288 400 288 409 L 288 461 Q 288 470 297 470 L 310 470 Z",
+            fill: "#e8edf3", stroke: "#94a3b8", "stroke-width": 1.2
+        }, frontA);
+        // Inner dark-slate curved planter curbs framing Building A's entrance doors
+        el("path", {
+            d: "M 309 403 L 296 403 Q 290 403 290 409 L 290 417 L 297 417 L 297 409 L 309 409 Z",
+            fill: "#94a3b8", stroke: "#475569", "stroke-width": 0.9
         }, frontA);
         el("path", {
-            d: "M 308 470 L 290 470 Q 282 470 282 462 L 282 452 L 292 452 L 292 462 L 308 462 Z",
-            fill: "#94a3b8", stroke: "#475569", "stroke-width": 1
+            d: "M 309 467 L 296 467 Q 290 467 290 461 L 290 453 L 297 453 L 297 461 L 309 461 Z",
+            fill: "#94a3b8", stroke: "#475569", "stroke-width": 0.9
         }, frontA);
-        // Subtle twin bracket accent curbs flanking the front stairs
-        el("path", { d: "M 288 416 L 296 416 L 296 422", fill: "none", stroke: "#334155", "stroke-width": 1.6, "stroke-linecap": "round" }, frontA);
-        el("path", { d: "M 288 454 L 296 454 L 296 448", fill: "none", stroke: "#334155", "stroke-width": 1.6, "stroke-linecap": "round" }, frontA);
+        // Twin dark bracket curbs flanking the curved entrance stairs
+        el("path", { d: "M 292 416 L 299 416 L 299 422", fill: "none", stroke: "#334155", "stroke-width": 1.5, "stroke-linecap": "round" }, frontA);
+        el("path", { d: "M 292 454 L 299 454 L 299 448", fill: "none", stroke: "#334155", "stroke-width": 1.5, "stroke-linecap": "round" }, frontA);
         // Concentric curved entry steps leading into Building A's main doorway
-        el("path", { d: "M 306 422 Q 294 435 306 448", fill: "none", stroke: "#64748b", "stroke-width": 1.4 }, frontA);
-        el("path", { d: "M 309 426 Q 299 435 309 444", fill: "none", stroke: "#64748b", "stroke-width": 1.2 }, frontA);
+        el("path", { d: "M 307 422 Q 297 435 307 448", fill: "none", stroke: "#64748b", "stroke-width": 1.35 }, frontA);
+        el("path", { d: "M 310 426 Q 302 435 310 444", fill: "none", stroke: "#64748b", "stroke-width": 1.15 }, frontA);
 
         // 4B. Central Courtyard & Fountains between Building C and Building B
         const cc = el("g", { id: "centralColonnade" }, layer);
@@ -779,14 +839,14 @@
                     ["626,570 634,570 634,585 626,585", ROOF_LIGHT]
                 ]
             },
-            // Banpro / Bank (distinct L-shaped teal building flush against Lower West Parking & West Main Avenue)
+            // Banpro / Bank (distinct L-shaped teal building flush against Lower West Parking & wider West Avenue)
             {
-                path: "M 206 502 L 236 502 L 236 534 L 218 534 L 218 518 L 206 518 Z",
+                path: "M 200 502 L 230 502 L 230 534 L 212 534 L 212 518 L 200 518 Z",
                 borderWidth: 2.2,
                 facets: [
-                    ["206,502 236,502 227,510 206,510", ROOF_LIGHT],
-                    ["236,502 236,534 227,526 227,510", ROOF_LIGHT],
-                    ["218,534 236,534 227,526", ROOF_DARK]
+                    ["200,502 230,502 221,510 200,510", ROOF_LIGHT],
+                    ["230,502 230,534 221,526 221,510", ROOF_LIGHT],
+                    ["212,534 230,534 221,526", ROOF_DARK]
                 ]
             },
             // Edificio K (Cafeteria Central - Dogleg)
@@ -820,8 +880,8 @@
         // --- Secondary Campus Pavilions, Kiosks, Restrooms & East Complex Buildings ---
         const supportBuildings = [
             // West & North-Central pavilions
-            { x: 48, y: 278, w: 30, h: 20, orientation: "v" },  // Acopio
-            { x: 246, y: 148, w: 34, h: 26 },                  // Estacion Meteorologica
+            { x: 38, y: 278, w: 30, h: 20, orientation: "v" },  // Acopio
+            { x: 248, y: 148, w: 34, h: 26 },                  // Estacion Meteorologica
             { x: 282, y: 320, w: 18, h: 18, orientation: "h" }, // Kiosko Plaza Chilamates
             { x: 536, y: 246, w: 16, h: 15 },                  // Small annex 1 below O
             { x: 556, y: 246, w: 16, h: 15 },                  // Small annex 2 below O
@@ -861,9 +921,9 @@
             addRectBuilding(layer, { borderWidth: 2.2, ...sb });
         }
 
-        // Main South Gate (Entrada Principal — centered on shifted wider West Main Avenue)
+        // Main South Gate (Entrada Principal — centered on wider West Avenue)
         const gate = el("g", { class: "bldg-shape", "data-node": "mainParking", "data-bldg": "ENTRADA" }, layer);
-        el("rect", { x: 260, y: 760, width: 44, height: 18, fill: ROOF_BORDER, stroke: ROOF_BORDER, "stroke-width": 2, filter: "url(#bldgShadow)" }, gate);
+        el("rect", { x: 248, y: 760, width: 52, height: 18, fill: ROOF_BORDER, stroke: ROOF_BORDER, "stroke-width": 2, filter: "url(#bldgShadow)" }, gate);
     }
 
     // ----------------------------------------------------------------------------
@@ -873,9 +933,9 @@
         // Large canopy tree rows [x1, y1, x2, y2, count]
         const largeTreeRows = [
             // West parking divider (8 trees) & Lower West Parking median trees (3 on upper median, 4 on lower median)
-            [74, 344, 218, 344, 8],
-            [148, 398, 192, 398, 3],
-            [146, 446, 206, 446, 4],
+            [64, 344, 204, 344, 8],
+            [138, 398, 182, 398, 3],
+            [136, 446, 196, 446, 4],
             // Continuous 12-tree line hugging Building K & Main Entrance pull-out lay-by (6 beside K + 6 beside lay-by)
             [308, 486, 316, 562, 6],
             [318, 578, 326, 674, 6],
@@ -913,8 +973,8 @@
 
         // Individual accent trees (near P, Plaza Chilamates perimeter, below J, K/Plaza Central, Banpro, Main Entrance, G/F, Jaguar Gym Lot, East Complex)
         const singleTrees = [
-            [362, 150], [260, 314], [344, 345], [354, 562],
-            [208, 528], [256, 746], [256, 766],
+            [362, 150], [262, 314], [344, 345], [354, 562],
+            [202, 528], [244, 746], [244, 766],
             [700, 585],
             [880, 704], [896, 720], [930, 696],
             [992, 577], [966, 594], [966, 614], [966, 632], [960, 662], [1146, 756]

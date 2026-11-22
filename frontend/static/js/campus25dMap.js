@@ -112,13 +112,13 @@
                 "buildingN": { x: 442, y: 260 },
                 "buildingO": { x: 611, y: 196 },
                 "buildingP": { x: 456, y: 115 },
-                "mainParking": { x: 282, y: 766 },
+                "mainParking": { x: 274, y: 766 },
                 "chilamatesPlaza": { x: 294, y: 292 },
                 "sportsZone": { x: 938, y: 447 },
                 "jaguarCenter": { x: 900, y: 623 },
                 "jaguarGym": { x: 969, y: 726 },
                 "physiotherapy": { x: 978, y: 677 },
-                "northGate": { x: 224, y: 74 },
+                "northGate": { x: 218, y: 74 },
                 "northeastGate": { x: 659, y: 16 }
             };
 
