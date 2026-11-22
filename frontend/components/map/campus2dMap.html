@@ -6,7 +6,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
 - Flat architectural building layouts (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P)
 - Real sports facilities: Baseball Stadium, Soccer Field, Jaguar Center, Jaguar Gym, Courts
 - Plaza Central Rubén Darío, Plaza Chilamates, Ranchón, Weather Station, Parking & Tree rows
-- Pedestrian walkway network and animated Dijkstra route path
+- Animated Dijkstra route path
 - Official letter badges and orientation compass rose
 - Clean flat architectural colors (pure 2D vector view)
 ================================================================================
@@ -212,7 +212,6 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                     <line x1="484" y1="324" x2="472" y2="340" />
                     <line x1="498" y1="324" x2="486" y2="340" />
                 </g>
-                <line x1="276" y1="340" x2="486" y2="340" stroke="#ffffff" stroke-width="1" stroke-dasharray="3,3" opacity="0.6" />
 
                 <!-- Bottom Perpendicular Stalls (Vertical White Lines facing Building C) -->
                 <g stroke="#ffffff" stroke-width="1.8" stroke-linecap="round">
@@ -237,10 +236,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                     <line x1="496" y1="368" x2="496" y2="384" />
                     <line x1="508" y1="368" x2="508" y2="384" />
                 </g>
-                <line x1="280" y1="368" x2="508" y2="368" stroke="#ffffff" stroke-width="1" stroke-dasharray="3,3" opacity="0.6" />
 
-                <!-- Central Driving Lane Centerline -->
-                <line x1="268" y1="354" x2="495" y2="354" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="6,6" opacity="0.5" />
 
                 <!-- East Landscaping Tree Column -->
                 <g fill="#475569" opacity="0.85">
@@ -267,16 +263,6 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                     <line x1="240" y1="379" x2="260" y2="379" />
                     <line x1="240" y1="387" x2="260" y2="387" />
                 </g>
-            </g>
-
-            <!-- Parking Row Stripes -->
-            <g stroke="#94a3b8" stroke-width="1" stroke-dasharray="8,6" opacity="0.6">
-                <line x1="90" y1="320" x2="180" y2="320" />
-                <line x1="90" y1="380" x2="180" y2="380" />
-                <line x1="90" y1="440" x2="180" y2="440" />
-                <line x1="90" y1="500" x2="180" y2="500" />
-                <line x1="90" y1="560" x2="180" y2="560" />
-                <line x1="240" y1="715" x2="580" y2="715" />
             </g>
 
             <!-- Circular Landscape Trees (Matching Official Signage Rows) -->
@@ -383,7 +369,6 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 <g class="bldg-shape" data-node="buildingL" data-bldg="CANCHAS">
                     <rect x="805" y="475" width="75" height="55" fill="#2563eb" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                     <rect x="812" y="482" width="61" height="41" fill="none" stroke="#ffffff" stroke-width="1.5" />
-                    <line x1="842" y1="475" x2="842" y2="530" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4,2" />
                 </g>
 
                 <!-- Grandstands (Graderías) -->
@@ -553,8 +538,6 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                     <polygon points="270,390 515,390 495,410 270,410" fill="#48b2a9" />
                     <!-- Inward Hip Roof Facet East: #1f8383 -->
                     <polygon points="515,390 515,430 495,410" fill="#1f8383" />
-                    <!-- Green Corridor Walkway -->
-                    <line x1="270" y1="410" x2="515" y2="410" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.85" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
                 <rect x="270" y="390" width="245" height="40" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
@@ -607,8 +590,6 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 <g clip-path="url(#clipConnectorBC)">
                     <rect x="370" y="430" width="14" height="50" fill="#1da495" />
                     <rect x="384" y="430" width="14" height="50" fill="#48b2a9" />
-                    <!-- Green Corridor Walkway -->
-                    <line x1="384" y1="430" x2="384" y2="480" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.9" />
                 </g>
                 <!-- Navy Side Borders -->
                 <line x1="370" y1="430" x2="370" y2="480" stroke="#253452" stroke-width="3.5" stroke-linecap="square" />
@@ -624,8 +605,6 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                     <polygon points="270,480 515,480 495,500 270,500" fill="#48b2a9" />
                     <!-- Shadow Inward Hip Roof Facet East: #1f8383 -->
                     <polygon points="515,480 515,520 495,500" fill="#1f8383" />
-                    <!-- Green Corridor Walkway -->
-                    <line x1="270" y1="500" x2="515" y2="500" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.85" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
                 <rect x="270" y="480" width="245" height="40" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
@@ -641,8 +620,6 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 <g clip-path="url(#clipConnectorBE)">
                     <rect x="442" y="520" width="4" height="48" fill="#1da495" />
                     <rect x="446" y="520" width="4" height="48" fill="#48b2a9" />
-                    <!-- Green Corridor Walkway -->
-                    <line x1="446" y1="520" x2="446" y2="568" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,3" opacity="0.9" />
                 </g>
                 <!-- Navy Side Borders (Thin straight lines connecting B and E) -->
                 <line x1="442" y1="520" x2="442" y2="568" stroke="#253452" stroke-width="2.5" stroke-linecap="square" />
@@ -660,8 +637,6 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                     <polygon points="440,568 476,568 458,586" fill="#1f8383" />
                     <!-- Shadow Bottom South Hip Triangle: #1f8383 -->
                     <polygon points="440,745 476,745 458,727" fill="#1f8383" />
-                    <!-- Green Corridor Walkway -->
-                    <line x1="458" y1="586" x2="458" y2="727" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.85" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners (Clean Rectangle) -->
                 <rect x="440" y="568" width="36" height="177" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
@@ -820,8 +795,6 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                     <polygon points="270,653 317,653 293,635" fill="#1f8383" />
                     <!-- Right wing bottom inverted-V hip triangle -->
                     <polygon points="322,653 346,653 334,643" fill="#1f8383" />
-                    <!-- Green Corridor Walkway through right wing matching official map signage -->
-                    <line x1="316" y1="606" x2="346" y2="606" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.85" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
                 <polygon points="270,575 316,575 316,583 346,627 346,653 322,653 322,630 317,630 317,653 270,653" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
@@ -863,30 +836,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
         </g>
 
         <!-- ================================================================== -->
-        <!-- 5. PEDESTRIAN WALKWAY EDGES                                        -->
-        <!-- ================================================================== -->
-        <g id="campus2dWalkways" fill="none" stroke="#64748b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6,4" opacity="0.65">
-            <!-- Walkways connecting Parking -> K -> A -> B/C -> E/G/F -> I -> Sports -->
-            <path d="M 340 785 L 340 606 L 293 606" />
-            <path d="M 293 575 L 250 520 L 250 500" />
-            <path d="M 250 500 L 250 390 L 250 315 L 225 287 L 275 287 L 330 287" />
-            <path d="M 250 287 L 250 217 L 350 217 L 350 128" />
-            <path d="M 250 410 L 515 410" />
-            <path d="M 250 500 L 515 500" />
-            <path d="M 384 410 L 384 500" />
-            <path d="M 515 410 L 575 410 L 600 425 L 510 255 L 440 128" />
-            <path d="M 515 500 L 575 500 L 635 459" />
-            <path d="M 458 500 L 446 520 L 446 568 L 458 586 L 458 735" />
-            <path d="M 476 591 L 514 591" />
-            <path d="M 476 661 L 514 661" />
-            <path d="M 458 735 L 598 735 L 598 725" />
-            <path d="M 598 785 L 598 682 L 653 682 L 653 748" />
-            <path d="M 598 682 L 598 625 L 690 520 L 805 507" />
-            <path d="M 635 459 L 670 362 L 640 167" />
-        </g>
-
-        <!-- ================================================================== -->
-        <!-- 6. DIJKSTRA ANIMATED ROUTE OVERLAY                                 -->
+        <!-- 5. DIJKSTRA ANIMATED ROUTE OVERLAY                                 -->
         <!-- ================================================================== -->
         <g id="route2dLayer">
             <!-- Ground Drop Shadow Polyline for 3D Route Extrusion -->
