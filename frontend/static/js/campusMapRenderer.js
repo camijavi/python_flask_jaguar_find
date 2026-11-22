@@ -353,9 +353,24 @@
             addStallRow(l, 754, 90, 862, 90, 12, 0, -14, true);
         });
 
-        // 2.8 East Roadside Parking Strips (East of Building O & Left/Compass-East Side of Soccer Field)
+        // 2.8 East & Central-Spine Parking Lots (East of O, West/Right of G & F, Left/East of Soccer Field)
         makeLot("parkingLotEastO", "rect", { x: 626, y: 204, width: 24, height: 64, rx: 4 }, (_, l) => {
             addStallRow(l, 629, 210, 629, 262, 8, 11, 0, true);
+        });
+        // Parking Lot on Right (Compass-West) Side of Buildings G & F (with pill median island & dual stall columns)
+        makeLot("parkingLotWestGF", "path", {
+            d: "M 618 486 L 672 476 L 694 476 L 694 562 L 678 578 L 618 578 Z"
+        }, (g, l) => {
+            // Left column perpendicular stalls along Building G & Building F
+            addStallRow(l, 624, 490, 624, 530, 5, 11, 0);
+            addStallRow(l, 624, 542, 624, 574, 5, 11, 0);
+            // Vertical pill-shaped raised concrete median island (east of Meeting Point 5)
+            el("rect", {
+                x: 668, y: 496, width: 7, height: 58, rx: 3.5,
+                fill: "#b4c0cf", stroke: "#ffffff", "stroke-width": 1.3, class: "parking-island"
+            }, g);
+            // Right column perpendicular stalls along Central Spine Road
+            addStallRow(l, 681, 480, 681, 554, 12, 12, 0);
         });
         makeLot("parkingLotSoccerEast", "path", {
             d: "M 716 398 L 735 398 L 735 536 L 716 536 Z"
@@ -388,20 +403,20 @@
             addStallRow(l, 498, 742, 626, 742, 16, 0, 13);
         });
 
-        // 2.10 South-East Parking Lot (Between E Annexes, F, and Spine Road, with I-shaped median)
+        // 2.10 South-East Parking Lot (Between E Annexes, F double-tree row, and Spine Road, with I-shaped median)
         makeLot("parkingLotSouthEF", "path", {
-            d: "M 582 596 L 686 596 L 686 666 A 14 14 0 0 1 672 680 L 582 680 Z"
+            d: "M 582 602 L 686 602 L 686 668 A 14 14 0 0 1 672 682 L 582 682 Z"
         }, (g, l) => {
             // Center I-shaped raised concrete median island
             el("path", {
-                d: "M 616 606 L 652 606 A 2.5 2.5 0 0 1 652 611 L 641 611 L 641 661 L 652 661 A 2.5 2.5 0 0 1 652 666 L 616 666 A 2.5 2.5 0 0 1 616 661 L 627 661 L 627 611 L 616 611 A 2.5 2.5 0 0 1 616 606 Z",
+                d: "M 616 611 L 652 611 A 2.5 2.5 0 0 1 652 616 L 641 616 L 641 663 L 652 663 A 2.5 2.5 0 0 1 652 668 L 616 668 A 2.5 2.5 0 0 1 616 663 L 627 663 L 627 616 L 616 616 A 2.5 2.5 0 0 1 616 611 Z",
                 fill: "#b4c0cf", stroke: "#ffffff", "stroke-width": 1.3, class: "parking-island"
             }, g);
             // 4 neat columns of stalls (west curb, left of island, right of island, east curb)
-            addStallRow(l, 586, 602, 586, 666, 9, 13, 0, true);
-            addStallRow(l, 626, 616, 626, 656, 6, -13, 0);
-            addStallRow(l, 642, 616, 642, 656, 6, 13, 0);
-            addStallRow(l, 682, 602, 682, 666, 9, -13, 0, true);
+            addStallRow(l, 586, 608, 586, 668, 9, 13, 0, true);
+            addStallRow(l, 626, 621, 626, 658, 6, -13, 0);
+            addStallRow(l, 642, 621, 642, 658, 6, 13, 0);
+            addStallRow(l, 682, 608, 682, 668, 9, -13, 0, true);
         });
 
         // 2.11 & 2.12 Unified Building I + Jaguar Gym / Jaguar Center Parking Lot
@@ -556,10 +571,6 @@
             // Edificio H (Laboratorios de Medicina) + small west wing
             { x: 604, y: 354, w: 84, h: 32, node: "buildingH", bldg: "H", badge: "H", badgeClass: "badge-green", badgeX: 646, badgeY: 370, orientation: "h" },
             { x: 576, y: 356, w: 24, h: 20, node: "buildingH", bldg: "H", orientation: "h", borderWidth: 2.5 },
-            // Edificio G (Auditorio Central & Derecho)
-            { x: 568, y: 488, w: 48, h: 44, node: "buildingG", bldg: "G", badge: "G", badgeClass: "badge-cyan", orientation: "v" },
-            // Edificio F (FACEE)
-            { x: 568, y: 540, w: 48, h: 48, node: "buildingF", bldg: "F", badge: "F", badgeClass: "badge-magenta", orientation: "v" },
             // Jaguar Gym (vertical hipped-roof geometry matching close-up signage, clickable navigation node)
             { x: 934, y: 704, w: 42, h: 44, node: "jaguarGym", bldg: "JAGUAR GYM", orientation: "v" },
             // Physiotherapy Building / Fisioterapia (hipped roof north of Jaguar Gym, clickable navigation node)
@@ -633,6 +644,29 @@
                     ["578,418 578,452 592,435", ROOF_DARK],
                     ["592,404 636,404 614,415", ROOF_DARK],
                     ["592,466 636,466 614,454", ROOF_DARK]
+                ]
+            },
+            // Edificio G (Auditorio Central & Derecho — main hipped block + upper-right side annex)
+            {
+                node: "buildingG", bldg: "G", badge: "G", badgeClass: "badge-navy", badgeX: 591, badgeY: 509,
+                path: "M 568 486 L 614 486 L 614 495 L 622 495 L 622 515 L 614 515 L 614 532 L 568 532 Z",
+                facets: [
+                    ["568,486 591,500 591,518 568,532", ROOF_LIGHT],
+                    ["568,486 614,486 591,500", ROOF_DARK],
+                    ["568,532 614,532 591,518", ROOF_DARK],
+                    ["614,495 622,495 622,515 614,515", ROOF_LIGHT]
+                ]
+            },
+            // Edificio F (FACEE — taller hipped block + twin right-side annex notches)
+            {
+                node: "buildingF", bldg: "F", badge: "F", badgeClass: "badge-magenta", badgeX: 591, badgeY: 566,
+                path: "M 568 540 L 614 540 L 614 550 L 621 550 L 621 561 L 614 561 L 614 570 L 622 570 L 622 585 L 614 585 L 614 592 L 568 592 Z",
+                facets: [
+                    ["568,540 591,554 591,578 568,592", ROOF_LIGHT],
+                    ["568,540 614,540 591,554", ROOF_DARK],
+                    ["568,592 614,592 591,578", ROOF_DARK],
+                    ["614,550 621,550 621,561 614,561", ROOF_LIGHT],
+                    ["614,570 622,570 622,585 614,585", ROOF_LIGHT]
                 ]
             },
             // Edificio K (Cafeteria Central - Dogleg)
@@ -730,6 +764,9 @@
             [504, 514, 504, 650, 9],
             // South of Plaza Central
             [396, 562, 486, 562, 5],
+            // Double staggered tree rows separating G/F Parking from South-East Parking (exact close-up pattern)
+            [628, 581, 672, 581, 4],
+            [620, 593, 682, 593, 5],
             // South parking horizontal tree rows (dead-straight horizontal, matching close-up signage)
             [356, 680, 466, 680, 7],      // Below South Upper Parking (left of E)
             [616, 680, 672, 680, 3],      // Below SE Parking (right of Innovacion)
@@ -759,7 +796,7 @@
         const singleTrees = [
             [304, 248], [368, 152], [338, 560], [358, 560],
             [274, 746], [274, 766],
-            [632, 574], [652, 574], [668, 574],
+            [688, 585],
             [866, 704], [882, 720], [916, 696],
             [978, 577], [952, 594], [952, 614], [952, 632], [946, 662], [1132, 756]
         ];
@@ -816,15 +853,15 @@
             "M 400 524 L 426 518",
             "M 518 522 L 470 518",
 
-            // Buildings H, M, G, F, E, I -> Meeting Point 5 (East Spine Road)
-            "M 688 380 L 692 468 L 668 504",
-            "M 638 446 L 654 498",
-            "M 566 468 L 628 468 L 648 504",
-            "M 618 514 L 640 516",
-            "M 618 560 L 646 530",
-            "M 664 646 L 664 584 L 658 532",
-            "M 748 606 L 720 578 L 668 528",
-            "M 796 706 L 702 706 L 702 588 L 670 530",
+            // Buildings H, M, G, F, E, I -> Meeting Point 5 (centered in G/F parking aisle west of pill median)
+            "M 688 380 L 688 468 L 664 504",
+            "M 638 446 L 650 500",
+            "M 566 468 L 626 468 L 644 504",
+            "M 622 508 L 634 516",
+            "M 622 560 L 640 532",
+            "M 651 642 L 651 536",
+            "M 748 606 L 716 574 L 668 532",
+            "M 796 706 L 702 706 L 702 588 L 666 534",
 
             // Sports Concourse -> Meeting Point 3 (Soccer Field)
             "M 754 338 L 876 426",
@@ -883,7 +920,7 @@
             { cx: 656, cy: 200, r: 11 },   // East of Building O
             { cx: 904, cy: 446, r: 21 },   // Soccer Field Center
             { cx: 448, cy: 514, r: 18 },   // Plaza Central Ruben Dario
-            { cx: 656, cy: 516, r: 11 }    // Spine Road East of G/F
+            { cx: 651, cy: 518, r: 10.5 }  // G/F Parking Aisle (West of Pill Median)
         ];
 
         for (const pt of safePoints) {
