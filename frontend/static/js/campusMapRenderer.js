@@ -35,7 +35,7 @@
         buildingI: { x: 762, y: 656 },
         buildingJ: { x: 357, y: 316 },
         buildingK: { x: 362, y: 526 },
-        buildingL: { x: 982, y: 626 },
+        buildingL: { x: 975, y: 612 },
         buildingM: { x: 612, y: 435 },
         buildingN: { x: 436, y: 260 },
         buildingO: { x: 597, y: 196 },
@@ -84,7 +84,7 @@
         const {
             x, y, w, h,
             node, bldg,
-            badge, badgeClass, badgeX, badgeY,
+            badge, badgeClass, badgeX, badgeY, badgeSize = 20,
             orientation = (w >= h ? "h" : "v"),
             borderWidth = 3,
             shadow = true
@@ -135,7 +135,7 @@
         }, g);
 
         if (badge) {
-            addBadge(g, badgeX ?? (x + w / 2), badgeY ?? (y + h / 2), badge, badgeClass);
+            addBadge(g, badgeX ?? (x + w / 2), badgeY ?? (y + h / 2), badge, badgeClass, badgeSize);
         }
         return g;
     }
@@ -221,8 +221,8 @@
             { d: "M 678 696 L 678 742", w: 16, color: "#cbd5e1" },
             // Pedestrian sports concourse between Baseball Stadium and Soccer Field
             { d: "M 708 338 L 1140 338", w: 22, color: "#dce2ec" },
-            // Pedestrian corridor between Jaguar Center/Soccer and L/Courts/East buildings
-            { d: "M 988 538 L 998 840", w: 14, color: "#dce2ec" }
+            // Pedestrian corridor cleanly running between Building L/Jaguar Gym and Courts/East Complex
+            { d: "M 992 542 L 994 842", w: 10, color: "#e4e9f2" }
         ];
 
         for (const r of connectors) {
@@ -465,22 +465,24 @@
         el("rect", { x: 1042, y: 412, width: 38, height: 70 }, lines);
         el("rect", { x: 1064, y: 427, width: 16, height: 40 }, lines);
 
-        // 3C. Outdoor Courts (Canchas) & Grandstands (Graderias) East of Building L
+        // 3C. Outdoor Courts East of Building L: Tennis/Multi-Sport Court + Sand Volleyball Court
         const cts = el("g", { id: "sportsCourts", class: "bldg-shape", "data-node": "buildingL", "data-bldg": "CANCHAS" }, layer);
-        // Two side-by-side blue courts
-        for (const cx of [1028, 1088]) {
-            el("rect", { x: cx, y: 586, width: 52, height: 54, fill: "#2563eb", stroke: ROOF_BORDER, "stroke-width": 2.5 }, cts);
-            el("rect", { x: cx + 5, y: 591, width: 42, height: 44, fill: "none", stroke: "#ffffff", "stroke-width": 1.2 }, cts);
-            el("line", { x1: cx + 5, y1: 613, x2: cx + 47, y2: 613, stroke: "#ffffff", "stroke-width": 1.2 }, cts);
-            el("circle", { cx: cx + 26, cy: 613, r: 6, fill: "none", stroke: "#ffffff", "stroke-width": 1.1 }, cts);
-        }
-        // Grandstands (Graderias) along north & west edges of courts
-        const gr = el("g", { id: "grandstands" }, layer);
-        el("rect", { x: 1018, y: 562, width: 72, height: 18, fill: "#94a3b8", stroke: ROOF_BORDER, "stroke-width": 1.8 }, gr);
-        for (let gy = 567; gy <= 576; gy += 4.5) {
-            el("line", { x1: 1020, y1: gy, x2: 1088, y2: gy, stroke: "#e2e8f0", "stroke-width": 1 }, gr);
-        }
-        el("rect", { x: 1012, y: 586, width: 11, height: 54, fill: "#94a3b8", stroke: ROOF_BORDER, "stroke-width": 1.5 }, gr);
+
+        // Left Court: Full Tennis / Multi-Sport Court with exact singles/doubles & service lines
+        el("rect", { x: 998, y: 568, width: 64, height: 74, fill: "#cbd5e1", stroke: ROOF_BORDER, "stroke-width": 2.2 }, cts);
+        el("rect", { x: 1004, y: 573, width: 52, height: 64, fill: "#2563eb", stroke: "#ffffff", "stroke-width": 1.3 }, cts);
+        const tl = el("g", { stroke: "#ffffff", "stroke-width": 1.15, fill: "none" }, cts);
+        el("line", { x1: 1012, y1: 573, x2: 1012, y2: 637 }, tl); // Left singles sideline
+        el("line", { x1: 1048, y1: 573, x2: 1048, y2: 637 }, tl); // Right singles sideline
+        el("line", { x1: 1004, y1: 605, x2: 1056, y2: 605 }, tl); // Center net line
+        el("line", { x1: 1012, y1: 588, x2: 1048, y2: 588 }, tl); // North service line
+        el("line", { x1: 1012, y1: 622, x2: 1048, y2: 622 }, tl); // South service line
+        el("line", { x1: 1030, y1: 588, x2: 1030, y2: 622 }, tl); // Center service line
+
+        // Right Court: Sand Volleyball Court (shorter portrait sand box with white court + center net)
+        el("rect", { x: 1068, y: 568, width: 48, height: 56, fill: "#e6c88c", stroke: ROOF_BORDER, "stroke-width": 2.2 }, cts);
+        el("rect", { x: 1077, y: 576, width: 30, height: 40, fill: "#d9b46e", stroke: "#ffffff", "stroke-width": 1.3 }, cts);
+        el("line", { x1: 1077, y1: 596, x2: 1107, y2: 596, stroke: "#ffffff", "stroke-width": 1.3 }, cts);
     }
 
     // ----------------------------------------------------------------------------
@@ -557,8 +559,11 @@
             { x: 568, y: 540, w: 48, h: 48, node: "buildingF", bldg: "F", badge: "F", badgeClass: "badge-magenta", orientation: "v" },
             // Jaguar Gym (vertical hipped-roof geometry matching close-up signage, clickable navigation node)
             { x: 934, y: 704, w: 42, h: 44, node: "jaguarGym", bldg: "JAGUAR GYM", orientation: "v" },
-            // Physiotherapy Building / Fisioterapia (horizontal hipped roof north of Jaguar Gym, clickable navigation node)
-            { x: 944, y: 666, w: 40, h: 26, node: "physiotherapy", bldg: "FISIOTERAPIA", orientation: "h", borderWidth: 2.6 }
+            // Physiotherapy Building / Fisioterapia (hipped roof north of Jaguar Gym, clickable navigation node)
+            { x: 944, y: 668, w: 40, h: 22, node: "physiotherapy", bldg: "FISIOTERAPIA", orientation: "v", borderWidth: 2.5 },
+            // Edificio L — Two separate twin squares (matching official signage)
+            { x: 964, y: 588, w: 22, h: 20, node: "buildingL", bldg: "L", badge: "L", badgeClass: "badge-magenta", badgeSize: 13, orientation: "v", borderWidth: 2.2 },
+            { x: 964, y: 616, w: 22, h: 20, node: "buildingL", bldg: "L", badge: "L", badgeClass: "badge-magenta", badgeSize: 13, orientation: "v", borderWidth: 2.2 }
         ];
 
         for (const cfg of rectBuildings) {
@@ -648,16 +653,6 @@
                     ["728,630 740,642 740,686 728,700", ROOF_LIGHT],
                     ["728,700 798,700 784,686 740,686", ROOF_DARK]
                 ]
-            },
-            // Edificio L (Cultura & Complejo Deportivo, clear pedestrian gap above Physiotherapy)
-            {
-                node: "buildingL", bldg: "L", badge: "L", badgeClass: "badge-cyan", badgeX: 982, badgeY: 620,
-                path: "M 964 588 L 996 588 L 996 654 L 972 654 L 972 614 L 964 614 Z",
-                facets: [
-                    ["964,588 996,588 984,602 964,602", ROOF_LIGHT],
-                    ["996,588 996,654 984,642 984,602", ROOF_LIGHT],
-                    ["972,654 996,654 984,642", ROOF_DARK]
-                ]
             }
         ];
 
@@ -683,20 +678,33 @@
             { x: 774, y: 325, w: 30, h: 28 },      // Kiosko Mid
             { x: 844, y: 325, w: 30, h: 28 },      // Sanitarios Mid
             { x: 944, y: 320, w: 42, h: 31 },      // Oficina de Deportes
-            // East / Bottom-Right Complex
-            { x: 974, y: 548, w: 28, h: 24 },      // Sanitarios Publicos
-            { x: 1018, y: 664, w: 40, h: 30 },     // Bodega / Warehouse
-            { x: 1086, y: 656, w: 48, h: 22 },     // Kiosko Jaguar Sport
-            { x: 1030, y: 714, w: 36, h: 28 },     // Artes Marciales (West)
-            { x: 1084, y: 714, w: 56, h: 28 },     // Artes Marciales (East)
-            { x: 1024, y: 754, w: 44, h: 36 },     // Usos Multiples (West)
-            { x: 1082, y: 754, w: 60, h: 28 },     // Usos Multiples (East)
-            { x: 1014, y: 812, w: 46, h: 24 },     // Comedor (West)
-            { x: 1082, y: 812, w: 56, h: 24 }      // Comedor (East)
+            // East / Bottom-Right Sports & Service Complex (exact layout from close-up signage)
+            { x: 964, y: 550, w: 24, h: 20, orientation: "v" },   // Public Washrooms (above Building L)
+            { x: 962, y: 646, w: 24, h: 16, orientation: "h" },   // Small nameless pavilion (between L & Physiotherapy)
+            { x: 1012, y: 652, w: 40, h: 24, orientation: "v" },  // Warehouse (Bodega)
+            { x: 1074, y: 630, w: 42, h: 22, orientation: "h" },  // Jaguar Sport Kiosk (main pavilion below sand volleyball)
+            { x: 1104, y: 666, w: 26, h: 14, orientation: "h" },  // Jaguar Sport Kiosk (small east booth)
+            { x: 1076, y: 684, w: 58, h: 26, orientation: "v" },  // Martial Arts Building (Artes Marciales)
+            { x: 1078, y: 720, w: 58, h: 24, orientation: "h" },  // Multipurpose Room (Usos Multiples)
+            { x: 1080, y: 792, w: 56, h: 24, orientation: "h" },  // Lunch Area (Comedor)
+
+            // Nameless Modular Complex (stacked corrugated awnings & hipped roofs south of Warehouse)
+            { x: 1006, y: 682, w: 52, h: 16, orientation: "ribV", borderWidth: 1.5, shadow: false },
+            { x: 1006, y: 698, w: 52, h: 20, orientation: "h", borderWidth: 2 },
+            { x: 1006, y: 718, w: 52, h: 16, orientation: "ribV", borderWidth: 1.5, shadow: false },
+            { x: 1006, y: 734, w: 52, h: 20, orientation: "h", borderWidth: 2 },
+            { x: 1006, y: 754, w: 52, h: 14, orientation: "ribV", borderWidth: 1.5, shadow: false },
+            { x: 1008, y: 780, w: 52, h: 16, orientation: "ribV", borderWidth: 1.5, shadow: false },
+            { x: 1008, y: 796, w: 52, h: 20, orientation: "h", borderWidth: 2 },
+            { x: 1008, y: 816, w: 52, h: 14, orientation: "ribV", borderWidth: 1.5, shadow: false },
+            { x: 1008, y: 832, w: 52, h: 10, orientation: "ribV", borderWidth: 1.5, shadow: false }
         ];
 
+        // Subtle dining patio pad beneath Lunch Area (Comedor)
+        el("rect", { x: 1068, y: 782, width: 72, height: 42, rx: 2, fill: "#dfe5ec", stroke: "#cbd5e1", "stroke-width": 1 }, layer);
+
         for (const sb of supportBuildings) {
-            addRectBuilding(layer, { ...sb, borderWidth: 2.2 });
+            addRectBuilding(layer, { borderWidth: 2.2, ...sb });
         }
 
         // Main South Gate (Entrada Principal)
@@ -744,12 +752,13 @@
             addTreeRow(layer, x1, y1, x2, y2, count, "#treeLarge");
         }
 
-        // Individual accent trees (Plaza Chilamates, near P, F, Main Entrance, Jaguar Center Lot, East)
+        // Individual accent trees (Plaza Chilamates, near P, F, Main Entrance, Jaguar Gym Lot, East Complex)
         const singleTrees = [
             [304, 248], [368, 152], [338, 560], [358, 560],
             [274, 746], [274, 766],
             [632, 574], [652, 574], [668, 574],
-            [866, 704], [882, 720], [916, 696], [944, 658], [1138, 796]
+            [866, 704], [882, 720], [916, 696],
+            [978, 577], [952, 594], [952, 614], [952, 632], [946, 662], [1132, 756]
         ];
         for (const [x, y] of singleTrees) {
             el("use", { href: "#treeLarge", x, y }, layer);
@@ -776,9 +785,7 @@
             [346, 474, 438, 474, 9],
             [458, 474, 514, 474, 6],
             // Around Building F & SE Parking
-            [628, 624, 634, 668, 5],
-            // Around Building L & Jaguar Center east corridor
-            [952, 588, 952, 656, 7]
+            [628, 624, 634, 668, 5]
         ];
 
         for (const [x1, y1, x2, y2, count] of bushRows) {
@@ -819,12 +826,16 @@
             // Sports Concourse -> Meeting Point 3 (Soccer Field)
             "M 754 338 L 876 426",
 
-            // Jaguar Center, L, Gym, Physiotherapy, Courts, East Complex -> Meeting Point 3 (Soccer Field)
-            "M 848 574 L 848 558 L 938 558 L 938 474",
-            "M 962 612 L 942 612 L 942 558 L 938 558",
-            "M 978 724 L 978 696 L 936 696 L 936 566",
-            "M 1068 818 L 1068 696 L 986 696 L 986 678",
-            "M 1054 644 L 1054 580 L 1006 580 L 944 558"
+            // Jaguar Center, L, Gym, Physiotherapy, Warehouse, Nameless Complex & Martial Arts -> Soccer Field
+            "M 848 574 L 848 558 L 944 558 L 944 474",
+            "M 964 598 L 952 598 L 952 580",
+            "M 964 626 L 952 626 L 952 642 L 992 642",
+            "M 978 724 L 978 696 L 944 696 L 944 566",
+            // East walkway corridor cleanly between Building L/Jaguar Gym and Courts/Nameless Complex (zero court overlap!)
+            "M 1004 834 L 994 834 L 994 580 L 950 580",
+            "M 1018 676 L 1018 682 L 994 682",
+            "M 1068 742 L 1066 742 L 1066 678",
+            "M 1140 732 L 1140 656"
         ];
 
         // Crisp white halo underneath so green dashed routes stay legible on dark grass & light roads
@@ -852,6 +863,14 @@
         for (const d of evacuationPaths) {
             el("path", { d }, casingGroup);
             el("path", { d, "marker-end": "url(#evacArrow)" }, routesGroup);
+        }
+
+        // Emergency route junction nodes (green circles along east complex walkways)
+        const junctionDots = [
+            [994, 642], [994, 676], [1004, 682], [1066, 678], [1140, 656], [994, 766]
+        ];
+        for (const [cx, cy] of junctionDots) {
+            el("circle", { cx, cy, r: 3.2, fill: "#166534", stroke: "#ffffff", "stroke-width": 1 }, layer);
         }
 
         // 7B. Safe Area / Meeting Point Green Circles with Checkmarks
