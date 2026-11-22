@@ -74,17 +74,17 @@ def createApp(configClass=Config) -> Flask:
 
     @app.route("/auth")
     def renderLogInScreen():
-        """Pantalla de entrada: sign up or signIn."""
+        """Log in screen: sign up or signIn."""
         return render_template("screens/auth/logInScreen.html")
 
     @app.route("/auth/options")
     def renderUserOptions():
-        """Selección de rol (Estudiante / Colaborador / Visitante)."""
+        """role selection (student / collaborator / visitor)."""
         return render_template("screens/auth/userOptions.html")
 
     @app.route("/auth/signup")
-    def renderSigUp():
-        """Formulario de registro, filtrado por el rol elegido."""
+    def renderSignUp():
+        """Sign up form, filtered by the chosen role."""
         rol = request.args.get("rol", "estudiante")
         if rol not in ("estudiante", "colaborador", "visitante"):
             rol = "estudiante"
@@ -92,9 +92,8 @@ def createApp(configClass=Config) -> Flask:
 
     @app.route("/auth/signin")
     def renderSignIn():
-        """Formulario de inicio de sesión."""
+        """Login form."""
         return render_template("screens/auth/signInScreen.html")
-
 
     @app.route("/set-language/<lang>", methods=["GET", "POST"])
     def setLanguage(lang: str):
