@@ -27,27 +27,27 @@
         buildingA: { x: 323, y: 435 },
         buildingB: { x: 444, y: 459 },
         buildingC: { x: 444, y: 411 },
-        buildingD: { x: 404, y: 316 },
+        buildingD: { x: 410, y: 316 },
         buildingE: { x: 534, y: 580 },
-        buildingF: { x: 592, y: 564 },
-        buildingG: { x: 592, y: 510 },
-        buildingH: { x: 637, y: 369 },
-        buildingI: { x: 762, y: 656 },
-        buildingJ: { x: 357, y: 316 },
+        buildingF: { x: 604, y: 564 },
+        buildingG: { x: 604, y: 510 },
+        buildingH: { x: 652, y: 369 },
+        buildingI: { x: 776, y: 656 },
+        buildingJ: { x: 361, y: 316 },
         buildingK: { x: 362, y: 526 },
-        buildingL: { x: 975, y: 612 },
-        buildingM: { x: 612, y: 435 },
-        buildingN: { x: 436, y: 260 },
-        buildingO: { x: 597, y: 196 },
-        buildingP: { x: 450, y: 115 },
+        buildingL: { x: 989, y: 612 },
+        buildingM: { x: 626, y: 435 },
+        buildingN: { x: 442, y: 260 },
+        buildingO: { x: 611, y: 196 },
+        buildingP: { x: 456, y: 115 },
         mainParking: { x: 282, y: 766 },
-        chilamatesPlaza: { x: 300, y: 292 },
-        sportsZone: { x: 924, y: 447 },
-        jaguarCenter: { x: 886, y: 623 },
-        jaguarGym: { x: 955, y: 726 },
-        physiotherapy: { x: 964, y: 677 },
+        chilamatesPlaza: { x: 294, y: 292 },
+        sportsZone: { x: 938, y: 447 },
+        jaguarCenter: { x: 900, y: 623 },
+        jaguarGym: { x: 969, y: 726 },
+        physiotherapy: { x: 978, y: 677 },
         northGate: { x: 224, y: 74 },
-        northeastGate: { x: 645, y: 16 }
+        northeastGate: { x: 659, y: 16 }
     };
 
     // ----------------------------------------------------------------------------
@@ -208,21 +208,21 @@
     function renderRoads(layer) {
         // 1A. Secondary walkways & parking driveways (flat pale slate, no lane dashes)
         const connectors = [
-            // Wide seamless asphalt throat connecting West Main Avenue into Central CD Parking
-            { d: "M 252 366 L 312 366", w: 28, color: "#dfe5ec" },
+            // Wide seamless asphalt throat connecting West Main Avenue across crosswalk into Central CD Parking
+            { d: "M 248 369 L 336 369", w: 50, color: "#dfe5ec" },
             // Wide seamless asphalt throat connecting West Main Avenue into Upper & Lower West Parking
             { d: "M 226 266 L 246 266", w: 120, color: "#dfe5ec" },
             { d: "M 236 432 L 260 432", w: 132, color: "#dfe5ec" },
             // North Sports Parking entry apron connecting down from Camino Segundo Acceso
-            { d: "M 808 16 L 808 46", w: 24, color: "#dfe5ec" },
+            { d: "M 822 16 L 822 46", w: 24, color: "#dfe5ec" },
             // Driveways from South Main Avenue into upper parking bays & center entry into North/Main-Entrance lot
-            { d: "M 634 676 L 634 696", w: 13, color: "#cbd5e1" },
+            { d: "M 646 676 L 646 696", w: 13, color: "#cbd5e1" },
             { d: "M 484 696 L 484 734", w: 16, color: "#cbd5e1" },
-            { d: "M 678 696 L 678 742", w: 16, color: "#cbd5e1" },
+            { d: "M 692 696 L 692 742", w: 16, color: "#cbd5e1" },
             // Pedestrian sports concourse between Baseball Stadium and Soccer Field
-            { d: "M 708 338 L 1140 338", w: 22, color: "#dce2ec" },
+            { d: "M 722 338 L 1154 338", w: 22, color: "#dce2ec" },
             // Pedestrian corridor cleanly running between Building L/Jaguar Gym and Courts/East Complex
-            { d: "M 992 542 L 994 842", w: 10, color: "#e4e9f2" }
+            { d: "M 1006 542 L 1008 842", w: 10, color: "#e4e9f2" }
         ];
 
         for (const r of connectors) {
@@ -230,16 +230,16 @@
         }
 
         // 1B. Main Campus Vehicle Road Network (balanced uniform boulevard width, zero corner step)
-        const westMainPath = "M 282 766 L 282 702 C 278 600, 264 470, 248 340 C 236 245, 226 165, 224 92 C 222 46, 260 24, 380 17 L 645 15";
+        const westMainPath = "M 282 766 L 282 702 C 278 600, 264 470, 248 340 C 236 245, 226 165, 224 92 C 222 46, 260 24, 380 17 L 659 15";
         const otherMainPaths = [
             // Tercer Acceso (NW gate stub branching west)
             "M 224 74 L 164 74",
             // Camino Segundo Acceso (continuing east from Top T-Junction)
-            "M 645 15 L 1120 12",
+            "M 659 15 L 1140 12",
             // South Internal Ring (Dead-horizontal South Avenue -> SE rounded curve -> Central Spine North -> Top T-Junction)
-            "M 282 702 Q 282 696 298 696 L 678 696 Q 706 696 706 668 L 706 430 C 708 345, 678 270, 662 185 L 645 15",
+            "M 282 702 Q 282 696 298 696 L 692 696 Q 720 696 720 668 L 720 430 C 722 345, 692 270, 676 185 L 659 15",
             // SE Branch connecting SE Curve -> Building I Parking Lot -> Jaguar Center Parking
-            "M 694 696 Q 710 742 742 744 L 836 744"
+            "M 708 696 Q 724 742 756 744 L 850 744"
         ];
 
         const roadCurb = el("g", { class: "main-road-curb", fill: "none", stroke: "#9aa8be", "stroke-linecap": "round", "stroke-linejoin": "round" }, layer);
@@ -306,14 +306,14 @@
             return g;
         }
 
-        // 2.1 Behind Building P (seamless open throat off NW arch road, matching Photo 1)
+        // 2.1 Behind Building P (seamless open throat off NW arch road, aligned with shifted P)
         makeLot("parkingLotBehindP", "path", {
-            d: "M 340 20 L 424 18 L 532 24 A 6 6 0 0 1 538 30 L 538 74 A 6 6 0 0 1 532 80 L 434 80 L 340 24 Z"
+            d: "M 346 20 L 430 18 L 538 24 A 6 6 0 0 1 544 30 L 544 74 A 6 6 0 0 1 538 80 L 440 80 L 346 24 Z"
         }, (_, l) => {
-            addStallRow(l, 368, 34, 434, 76, 8, 5, -9, true);      // SW diagonal stalls
-            addStallRow(l, 444, 29, 514, 29, 9, 0, 11, true);     // Top row
-            addStallRow(l, 440, 76, 512, 76, 9, 0, -11, true);    // Bottom row
-            addStallRow(l, 533, 35, 533, 72, 6, -11, 0, true);    // East column
+            addStallRow(l, 374, 34, 440, 76, 8, 5, -9, true);      // SW diagonal stalls
+            addStallRow(l, 450, 29, 520, 29, 9, 0, 11, true);     // Top row
+            addStallRow(l, 446, 76, 518, 76, 9, 0, -11, true);    // Bottom row
+            addStallRow(l, 539, 35, 539, 72, 6, -11, 0, true);    // East column
         });
 
         // 2.2 West Side of Building P (extends down behind Weather Station on its east column, matching Photo 1 & 9)
@@ -322,12 +322,12 @@
             addStallRow(l, 288, 101, 288, 159, 7, -11, 0, true);  // Right column running beside Weather Station
         });
 
-        // 2.3 North Parking (Between P & N — full apron to West Main Avenue + 3 south curb tabs & NW tree notch, Photo 4 & 5)
+        // 2.3 North Parking (Between P & N — full apron to West Main Avenue + 3 south curb tabs & NW tree notch)
         makeLot("parkingLotNorthPON", "path", {
-            d: "M 244 179 L 318 179 L 318 164 L 348 164 L 348 158 L 538 158 L 538 214 L 528 214 L 528 221 L 520 221 L 520 214 L 414 214 L 414 221 L 406 221 L 406 214 L 334 214 L 334 221 L 326 221 L 326 214 L 248 214 Z"
+            d: "M 244 179 L 324 179 L 324 164 L 354 164 L 354 158 L 546 158 L 546 214 L 536 214 L 536 221 L 528 221 L 528 214 L 420 214 L 420 221 L 412 221 L 412 214 L 340 214 L 340 221 L 332 221 L 332 214 L 248 214 Z"
         }, (_, l) => {
-            addStallRow(l, 330, 160, 532, 160, 26, 0, 14);
-            addStallRow(l, 330, 212, 532, 212, 26, 0, -14);
+            addStallRow(l, 336, 160, 540, 160, 26, 0, 14);
+            addStallRow(l, 336, 212, 540, 212, 26, 0, -14);
         });
 
         // 2.4 Upper West Parking Lot (Seamless connection to West Main Avenue, 4 structured stall rows)
@@ -384,58 +384,53 @@
             addStallRow(l, 202, 466, 224, 466, 3, 0, 11);
         });
 
-        // 2.6 Central Parking Lot (Between N/J/D and Building C — with north double curb & center stair landing, Photo 6 & 7)
+        // 2.6 Central Parking Lot (Starts cleanly east of the moved crosswalk at x=329, ends at x=514 aligned with N & C dormer)
         makeLot("parkingLotCentralCD", "path", {
-            d: "M 304 366 L 322 344 L 496 344 L 496 395 L 304 395 Z"
+            d: "M 329 368 L 356 346 L 514 344 L 514 395 L 329 395 Z"
         }, (g, l) => {
-            el("rect", { x: 304, y: 391, width: 192, height: 4, fill: "#cbd5e1" }, g);
-            // Architectural double retaining curb & center stair landing along north edge (Photo 6 & 7)
-            el("path", { d: "M 314 362 L 326 348 L 434 345 L 444 341 L 456 345 L 496 344", fill: "none", stroke: "#64748b", "stroke-width": 1.2 }, g);
-            el("rect", { x: 438, y: 336, width: 16, height: 11, fill: "#cbd5e1", stroke: "#64748b", "stroke-width": 1 }, g);
-            addStallRow(l, 330, 349, 486, 349, 13, -9, 13);   // Angled top stalls
-            addStallRow(l, 318, 391, 490, 391, 15, 0, -14);   // Perpendicular bottom stalls
+            el("rect", { x: 329, y: 391, width: 185, height: 4, fill: "#cbd5e1" }, g);
+            // Architectural double retaining curb & center stair landing along north edge (between D & N leg)
+            el("path", { d: "M 335 366 L 358 349 L 444 345 L 454 341 L 466 345 L 514 344", fill: "none", stroke: "#64748b", "stroke-width": 1.2 }, g);
+            el("rect", { x: 448, y: 336, width: 16, height: 11, fill: "#cbd5e1", stroke: "#64748b", "stroke-width": 1 }, g);
+            addStallRow(l, 358, 350, 498, 349, 13, 7, 12);    // Angled top stalls slanting down-right
+            addStallRow(l, 354, 391, 508, 391, 14, 0, -14);   // Perpendicular bottom stalls (starting above C's left dormer)
         });
 
-        // Pedestrian Zebra Crosswalk between Plaza Chilamates & Building A Front Plaza
+        // Pedestrian Zebra Crosswalk — positioned at real compass-west location connecting Plaza Chilamates SW edge directly to Building A
         const cw = el("g", { id: "pedestrianChilamatesToA" }, layer);
-        el("rect", { x: 280, y: 344, width: 22, height: 50, fill: "#dfe5ec", stroke: "#cbd5e1", "stroke-width": 1.2 }, cw);
-        for (let y = 350; y <= 388; y += 7) {
-            el("line", { x1: 283, y1: y, x2: 299, y2: y, stroke: "#ffffff", "stroke-width": 3 }, cw);
+        el("rect", { x: 310, y: 344, width: 19, height: 54, fill: "#dfe5ec", stroke: "#cbd5e1", "stroke-width": 1.2 }, cw);
+        for (let y = 350; y <= 392; y += 7) {
+            el("line", { x1: 313, y1: y, x2: 326, y2: y, stroke: "#ffffff", "stroke-width": 3 }, cw);
         }
 
-        // 2.7 North-East Sports Parking (North of Baseball Stadium)
-        makeLot("parkingLotNorthSports", "rect", { x: 744, y: 42, width: 128, height: 52, rx: 6 }, (_, l) => {
-            addStallRow(l, 754, 46, 862, 46, 12, 0, 14, true);
-            addStallRow(l, 754, 90, 862, 90, 12, 0, -14, true);
+        // 2.7 North-East Sports Parking (North of Baseball Stadium, shifted +14px with east campus)
+        makeLot("parkingLotNorthSports", "rect", { x: 758, y: 42, width: 128, height: 52, rx: 6 }, (_, l) => {
+            addStallRow(l, 768, 46, 876, 46, 12, 0, 14, true);
+            addStallRow(l, 768, 90, 876, 90, 12, 0, -14, true);
         });
 
-        // 2.8 East & Central-Spine Parking Lots (Full-length roadside bay east of Spine Road beside O, G/F lot, Soccer lot)
+        // 2.8 East & Central-Spine Parking Lots (Shifted +14px cleanly alongside spine road)
         makeLot("parkingLotEastO", "path", {
-            d: "M 664 138 L 682 138 L 694 274 L 676 274 Z"
+            d: "M 678 138 L 696 138 L 708 274 L 690 274 Z"
         }, (_, l) => {
-            // 14 crisp horizontal perpendicular stalls flush along the east curb of the Spine Road (zero road overlap)
-            addStallRow(l, 679, 144, 691, 268, 14, -13, 0, true);
+            addStallRow(l, 693, 144, 705, 268, 14, -13, 0, true);
         });
-        // Parking Lot on Right (Compass-West) Side of Buildings G & F (with pill median island & dual stall columns)
+        // Parking Lot on Right (Compass-West) Side of Buildings G & F (shifted +12px)
         makeLot("parkingLotWestGF", "path", {
-            d: "M 618 486 L 672 476 L 694 476 L 694 562 L 678 578 L 618 578 Z"
+            d: "M 630 486 L 686 476 L 708 476 L 708 562 L 692 578 L 630 578 Z"
         }, (g, l) => {
-            // Left column perpendicular stalls along Building G & Building F
-            addStallRow(l, 624, 490, 624, 530, 5, 11, 0);
-            addStallRow(l, 624, 542, 624, 574, 5, 11, 0);
-            // Vertical pill-shaped raised concrete median island (east of Meeting Point 5)
+            addStallRow(l, 636, 490, 636, 530, 5, 11, 0);
+            addStallRow(l, 636, 542, 636, 574, 5, 11, 0);
             el("rect", {
-                x: 668, y: 496, width: 7, height: 58, rx: 3.5,
+                x: 682, y: 496, width: 7, height: 58, rx: 3.5,
                 fill: "#b4c0cf", stroke: "#ffffff", "stroke-width": 1.3, class: "parking-island"
             }, g);
-            // Right column perpendicular stalls along Central Spine Road
-            addStallRow(l, 681, 480, 681, 554, 12, 12, 0);
+            addStallRow(l, 695, 480, 695, 554, 12, 12, 0);
         });
         makeLot("parkingLotSoccerEast", "path", {
-            d: "M 716 398 L 735 398 L 735 536 L 716 536 Z"
+            d: "M 730 398 L 749 398 L 749 536 L 730 536 Z"
         }, (_, l) => {
-            // 20 crisp perpendicular stalls running along the left (compass-east) side of the Soccer Field
-            addStallRow(l, 718, 402, 718, 532, 20, 15, 0);
+            addStallRow(l, 732, 402, 732, 532, 20, 15, 0);
         });
 
         // 2.9 Main South Parking Lot (Upper bay cleanly east of the pull-out lay-by & 12-tree line)
@@ -446,65 +441,57 @@
             addStallRow(l, 346, 616, 490, 616, 13, 0, -13, true);
             addStallRow(l, 346, 620, 490, 620, 13, 0, 13);
             addStallRow(l, 348, 660, 492, 660, 13, 0, -13, true);
-            // Crisp white horizontal curb along south edge of upper lot
             el("line", { x1: 360, y1: 673, x2: 472, y2: 673, stroke: "#ffffff", "stroke-width": 1.4, "stroke-linecap": "round" }, g);
-            // Curved teal UAM sign-wall accent at the SW corner beside the pull-out bay
             el("path", { d: "M 334 666 Q 341 678 355 674", fill: "none", stroke: "#1da495", "stroke-width": 2, "stroke-linecap": "round" }, g);
         });
 
-        // 2.9B North (Compass-North / Main-Entrance) Parking Strip — Dead-Horizontal, Separated from Main Entrance
+        // 2.9B North (Compass-North / Main-Entrance) Parking Strip — extended cleanly to meet shifted Building I lot at x=706
         makeLot("parkingLotSouthLower", "path", {
-            d: "M 342 712 L 692 712 L 692 764 L 682 764 L 682 780 L 560 780 L 560 764 L 542 764 L 542 780 L 414 780 L 414 764 L 372 764 L 376 782 L 348 782 L 342 758 Z"
+            d: "M 342 712 L 706 712 L 706 764 L 694 764 L 694 780 L 566 780 L 566 764 L 546 764 L 546 780 L 414 780 L 414 764 L 372 764 L 376 782 L 348 782 L 342 758 Z"
         }, (g, l) => {
-            // Crisp white horizontal planter curb dividers above the two tree blocks (with center driveway opening)
             el("path", { d: "M 356 717 L 468 717", fill: "none", stroke: "#ffffff", "stroke-width": 1.6, "stroke-linecap": "round" }, g);
-            el("path", { d: "M 502 717 L 630 717", fill: "none", stroke: "#ffffff", "stroke-width": 1.6, "stroke-linecap": "round" }, g);
-            // Single straight horizontal row of perpendicular parking stalls split into 2 clean bays
+            el("path", { d: "M 502 717 L 642 717", fill: "none", stroke: "#ffffff", "stroke-width": 1.6, "stroke-linecap": "round" }, g);
             addStallRow(l, 354, 742, 470, 742, 15, 0, 13);
-            addStallRow(l, 498, 742, 626, 742, 16, 0, 13);
+            addStallRow(l, 498, 742, 638, 742, 17, 0, 13);
         });
 
-        // 2.10 South-East Parking Lot (Between E Annexes, F double-tree row, and Spine Road, with I-shaped median)
+        // 2.10 South-East Parking Lot (Shifted +12px cleanly with G/F & Spine Road)
         makeLot("parkingLotSouthEF", "path", {
-            d: "M 582 602 L 686 602 L 686 668 A 14 14 0 0 1 672 682 L 582 682 Z"
+            d: "M 594 602 L 698 602 L 698 668 A 14 14 0 0 1 684 682 L 594 682 Z"
         }, (g, l) => {
-            // Center I-shaped raised concrete median island
             el("path", {
-                d: "M 616 611 L 652 611 A 2.5 2.5 0 0 1 652 616 L 641 616 L 641 663 L 652 663 A 2.5 2.5 0 0 1 652 668 L 616 668 A 2.5 2.5 0 0 1 616 663 L 627 663 L 627 616 L 616 616 A 2.5 2.5 0 0 1 616 611 Z",
+                d: "M 628 611 L 664 611 A 2.5 2.5 0 0 1 664 616 L 653 616 L 653 663 L 664 663 A 2.5 2.5 0 0 1 664 668 L 628 668 A 2.5 2.5 0 0 1 628 663 L 639 663 L 639 616 L 628 616 A 2.5 2.5 0 0 1 628 611 Z",
                 fill: "#b4c0cf", stroke: "#ffffff", "stroke-width": 1.3, class: "parking-island"
             }, g);
-            // 4 neat columns of stalls (west curb, left of island, right of island, east curb)
-            addStallRow(l, 586, 608, 586, 668, 9, 13, 0, true);
-            addStallRow(l, 626, 621, 626, 658, 6, -13, 0);
-            addStallRow(l, 642, 621, 642, 658, 6, 13, 0);
-            addStallRow(l, 682, 608, 682, 668, 9, -13, 0, true);
+            addStallRow(l, 598, 608, 598, 668, 9, 13, 0, true);
+            addStallRow(l, 638, 621, 638, 658, 6, -13, 0);
+            addStallRow(l, 654, 621, 654, 658, 6, 13, 0);
+            addStallRow(l, 694, 608, 694, 668, 9, -13, 0, true);
         });
 
-        // 2.11 & 2.12 Unified Building I + Jaguar Gym / Jaguar Center Parking Lot
-        // Single continuous asphalt footprint matching the official close-up geometry & bottom step
+        // 2.11 & 2.12 Unified Building I + Jaguar Gym / Jaguar Center Parking Lot (Shifted +14px with east campus)
         makeLot("parkingLotJaguarGymAndI", "path", {
             d: [
-                "M 692 710 L 804 710 L 804 744 L 814 744 L 814 680 L 928 680 Q 934 680 934 686",
-                "L 934 700 L 930 700 L 930 750 L 974 750 L 974 772 L 858 772 L 858 786",
-                "L 718 786 L 718 766 L 692 766 Z"
+                "M 706 710 L 818 710 L 818 744 L 828 744 L 828 680 L 942 680 Q 948 680 948 686",
+                "L 948 700 L 944 700 L 944 750 L 988 750 L 988 772 L 872 772 L 872 786",
+                "L 732 786 L 732 766 L 706 766 Z"
             ].join(" ")
         }, (_, l) => {
-            // Building I angled parking bay (11 diagonal // stalls with white back curb)
-            addStallRow(l, 718, 715, 800, 715, 11, -7, 14, true);
-            // Jaguar Gym / Jaguar Center Parking bays (exact stall layout from official map)
-            addStallRow(l, 832, 684, 920, 684, 10, 0, 13, true);    // Top row below Jaguar Center
-            addStallRow(l, 818, 698, 818, 748, 7, 14, 0, true);     // West column beside Building I sidewalk pier
-            addStallRow(l, 926, 704, 926, 748, 7, -14, 0, true);    // East column beside Jaguar Gym
-            addStallRow(l, 818, 766, 964, 766, 22, 0, -13, true);   // Bottom straight row extending under Jaguar Gym
+            addStallRow(l, 732, 715, 814, 715, 11, -7, 14, true);
+            addStallRow(l, 846, 684, 934, 684, 10, 0, 13, true);
+            addStallRow(l, 832, 698, 832, 748, 7, 14, 0, true);
+            addStallRow(l, 940, 704, 940, 748, 7, -14, 0, true);
+            addStallRow(l, 832, 766, 978, 766, 22, 0, -13, true);
         });
     }
 
     // ----------------------------------------------------------------------------
-    // 4. Layer 3: Sports Facilities (Baseball, Soccer, Courts, Grandstands)
+    // 4. Layer 3: Sports Facilities (Baseball, Soccer, Tennis & Sand Volleyball — shifted +14px with east campus)
     // ----------------------------------------------------------------------------
     function renderSports(layer) {
+        const eastSports = el("g", { transform: "translate(14, 0)" }, layer);
         // 3A. Estadio de Beisbol (Exact official sign geometry: concave-corner infield, pitcher lane, dugouts & fan backstop)
-        const bb = el("g", { id: "baseballStadium", class: "bldg-shape", "data-node": "sportsZone", "data-bldg": "BÉISBOL" }, layer);
+        const bb = el("g", { id: "baseballStadium", class: "bldg-shape", "data-node": "sportsZone", "data-bldg": "BÉISBOL" }, eastSports);
         // Outer stadium parcel with smooth SW curve following the spine road
         el("path", {
             d: "M 696 108 L 1076 108 L 1076 312 L 734 312 Q 702 308 696 272 Z",
@@ -537,7 +524,7 @@
         }
 
         // 3B. Cancha de Futbol (Wide proportional soccer pitch with penalty D-arcs & corner arcs, Photo 15)
-        const sc = el("g", { id: "soccerField", class: "bldg-shape", "data-node": "sportsZone", "data-bldg": "FÚTBOL" }, layer);
+        const sc = el("g", { id: "soccerField", class: "bldg-shape", "data-node": "sportsZone", "data-bldg": "FÚTBOL" }, eastSports);
         el("rect", { x: 757, y: 372, width: 335, height: 150, fill: "#15803d", stroke: ROOF_BORDER, "stroke-width": 2.5 }, sc);
         const lines = el("g", { stroke: "#ffffff", "stroke-width": 1.8, fill: "none" }, sc);
         el("rect", { x: 768, y: 382, width: 313, height: 130 }, lines);
@@ -555,7 +542,7 @@
         el("path", { d: "M 768 389 A 7 7 0 0 0 775 382 M 1074 382 A 7 7 0 0 0 1081 389 M 1081 505 A 7 7 0 0 0 1074 512 M 775 512 A 7 7 0 0 0 768 505", "stroke-width": 1.2 }, lines);
 
         // 3C. Outdoor Courts East of Building L: Tennis/Multi-Sport Court + Sand Volleyball Court
-        const cts = el("g", { id: "sportsCourts", class: "bldg-shape", "data-node": "buildingL", "data-bldg": "CANCHAS" }, layer);
+        const cts = el("g", { id: "sportsCourts", class: "bldg-shape", "data-node": "buildingL", "data-bldg": "CANCHAS" }, eastSports);
 
         // Left Court: Full Tennis / Multi-Sport Court with exact singles/doubles & service lines
         el("rect", { x: 998, y: 568, width: 64, height: 74, fill: "#cbd5e1", stroke: ROOF_BORDER, "stroke-width": 2.2 }, cts);
@@ -581,7 +568,7 @@
         // 4A. Plaza Chilamates (Paved plaza west of J/N with iconic giant Chilamate tree & corner Kiosk)
         const ch = el("g", { class: "bldg-shape", "data-node": "chilamatesPlaza", "data-bldg": "CHILAMATES" }, layer);
         el("path", {
-            d: "M 256 226 L 330 226 L 330 330 L 314 344 L 256 344 Z",
+            d: "M 256 226 L 329 226 L 329 344 L 256 344 Z",
             fill: "#e2e8f0", stroke: "#cbd5e1", "stroke-width": 1.3, "stroke-linejoin": "round"
         }, ch);
         // Iconic large Chilamate specimen canopy & smaller north companion canopy
@@ -650,24 +637,24 @@
         // 4C-end: restore pool line right before 4D terrace pads
         el("line", { x1: 391, y1: 489, x2: 419, y2: 489, stroke: "#ffffff", "stroke-width": 0.8, opacity: 0.75 }, pool);
 
-        // 4D. Architectural Paved Courtyard Pads (Building M patio, E-to-G/F terrace, Building I apron — Photos 7, 13, 14)
+        // 4D. Architectural Paved Courtyard Pads (Building M patio, E-to-G/F terrace, Building I apron — shifted with east campus)
         const pads = el("g", { id: "campusTerracePads", "pointer-events": "none" }, layer);
-        el("rect", { x: 570, y: 400, width: 72, height: 72, rx: 2, fill: "#cbd5e1", opacity: 0.6 }, pads);  // Behind M
-        el("rect", { x: 546, y: 488, width: 22, height: 92, rx: 2, fill: "#cbd5e1", opacity: 0.65 }, pads); // Between E & G/F
-        el("rect", { x: 738, y: 584, width: 68, height: 118, rx: 2, fill: "#cbd5e1", opacity: 0.55 }, pads); // Around Building I
+        el("rect", { x: 584, y: 400, width: 72, height: 72, rx: 2, fill: "#cbd5e1", opacity: 0.6 }, pads);  // Behind M
+        el("rect", { x: 548, y: 488, width: 32, height: 92, rx: 2, fill: "#cbd5e1", opacity: 0.65 }, pads); // Between E & G/F
+        el("rect", { x: 752, y: 584, width: 68, height: 118, rx: 2, fill: "#cbd5e1", opacity: 0.55 }, pads); // Around Building I
     }
 
     // ----------------------------------------------------------------------------
     // 6. Layer 5: All Official Campus Buildings (A-P + Campus Support Buildings)
     // ----------------------------------------------------------------------------
     function renderBuildings(layer) {
-        // --- Rectangular Main Buildings (A, B, C, E, F, G, H, J, P, Jaguar Center, Jaguar Gym) ---
+        // --- Rectangular Main Buildings (A, B, C, E, H, J, P, Jaguar Gym, Physiotherapy, Twin L) ---
         const rectBuildings = [
-            // Edificio P (Copernico)
-            { x: 344, y: 94, w: 218, h: 42, node: "buildingP", bldg: "P", badge: "P", badgeClass: "badge-maroon", badgeX: 486, badgeY: 115, orientation: "h" },
-            // Edificio J (Laboratorios Odontologia)
-            { x: 338, y: 300, w: 38, h: 32, node: "buildingJ", bldg: "J", badge: "J", badgeClass: "badge-cyan", orientation: "h" },
-            // Edificio A (West Bar)
+            // Edificio P (Copernico — shifted +6px with N/J/D)
+            { x: 350, y: 94, w: 218, h: 42, node: "buildingP", bldg: "P", badge: "P", badgeClass: "badge-maroon", badgeX: 492, badgeY: 115, orientation: "h" },
+            // Edificio J (Laboratorios Odontologia — cleanly right of the moved crosswalk)
+            { x: 342, y: 300, w: 38, h: 32, node: "buildingJ", bldg: "J", badge: "J", badgeClass: "badge-cyan", orientation: "h" },
+            // Edificio A (West Bar — directly beneath the moved crosswalk)
             { x: 310, y: 400, w: 26, h: 70, node: "buildingA", bldg: "A", badge: "A", badgeClass: "badge-maroon", orientation: "v" },
             // Edificio C (North Classroom Bar)
             { x: 336, y: 400, w: 228, h: 22, node: "buildingC", bldg: "C", badge: "C", badgeClass: "badge-purple", badgeX: 444, badgeY: 402, orientation: "h" },
@@ -677,21 +664,21 @@
             { x: 336, y: 448, w: 228, h: 22, node: "buildingB", bldg: "B", badge: "B", badgeClass: "badge-purple", badgeX: 444, badgeY: 458, orientation: "h" },
             // 2nd-floor bridge between B and E
             { x: 526, y: 470, w: 8, h: 30, bldg: "PUENTE_BE", orientation: "v", borderWidth: 2 },
-            // Edificio E (Facultad de Medicina) + Vida Estudiantil & Direccion de Innovacion (crisp hipped roofs, Photo 13)
+            // Edificio E (Facultad de Medicina) + Vida Estudiantil & Direccion de Innovacion
             { x: 520, y: 500, w: 28, h: 156, node: "buildingE", bldg: "E", badge: "E", badgeClass: "badge-navy", badgeX: 534, badgeY: 604, orientation: "v" },
-            { x: 554, y: 622, w: 22, h: 48, node: "buildingE", bldg: "E", orientation: "v", borderWidth: 2.5 },
-            { x: 532, y: 676, w: 54, h: 14, node: "buildingE", bldg: "E", orientation: "h", borderWidth: 2.5 },
-            // Edificio H (Laboratorios de Medicina — main bar + flush west porch + separate lab annex, Photo 7 & 8)
-            { x: 596, y: 354, w: 84, h: 30, node: "buildingH", bldg: "H", badge: "H", badgeClass: "badge-green", badgeX: 638, badgeY: 369, orientation: "h" },
-            { x: 584, y: 358, w: 12, h: 20, node: "buildingH", bldg: "H", orientation: "h", borderWidth: 2.2 },
-            { x: 556, y: 352, w: 20, h: 26, node: "buildingH", bldg: "H", orientation: "v", borderWidth: 2.3 },
-            // Jaguar Gym (vertical hipped-roof geometry matching close-up signage, clickable navigation node)
-            { x: 934, y: 704, w: 42, h: 44, node: "jaguarGym", bldg: "JAGUAR GYM", orientation: "v" },
-            // Physiotherapy Building / Fisioterapia (hipped roof north of Jaguar Gym, clickable navigation node)
-            { x: 944, y: 668, w: 40, h: 22, node: "physiotherapy", bldg: "FISIOTERAPIA", orientation: "v", borderWidth: 2.5 },
-            // Edificio L — Two separate twin squares (matching official signage)
-            { x: 964, y: 588, w: 22, h: 20, node: "buildingL", bldg: "L", badge: "L", badgeClass: "badge-magenta", badgeSize: 13, orientation: "v", borderWidth: 2.2 },
-            { x: 964, y: 616, w: 22, h: 20, node: "buildingL", bldg: "L", badge: "L", badgeClass: "badge-magenta", badgeSize: 13, orientation: "v", borderWidth: 2.2 }
+            { x: 560, y: 622, w: 22, h: 48, node: "buildingE", bldg: "E", orientation: "v", borderWidth: 2.5 },
+            { x: 538, y: 676, w: 54, h: 14, node: "buildingE", bldg: "E", orientation: "h", borderWidth: 2.5 },
+            // Edificio H (Laboratorios de Medicina — shifted +14px with east spine) + flush west porch + lab annex
+            { x: 610, y: 354, w: 84, h: 30, node: "buildingH", bldg: "H", badge: "H", badgeClass: "badge-green", badgeX: 652, badgeY: 369, orientation: "h" },
+            { x: 598, y: 358, w: 12, h: 20, node: "buildingH", bldg: "H", orientation: "h", borderWidth: 2.2 },
+            { x: 570, y: 352, w: 20, h: 26, node: "buildingH", bldg: "H", orientation: "v", borderWidth: 2.3 },
+            // Jaguar Gym (shifted +14px with east campus)
+            { x: 948, y: 704, w: 42, h: 44, node: "jaguarGym", bldg: "JAGUAR GYM", orientation: "v" },
+            // Physiotherapy Building / Fisioterapia (shifted +14px with east campus)
+            { x: 958, y: 668, w: 40, h: 22, node: "physiotherapy", bldg: "FISIOTERAPIA", orientation: "v", borderWidth: 2.5 },
+            // Edificio L — Two separate twin squares (shifted +14px with east campus)
+            { x: 978, y: 588, w: 22, h: 20, node: "buildingL", bldg: "L", badge: "L", badgeClass: "badge-magenta", badgeSize: 13, orientation: "v", borderWidth: 2.2 },
+            { x: 978, y: 616, w: 22, h: 20, node: "buildingL", bldg: "L", badge: "L", badgeClass: "badge-magenta", badgeSize: 13, orientation: "v", borderWidth: 2.2 }
         ];
 
         for (const cfg of rectBuildings) {
@@ -703,94 +690,93 @@
             addRectBuilding(layer, { x: dx, y: 392, w: 24, h: 9, node: "buildingC", bldg: "C", orientation: "v", borderWidth: 2.2, shadow: false });
         }
 
-        // Observatorio Dome attached to West end of Building P (iconic pie-wedge telescope dome, Photo 1 & 5)
+        // Observatorio Dome attached to West end of Building P (shifted +6px with P)
         const obs = el("g", { class: "bldg-shape", "data-node": "buildingP", "data-bldg": "P", filter: "url(#bldgShadow)" }, layer);
-        el("rect", { x: 302, y: 94, width: 42, height: 42, fill: "#cbd5e1", stroke: ROOF_BORDER, "stroke-width": 3 }, obs);
-        el("rect", { x: 306, y: 98, width: 34, height: 34, fill: "#e2e8f0", stroke: "#94a3b8", "stroke-width": 1 }, obs);
-        // Full teal circle + bottom-left light-grey pie-wedge cutout matching official Copernicus Observatory graphic
-        el("circle", { cx: 323, cy: 115, r: 14, fill: ROOF_BASE, stroke: "#ffffff", "stroke-width": 1.6 }, obs);
-        el("path", { d: "M 323 115 L 311 122 A 14 14 0 0 0 331 127 Z", fill: "#cbd5e1", stroke: "#ffffff", "stroke-width": 1.1 }, obs);
+        el("rect", { x: 308, y: 94, width: 42, height: 42, fill: "#cbd5e1", stroke: ROOF_BORDER, "stroke-width": 3 }, obs);
+        el("rect", { x: 312, y: 98, width: 34, height: 34, fill: "#e2e8f0", stroke: "#94a3b8", "stroke-width": 1 }, obs);
+        el("circle", { cx: 329, cy: 115, r: 14, fill: ROOF_BASE, stroke: "#ffffff", "stroke-width": 1.6 }, obs);
+        el("path", { d: "M 329 115 L 317 122 A 14 14 0 0 0 337 127 Z", fill: "#cbd5e1", stroke: "#ffffff", "stroke-width": 1.1 }, obs);
 
-        // Jaguar Center Arena (with Official UAM Jaguar Emblem)
+        // Jaguar Center Arena (shifted +14px with east campus)
         const jc = addRectBuilding(layer, {
-            x: 834, y: 576, w: 104, h: 94,
+            x: 848, y: 576, w: 104, h: 94,
             node: "jaguarCenter", bldg: "JAGUAR CENTER", orientation: "h"
         });
         const logoUrl = layer.closest("svg")?.dataset.jaguarLogo || "/static/img/jaguarCenterLogo.png";
         el("image", {
-            href: logoUrl, x: 851, y: 589, width: 70, height: 68,
+            href: logoUrl, x: 865, y: 589, width: 70, height: 68,
             preserveAspectRatio: "xMidYMid meet", "pointer-events": "none"
         }, jc);
 
-        // --- Custom-Footprint Buildings (O, N, D, M, K, I, L) ---
+        // --- Custom-Footprint Buildings (O, N, D, M, G, F, Banpro, K, I) ---
         const customBuildings = [
-            // Edificio O (Ingenieria & FIA — main block + west wing + bottom-right hipped annex, Photo 8)
+            // Edificio O (Ingenieria & FIA — shifted +14px with east spine)
             {
-                node: "buildingO", bldg: "O", badge: "O", badgeClass: "badge-amber", badgeX: 597, badgeY: 184,
-                path: "M 572 152 L 622 152 L 622 258 L 596 258 L 596 238 L 572 238 L 572 224 L 556 224 L 556 174 L 572 174 Z",
+                node: "buildingO", bldg: "O", badge: "O", badgeClass: "badge-amber", badgeX: 611, badgeY: 184,
+                path: "M 586 152 L 636 152 L 636 258 L 610 258 L 610 238 L 586 238 L 586 224 L 570 224 L 570 174 L 586 174 Z",
                 facets: [
-                    ["622,152 597,172 597,214 622,238", ROOF_LIGHT],
-                    ["572,152 622,152 597,172", ROOF_DARK],
-                    ["572,238 622,238 597,214", ROOF_DARK],
-                    ["556,174 556,224 572,199", ROOF_DARK],
-                    ["556,174 572,174 572,199", ROOF_LIGHT],
-                    ["596,258 622,258 609,246", ROOF_DARK]
+                    ["636,152 611,172 611,214 636,238", ROOF_LIGHT],
+                    ["586,152 636,152 611,172", ROOF_DARK],
+                    ["586,238 636,238 611,214", ROOF_DARK],
+                    ["570,174 570,224 586,199", ROOF_DARK],
+                    ["570,174 586,174 586,199", ROOF_LIGHT],
+                    ["610,258 636,258 623,246", ROOF_DARK]
                 ]
             },
-            // Edificio N (Clinicas Medicas Odontologicas - Inverted L)
+            // Edificio N (Clinicas Medicas Odontologicas — shifted +6px so right wall aligns with Central Parking & C dormer)
             {
-                node: "buildingN", bldg: "N", badge: "N", badgeClass: "badge-magenta", badgeX: 386, badgeY: 256,
-                path: "M 364 230 L 510 230 L 510 340 L 464 340 L 464 276 L 364 276 Z",
+                node: "buildingN", bldg: "N", badge: "N", badgeClass: "badge-magenta", badgeX: 392, badgeY: 256,
+                path: "M 370 230 L 516 230 L 516 340 L 470 340 L 470 276 L 370 276 Z",
                 facets: [
-                    ["364,230 510,230 487,253 364,253", ROOF_LIGHT],
-                    ["510,230 510,340 487,318 487,253", ROOF_LIGHT],
-                    ["364,230 364,276 386,253", ROOF_DARK],
-                    ["464,340 510,340 487,318", ROOF_DARK]
+                    ["370,230 516,230 493,253 370,253", ROOF_LIGHT],
+                    ["516,230 516,340 493,318 493,253", ROOF_LIGHT],
+                    ["370,230 370,276 392,253", ROOF_DARK],
+                    ["470,340 516,340 493,318", ROOF_DARK]
                 ]
             },
-            // Edificio D (Odontologia Digital — exact bottom-right cutout notch, Photo 6)
+            // Edificio D (Odontologia Digital — shifted +6px with J & N)
             {
-                node: "buildingD", bldg: "D", badge: "D", badgeClass: "badge-green", badgeX: 400, badgeY: 314,
-                path: "M 384 300 L 428 300 L 428 326 L 418 326 L 418 336 L 384 336 Z",
+                node: "buildingD", bldg: "D", badge: "D", badgeClass: "badge-green", badgeX: 406, badgeY: 314,
+                path: "M 390 300 L 434 300 L 434 326 L 424 326 L 424 336 L 390 336 Z",
                 facets: [
-                    ["384,300 428,300 416,314 384,314", ROOF_LIGHT],
-                    ["428,300 428,326 416,314", ROOF_DARK],
-                    ["384,336 418,336 401,324", ROOF_DARK]
+                    ["390,300 434,300 422,314 390,314", ROOF_LIGHT],
+                    ["434,300 434,326 422,314", ROOF_DARK],
+                    ["390,336 424,336 407,324", ROOF_DARK]
                 ]
             },
-            // Edificio M (Postgrados — asymmetric main spine + west wing + upper-right wing, Photo 7)
+            // Edificio M (Postgrados — shifted +14px with H & east spine)
             {
-                node: "buildingM", bldg: "M", badge: "M", badgeClass: "badge-teal", badgeX: 612, badgeY: 432,
-                path: "M 592 404 L 630 404 L 630 410 L 640 410 L 640 432 L 630 432 L 630 468 L 592 468 L 592 452 L 576 452 L 576 424 L 592 424 Z",
+                node: "buildingM", bldg: "M", badge: "M", badgeClass: "badge-teal", badgeX: 626, badgeY: 432,
+                path: "M 606 404 L 644 404 L 644 410 L 654 410 L 654 432 L 644 432 L 644 468 L 606 468 L 606 452 L 590 452 L 590 424 L 606 424 Z",
                 facets: [
-                    ["612,416 630,404 630,468 612,454", ROOF_LIGHT],
-                    ["576,424 576,452 592,438", ROOF_DARK],
-                    ["592,404 630,404 612,416", ROOF_DARK],
-                    ["592,468 630,468 612,454", ROOF_DARK],
-                    ["630,410 640,410 640,432 630,432", ROOF_LIGHT]
+                    ["626,416 644,404 644,468 626,454", ROOF_LIGHT],
+                    ["590,424 590,452 606,438", ROOF_DARK],
+                    ["606,404 644,404 626,416", ROOF_DARK],
+                    ["606,468 644,468 626,454", ROOF_DARK],
+                    ["644,410 654,410 654,432 644,432", ROOF_LIGHT]
                 ]
             },
-            // Edificio G (Auditorio Central & Derecho — main hipped block + upper-right side annex)
+            // Edificio G (Auditorio Central & Derecho — shifted +12px cleanly east of E courtyard)
             {
-                node: "buildingG", bldg: "G", badge: "G", badgeClass: "badge-navy", badgeX: 591, badgeY: 509,
-                path: "M 568 486 L 614 486 L 614 495 L 622 495 L 622 515 L 614 515 L 614 532 L 568 532 Z",
+                node: "buildingG", bldg: "G", badge: "G", badgeClass: "badge-navy", badgeX: 603, badgeY: 509,
+                path: "M 580 486 L 626 486 L 626 495 L 634 495 L 634 515 L 626 515 L 626 532 L 580 532 Z",
                 facets: [
-                    ["568,486 591,500 591,518 568,532", ROOF_LIGHT],
-                    ["568,486 614,486 591,500", ROOF_DARK],
-                    ["568,532 614,532 591,518", ROOF_DARK],
-                    ["614,495 622,495 622,515 614,515", ROOF_LIGHT]
+                    ["580,486 603,500 603,518 580,532", ROOF_LIGHT],
+                    ["580,486 626,486 603,500", ROOF_DARK],
+                    ["580,532 626,532 603,518", ROOF_DARK],
+                    ["626,495 634,495 634,515 626,515", ROOF_LIGHT]
                 ]
             },
-            // Edificio F (FACEE — taller hipped block + twin right-side annex notches)
+            // Edificio F (FACEE — shifted +12px with G)
             {
-                node: "buildingF", bldg: "F", badge: "F", badgeClass: "badge-magenta", badgeX: 591, badgeY: 566,
-                path: "M 568 540 L 614 540 L 614 550 L 621 550 L 621 561 L 614 561 L 614 570 L 622 570 L 622 585 L 614 585 L 614 592 L 568 592 Z",
+                node: "buildingF", bldg: "F", badge: "F", badgeClass: "badge-magenta", badgeX: 603, badgeY: 566,
+                path: "M 580 540 L 626 540 L 626 550 L 633 550 L 633 561 L 626 561 L 626 570 L 634 570 L 634 585 L 626 585 L 626 592 L 580 592 Z",
                 facets: [
-                    ["568,540 591,554 591,578 568,592", ROOF_LIGHT],
-                    ["568,540 614,540 591,554", ROOF_DARK],
-                    ["568,592 614,592 591,578", ROOF_DARK],
-                    ["614,550 621,550 621,561 614,561", ROOF_LIGHT],
-                    ["614,570 622,570 622,585 614,585", ROOF_LIGHT]
+                    ["580,540 603,554 603,578 580,592", ROOF_LIGHT],
+                    ["580,540 626,540 603,554", ROOF_DARK],
+                    ["580,592 626,592 603,578", ROOF_DARK],
+                    ["626,550 633,550 633,561 626,561", ROOF_LIGHT],
+                    ["626,570 634,570 634,585 626,585", ROOF_LIGHT]
                 ]
             },
             // Banpro / Bank (distinct L-shaped teal building flush against Lower West Parking & West Main Avenue)
@@ -814,15 +800,15 @@
                     ["338,556 374,556 358,542", ROOF_DARK]
                 ]
             },
-            // Edificio I (Rectoria & Biblioteca Central - U-shape, cleanly above its own parking lot)
+            // Edificio I (Rectoria & Biblioteca Central — shifted +14px with east campus)
             {
-                node: "buildingI", bldg: "I", badge: "I", badgeClass: "badge-navy", badgeX: 762, badgeY: 652,
-                path: "M 748 594 L 798 594 L 798 700 L 728 700 L 728 630 L 752 630 L 752 676 L 774 676 L 774 618 L 748 618 Z",
+                node: "buildingI", bldg: "I", badge: "I", badgeClass: "badge-navy", badgeX: 776, badgeY: 652,
+                path: "M 762 594 L 812 594 L 812 700 L 742 700 L 742 630 L 766 630 L 766 676 L 788 676 L 788 618 L 762 618 Z",
                 facets: [
-                    ["748,594 798,594 784,608 762,608", ROOF_LIGHT],
-                    ["798,594 798,700 784,686 784,608", ROOF_LIGHT],
-                    ["728,630 740,642 740,686 728,700", ROOF_LIGHT],
-                    ["728,700 798,700 784,686 740,686", ROOF_DARK]
+                    ["762,594 812,594 798,608 776,608", ROOF_LIGHT],
+                    ["812,594 812,700 798,686 798,608", ROOF_LIGHT],
+                    ["742,630 754,642 754,686 742,700", ROOF_LIGHT],
+                    ["742,700 812,700 798,686 754,686", ROOF_DARK]
                 ]
             }
         ];
@@ -832,46 +818,44 @@
         }
 
         // --- Secondary Campus Pavilions, Kiosks, Restrooms & East Complex Buildings ---
-        // (All clean architectural teal hipped roofs, no cluttered physical-sign text)
         const supportBuildings = [
-            // West & North-Central pavilions (aligned with reshaped West Parking & Plaza Chilamates)
+            // West & North-Central pavilions
             { x: 48, y: 278, w: 30, h: 20, orientation: "v" },  // Acopio
-            { x: 246, y: 148, w: 34, h: 26 },                  // Estacion Meteorologica (cleanly above N parking apron)
-            { x: 282, y: 320, w: 18, h: 18, orientation: "h" }, // Kiosko Plaza Chilamates (aligned below giant tree)
-            { x: 528, y: 248, w: 16, h: 15 },                  // Small annex 1 below O
-            { x: 548, y: 248, w: 16, h: 15 },                  // Small annex 2 below O
-            { x: 528, y: 282, w: 30, h: 28 },                  // Ranchon
-            { x: 522, y: 322, w: 11, h: 15 },                  // Lab Digital FIA
-            // Sports North & Mid Concourse pavilions (locked to official overlay coordinates)
-            { x: 902, y: 50, w: 36, h: 30 },       // Kiosko NE
-            { x: 978, y: 46, w: 38, h: 30 },       // Sanitarios NE
-            { x: 770, y: 325, w: 30, h: 28 },      // Kiosko Mid
-            { x: 838, y: 325, w: 30, h: 28 },      // Sanitarios Mid
-            { x: 950, y: 320, w: 42, h: 31 },      // Oficina de Deportes
-            // East / Bottom-Right Sports & Service Complex (exact layout from close-up signage)
-            { x: 964, y: 550, w: 24, h: 20, orientation: "v" },   // Public Washrooms (above Building L)
-            { x: 962, y: 646, w: 24, h: 16, orientation: "h" },   // Small nameless pavilion (between L & Physiotherapy)
-            { x: 1012, y: 652, w: 40, h: 24, orientation: "v" },  // Warehouse (Bodega)
-            { x: 1074, y: 630, w: 42, h: 22, orientation: "h" },  // Jaguar Sport Kiosk (main pavilion below sand volleyball)
-            { x: 1104, y: 666, w: 26, h: 14, orientation: "h" },  // Jaguar Sport Kiosk (small east booth)
-            { x: 1076, y: 684, w: 58, h: 26, orientation: "v" },  // Martial Arts Building (Artes Marciales)
-            { x: 1078, y: 720, w: 58, h: 24, orientation: "h" },  // Multipurpose Room (Usos Multiples)
-            { x: 1080, y: 792, w: 56, h: 24, orientation: "h" },  // Lunch Area (Comedor)
-
-            // Nameless Modular Complex (stacked corrugated awnings & hipped roofs south of Warehouse)
-            { x: 1006, y: 682, w: 52, h: 16, orientation: "ribV", borderWidth: 1.5, shadow: false },
-            { x: 1006, y: 698, w: 52, h: 20, orientation: "h", borderWidth: 2 },
-            { x: 1006, y: 718, w: 52, h: 16, orientation: "ribV", borderWidth: 1.5, shadow: false },
-            { x: 1006, y: 734, w: 52, h: 20, orientation: "h", borderWidth: 2 },
-            { x: 1006, y: 754, w: 52, h: 14, orientation: "ribV", borderWidth: 1.5, shadow: false },
-            { x: 1008, y: 780, w: 52, h: 16, orientation: "ribV", borderWidth: 1.5, shadow: false },
-            { x: 1008, y: 796, w: 52, h: 20, orientation: "h", borderWidth: 2 },
-            { x: 1008, y: 816, w: 52, h: 14, orientation: "ribV", borderWidth: 1.5, shadow: false },
-            { x: 1008, y: 832, w: 52, h: 10, orientation: "ribV", borderWidth: 1.5, shadow: false }
+            { x: 246, y: 148, w: 34, h: 26 },                  // Estacion Meteorologica
+            { x: 282, y: 320, w: 18, h: 18, orientation: "h" }, // Kiosko Plaza Chilamates
+            { x: 536, y: 246, w: 16, h: 15 },                  // Small annex 1 below O
+            { x: 556, y: 246, w: 16, h: 15 },                  // Small annex 2 below O
+            { x: 540, y: 282, w: 30, h: 28 },                  // Ranchon (+12px)
+            { x: 534, y: 322, w: 11, h: 15 },                  // Lab Digital FIA (+12px)
+            // Sports North & Mid Concourse pavilions (+14px with east campus)
+            { x: 916, y: 50, w: 36, h: 30 },                   // Kiosko NE
+            { x: 992, y: 46, w: 38, h: 30 },                   // Sanitarios NE
+            { x: 784, y: 325, w: 30, h: 28 },                  // Kiosko Mid
+            { x: 852, y: 325, w: 30, h: 28 },                  // Sanitarios Mid
+            { x: 964, y: 320, w: 42, h: 31 },                  // Oficina de Deportes
+            // East / Bottom-Right Sports & Service Complex (+14px with east campus)
+            { x: 978, y: 550, w: 24, h: 20, orientation: "v" },  // Public Washrooms
+            { x: 976, y: 646, w: 24, h: 16, orientation: "h" },  // Small nameless pavilion
+            { x: 1026, y: 652, w: 40, h: 24, orientation: "v" }, // Warehouse (Bodega)
+            { x: 1088, y: 630, w: 42, h: 22, orientation: "h" }, // Jaguar Sport Kiosk (main)
+            { x: 1118, y: 666, w: 26, h: 14, orientation: "h" }, // Jaguar Sport Kiosk (east booth)
+            { x: 1090, y: 684, w: 58, h: 26, orientation: "v" }, // Martial Arts Building
+            { x: 1092, y: 720, w: 58, h: 24, orientation: "h" }, // Multipurpose Room
+            { x: 1094, y: 792, w: 56, h: 24, orientation: "h" }, // Lunch Area (Comedor)
+            // Nameless Modular Complex (+14px with east campus)
+            { x: 1020, y: 682, w: 52, h: 16, orientation: "ribV", borderWidth: 1.5, shadow: false },
+            { x: 1020, y: 698, w: 52, h: 20, orientation: "h", borderWidth: 2 },
+            { x: 1020, y: 718, w: 52, h: 16, orientation: "ribV", borderWidth: 1.5, shadow: false },
+            { x: 1020, y: 734, w: 52, h: 20, orientation: "h", borderWidth: 2 },
+            { x: 1020, y: 754, w: 52, h: 14, orientation: "ribV", borderWidth: 1.5, shadow: false },
+            { x: 1022, y: 780, w: 52, h: 16, orientation: "ribV", borderWidth: 1.5, shadow: false },
+            { x: 1022, y: 796, w: 52, h: 20, orientation: "h", borderWidth: 2 },
+            { x: 1022, y: 816, w: 52, h: 14, orientation: "ribV", borderWidth: 1.5, shadow: false },
+            { x: 1022, y: 832, w: 52, h: 10, orientation: "ribV", borderWidth: 1.5, shadow: false }
         ];
 
-        // Subtle dining patio pad beneath Lunch Area (Comedor)
-        el("rect", { x: 1068, y: 782, width: 72, height: 42, rx: 2, fill: "#dfe5ec", stroke: "#cbd5e1", "stroke-width": 1 }, layer);
+        // Subtle dining patio pad beneath Lunch Area (Comedor, shifted +14px)
+        el("rect", { x: 1082, y: 782, width: 72, height: 42, rx: 2, fill: "#dfe5ec", stroke: "#cbd5e1", "stroke-width": 1 }, layer);
 
         for (const sb of supportBuildings) {
             addRectBuilding(layer, { borderWidth: 2.2, ...sb });
@@ -899,41 +883,41 @@
             [506, 504, 512, 656, 10],
             // South of Plaza Central (matching exact tree positions below K & Plaza Central)
             [398, 562, 486, 562, 5],
-            // Double staggered tree rows separating G/F Parking from South-East Parking (Photo 12 & 13)
-            [628, 581, 672, 581, 4],
-            [620, 593, 682, 593, 5],
+            // Double staggered tree rows separating G/F Parking from South-East Parking (shifted +12px)
+            [640, 581, 684, 581, 4],
+            [632, 593, 694, 593, 5],
             // South parking horizontal tree rows (dead-straight horizontal, matching close-up signage)
             [356, 680, 466, 680, 7],      // Below South Upper Parking (left of E)
-            [618, 680, 670, 680, 3],      // Below SE Parking (right of Innovacion)
+            [630, 680, 682, 680, 3],      // Below SE Parking (right of Innovacion, +12px)
             [358, 725, 466, 725, 7],      // North/Main-Entrance Lot upper row (left block)
-            [504, 725, 628, 725, 8],      // North/Main-Entrance Lot upper row (right block)
-            [358, 766, 688, 766, 18],     // Bottom straight perimeter tree line
-            // Double tree column flanking Central Spine Road & West side of Building I (Photo 12 & 14)
-            [692, 606, 692, 666, 5],
-            [716, 598, 720, 694, 7],
-            // Between Building I and Jaguar Center (bottom tree anchors NW corner of Jaguar Gym parking)
-            [816, 586, 816, 684, 6],
-            // Baseball Stadium: 7 west trees cleanly inside western curve + 3 south concourse trees (Photo 2 & 15)
-            [708, 128, 716, 276, 7],
-            [792, 308, 956, 308, 3],
-            // Left (compass-east) edge of Soccer Field — dead-straight vertical line of 10 trees beside parking buffer
-            [747, 376, 747, 524, 10],
-            // South edge of Soccer Field — clean 90-degree corner turn from vertical tree line
-            [758, 534, 926, 534, 10],
-            [974, 534, 1094, 534, 7]
+            [504, 725, 640, 725, 9],      // North/Main-Entrance Lot upper row (right block)
+            [358, 766, 700, 766, 19],     // Bottom straight perimeter tree line
+            // Double tree column flanking Central Spine Road & West side of Building I
+            [704, 606, 704, 666, 5],
+            [732, 598, 734, 694, 7],
+            // Between Building I and Jaguar Center (bottom tree anchors NW corner of Jaguar Gym parking, +14px)
+            [830, 586, 830, 684, 6],
+            // Baseball Stadium: 7 west trees cleanly inside western curve + 3 south concourse trees (+14px)
+            [722, 128, 730, 276, 7],
+            [806, 308, 970, 308, 3],
+            // Left (compass-east) edge of Soccer Field — dead-straight vertical line of 10 trees beside parking buffer (+14px)
+            [761, 376, 761, 524, 10],
+            // South edge of Soccer Field — clean 90-degree corner turn from vertical tree line (+14px)
+            [772, 534, 940, 534, 10],
+            [988, 534, 1108, 534, 7]
         ];
 
         for (const [x1, y1, x2, y2, count] of largeTreeRows) {
             addTreeRow(layer, x1, y1, x2, y2, count, "#treeLarge");
         }
 
-        // Individual accent trees (near P, Plaza Chilamates perimeter, K/Plaza Central, Banpro, Main Entrance, G/F, Jaguar Gym Lot, East Complex)
+        // Individual accent trees (near P, Plaza Chilamates perimeter, below J, K/Plaza Central, Banpro, Main Entrance, G/F, Jaguar Gym Lot, East Complex)
         const singleTrees = [
-            [356, 152], [260, 314], [334, 338], [354, 562],
+            [362, 150], [260, 314], [344, 345], [354, 562],
             [208, 528], [256, 746], [256, 766],
-            [688, 585],
-            [866, 704], [882, 720], [916, 696],
-            [978, 577], [952, 594], [952, 614], [952, 632], [946, 662], [1132, 756]
+            [700, 585],
+            [880, 704], [896, 720], [930, 696],
+            [992, 577], [966, 594], [966, 614], [966, 632], [960, 662], [1146, 756]
         ];
         for (const [x, y] of singleTrees) {
             el("use", { href: "#treeLarge", x, y }, layer);
@@ -943,16 +927,16 @@
         const bushRows = [
             // Plaza Chilamates west hedge (10 neat small bushes)
             [268, 244, 268, 298, 10],
-            // West side of Building N (9 neat small bushes)
-            [346, 242, 346, 290, 9],
-            // East side of Central Parking (double 6-bush column + 2 diagonal accents, Photo 7 & 8)
-            [506, 346, 514, 386, 6],
-            [518, 346, 526, 386, 6],
-            [534, 354, 538, 364, 2],
-            // Below H (5 bushes) & double vertical 6+6 bush column east of M (Photo 7)
-            [594, 393, 628, 393, 5],
-            [666, 434, 666, 464, 6],
-            [673, 434, 673, 464, 6],
+            // West side of Building N (9 neat small bushes aligned between corridor & shifted N)
+            [356, 242, 356, 290, 9],
+            // East side of Central Parking (double 6-bush column + 2 diagonal accents aligned below N & above C right dormer)
+            [520, 346, 528, 386, 6],
+            [531, 346, 539, 386, 6],
+            [547, 354, 551, 364, 2],
+            // Below H (5 bushes) & double vertical 6+6 bush column east of M (+14px)
+            [608, 393, 642, 393, 5],
+            [680, 434, 680, 464, 6],
+            [687, 434, 687, 464, 6],
             // Inside C-B Courtyard (west & east of central bridge)
             [344, 427, 424, 427, 7],
             [464, 427, 554, 427, 8],
@@ -967,8 +951,8 @@
         for (const [x1, y1, x2, y2, count] of bushRows) {
             addTreeRow(layer, x1, y1, x2, y2, count, "#treeSmall");
         }
-        // Tiny 3-bush cluster tucked at NW corner of Building J (Photo 6)
-        for (const [bx, by] of [[335, 295], [342, 295], [335, 302]]) {
+        // Tiny 3-bush cluster tucked cleanly above NW corner of shifted Building J
+        for (const [bx, by] of [[342, 290], [349, 290], [342, 296]]) {
             el("use", { href: "#treeSmall", x: bx, y: by }, layer);
         }
     }
@@ -978,16 +962,16 @@
     // ----------------------------------------------------------------------------
     function renderEmergencyLayer(layer) {
         const evacuationPaths = [
-            // Zone North (P, Observatorio, N, J, D, Ranchon, O -> North PON Lot & Meeting Point 2 east of O — Photos 1, 4, 5, 8)
-            "M 320 140 L 322 186 L 430 186",
-            "M 326 186 L 332 336 L 382 336 L 382 342 L 408 342",
-            "M 398 256 L 484 256 L 488 336",
-            "M 436 226 L 436 198",
-            "M 526 294 L 516 294 L 516 222 L 528 222 L 528 198",
-            "M 560 148 L 560 184 L 468 186",
-            "M 624 200 L 656 200",
+            // Zone North (P, Observatorio, N, J, D, Ranchon, O -> North PON Lot & Meeting Point 2 east of O)
+            "M 329 140 L 331 186 L 436 186",
+            "M 331 186 L 336 335 L 386 335 L 386 340 L 414 340",
+            "M 404 256 L 492 256 L 494 336",
+            "M 442 226 L 442 198",
+            "M 538 294 L 526 294 L 526 222 L 534 222 L 534 198",
+            "M 574 148 L 574 184 L 474 186",
+            "M 638 200 L 670 200",
 
-            // Zone Central (A, B, C, K, E -> Meeting Point 4 in Plaza Central Ruben Dario — Photos 7, 10, 12)
+            // Zone Central (A, B, C, K, E -> Meeting Point 4 in Plaza Central Ruben Dario)
             "M 352 472 L 352 484 L 440 484 L 444 494",
             "M 448 472 L 452 492",
             "M 516 472 L 470 500",
@@ -995,30 +979,30 @@
             "M 518 522 L 470 518",
             "M 534 654 L 534 670 L 494 670 L 494 540 L 470 526",
 
-            // Zone East-Center (H, M, G, F, Vida Estudiantil, SE Parking, I -> Meeting Point 5 — Photos 7, 12, 13)
-            "M 680 370 L 686 468 L 664 504",
-            "M 630 438 L 656 438 L 664 498",
-            "M 568 468 L 626 468 L 644 504",
-            "M 622 508 L 634 516",
-            "M 622 560 L 640 532",
-            "M 560 618 L 560 600 L 651 600 L 651 536",
-            "M 762 640 L 762 628 L 740 628 L 718 576 L 668 532",
-            "M 796 706 L 702 706 L 702 588 L 666 534",
+            // Zone East-Center (H, M, G, F, Vida Estudiantil, SE Parking, I -> Meeting Point 5)
+            "M 694 370 L 700 468 L 676 504",
+            "M 644 438 L 670 438 L 676 498",
+            "M 568 468 L 638 468 L 656 504",
+            "M 634 508 L 646 516",
+            "M 634 560 L 652 532",
+            "M 570 618 L 570 600 L 663 600 L 663 536",
+            "M 776 640 L 776 628 L 754 628 L 732 576 L 680 532",
+            "M 810 706 L 716 706 L 716 588 L 678 534",
 
-            // Sports Concourse -> Meeting Point 3 (Soccer Field — Photo 15)
-            "M 754 344 L 876 426",
+            // Sports Concourse -> Meeting Point 3 (Soccer Field, +14px)
+            "M 768 344 L 890 426",
 
-            // Jaguar Center, L, Gym, Physiotherapy, Warehouse, Nameless Complex & Martial Arts -> Soccer Field (Photo 14)
-            "M 852 574 L 852 560 L 944 560 L 944 474",
-            "M 898 574 L 898 560",
-            "M 964 598 L 952 598 L 952 580",
-            "M 964 626 L 952 626 L 952 642 L 992 642",
-            "M 978 724 L 978 696 L 944 696 L 944 566",
-            "M 1004 834 L 994 834 L 994 580 L 950 580",
-            "M 1018 676 L 1018 682 L 994 682",
-            "M 1058 646 L 1066 742",
-            "M 1068 742 L 1066 742 L 1066 678",
-            "M 1140 732 L 1140 656"
+            // Jaguar Center, L, Gym, Physiotherapy, Warehouse, Nameless Complex & Martial Arts -> Soccer Field (+14px)
+            "M 866 574 L 866 560 L 958 560 L 958 474",
+            "M 912 574 L 912 560",
+            "M 978 598 L 966 598 L 966 580",
+            "M 978 626 L 966 626 L 966 642 L 1006 642",
+            "M 992 724 L 992 696 L 958 696 L 958 566",
+            "M 1018 834 L 1008 834 L 1008 580 L 964 580",
+            "M 1032 676 L 1032 682 L 1008 682",
+            "M 1072 646 L 1080 742",
+            "M 1082 742 L 1080 742 L 1080 678",
+            "M 1154 732 L 1154 656"
         ];
 
         // Crisp white halo underneath so green dashed routes stay legible on dark grass & light roads
@@ -1048,9 +1032,9 @@
             el("path", { d, "marker-end": "url(#evacArrow)" }, routesGroup);
         }
 
-        // Emergency route junction nodes (green circles along east complex walkways)
+        // Emergency route junction nodes (green circles along east complex walkways, +14px)
         const junctionDots = [
-            [994, 642], [994, 676], [1004, 682], [1058, 646], [1066, 678], [1140, 656], [994, 766]
+            [1008, 642], [1008, 676], [1018, 682], [1072, 646], [1080, 678], [1154, 656], [1008, 766]
         ];
         for (const [cx, cy] of junctionDots) {
             el("circle", { cx, cy, r: 3.2, fill: "#166534", stroke: "#ffffff", "stroke-width": 1 }, layer);
@@ -1059,11 +1043,11 @@
         // 7B. Safe Area / Meeting Point Green Circles with Checkmarks
         const pointsGroup = el("g", { id: "emergencySafePointsGroup" }, layer);
         const safePoints = [
-            { cx: 866, cy: 194, r: 18 },   // Baseball Stadium Outfield
-            { cx: 672, cy: 200, r: 10.5 }, // East of Building O (on roadside parking bay)
-            { cx: 904, cy: 446, r: 21 },   // Soccer Field Center
+            { cx: 880, cy: 194, r: 18 },   // Baseball Stadium Outfield
+            { cx: 686, cy: 200, r: 10.5 }, // East of Building O (on roadside parking bay)
+            { cx: 918, cy: 446, r: 21 },   // Soccer Field Center
             { cx: 448, cy: 514, r: 18 },   // Plaza Central Ruben Dario
-            { cx: 651, cy: 518, r: 10.5 }  // G/F Parking Aisle (West of Pill Median)
+            { cx: 663, cy: 518, r: 10.5 }  // G/F Parking Aisle (West of Pill Median)
         ];
 
         for (const pt of safePoints) {
