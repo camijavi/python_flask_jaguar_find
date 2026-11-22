@@ -92,11 +92,13 @@
 }
 
 /* Hide SVG badges in 2.5D mode to prevent trapezoidal stretching (Decoupled HTML overlay takes over) */
+.campus-25d-active .billboard-badge,
 .campus-25d-active [class*="badge-"],
 .campus-25d-active .badge-text,
 .campus-25d-active #origin2dPin,
 .campus-25d-active #destination2dPin {
     opacity: 0 !important;
+    display: none !important;
     pointer-events: none !important;
 }
 

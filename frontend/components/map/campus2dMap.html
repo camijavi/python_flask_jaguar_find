@@ -107,10 +107,10 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 <rect x="270" y="480" width="245" height="40" />
             </clipPath>
             <clipPath id="clipConnectorBE">
-                <rect x="442" y="520" width="16" height="30" />
+                <rect x="442" y="520" width="8" height="48" />
             </clipPath>
             <clipPath id="clipBldgE">
-                <rect x="440" y="550" width="36" height="185" />
+                <rect x="440" y="568" width="36" height="177" />
             </clipPath>
             <clipPath id="clipBldgH">
                 <rect x="525" y="365" width="95" height="36" />
@@ -119,10 +119,10 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 <path d="M 545 425 L 590 425 L 590 443 L 605 443 L 605 477 L 590 477 L 590 495 L 545 495 L 545 477 L 530 477 L 530 443 L 545 443 Z" />
             </clipPath>
             <clipPath id="clipBldgG">
-                <rect x="490" y="535" width="54" height="46" />
+                <rect x="514" y="535" width="54" height="46" />
             </clipPath>
             <clipPath id="clipBldgF">
-                <rect x="490" y="605" width="54" height="46" />
+                <rect x="514" y="605" width="54" height="46" />
             </clipPath>
             <clipPath id="clipBldgK">
                 <polygon points="250,545 305,545 330,590 315,620 250,620 250,580" />
@@ -521,10 +521,10 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
                 <rect x="230" y="390" width="40" height="130" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <!-- Badge A (Crimson / Maroon with Crisp White Border - matching official signage) -->
+                <!-- Badge A (Maroon) -->
                 <g class="billboard-badge">
-                    <rect x="238" y="443" width="24" height="24" rx="5" fill="#991b1b" stroke="#ffffff" stroke-width="2" />
-                    <text x="250" y="455" class="badge-text" font-size="12" font-weight="800">A</text>
+                    <rect x="239" y="444" width="22" height="22" class="badge-maroon" />
+                    <text x="250" y="455" class="badge-text">A</text>
                 </g>
             </g>
 
@@ -542,10 +542,10 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
                 <rect x="270" y="390" width="245" height="40" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <!-- Badge C (Deep Indigo / Purple with Crisp White Border - matching official signage) -->
+                <!-- Badge C (Purple) -->
                 <g class="billboard-badge">
-                    <rect x="372" y="378" width="24" height="24" rx="5" fill="#4c1d95" stroke="#ffffff" stroke-width="2" />
-                    <text x="384" y="390" class="badge-text" font-size="12" font-weight="800">C</text>
+                    <rect x="373" y="379" width="22" height="22" class="badge-purple" />
+                    <text x="384" y="390" class="badge-text">C</text>
                 </g>
             </g>
 
@@ -613,45 +613,45 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
                 <rect x="270" y="480" width="245" height="40" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <!-- Badge B (Purple with Crisp White Border - matching official signage) -->
+                <!-- Badge B (Purple) -->
                 <g class="billboard-badge">
-                    <rect x="372" y="468" width="24" height="24" rx="5" fill="#581c87" stroke="#ffffff" stroke-width="2" />
-                    <text x="384" y="480" class="badge-text" font-size="12" font-weight="800">B</text>
+                    <rect x="373" y="469" width="22" height="22" class="badge-purple" />
+                    <text x="384" y="480" class="badge-text">B</text>
                 </g>
             </g>
 
             <!-- Connecting Second Floor Bridge Between Building B and Building E (Straight Line Connector) -->
             <g id="connectorSecondFloorBE" class="bldg-shape" data-bldg="PUENTE_BE" filter="url(#bldgShadow)">
                 <g clip-path="url(#clipConnectorBE)">
-                    <rect x="442" y="520" width="8" height="30" fill="#1da495" />
-                    <rect x="450" y="520" width="8" height="30" fill="#48b2a9" />
+                    <rect x="442" y="520" width="4" height="48" fill="#1da495" />
+                    <rect x="446" y="520" width="4" height="48" fill="#48b2a9" />
                     <!-- Green Corridor Walkway -->
-                    <line x1="446" y1="520" x2="446" y2="550" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.9" />
+                    <line x1="446" y1="520" x2="446" y2="568" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,3" opacity="0.9" />
                 </g>
-                <!-- Navy Side Borders (Straight Lines connecting B and E) -->
-                <line x1="442" y1="520" x2="442" y2="550" stroke="#253452" stroke-width="3.5" stroke-linecap="square" />
-                <line x1="458" y1="520" x2="458" y2="550" stroke="#253452" stroke-width="3.5" stroke-linecap="square" />
+                <!-- Navy Side Borders (Thin straight lines connecting B and E) -->
+                <line x1="442" y1="520" x2="442" y2="568" stroke="#253452" stroke-width="2.5" stroke-linecap="square" />
+                <line x1="450" y1="520" x2="450" y2="568" stroke="#253452" stroke-width="2.5" stroke-linecap="square" />
             </g>
 
             <!-- 4E. EDIFICIO E (FACULTAD DE MEDICINA - EXTENDS SOUTH FROM B VIA SECOND FLOOR CONNECTOR) -->
             <g class="bldg-shape" data-node="buildingE" data-bldg="E" filter="url(#bldgShadow)">
                 <g clip-path="url(#clipBldgE)">
                     <!-- Base: #1da495 -->
-                    <rect x="440" y="550" width="36" height="185" fill="#1da495" />
+                    <rect x="440" y="568" width="36" height="177" fill="#1da495" />
                     <!-- Lightning left slope: #48b2a9 -->
-                    <polygon points="440,550 458,568 458,717 440,735" fill="#48b2a9" />
+                    <polygon points="440,568 458,586 458,727 440,745" fill="#48b2a9" />
                     <!-- Shadow Top North Hip Triangle: #1f8383 -->
-                    <polygon points="440,550 476,550 458,568" fill="#1f8383" />
+                    <polygon points="440,568 476,568 458,586" fill="#1f8383" />
                     <!-- Shadow Bottom South Hip Triangle: #1f8383 -->
-                    <polygon points="440,735 476,735 458,717" fill="#1f8383" />
+                    <polygon points="440,745 476,745 458,727" fill="#1f8383" />
                     <!-- Green Corridor Walkway -->
-                    <line x1="458" y1="568" x2="458" y2="717" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.85" />
+                    <line x1="458" y1="586" x2="458" y2="727" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.85" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners (Clean Rectangle) -->
-                <rect x="440" y="550" width="36" height="185" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="440" y="568" width="36" height="177" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <g class="billboard-badge">
-                    <rect x="447" y="600" width="22" height="22" class="badge-navy" />
-                    <text x="458" y="611" class="badge-text">E</text>
+                    <rect x="447" y="640" width="22" height="22" class="badge-navy" />
+                    <text x="458" y="651" class="badge-text">E</text>
                 </g>
             </g>
 
@@ -696,17 +696,17 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <g class="bldg-shape" data-node="buildingG" data-bldg="G" filter="url(#bldgShadow)">
                 <g clip-path="url(#clipBldgG)">
                     <!-- Base: #1da495 -->
-                    <rect x="490" y="535" width="54" height="46" fill="#1da495" />
+                    <rect x="514" y="535" width="54" height="46" fill="#1da495" />
                     <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="490,535 544,535 544,558 490,558" fill="#48b2a9" />
+                    <polygon points="514,535 568,535 568,558 514,558" fill="#48b2a9" />
                     <!-- Shadow Left Triangle: #1f8383 -->
-                    <polygon points="490,535 490,581 513,558" fill="#1f8383" />
+                    <polygon points="514,535 514,581 537,558" fill="#1f8383" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="490" y="535" width="54" height="46" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="514" y="535" width="54" height="46" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <g class="billboard-badge">
-                    <rect x="506" y="547" width="22" height="22" class="badge-cyan" />
-                    <text x="517" y="558" class="badge-text">G</text>
+                    <rect x="530" y="547" width="22" height="22" class="badge-cyan" />
+                    <text x="541" y="558" class="badge-text">G</text>
                 </g>
             </g>
 
@@ -714,17 +714,17 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <g class="bldg-shape" data-node="buildingF" data-bldg="F" filter="url(#bldgShadow)">
                 <g clip-path="url(#clipBldgF)">
                     <!-- Base: #1da495 -->
-                    <rect x="490" y="605" width="54" height="46" fill="#1da495" />
+                    <rect x="514" y="605" width="54" height="46" fill="#1da495" />
                     <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="490,605 544,605 544,628 490,628" fill="#48b2a9" />
+                    <polygon points="514,605 568,605 568,628 514,628" fill="#48b2a9" />
                     <!-- Shadow Left Triangle: #1f8383 -->
-                    <polygon points="490,605 490,651 513,628" fill="#1f8383" />
+                    <polygon points="514,605 514,651 537,628" fill="#1f8383" />
                 </g>
                 <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="490" y="605" width="54" height="46" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <rect x="514" y="605" width="54" height="46" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <g class="billboard-badge">
-                    <rect x="506" y="617" width="22" height="22" class="badge-magenta" />
-                    <text x="517" y="628" class="badge-text">F</text>
+                    <rect x="530" y="617" width="22" height="22" class="badge-magenta" />
+                    <text x="541" y="628" class="badge-text">F</text>
                 </g>
             </g>
 
@@ -795,10 +795,10 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <path d="M 384 410 L 384 500" />
             <path d="M 515 410 L 545 410 L 570 425 L 510 255 L 440 128" />
             <path d="M 515 500 L 545 500 L 605 459" />
-            <path d="M 458 500 L 458 725" />
-            <path d="M 476 558 L 490 558" />
-            <path d="M 476 628 L 490 628" />
-            <path d="M 458 725 L 598 725" />
+            <path d="M 458 500 L 446 520 L 446 568 L 458 586 L 458 735" />
+            <path d="M 476 558 L 514 558" />
+            <path d="M 476 628 L 514 628" />
+            <path d="M 458 735 L 598 735 L 598 725" />
             <path d="M 598 785 L 598 682 L 653 682 L 653 748" />
             <path d="M 598 682 L 598 625 L 690 520 L 805 507" />
             <path d="M 605 459 L 640 362 L 640 167" />
