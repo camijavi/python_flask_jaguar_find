@@ -299,6 +299,50 @@ document.addEventListener("DOMContentLoaded", function () {
                 { floor: "Piso 1", rooms: "Clínica de Fisioterapia, Rehabilitación Física y Deportiva, Atención a Estudiantes y Atletas." }
             ]
         },
+        "jaguarJungle": {
+            id: "jaguarJungle",
+            letter: "JJ",
+            name: "Jaguar Jungle • Jardín & Conexión Central",
+            badgeClass: "badge-green",
+            badgeBg: "#15803d",
+            anchor: { x: 626, y: 306 },
+            floors: [
+                { floor: "Área Verde & Senderos", rooms: "Zona recreativa natural con senderos peatonales que conectan Edificio O, Mi Ranchito, Lab Digital FIA, Edificio H y la Avenida Principal Interna." }
+            ]
+        },
+        "miRanchito": {
+            id: "miRanchito",
+            letter: "MR",
+            name: "Mi Ranchito • Ranchón Universitario",
+            badgeClass: "badge-amber",
+            badgeBg: "#b45309",
+            anchor: { x: 555, y: 296 },
+            floors: [
+                { floor: "Pabellón Exterior", rooms: "Ranchón de descanso, cafetería y punto de encuentro estudiantil entre Edificio N, Edificio O y Jaguar Jungle." }
+            ]
+        },
+        "labDigitalFia": {
+            id: "labDigitalFia",
+            letter: "FIA",
+            name: "Lab Digital FIA • Laboratorio Digital",
+            badgeClass: "badge-teal",
+            badgeBg: "#0f766e",
+            anchor: { x: 530, y: 328 },
+            floors: [
+                { floor: "Piso 1", rooms: "Laboratorio Digital de la Facultad de Ingeniería y Arquitectura (FIA), junto al Edificio N, Mi Ranchito y Área de Mesas." }
+            ]
+        },
+        "areaDeMesas": {
+            id: "areaDeMesas",
+            letter: "AM",
+            name: "Área de Mesas • Terraza de Estudio",
+            badgeClass: "badge-navy",
+            badgeBg: "#1e3a8a",
+            anchor: { x: 532, y: 366 },
+            floors: [
+                { floor: "Terraza Exterior", rooms: "Mesas techadas y sombreadas para estudio, trabajo grupal y almuerzo entre Lab Digital FIA, Parqueo Central y Edificio C." }
+            ]
+        },
         "northGate": {
             id: "northGate",
             letter: "3°",

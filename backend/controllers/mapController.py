@@ -11,6 +11,7 @@ and GPS-to-campus-node snapping.
 
 from flask import Blueprint, request, jsonify, session
 from typing import Dict, Any, List
+import unicodedata
 
 from backend.graph.navigationService import globalNavigationService
 from backend.graph.geoUtils import CampusGeoUtils
@@ -131,6 +132,12 @@ def getCategories():
     }), 200
 
 
+def _normalizeText(text: str) -> str:
+    """Case- and accent-insensitive normalization for bilingual campus search."""
+    decomposed = unicodedata.normalize("NFD", str(text or "").strip().lower())
+    return "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
+
+
 @mapController.route("/places", methods=["GET"])
 def getPlaces():
     """
@@ -142,7 +149,7 @@ def getPlaces():
       - floor: integer floor filter (e.g. 1, 2)
     """
     categoryFilter = request.args.get("category")
-    searchQuery = (request.args.get("q") or "").strip().lower()
+    searchQuery = _normalizeText(request.args.get("q") or "")
     floorFilter = request.args.get("floor")
 
     results = []
@@ -157,9 +164,9 @@ def getPlaces():
                 pass
 
         if searchQuery:
-            nameMatch = searchQuery in place.get("name", "").lower()
-            notesMatch = searchQuery in place.get("locationNotes", "").lower()
-            keywordMatch = any(searchQuery in kw.lower() for kw in place.get("keywords", []))
+            nameMatch = searchQuery in _normalizeText(place.get("name", ""))
+            notesMatch = searchQuery in _normalizeText(place.get("locationNotes", ""))
+            keywordMatch = any(searchQuery in _normalizeText(kw) for kw in place.get("keywords", []))
             if not (nameMatch or notesMatch or keywordMatch):
                 continue
 

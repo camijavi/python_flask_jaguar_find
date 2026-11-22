@@ -103,9 +103,11 @@
             drop-shadow(0 4px 8px rgba(15, 23, 42, 0.34)) brightness(1.07);
 }
 
-/* Keep flat sports fields, plazas, and south gate grounded flush with terrain */
+/* Keep flat sports fields, plazas, botanical gardens, terraces, and south gate grounded flush with terrain */
 .campus-25d-active #baseballStadium,
 .campus-25d-active #soccerField,
+.campus-25d-active #jaguarJungle,
+.campus-25d-active #areaDeMesas,
 .campus-25d-active .bldg-shape[data-bldg="CANCHAS"],
 .campus-25d-active .bldg-shape[data-node="chilamatesPlaza"],
 .campus-25d-active .bldg-shape[data-node="mainParking"] {
@@ -115,6 +117,8 @@
 
 .campus-25d-active #baseballStadium:hover,
 .campus-25d-active #soccerField:hover,
+.campus-25d-active #jaguarJungle:hover,
+.campus-25d-active #areaDeMesas:hover,
 .campus-25d-active .bldg-shape[data-bldg="CANCHAS"]:hover,
 .campus-25d-active .bldg-shape[data-node="chilamatesPlaza"]:hover,
 .campus-25d-active .bldg-shape[data-node="mainParking"]:hover {
@@ -219,10 +223,10 @@
     width: 72px;
     height: 54px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(15, 23, 42, 0.17) 0%, rgba(15, 23, 42, 0.08) 65%, transparent 100%);
-    border: 1.5px solid rgba(255, 255, 255, 0.65);
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.28) 0%, rgba(14, 165, 233, 0.12) 65%, transparent 100%);
+    border: 1.5px solid rgba(255, 255, 255, 0.92);
     transform: translateY(4px);
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.18);
 }
 
 .waze-puck-pulse {
@@ -230,7 +234,7 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    border: 2px solid #22d3ee;
+    border: 2.2px solid #38bdf8;
     animation: wazePulse 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
 }
 
@@ -245,7 +249,7 @@
     top: -24px;
     width: 52px;
     height: 46px;
-    background: linear-gradient(to top, rgba(34, 211, 238, 0.32) 0%, transparent 100%);
+    background: linear-gradient(to top, rgba(56, 189, 248, 0.36) 0%, rgba(125, 211, 252, 0.14) 65%, transparent 100%);
     clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
     pointer-events: none;
     transform-origin: 50% 100%;
@@ -256,7 +260,7 @@
     width: 52px;
     height: 52px;
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    filter: drop-shadow(0 5px 10px rgba(8, 145, 178, 0.42));
+    filter: drop-shadow(0 5px 12px rgba(2, 132, 199, 0.38));
 }
 
 .waze-road-pill {
@@ -264,17 +268,17 @@
     bottom: -24px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 3px 11px;
+    padding: 3.5px 12px;
     border-radius: 9999px;
-    background: #6d28d9;
-    color: #ffffff;
+    background: rgba(255, 255, 255, 0.96);
+    color: #0369a1;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     font-size: 11px;
     font-weight: 800;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.015em;
     white-space: nowrap;
-    border: 2px solid #ffffff;
-    box-shadow: 0 4px 12px rgba(109, 40, 217, 0.45);
+    border: 2px solid #38bdf8;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.22);
     z-index: 26;
 }
 
@@ -387,27 +391,33 @@
 
 @keyframes slideUpTray {
     from {
-        transform: translateY(16px);
         opacity: 0;
+        margin-bottom: -10px;
     }
     to {
-        transform: translateY(0);
         opacity: 1;
+        margin-bottom: 0;
     }
 }
 
-/* Iconic Waze Dark Circular Gauge / Mode Dial (Bottom-Left above Bottom Dock) */
+/* JaguarFind Light-Theme White & Sky-Blue Circular Gauge / Mode Dial (Bottom-Left) */
 .waze-speed-dial {
-    background: radial-gradient(circle at 35% 30%, #334155 0%, #1e293b 58%, #0f172a 100%);
-    border: 3px solid #ffffff;
-    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.34), inset 0 1px 2px rgba(255, 255, 255, 0.16);
+    background: radial-gradient(circle at 30% 25%, #ffffff 0%, #f0f9ff 62%, #e0f2fe 100%);
+    border: 3px solid #38bdf8;
+    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.20), inset 0 1px 2px rgba(255, 255, 255, 0.95);
 }
 
-/* Iconic Waze Vibrant Orange Circular Action FAB (Bottom-Right above Bottom Dock) */
+/* JaguarFind Light-Theme Vibrant Sky-to-Cyan Circular Action FAB (Explore Mode) */
 .waze-orange-fab {
-    background: linear-gradient(145deg, #fbbf24 0%, #f97316 58%, #ea580c 100%);
+    background: linear-gradient(145deg, #38bdf8 0%, #0ea5e9 54%, #0284c7 100%);
     border: 3.5px solid #ffffff;
-    box-shadow: 0 8px 22px rgba(249, 115, 22, 0.42), 0 2px 6px rgba(15, 23, 42, 0.18);
+    box-shadow: 0 8px 22px rgba(14, 165, 233, 0.36), 0 2px 6px rgba(2, 132, 199, 0.16);
+}
+
+/* Active Navigation State: Bright Light-Theme Coral-Rose Recenter Beacon */
+.campus-tbt-active .waze-orange-fab {
+    background: linear-gradient(145deg, #fb7185 0%, #f43f5e 56%, #e11d48 100%);
+    box-shadow: 0 8px 22px rgba(244, 63, 94, 0.36), 0 2px 6px rgba(15, 41, 82, 0.14);
 }
 
 /* Zero-Collision Offset Rules when Waze Black Turn-by-Turn Banner is Visible */
@@ -439,10 +449,17 @@
     }
 }
 
-/* On desktop (>= 1024px), top banner is centered max-w-xl so right toolbar stays cleanly at top-4 */
+/* On desktop (>= 1024px), keep right toolbar at top-4 and compact left mode pill during active TBT so it never collides with the centered banner when sidebar is open */
 @media (min-width: 1024px) {
     .campus-tbt-active .waze-right-stack {
         top: 16px !important;
+    }
+}
+@media (min-width: 1024px) and (max-width: 1535px) {
+    .campus-tbt-active #pitchControlGroup,
+    .campus-tbt-active #headingControlGroup,
+    .campus-tbt-active #parkingControlGroup {
+        display: none !important;
     }
 }
 
@@ -466,7 +483,7 @@
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .mode-pill-btn.active {
-    background-color: #0284c7;
+    background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
     color: #ffffff;
-    box-shadow: 0 2px 6px -1px rgba(2, 132, 199, 0.4);
+    box-shadow: 0 2px 8px -1px rgba(14, 165, 233, 0.42);
 }

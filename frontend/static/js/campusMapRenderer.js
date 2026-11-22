@@ -46,6 +46,10 @@
         jaguarCenter: { x: 900, y: 623 },
         jaguarGym: { x: 969, y: 726 },
         physiotherapy: { x: 978, y: 677 },
+        jaguarJungle: { x: 626, y: 306 },
+        miRanchito: { x: 555, y: 296 },
+        labDigitalFia: { x: 530, y: 328 },
+        areaDeMesas: { x: 532, y: 366 },
         northGate: { x: 184, y: 74 },
         northeastGate: { x: 906, y: 14 }
     };
@@ -710,6 +714,47 @@
         el("rect", { x: 584, y: 400, width: 72, height: 72, rx: 2, fill: "#cbd5e1", opacity: 0.6 }, pads);  // Behind M
         el("rect", { x: 548, y: 488, width: 32, height: 92, rx: 2, fill: "#cbd5e1", opacity: 0.65 }, pads); // Between E & G/F
         el("rect", { x: 752, y: 584, width: 68, height: 118, rx: 2, fill: "#cbd5e1", opacity: 0.55 }, pads); // Around Building I
+
+        // 4E. Jaguar Jungle (Botanical Garden & Central Walkway Hub between Building O, Main Spine Road, Mi Ranchito & Building H)
+        const jj = el("g", { id: "jaguarJungle", class: "bldg-shape", "data-node": "jaguarJungle", "data-bldg": "JAGUAR JUNGLE" }, layer);
+        // Organic shaded garden footprint snugly bounded by O (top), Spine Road (right), H (bottom), and Mi Ranchito (left)
+        el("path", {
+            d: "M 584 266 L 646 266 Q 655 266 658 275 C 664 294, 672 314, 680 332 Q 684 342 672 344 L 586 344 Q 574 344 574 332 L 574 278 Q 574 266 584 266 Z",
+            fill: "#cfeeda", stroke: "#52b788", "stroke-width": 1.5, "stroke-linejoin": "round"
+        }, jj);
+        // Inner soft botanical lawn contour highlight
+        el("path", {
+            d: "M 590 273 L 642 273 Q 650 273 653 282 C 658 298, 665 314, 671 329 Q 674 337 665 338 L 590 338 Q 581 338 581 329 L 581 282 Q 581 273 590 273 Z",
+            fill: "#b7e4c7", opacity: 0.45
+        }, jj);
+
+        // Interconnected Pedestrian Walkways linking Building O, Spine Road, Building H, Mi Ranchito, Lab Digital FIA, Area de Mesas & C/M
+        const jjWalkways = [
+            // North-South curved garden path: Building O terrace -> Jaguar Jungle -> Building H
+            "M 638 260 C 636 276, 624 292, 628 312 C 632 328, 641 340, 640 354",
+            // East-West garden path: Main Spine Road edge -> Jaguar Jungle -> Mi Ranchito / Lab Digital FIA corridor
+            "M 674 318 C 655 320, 642 317, 628 316 C 608 316, 584 322, 558 324",
+            // Eastern pedestrian corridor: Mi Ranchito -> Lab Digital FIA -> Area de Mesas -> Building C / M passage
+            "M 558 310 L 558 324 L 554 388 L 574 390 L 574 428",
+            // Short feeder branch into moved Lab Digital FIA
+            "M 536 328 L 558 328"
+        ];
+        const jjPathCasing = el("g", { fill: "none", stroke: "#94a3b8", "stroke-width": 7.4, "stroke-linecap": "butt", "stroke-linejoin": "round", "pointer-events": "none" }, layer);
+        const jjPathFill = el("g", { fill: "none", stroke: "#e8edf3", "stroke-width": 5.4, "stroke-linecap": "round", "stroke-linejoin": "round", "pointer-events": "none" }, layer);
+        for (const d of jjWalkways) {
+            el("path", { d }, jjPathCasing);
+            el("path", { d }, jjPathFill);
+        }
+        // Seamless flush apron patches where walkways meet Building O's terrace pad and Spine Road west shoulder
+        el("rect", { x: 634, y: 256, width: 9, height: 6, fill: "#dfe5ec", "pointer-events": "none" }, layer);
+        el("path", { d: "M 671 313 L 680 312 L 681 324 L 672 323 Z", fill: "#e8edf3", "pointer-events": "none" }, layer);
+
+        // 4F. Area de Mesas (Shaded Outdoor Tables & Study Terrace between Central Parking & Corridor, below Lab Digital FIA)
+        const mesas = el("g", { id: "areaDeMesas", class: "bldg-shape", "data-node": "areaDeMesas", "data-bldg": "ÁREA DE MESAS" }, layer);
+        el("path", {
+            d: "M 516 342 L 548 342 L 552 390 L 520 390 Z",
+            fill: "#e5ebf2", stroke: "#94a3b8", "stroke-width": 1.2, "stroke-linejoin": "round"
+        }, mesas);
     }
 
     // ----------------------------------------------------------------------------
@@ -893,8 +938,8 @@
             { x: 282, y: 320, w: 18, h: 18, orientation: "h" }, // Kiosko Plaza Chilamates
             { x: 536, y: 246, w: 16, h: 15 },                  // Small annex 1 below O
             { x: 556, y: 246, w: 16, h: 15 },                  // Small annex 2 below O
-            { x: 540, y: 282, w: 30, h: 28 },                  // Ranchon (+12px)
-            { x: 534, y: 322, w: 11, h: 15 },                  // Lab Digital FIA (+12px)
+            { x: 540, y: 282, w: 30, h: 28, node: "miRanchito", bldg: "MI RANCHITO" },         // Mi Ranchito (Ranchon)
+            { x: 523, y: 320, w: 13, h: 16, node: "labDigitalFia", bldg: "LAB FIA" },          // Lab Digital FIA (moved east closer to N, near Mi Ranchito)
             // Sports North & Mid Concourse pavilions (+14px with east campus)
             { x: 916, y: 50, w: 36, h: 30 },                   // Kiosko NE
             { x: 992, y: 46, w: 38, h: 30 },                   // Sanitarios NE
@@ -1000,10 +1045,12 @@
             addTreeRow(layer, x1, y1, x2, y2, count, "#treeLarge");
         }
 
-        // Individual accent trees (near P, Plaza Chilamates perimeter, below J, K/Plaza Central, Banpro, Main Entrance, G/F, Jaguar Gym Lot, East Complex)
+        // Individual accent trees (near P, Plaza Chilamates perimeter, below J, Jaguar Jungle canopy, K/Plaza Central, Banpro, Main Entrance, G/F, Jaguar Gym Lot, East Complex)
         const singleTrees = [
             [362, 150], [262, 314], [344, 345], [354, 562],
             [202, 528], [244, 746], [244, 766],
+            // Lush shaded canopy trees inside Jaguar Jungle quadrants (clear of walkways)
+            [594, 286], [612, 279], [593, 306], [648, 290], [656, 305], [598, 333], [656, 333],
             [700, 585],
             [880, 704], [896, 720], [930, 696],
             [992, 577], [966, 594], [966, 614], [966, 632], [960, 662], [1146, 756]
@@ -1018,10 +1065,13 @@
             [268, 244, 268, 298, 10],
             // West side of Building N (9 neat small bushes aligned between corridor & shifted N)
             [356, 242, 356, 290, 9],
-            // East side of Central Parking (double 6-bush column + 2 diagonal accents aligned below N & above C right dormer)
-            [520, 346, 528, 386, 6],
-            [531, 346, 539, 386, 6],
-            [547, 354, 551, 364, 2],
+            // Area de Mesas shaded table canopies (double 6-unit column + 2 edge accents tucked inside terrace)
+            [521, 346, 527, 386, 6],
+            [532, 346, 538, 386, 6],
+            [544, 353, 546, 365, 2],
+            // Botanical accent shrubs inside Jaguar Jungle
+            [610, 298, 616, 304, 2],
+            [614, 332, 622, 335, 2],
             // Below H (5 bushes) & double vertical 6+6 bush column east of M (+14px)
             [608, 393, 642, 393, 5],
             [680, 434, 680, 464, 6],

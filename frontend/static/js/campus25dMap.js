@@ -133,6 +133,10 @@
                 "jaguarCenter": { x: 900, y: 623 },
                 "jaguarGym": { x: 969, y: 726 },
                 "physiotherapy": { x: 978, y: 677 },
+                "jaguarJungle": { x: 626, y: 306 },
+                "miRanchito": { x: 555, y: 296 },
+                "labDigitalFia": { x: 530, y: 328 },
+                "areaDeMesas": { x: 532, y: 366 },
                 "northGate": { x: 184, y: 74 },
                 "northeastGate": { x: 906, y: 14 }
             };
@@ -414,7 +418,10 @@
             }
 
             if (this.btnWazeExpandTray) {
-                this.btnWazeExpandTray.addEventListener("click", () => this.toggleActionTray());
+                this.btnWazeExpandTray.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    this.toggleActionTray();
+                });
             }
 
             if (this.btnWazeAudio) {
@@ -520,7 +527,7 @@
 
             const onPointerDown = (clientX, clientY, isRotateAction, target) => {
                 if (!this.is25dActive) return false;
-                if (target && (target.closest("button") || target.closest("#bldgPopover") || target.closest(".waze-bldg-badge") || target.closest("#campusCompass"))) {
+                if (target && (target.closest("button") || target.closest("#bldgPopover") || target.closest(".waze-bldg-badge") || target.closest("#campusCompass") || target.closest("#wazeBottomBar") || target.closest("#wazeActionTray") || target.closest("#turnByTurnBanner"))) {
                     return false;
                 }
 
@@ -748,7 +755,7 @@
             }
             if (!this.currentRoute) {
                 if (this.wazeDialValue) this.wazeDialValue.textContent = this.is25dActive ? "3D" : "2D";
-                if (this.wazeDialUnit) this.wazeDialUnit.textContent = this.is25dActive ? "waze" : "vista";
+                if (this.wazeDialUnit) this.wazeDialUnit.textContent = this.is25dActive ? "vista" : "mapa";
                 if (this.wazeActiveRoadPill) this.wazeActiveRoadPill.classList.add("hidden");
                 if (this.wazeOrangeFabIcon) {
                     this.wazeOrangeFabIcon.innerHTML = `<path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/>`;
@@ -1116,7 +1123,7 @@
                 if (bldgData.id === "buildingP") {
                     this.tbtNextPreview.textContent = "Toca para abrir Maqueta Isométrica 3D (3 Pisos)";
                 } else {
-                    this.tbtNextPreview.textContent = "Toca «Ir aquí» para trazar ruta Waze";
+                    this.tbtNextPreview.textContent = "Toca «Ir aquí» para iniciar navegación JaguarFind";
                 }
             }
 
@@ -1227,7 +1234,7 @@
             const vw = this.viewport.clientWidth || 1000;
 
             // 1. Position Upright Building Badges (aligned with lifted 3D building roofs)
-            const flatNodes = new Set(["northGate", "northeastGate", "mainParking", "chilamatesPlaza", "sportsZone"]);
+            const flatNodes = new Set(["northGate", "northeastGate", "mainParking", "chilamatesPlaza", "sportsZone", "jaguarJungle", "areaDeMesas"]);
             const roofLift = (this.pitch || 45) >= 50 ? 2.5 : 3.0;
             for (const [nodeId, anchor] of Object.entries(this.buildingAnchors)) {
                 const badgeEl = document.getElementById(`wazeBadge_${nodeId}`);

@@ -2,37 +2,37 @@
 ================================================================================
 CAMPUS ORIENTATION COMPASS COMPONENT (COMPASS.HTML)
 ================================================================================
-Sleek Waze-Style Circular Campus Orientation Compass:
+JaguarFind Circular Campus Orientation Compass:
 - Floats cleanly inside the right-edge map control rail across all screen sizes
-- Clean circular white dial with subtle rim ticks & sky-blue/coral pointer
+- Official UAM Ocean Blue & Jaguar Gold pointer with crisp teal tick dial
 - Dynamically rotates in real time with 2D rotation & 2.5D Heading-Up camera
 - Interactive: tap to reorient smoothly to 0°; drag to manually rotate map
 ================================================================================
 -->
 
 <div id="campusCompass"
-     class="campus-compass w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg shadow-slate-900/12 flex items-center justify-center transition-transform duration-200 hover:scale-105 active:scale-95 pointer-events-auto select-none cursor-pointer"
+     class="campus-compass w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/95 backdrop-blur-md border border-brand-200/80 shadow-lg shadow-brand-900/12 flex items-center justify-center transition-transform duration-200 hover:scale-105 active:scale-95 pointer-events-auto select-none cursor-pointer"
      title="{{ t('map.compass_orientation', default='Orientación del campus • Clic para centrar y reorientar') }}"
      aria-label="{{ t('map.compass_orientation', default='Orientación del campus') }}"
      role="button"
      tabindex="0">
     <svg id="compassRose" class="w-9 h-9 sm:w-10 sm:h-10 compass-rose overflow-visible" viewBox="-34 -34 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Subtle outer Waze dial tick ring -->
-        <circle cx="0" cy="0" r="29" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2" />
-        <circle cx="0" cy="0" r="25" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="1.4 5.14" />
+        <!-- Subtle outer UAM teal-tinted dial tick ring -->
+        <circle cx="0" cy="0" r="29" fill="#ffffff" stroke="#bae6fd" stroke-width="1.3" />
+        <circle cx="0" cy="0" r="25" fill="none" stroke="#99f6e4" stroke-width="2.2" stroke-dasharray="1.5 5.04" />
 
         <!-- Rotating Compass Dial Assembly -->
         <g id="compassDial" style="transform-origin: 0px 0px; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
-            <!-- Primary Campus South Axis Pointer (Waze Red/Coral tip) -->
-            <polygon points="0,-18 -4.2,-2 0,-5" fill="#ef4444" />
-            <polygon points="0,-18 4.2,-2 0,-5" fill="#dc2626" />
-            <!-- Opposite Pointer (Cool Slate) -->
-            <polygon points="0,16 -3.5,2 0,5" fill="#cbd5e1" />
-            <polygon points="0,16 3.5,2 0,5" fill="#94a3b8" />
-            <!-- Center Hub -->
-            <circle cx="0" cy="0" r="2.8" fill="#1e293b" stroke="#ffffff" stroke-width="1.2" />
+            <!-- Primary Campus South Axis Pointer (Official UAM Ocean Blue) -->
+            <polygon points="0,-18 -4.4,-2 0,-5" fill="#0284c7" />
+            <polygon points="0,-18 4.4,-2 0,-5" fill="#1e3a8a" />
+            <!-- Opposite Pointer (Campus Teal) -->
+            <polygon points="0,16 -3.5,2 0,5" fill="#5eead4" />
+            <polygon points="0,16 3.5,2 0,5" fill="#0f766e" />
+            <!-- Center Jaguar Gold Jewel Hub -->
+            <circle cx="0" cy="0" r="3.2" fill="#f59e0b" stroke="#ffffff" stroke-width="1.3" />
             <!-- Compact Cardinal South Marker -->
-            <text x="0" y="-22.5" fill="#dc2626" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="7.5" font-weight="800" text-anchor="middle" dominant-baseline="central">S</text>
+            <text x="0" y="-22.5" fill="#1e3a8a" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="7.8" font-weight="900" text-anchor="middle" dominant-baseline="central">S</text>
         </g>
     </svg>
 </div>

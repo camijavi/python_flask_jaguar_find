@@ -41,6 +41,10 @@ def buildUamCampusGraph() -> DirectedGraph:
     g.addNode(Node("jaguarCenter", "Jaguar Center Complex (Sports Center)", CampusCategory.SPORTS, 64.0, 72.0, 12.10725, -86.25690))
     g.addNode(Node("jaguarGym", "Jaguar Gym", CampusCategory.SPORTS, 79.0, 85.0, 12.10712, -86.25665))
     g.addNode(Node("physiotherapy", "Physiotherapy Building", CampusCategory.MEDICAL_LAB, 80.0, 79.0, 12.10718, -86.25662))
+    g.addNode(Node("jaguarJungle", "Jaguar Jungle (Nature Garden & Central Connector)", CampusCategory.FOOD_AREA, 52.2, 36.0, 12.10832, -86.25742))
+    g.addNode(Node("miRanchito", "Mi Ranchito (Dining & Rest Pavilion)", CampusCategory.FOOD_AREA, 46.3, 34.8, 12.10838, -86.25758))
+    g.addNode(Node("labDigitalFia", "Digital FIA Laboratory (Lab Digital FIA)", CampusCategory.FACULTY, 44.2, 38.6, 12.10824, -86.25764))
+    g.addNode(Node("areaDeMesas", "Outdoor Tables Area (Área de Mesas)", CampusCategory.FOOD_AREA, 44.3, 43.1, 12.10812, -86.25764))
     g.addNode(Node("buildingL", "Building L (Culture & Music)", CampusCategory.CLASSROOM, 69.0, 72.0, 12.10725, -86.25673))
     g.addNode(Node("northeastGate", "Second Access (Jaguar Stadium Road)", CampusCategory.PARKING_LOT, 75.5, 2.0, 12.10885, -86.25697))
     g.addNode(Node("northGate", "Third Access (Copernicus / West Avenue Gate)", CampusCategory.PARKING_LOT, 15.5, 9.0, 12.10895, -86.25818))
@@ -171,5 +175,58 @@ def buildUamCampusGraph() -> DirectedGraph:
     g.addBidirectionalWalkway("buildingM", "buildingH", 35.0, isAccessible=True,
                              forwardInstruction="Walk 35m northeast towards Building H.",
                              backwardInstruction="Walk 35m southwest towards Building M.")
+
+    # Jaguar Jungle, Mi Ranchito, Lab Digital FIA & Outdoor Tables Area (Area de Mesas) Connector Network
+    g.addBidirectionalWalkway("jaguarJungle", "buildingO", 25.0, isAccessible=True,
+                             forwardInstruction="Follow the Jaguar Jungle garden path 25m towards Building O (FIA).",
+                             backwardInstruction="Enter Jaguar Jungle from Building O and walk 25m along the shaded garden path.")
+
+    g.addBidirectionalWalkway("jaguarJungle", "buildingH", 25.0, isAccessible=True,
+                             forwardInstruction="Continue 25m along the Jaguar Jungle path towards Building H (Medical Labs).",
+                             backwardInstruction="Enter Jaguar Jungle from Building H and walk 25m along the central garden path.")
+
+    g.addBidirectionalWalkway("jaguarJungle", "miRanchito", 20.0, isAccessible=True,
+                             forwardInstruction="Walk 20m along the Jaguar Jungle walkway towards Mi Ranchito.",
+                             backwardInstruction="Enter Jaguar Jungle from Mi Ranchito, walking 20m along the main garden walkway.")
+
+    g.addBidirectionalWalkway("jaguarJungle", "labDigitalFia", 20.0, isAccessible=True,
+                             forwardInstruction="Follow the Jaguar Jungle walkway 20m to the corridor beside Lab Digital FIA.",
+                             backwardInstruction="Enter Jaguar Jungle from the Lab Digital FIA corridor, walking 20m into the central garden.")
+
+    g.addBidirectionalWalkway("jaguarJungle", "sportsZone", 55.0, isAccessible=True,
+                             forwardInstruction="Exit Jaguar Jungle onto the main internal road and cross 55m towards the Sports Fields.",
+                             backwardInstruction="Cross the main internal road 55m from the Sports Fields into Jaguar Jungle.")
+
+    g.addBidirectionalWalkway("miRanchito", "buildingO", 30.0, isAccessible=True,
+                             forwardInstruction="Walk 30m skirting Jaguar Jungle from Mi Ranchito towards Building O (FIA).",
+                             backwardInstruction="Walk 30m from Building O skirting Jaguar Jungle towards Mi Ranchito.")
+
+    g.addBidirectionalWalkway("miRanchito", "buildingN", 25.0, isAccessible=True,
+                             forwardInstruction="Walk 25m along the pedestrian walkway from Mi Ranchito towards Building N (Dental Clinics).",
+                             backwardInstruction="Walk 25m from Building N along the pedestrian walkway towards Mi Ranchito.")
+
+    g.addBidirectionalWalkway("miRanchito", "labDigitalFia", 15.0, isAccessible=True,
+                             forwardInstruction="Walk 15m along the pedestrian corridor from Mi Ranchito to Lab Digital FIA.",
+                             backwardInstruction="Walk 15m along the pedestrian corridor from Lab Digital FIA to Mi Ranchito.")
+
+    g.addBidirectionalWalkway("labDigitalFia", "buildingN", 15.0, isAccessible=True,
+                             forwardInstruction="Walk 15m from Lab Digital FIA directly to Building N (Dental Clinics).",
+                             backwardInstruction="Exit Building N and walk 15m to Lab Digital FIA.")
+
+    g.addBidirectionalWalkway("labDigitalFia", "areaDeMesas", 15.0, isAccessible=True,
+                             forwardInstruction="Continue 15m along the walkway from Lab Digital FIA to the Outdoor Tables Area (Área de Mesas).",
+                             backwardInstruction="Walk 15m along the walkway from Área de Mesas to Lab Digital FIA.")
+
+    g.addBidirectionalWalkway("areaDeMesas", "buildingC", 20.0, isAccessible=True,
+                             forwardInstruction="Walk 20m from Área de Mesas towards Building C (Computer Labs & Cashier).",
+                             backwardInstruction="Walk 20m from Building C towards the Outdoor Tables Area (Área de Mesas).")
+
+    g.addBidirectionalWalkway("areaDeMesas", "buildingH", 25.0, isAccessible=True,
+                             forwardInstruction="Follow the walkway 25m from Área de Mesas towards Building H (Medical Labs).",
+                             backwardInstruction="Follow the walkway 25m from Building H towards the Outdoor Tables Area (Área de Mesas).")
+
+    g.addBidirectionalWalkway("areaDeMesas", "buildingM", 30.0, isAccessible=True,
+                             forwardInstruction="Follow the pedestrian walkway 30m from Área de Mesas towards Building M.",
+                             backwardInstruction="Follow the pedestrian walkway 30m from Building M towards the Outdoor Tables Area (Área de Mesas).")
 
     return g

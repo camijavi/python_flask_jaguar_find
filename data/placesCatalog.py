@@ -1561,6 +1561,46 @@ PLACES_CATALOG = [
         "locationNotes": "Outdoor central plaza.",
         "keywords": ["chilamates", "fast point", "kiosko chilamates", "almuerzo aire libre"]
     },
+    {
+        "placeId": "jaguarJungleGarden",
+        "name": "Jaguar Jungle (Jardín & Senderos Centrales)",
+        "category": CampusCategory.FOOD_AREA,
+        "parentBuildingId": "jaguarJungle",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Shaded green garden area with walkways connecting Building O, Mi Ranchito, Building H, and the main internal road.",
+        "keywords": ["jaguar jungle", "jungle", "jungla", "jardin jaguar", "area verde", "sendero o h"]
+    },
+    {
+        "placeId": "miRanchitoPavilion",
+        "name": "Mi Ranchito (Ranchón Universitario)",
+        "category": CampusCategory.FOOD_AREA,
+        "parentBuildingId": "miRanchito",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Open-air rest and dining pavilion beside Jaguar Jungle, Building N, and Lab Digital FIA.",
+        "keywords": ["mi ranchito", "ranchito", "ranchon", "ranch", "kiosko ranchon", "descanso"]
+    },
+    {
+        "placeId": "labDigitalFiaRoom",
+        "name": "Lab Digital FIA (Laboratorio Digital de Ingeniería)",
+        "category": CampusCategory.FACULTY,
+        "parentBuildingId": "labDigitalFia",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "FIA Digital Laboratory located beside Building N, near Mi Ranchito and Área de Mesas.",
+        "keywords": ["lab digital fia", "laboratorio digital fia", "lab fia", "digital fia", "digital laboratory fia"]
+    },
+    {
+        "placeId": "areaDeMesasTerrace",
+        "name": "Área de Mesas (Terraza Exterior de Estudio)",
+        "category": CampusCategory.FOOD_AREA,
+        "parentBuildingId": "areaDeMesas",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Shaded outdoor tables and study terrace between Lab Digital FIA, Central Parking, and Building C.",
+        "keywords": ["area de mesas", "área de mesas", "mesas", "mesas exteriores", "outdoor tables", "terraza mesas"]
+    },
 
     # -------------------------------------------------------------------------
     # PARKING LOTS & MAIN GATES

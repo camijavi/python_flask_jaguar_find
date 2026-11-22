@@ -5,12 +5,21 @@ Supports full internationalization (i18n) across English and Spanish.
 All internal code and default strings are in English.
 """
 
+import unicodedata
 from typing import List, Optional
 from .campusGraphBuilder import buildUamCampusGraph
 from .dijkstraRouter import DijkstraRouter
 from .geoUtils import CampusGeoUtils
 from .i18n import t
 from data.placesCatalog import PLACES_CATALOG
+
+
+def _normalizeQuery(text: str) -> str:
+    """Lowercases and strips diacritics so Spanish/English queries match reliably (e.g. 'Área' == 'area')."""
+    if not text:
+        return ""
+    decomposed = unicodedata.normalize("NFD", text.strip().lower())
+    return "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
 
 
 class NavigationService:
@@ -27,11 +36,11 @@ class NavigationService:
         if not queryText:
             return None
 
-        cleaned = queryText.strip().lower()
+        cleaned = _normalizeQuery(queryText)
 
-        # 1. Direct match with a macro nodeId or exact building name (case-insensitive)
+        # 1. Direct match with a macro nodeId or exact building/zone name (case- & accent-insensitive)
         for nodeId, node in self.graph.nodes.items():
-            if cleaned in (nodeId.lower(), node.name.lower(), node.getName(lang).lower()):
+            if cleaned in (_normalizeQuery(nodeId), _normalizeQuery(node.name), _normalizeQuery(node.getName(lang))):
                 return {
                     "targetNodeId": node.nodeId,
                     "placeId": node.nodeId,
@@ -46,7 +55,7 @@ class NavigationService:
         bestMatch = None
         bestScore = 0
         for place in PLACES_CATALOG:
-            if place["placeId"].lower() == cleaned or place["name"].lower() == cleaned:
+            if _normalizeQuery(place["placeId"]) == cleaned or _normalizeQuery(place["name"]) == cleaned:
                 return {
                     "targetNodeId": place["parentBuildingId"],
                     "placeId": place["placeId"],
@@ -57,9 +66,9 @@ class NavigationService:
                     "isSubPlace": True
                 }
             for kw in place["keywords"]:
-                kwLower = kw.lower()
-                if kwLower in cleaned and len(kwLower) > bestScore:
-                    bestScore = len(kwLower)
+                kwNorm = _normalizeQuery(kw)
+                if kwNorm and (kwNorm in cleaned or (len(cleaned) >= 4 and cleaned in kwNorm)) and len(kwNorm) > bestScore:
+                    bestScore = len(kwNorm)
                     bestMatch = place
 
         if bestMatch:
@@ -73,10 +82,13 @@ class NavigationService:
                 "isSubPlace": True
             }
 
-        # 3. Fallback to building search by letter or name (e.g. "edificio b", "building b")
+        # 3. Fallback to building/zone search by letter or name (e.g. "edificio b", "jaguar jungle", "area de mesas")
         for nodeId, node in self.graph.nodes.items():
-            localizedName = node.getName(lang).lower()
-            if nodeId.lower() in cleaned or node.name.lower() in cleaned or localizedName in cleaned:
+            nodeNorm = _normalizeQuery(nodeId)
+            engNorm = _normalizeQuery(node.name)
+            locNorm = _normalizeQuery(node.getName(lang))
+            if (nodeNorm in cleaned or engNorm in cleaned or locNorm in cleaned
+                    or (len(cleaned) >= 4 and (cleaned in engNorm or cleaned in locNorm))):
                 return {
                     "targetNodeId": nodeId,
                     "placeId": nodeId,
@@ -153,7 +165,7 @@ class NavigationService:
         if targetNodeId == "buildingP":
             if accessibleOnly:
                 recommendedIndoorEntrance = "F1-ENT-E"
-            elif len(pathNodes) >= 2 and pathNodes[-2] in ("buildingO", "buildingH", "northeastGate"):
+            elif len(pathNodes) >= 2 and pathNodes[-2] in ("buildingO", "buildingH", "northeastGate", "jaguarJungle", "miRanchito"):
                 recommendedIndoorEntrance = "F1-ENT-O"
             else:
                 recommendedIndoorEntrance = "F1-ENT-W"
