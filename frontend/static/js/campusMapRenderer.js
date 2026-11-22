@@ -42,7 +42,7 @@
         buildingP: { x: 450, y: 115 },
         mainParking: { x: 298, y: 766 },
         chilamatesPlaza: { x: 300, y: 292 },
-        sportsZone: { x: 918, y: 447 },
+        sportsZone: { x: 924, y: 447 },
         jaguarCenter: { x: 886, y: 623 },
         jaguarGym: { x: 955, y: 726 },
         physiotherapy: { x: 964, y: 677 },
@@ -353,12 +353,15 @@
             addStallRow(l, 754, 90, 862, 90, 12, 0, -14, true);
         });
 
-        // 2.8 East Vertical Roadside Parking Strips (West side of Central Spine Road)
+        // 2.8 East Roadside Parking Strips (East of Building O & Left/Compass-East Side of Soccer Field)
         makeLot("parkingLotEastO", "rect", { x: 626, y: 204, width: 24, height: 64, rx: 4 }, (_, l) => {
             addStallRow(l, 629, 210, 629, 262, 8, 11, 0, true);
         });
-        makeLot("parkingLotEastGF", "rect", { x: 664, y: 462, width: 26, height: 110, rx: 4 }, (_, l) => {
-            addStallRow(l, 667, 468, 667, 566, 14, 12, 0, true);
+        makeLot("parkingLotSoccerEast", "path", {
+            d: "M 716 398 L 735 398 L 735 536 L 716 536 Z"
+        }, (_, l) => {
+            // 20 crisp perpendicular stalls running along the left (compass-east) side of the Soccer Field
+            addStallRow(l, 718, 402, 718, 532, 20, 15, 0);
         });
 
         // 2.9 Main South Parking Lot (Upper bay cleanly above the horizontal South Main Avenue)
@@ -451,19 +454,19 @@
             el("rect", { x: bx - 2.5, y: by - 2.5, width: 5, height: 5, fill: "#ffffff", transform: `rotate(45 ${bx} ${by})` }, bb);
         }
 
-        // 3B. Cancha de Futbol (Wide proportional soccer pitch)
+        // 3B. Cancha de Futbol (Wide proportional soccer pitch, clear of left parking & straight tree row)
         const sc = el("g", { id: "soccerField", class: "bldg-shape", "data-node": "sportsZone", "data-bldg": "FÚTBOL" }, layer);
-        el("rect", { x: 744, y: 372, width: 348, height: 150, fill: "#15803d", stroke: ROOF_BORDER, "stroke-width": 2.5 }, sc);
+        el("rect", { x: 757, y: 372, width: 335, height: 150, fill: "#15803d", stroke: ROOF_BORDER, "stroke-width": 2.5 }, sc);
         const lines = el("g", { stroke: "#ffffff", "stroke-width": 1.8, fill: "none" }, sc);
-        el("rect", { x: 756, y: 382, width: 324, height: 130 }, lines);
-        el("line", { x1: 918, y1: 382, x2: 918, y2: 512 }, lines);
-        el("circle", { cx: 918, cy: 447, r: 24 }, lines);
-        el("circle", { cx: 918, cy: 447, r: 2.2, fill: "#ffffff" }, lines);
+        el("rect", { x: 768, y: 382, width: 313, height: 130 }, lines);
+        el("line", { x1: 924.5, y1: 382, x2: 924.5, y2: 512 }, lines);
+        el("circle", { cx: 924.5, cy: 447, r: 24 }, lines);
+        el("circle", { cx: 924.5, cy: 447, r: 2.2, fill: "#ffffff" }, lines);
         // Left & right penalty boxes
-        el("rect", { x: 756, y: 412, width: 38, height: 70 }, lines);
-        el("rect", { x: 756, y: 427, width: 16, height: 40 }, lines);
-        el("rect", { x: 1042, y: 412, width: 38, height: 70 }, lines);
-        el("rect", { x: 1064, y: 427, width: 16, height: 40 }, lines);
+        el("rect", { x: 768, y: 412, width: 38, height: 70 }, lines);
+        el("rect", { x: 768, y: 427, width: 16, height: 40 }, lines);
+        el("rect", { x: 1043, y: 412, width: 38, height: 70 }, lines);
+        el("rect", { x: 1065, y: 427, width: 16, height: 40 }, lines);
 
         // 3C. Outdoor Courts East of Building L: Tennis/Multi-Sport Court + Sand Volleyball Court
         const cts = el("g", { id: "sportsCourts", class: "bldg-shape", "data-node": "buildingL", "data-bldg": "CANCHAS" }, layer);
@@ -741,11 +744,11 @@
             [706, 134, 712, 286, 9],
             // South edge of Baseball Stadium
             [818, 304, 1044, 304, 4],
-            // West edge of Soccer Field
-            [732, 358, 744, 530, 10],
-            // South edge of Soccer Field
-            [764, 538, 926, 538, 9],
-            [974, 538, 1094, 538, 7]
+            // Left (compass-east) edge of Soccer Field — dead-straight vertical line of 10 trees beside parking buffer
+            [747, 376, 747, 524, 10],
+            // South edge of Soccer Field — clean 90-degree corner turn from vertical tree line
+            [758, 534, 926, 534, 10],
+            [974, 534, 1094, 534, 7]
         ];
 
         for (const [x1, y1, x2, y2, count] of largeTreeRows) {
