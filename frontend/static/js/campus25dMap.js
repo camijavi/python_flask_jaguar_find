@@ -94,30 +94,30 @@
             this.labelSimPlay = document.getElementById("labelSimPlay");
             this.indoorHandoffTimer = null;
 
-            // Map building coordinates lookup (matches campus2dMap.js)
-            this.buildingAnchors = {
-                "buildingA": { x: 250, y: 455 },
-                "buildingB": { x: 384, y: 500 },
-                "buildingC": { x: 384, y: 410 },
-                "buildingD": { x: 351, y: 290 },
-                "buildingE": { x: 458, y: 653 },
-                "buildingF": { x: 545, y: 646 },
-                "buildingG": { x: 545, y: 590 },
-                "buildingH": { x: 602, y: 383 },
-                "buildingI": { x: 653, y: 724 },
-                "buildingJ": { x: 297, y: 287 },
-                "buildingK": { x: 293, y: 598 },
-                "buildingL": { x: 842, y: 502 },
-                "buildingM": { x: 597, y: 460 },
-                "buildingN": { x: 350, y: 217 },
-                "buildingO": { x: 510, y: 200 },
-                "buildingP": { x: 360, y: 104 },
-                "mainParking": { x: 340, y: 800 },
-                "chilamatesPlaza": { x: 225, y: 287 },
-                "sportsZone": { x: 762, y: 357 },
-                "jaguarCenter": { x: 735, y: 510 },
-                "northGate": { x: 240, y: 11 },
-                "northeastGate": { x: 720, y: 11 }
+            // Map building coordinates lookup (single source of truth from campusMapRenderer.js)
+            this.buildingAnchors = window.CAMPUS_BUILDING_ANCHORS || {
+                "buildingA": { x: 323, y: 435 },
+                "buildingB": { x: 444, y: 459 },
+                "buildingC": { x: 444, y: 411 },
+                "buildingD": { x: 404, y: 316 },
+                "buildingE": { x: 534, y: 580 },
+                "buildingF": { x: 592, y: 564 },
+                "buildingG": { x: 592, y: 510 },
+                "buildingH": { x: 646, y: 370 },
+                "buildingI": { x: 762, y: 656 },
+                "buildingJ": { x: 357, y: 316 },
+                "buildingK": { x: 362, y: 526 },
+                "buildingL": { x: 982, y: 626 },
+                "buildingM": { x: 612, y: 435 },
+                "buildingN": { x: 436, y: 260 },
+                "buildingO": { x: 597, y: 196 },
+                "buildingP": { x: 450, y: 115 },
+                "mainParking": { x: 318, y: 765 },
+                "chilamatesPlaza": { x: 300, y: 292 },
+                "sportsZone": { x: 918, y: 447 },
+                "jaguarCenter": { x: 886, y: 623 },
+                "northGate": { x: 245, y: 72 },
+                "northeastGate": { x: 645, y: 18 }
             };
 
             this.init();

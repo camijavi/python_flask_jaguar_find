@@ -127,79 +127,34 @@
     stroke: #bcc7da;
 }
 
-.campus-25d-active #parkingLayer > rect[fill="#dfe5ec"],
-.campus-25d-active #parkingLotSideP rect[fill="#dfe5ec"],
-.campus-25d-active #parkingLotBehindP path[fill="#dfe5ec"],
-.campus-25d-active #parkingLotNorthPON path[fill="#dfe5ec"],
-.campus-25d-active #parkingLotCentralCD path[fill="#dfe5ec"],
-.campus-25d-active #parkingLotSouthEF path[fill="#dfe5ec"] {
+.campus-25d-active #parkingLayer .parking-asphalt {
     fill: #c4d0df;
-    transition: fill 0.25s ease, stroke 0.25s ease, fill-opacity 0.25s ease;
-}
-
-.campus-25d-active #parkingLayer > rect[stroke="#cbd5e1"],
-.campus-25d-active #parkingLotSideP rect[stroke="#cbd5e1"],
-.campus-25d-active #parkingLotBehindP path[stroke="#cbd5e1"],
-.campus-25d-active #parkingLotNorthPON path[stroke="#cbd5e1"],
-.campus-25d-active #parkingLotCentralCD path[stroke="#cbd5e1"],
-.campus-25d-active #parkingLotSouthEF path[stroke="#cbd5e1"] {
     stroke: #8fa2ba;
     stroke-width: 1.8px;
-    transition: stroke 0.25s ease, stroke-width 0.25s ease;
+    transition: fill 0.25s ease, stroke 0.25s ease, fill-opacity 0.25s ease, stroke-width 0.25s ease;
 }
 
-.campus-25d-active #parkingLotSideP g[stroke="#ffffff"] line,
-.campus-25d-active #parkingLotBehindP g[stroke="#ffffff"] line,
-.campus-25d-active #parkingLotNorthPON g[stroke="#ffffff"] line,
-.campus-25d-active #parkingLotSouthEF g[stroke="#ffffff"] line,
-.campus-25d-active #parkingLotSouthEF > line[stroke="#ffffff"],
-.campus-25d-active #parkingLotSouthEF > path[stroke="#ffffff"] {
+.campus-25d-active #parkingLayer .parking-lines line {
     stroke: #ffffff;
     stroke-width: 1.55px;
 }
 
-.campus-25d-active #parkingLotCentralCD g[stroke="#ffffff"] line {
-    stroke: #ffffff;
-    stroke-width: 2px;
-}
-
-.campus-25d-active #parkingLotSouthEF path[fill="#b4c0cf"] {
+.campus-25d-active #parkingLayer .parking-island {
     fill: #94a3b8;
     stroke: #ffffff;
     stroke-width: 1.5px;
     filter: drop-shadow(0 1.2px 0 #64748b);
 }
 
-.campus-25d-active #parkingLotCentralCD rect[fill="#cbd5e1"] {
-    fill: #94a3b8;
-}
-
 /* 4B. Parking Highlight Toggle Mode (Emphasizes all campus parking lots in 2.5D view) */
-.campus-25d-active.campus-25d-highlight-parking #parkingLayer > rect[fill="#dfe5ec"],
-.campus-25d-active.campus-25d-highlight-parking #parkingLotSideP rect[fill="#dfe5ec"],
-.campus-25d-active.campus-25d-highlight-parking #parkingLotBehindP path[fill="#dfe5ec"],
-.campus-25d-active.campus-25d-highlight-parking #parkingLotNorthPON path[fill="#dfe5ec"],
-.campus-25d-active.campus-25d-highlight-parking #parkingLotCentralCD path[fill="#dfe5ec"],
-.campus-25d-active.campus-25d-highlight-parking #parkingLotSouthEF path[fill="#dfe5ec"] {
+.campus-25d-active.campus-25d-highlight-parking #parkingLayer .parking-asphalt {
     fill: #93c5fd;
     fill-opacity: 0.72;
-}
-
-.campus-25d-active.campus-25d-highlight-parking #parkingLayer > rect[stroke="#cbd5e1"],
-.campus-25d-active.campus-25d-highlight-parking #parkingLotSideP rect[stroke="#cbd5e1"],
-.campus-25d-active.campus-25d-highlight-parking #parkingLotBehindP path[stroke="#cbd5e1"],
-.campus-25d-active.campus-25d-highlight-parking #parkingLotNorthPON path[stroke="#cbd5e1"],
-.campus-25d-active.campus-25d-highlight-parking #parkingLotCentralCD path[stroke="#cbd5e1"],
-.campus-25d-active.campus-25d-highlight-parking #parkingLotSouthEF path[stroke="#cbd5e1"] {
     stroke: #0284c7;
     stroke-width: 2.3px;
 }
 
-.campus-25d-active.campus-25d-highlight-parking #parkingLotSideP,
-.campus-25d-active.campus-25d-highlight-parking #parkingLotBehindP,
-.campus-25d-active.campus-25d-highlight-parking #parkingLotNorthPON,
-.campus-25d-active.campus-25d-highlight-parking #parkingLotCentralCD,
-.campus-25d-active.campus-25d-highlight-parking #parkingLotSouthEF {
+.campus-25d-active.campus-25d-highlight-parking #parkingLayer .parking-lot {
     filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.35));
 }
 

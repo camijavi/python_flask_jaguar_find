@@ -2,13 +2,12 @@
 ================================================================================
 CAMPUS2DMAP COMPONENT (CAMPUS2DMAP.HTML)
 ================================================================================
-Official UAM 2D Vector Campus Map faithfully replicating the official signage:
-- Flat architectural building layouts (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P)
-- Real sports facilities: Baseball Stadium, Soccer Field, Jaguar Center, Jaguar Gym, Courts
-- Plaza Central Rubén Darío, Plaza Chilamates, Ranchón, Weather Station, Parking
-- Animated Dijkstra route path
-- Official letter badges and orientation compass rose
-- Clean flat architectural colors (pure 2D vector view)
+Official UAM 2D Vector Campus Map faithfully replicating the physical campus map:
+- Clean layered SVG canvas (1200 x 850) populated declaratively by campusMapRenderer.js
+- Architectural buildings (A-P + Observatorio, Ranchon, sports & east complex)
+- Detailed parking bays, landscaping trees/bushes, plazas & sports fields
+- Dedicated toggleable Emergency Evacuation Layer (safe points & green routes)
+- Animated Dijkstra route path & 2.5D perspective overlay compatibility
 ================================================================================
 -->
 
@@ -21,7 +20,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
     <!-- 2.5D Perspective Controls & Turn-by-Turn HUD -->
     {% include "components/map/campus25dMap.html" %}
 
-    <!-- Map Toolbar (Zoom, Center, 2.5D Perspective Toggle) -->
+    <!-- Map Toolbar (Zoom, Center, 2.5D Perspective Toggle, Emergency Layer Toggle) -->
     <div class="absolute top-4 right-4 z-20 flex flex-col gap-1.5 bg-white/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-200/90 shadow-md">
         <button id="btnMapZoomIn" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center font-bold text-sm transition-colors" title="Acercar">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -34,6 +33,9 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
         </button>
         <button id="btnToggle25dQuick" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-700 flex items-center justify-center font-black text-[11px] transition-colors" title="Alternar Vista 2.5D Perspectiva">
             3D
+        </button>
+        <button id="btnToggleEmergencyLayer" type="button" aria-pressed="true" class="w-8 h-8 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 flex items-center justify-center transition-colors" title="Puntos de Encuentro y Rutas de Evacuación">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
         </button>
     </div>
 
@@ -67,1068 +69,106 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
     <!-- 3D Transformable Stage (CSS 3D perspective plane with lower-third anchor) -->
     <div class="campus-map-wrapper campus-3d-stage" id="campusMapWrapper">
 
-        <!-- Official SVG 2D Vector Map Canvas (1200 x 850) with geometricPrecision anti-aliasing -->
-        <svg id="officialCampus2dSvg" viewBox="0 0 1200 850" class="campus-svg-canvas" overflow="visible" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
-        <defs>
-            <!-- Clean Elevation Shadow Filter for Buildings -->
-            <filter id="bldgShadow" x="-10%" y="-10%" width="120%" height="120%">
-                <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.2" />
-            </filter>
+        <!-- Official SVG 2D Vector Map Canvas (1200 x 850) -->
+        <svg id="officialCampus2dSvg"
+             viewBox="0 0 1200 850"
+             data-jaguar-logo="{{ url_for('static', filename='img/jaguarCenterLogo.png') }}"
+             class="campus-svg-canvas"
+             overflow="visible"
+             shape-rendering="geometricPrecision"
+             text-rendering="geometricPrecision">
+            <defs>
+                <!-- Clean Elevation Shadow Filter for Buildings -->
+                <filter id="bldgShadow" x="-10%" y="-10%" width="120%" height="120%">
+                    <feDropShadow dx="1.8" dy="3.5" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.18" />
+                </filter>
 
-            <!-- ClipPaths for Buildings (Sharp Architectural Facets Matching Official UAM Map) -->
-            <clipPath id="clipBldgP">
-                <rect x="250" y="80" width="220" height="48" />
-            </clipPath>
-            <clipPath id="clipBldgO">
-                <path d="M 482 145 L 538 145 L 538 233 L 482 233 L 482 221 L 467 221 L 467 171 L 482 171 Z" />
-            </clipPath>
-            <clipPath id="clipBldgOAnnex">
-                <rect x="512" y="249" width="26" height="25" />
-            </clipPath>
-            <clipPath id="clipBldgN">
-                <path d="M 275 195 L 425 195 L 425 315 L 380 315 L 380 240 L 275 240 Z" />
-            </clipPath>
-            <clipPath id="clipBldgJ">
-                <rect x="275" y="270" width="45" height="35" />
-            </clipPath>
-            <clipPath id="clipBldgD">
-                <path d="M 330 270 L 372 270 L 372 305 L 365 305 L 365 317 L 337 317 L 337 305 L 330 305 Z" />
-            </clipPath>
-            <clipPath id="clipBldgA">
-                <rect x="230" y="390" width="40" height="130" />
-            </clipPath>
-            <clipPath id="clipBldgC">
-                <rect x="270" y="390" width="245" height="40" />
-            </clipPath>
-            <clipPath id="clipConnectorBC">
-                <rect x="370" y="430" width="28" height="50" />
-            </clipPath>
-            <clipPath id="clipBldgB">
-                <rect x="270" y="480" width="245" height="40" />
-            </clipPath>
-            <clipPath id="clipConnectorBE">
-                <rect x="442" y="520" width="8" height="48" />
-            </clipPath>
-            <clipPath id="clipBldgE">
-                <rect x="440" y="568" width="36" height="160" />
-            </clipPath>
-            <clipPath id="clipBldgEAnnexVert">
-                <rect x="484" y="699" width="32" height="40" />
-            </clipPath>
-            <clipPath id="clipBldgEAnnexHoriz">
-                <rect x="467" y="750" width="66" height="13" />
-            </clipPath>
-            <clipPath id="clipBldgH">
-                <rect x="555" y="365" width="95" height="36" />
-            </clipPath>
-            <clipPath id="clipBldgM">
-                <path d="M 575 425 L 620 425 L 620 495 L 575 495 L 575 477 L 560 477 L 560 443 L 575 443 Z" />
-            </clipPath>
-            <clipPath id="clipBldgG">
-                <rect x="516" y="568" width="58" height="44" />
-            </clipPath>
-            <clipPath id="clipBldgF">
-                <rect x="516" y="620" width="58" height="52" />
-            </clipPath>
-            <clipPath id="clipBldgK">
-                <polygon points="270,575 316,575 316,583 346,627 346,653 322,653 322,630 317,630 317,653 270,653" />
-            </clipPath>
-            <clipPath id="clipBldgI">
-                <path d="M 633 640 L 695 640 L 695 785 L 615 785 L 615 692 L 645 692 L 645 756 L 661 756 L 661 672 L 633 672 Z" />
-            </clipPath>
-            <clipPath id="clipJaguarCenter">
-                <rect x="690" y="465" width="90" height="90" />
-            </clipPath>
-            <clipPath id="clipJaguarGym">
-                <rect x="705" y="575" width="60" height="45" />
-            </clipPath>
+                <!-- Diagonal Hatching Pattern for Plaza Central Terrace -->
+                <pattern id="plazaDiagonalHatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                    <line x1="0" y1="0" x2="0" y2="8" stroke="#94a3b8" stroke-width="1.2" opacity="0.65" />
+                </pattern>
 
-            <!-- Diagonal Hatching Pattern for Plaza Central Terrace -->
-            <pattern id="plazaDiagonalHatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                <line x1="0" y1="0" x2="0" y2="8" stroke="#94a3b8" stroke-width="1.2" opacity="0.65" />
-            </pattern>
-        </defs>
-
-        <!-- Seamless Ground Base (covers background infinitely during 3D perspective tilt & 360 rotation) -->
-        <rect x="-30000" y="-30000" width="60000" height="60000" fill="#f3f5f8" />
-
-        <!-- Master Vector Camera Group: vector pan, scale(2.2), and bearing rotation calculated mathematically -->
-        <g id="mapCameraGroup">
-
-        <!-- ================================================================== -->
-        <!-- 1. BASE CAMPUS GROUNDS & PERIMETER ROADS                           -->
-        <!-- ================================================================== -->
-        <!-- Background Ground (Bleeds infinitely within camera space) -->
-        <rect x="-30000" y="-30000" width="60000" height="60000" fill="#f3f5f8" />
-
-        <!-- Perimeter Access Drives (Lavender/Grey Roads) -->
-        <g id="roadsLayer" fill="none" stroke="#c8cfde" stroke-linecap="round" stroke-linejoin="round">
-            <!-- Top Road (Camino Segundo Acceso) - Extends into horizon -->
-            <path d="M -8000 11 L 8000 11" stroke-width="22" />
-            <!-- West Entrance Road (Tercer Acceso) - Extends north & south -->
-            <path d="M 120 -6000 L 120 220 L 70 240 L 70 6000" stroke-width="24" />
-            <!-- South Entrance Main Access Road - Extends east & west -->
-            <path d="M -8000 780 L 720 780 L 8000 780" stroke-width="26" />
-            <!-- Internal Loop to Edificio P & O -->
-            <path d="M 240 11 L 240 220 L 520 220 L 520 330" stroke-width="16" />
-            <!-- Internal Loop to Sports Area & Edificio I -->
-            <path d="M 520 220 L 880 220 L 880 720 L 550 720" stroke-width="18" />
-            <!-- Road between C/B and E/F/G -->
-            <path d="M 410 440 L 410 650 L 660 650" stroke-width="14" />
-            <!-- Driveway access to Central Parking Lot between C and J/D -->
-            <path d="M 120 355 L 260 355" stroke-width="16" />
-        </g>
-
-        <!-- ================================================================== -->
-        <!-- 2. PARKING AREAS & LANDSCAPING TREES                               -->
-        <!-- ================================================================== -->
-        <g id="parkingLayer">
-            <!-- West Parking Bay -->
-            <rect x="75" y="270" width="125" height="340" rx="8" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
-            <!-- South Main Parking (West Bay, below Plaza Central & Edificio K) -->
-            <rect x="220" y="675" width="212" height="88" rx="8" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
-
-            <!-- Southeast Parking Lot (Between Building E Annexes on West and Building F on North) -->
-            <g id="parkingLotSouthEF">
-                <!-- Asphalt Base Bay with Smooth Rounded Southeast Corner (Aligned to Building E Annexes & Building F) -->
-                <path d="M 516 675 L 608 675 L 608 747 A 16 16 0 0 1 592 763 L 516 763 Z" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
-
-                <!-- West Perimeter Curb Line along Building E Vertical Annex East Edge -->
-                <line x1="518.5" y1="676" x2="518.5" y2="743" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" />
-
-                <!-- Far-Left Perimeter Parking Stalls (Along West Curb, mirroring East Side) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="518.5" y1="681" x2="530" y2="681" />
-                    <line x1="518.5" y1="687.2" x2="530" y2="687.2" />
-                    <line x1="518.5" y1="693.4" x2="530" y2="693.4" />
-                    <line x1="518.5" y1="699.6" x2="530" y2="699.6" />
-                    <line x1="518.5" y1="705.8" x2="530" y2="705.8" />
-                    <line x1="518.5" y1="712" x2="530" y2="712" />
-                    <line x1="518.5" y1="718.2" x2="530" y2="718.2" />
-                    <line x1="518.5" y1="724.4" x2="530" y2="724.4" />
-                    <line x1="518.5" y1="730.6" x2="530" y2="730.6" />
-                    <line x1="518.5" y1="736.8" x2="530" y2="736.8" />
-                    <line x1="518.5" y1="743" x2="530" y2="743" />
+                <!-- Reusable Landscaping Tree Symbol -->
+                <g id="treeLarge">
+                    <circle cx="1.2" cy="1.8" r="7.5" fill="#0f172a" opacity="0.14" />
+                    <circle cx="0" cy="0" r="7.5" fill="#3b5e54" stroke="#28423b" stroke-width="1" />
+                    <circle cx="-2" cy="-2" r="3.2" fill="#527d70" opacity="0.7" />
                 </g>
 
-                <!-- Center "I"-Shaped Raised Concrete Median Island (Pill Crossbars + Central Stem) -->
-                <path d="M 544.5 684 L 579.5 684 A 2.5 2.5 0 0 1 579.5 689 L 569 689 L 569 741 L 579.5 741 A 2.5 2.5 0 0 1 579.5 746 L 544.5 746 A 2.5 2.5 0 0 1 544.5 741 L 555 741 L 555 689 L 544.5 689 A 2.5 2.5 0 0 1 544.5 684 Z" fill="#b4c0cf" stroke="#ffffff" stroke-width="1.4" stroke-linejoin="round" />
-
-                <!-- Left-of-Island Perpendicular Parking Stalls (9 Stalls) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="542" y1="694.8" x2="554.5" y2="694.8" />
-                    <line x1="542" y1="700.6" x2="554.5" y2="700.6" />
-                    <line x1="542" y1="706.3" x2="554.5" y2="706.3" />
-                    <line x1="542" y1="712.1" x2="554.5" y2="712.1" />
-                    <line x1="542" y1="717.9" x2="554.5" y2="717.9" />
-                    <line x1="542" y1="723.7" x2="554.5" y2="723.7" />
-                    <line x1="542" y1="729.4" x2="554.5" y2="729.4" />
-                    <line x1="542" y1="735.2" x2="554.5" y2="735.2" />
+                <!-- Reusable Manicured Bush / Hedge Symbol -->
+                <g id="treeSmall">
+                    <circle cx="0.6" cy="0.8" r="3.3" fill="#0f172a" opacity="0.12" />
+                    <circle cx="0" cy="0" r="3.3" fill="#476e63" stroke="#2f4d44" stroke-width="0.7" />
+                    <circle cx="-0.9" cy="-0.9" r="1.3" fill="#639284" opacity="0.75" />
                 </g>
 
-                <!-- Right-of-Island Perpendicular Parking Stalls (9 Stalls) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="569.5" y1="694.8" x2="582" y2="694.8" />
-                    <line x1="569.5" y1="700.6" x2="582" y2="700.6" />
-                    <line x1="569.5" y1="706.3" x2="582" y2="706.3" />
-                    <line x1="569.5" y1="712.1" x2="582" y2="712.1" />
-                    <line x1="569.5" y1="717.9" x2="582" y2="717.9" />
-                    <line x1="569.5" y1="723.7" x2="582" y2="723.7" />
-                    <line x1="569.5" y1="729.4" x2="582" y2="729.4" />
-                    <line x1="569.5" y1="735.2" x2="582" y2="735.2" />
+                <!-- Emergency Evacuation Arrowhead Marker -->
+                <marker id="evacArrow" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+                    <path d="M 0 1.2 L 8.5 5 L 0 8.8 z" fill="#15803d" />
+                </marker>
+            </defs>
+
+            <!-- Seamless Ground Base (covers infinite horizon during 2.5D perspective tilt & rotation) -->
+            <rect x="-30000" y="-30000" width="60000" height="60000" fill="#f3f5f8" />
+
+            <!-- Master Vector Camera Group -->
+            <g id="mapCameraGroup">
+                <rect x="-30000" y="-30000" width="60000" height="60000" fill="#f3f5f8" />
+
+                <!-- 1. Campus Roads & Perimeter Access Drives -->
+                <g id="roadsLayer" fill="none" stroke="#c8cfde" stroke-linecap="round" stroke-linejoin="round"></g>
+
+                <!-- 2. Campus Parking Lots (11 Lots with Procedurally Generated Stalls) -->
+                <g id="parkingLayer"></g>
+
+                <!-- 3. Sports Facilities (Baseball Stadium, Soccer Field, Courts, Grandstands) -->
+                <g id="sportsComplexLayer"></g>
+
+                <!-- 4. Plazas & Courtyards (Plaza Central, Plaza Chilamates, B-C Courtyard) -->
+                <g id="plazasLayer"></g>
+
+                <!-- 5. Campus Buildings (A-P + Observatorio, Kiosks, Sports & East Complex) -->
+                <g id="buildingsLayer"></g>
+
+                <!-- 6. Landscaping Trees & Bushes -->
+                <g id="landscapingLayer" pointer-events="none"></g>
+
+                <!-- 7. Emergency Layer: Safe Areas, Meeting Points & Evacuation Routes -->
+                <g id="emergencyEvacuationLayer" pointer-events="none"></g>
+
+                <!-- 8. Dijkstra Animated Route Overlay -->
+                <g id="route2dLayer">
+                    <polyline id="route2dShadowPolyline" points="" fill="none" stroke="#0f172a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity="0.22" />
+                    <polyline id="route2dGlowPolyline" points="" fill="none" stroke="#38bdf8" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.5" />
+                    <polyline id="route2dPolyline" points="" fill="none" stroke="#0284c7" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="ruta-animada" />
                 </g>
 
-                <!-- Far-Right Perimeter Parking Stalls (Along East Curb) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="594" y1="681" x2="606" y2="681" />
-                    <line x1="594" y1="687.2" x2="606" y2="687.2" />
-                    <line x1="594" y1="693.4" x2="606" y2="693.4" />
-                    <line x1="594" y1="699.6" x2="606" y2="699.6" />
-                    <line x1="594" y1="705.8" x2="606" y2="705.8" />
-                    <line x1="594" y1="712" x2="606" y2="712" />
-                    <line x1="594" y1="718.2" x2="606" y2="718.2" />
-                    <line x1="594" y1="724.4" x2="606" y2="724.4" />
-                    <line x1="594" y1="730.6" x2="606" y2="730.6" />
-                    <line x1="594" y1="736.8" x2="606" y2="736.8" />
-                    <line x1="594" y1="743" x2="606" y2="743" />
-                </g>
-
-                <!-- East & South Perimeter Curb Line with Rounded Southeast Corner -->
-                <path d="M 606 676 L 606 745 A 15 15 0 0 1 591 760 L 542 760" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </g>
-            <!-- Parking Lot Beside Building P (East/Left Side of Copernicus P, 8 Spots per Side) -->
-            <g id="parkingLotSideP">
-                <!-- Asphalt Base Bay (x=178..230, y=80..162; top flush with Building P y=80, adjacent to Loop Road x=232) -->
-                <rect x="178" y="80" width="52" height="82" rx="4" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
-
-                <!-- Left Column Perpendicular Parking Stalls (8 Uniform Spots: Back Curb + 9 White Dividers) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="181" y1="85" x2="181" y2="157" />
-                    <line x1="181" y1="85" x2="195" y2="85" />
-                    <line x1="181" y1="94" x2="195" y2="94" />
-                    <line x1="181" y1="103" x2="195" y2="103" />
-                    <line x1="181" y1="112" x2="195" y2="112" />
-                    <line x1="181" y1="121" x2="195" y2="121" />
-                    <line x1="181" y1="130" x2="195" y2="130" />
-                    <line x1="181" y1="139" x2="195" y2="139" />
-                    <line x1="181" y1="148" x2="195" y2="148" />
-                    <line x1="181" y1="157" x2="195" y2="157" />
-                </g>
-
-                <!-- Right Column Perpendicular Parking Stalls (8 Uniform Spots: Back Curb + 9 White Dividers) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="227" y1="85" x2="227" y2="157" />
-                    <line x1="213" y1="85" x2="227" y2="85" />
-                    <line x1="213" y1="94" x2="227" y2="94" />
-                    <line x1="213" y1="103" x2="227" y2="103" />
-                    <line x1="213" y1="112" x2="227" y2="112" />
-                    <line x1="213" y1="121" x2="227" y2="121" />
-                    <line x1="213" y1="130" x2="227" y2="130" />
-                    <line x1="213" y1="139" x2="227" y2="139" />
-                    <line x1="213" y1="148" x2="227" y2="148" />
-                    <line x1="213" y1="157" x2="227" y2="157" />
+                <!-- 9. Origin & Destination Pin Markers -->
+                <g id="route2dPinsLayer">
+                    <g id="origin2dPin" class="hidden"></g>
+                    <g id="destination2dPin" class="hidden"></g>
                 </g>
             </g>
-
-            <!-- Parking Lot Behind Building P (North of Copernicus P, angled entrance off Top Road) -->
-            <g id="parkingLotBehindP">
-                <!-- Asphalt Base Bay (Slanted SW wall + Rounded NE/SE Rectangular Eastern Bay) -->
-                <path d="M 264 21 L 348 21 L 454 25 A 6 6 0 0 1 460 31 L 460 67 A 6 6 0 0 1 454 73 L 352 73 L 264 21 Z" fill="#dfe5ec" />
-                <!-- Clean Perimeter Curb Outline (Open at NW Road Throat x=264..348) -->
-                <path d="M 348 21 L 454 25 A 6 6 0 0 1 460 31 L 460 67 A 6 6 0 0 1 454 73 L 352 73 L 264 21" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linejoin="round" />
-
-                <!-- Diagonal Southwest Parking Stalls (7 Spots: Back Curb + 8 Perpendicular White Dividers at 30.7 deg) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="286.5" y1="31.5" x2="352.5" y2="70.5" />
-                    <line x1="286.5" y1="31.5" x2="292.1" y2="22.0" />
-                    <line x1="295.9" y1="37.1" x2="301.5" y2="27.6" />
-                    <line x1="305.4" y1="42.6" x2="311.0" y2="33.2" />
-                    <line x1="314.8" y1="48.2" x2="320.4" y2="38.7" />
-                    <line x1="324.2" y1="53.8" x2="329.8" y2="44.3" />
-                    <line x1="333.6" y1="59.4" x2="339.2" y2="49.9" />
-                    <line x1="343.1" y1="64.9" x2="348.7" y2="55.5" />
-                    <line x1="352.5" y1="70.5" x2="358.1" y2="61.0" />
-                </g>
-
-                <!-- Top Row Perpendicular Parking Stalls (9 Spots: Back Curb + 10 White Dividers) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="368" y1="27.5" x2="440" y2="27.5" />
-                    <line x1="368" y1="27.5" x2="368" y2="38.5" />
-                    <line x1="376" y1="27.5" x2="376" y2="38.5" />
-                    <line x1="384" y1="27.5" x2="384" y2="38.5" />
-                    <line x1="392" y1="27.5" x2="392" y2="38.5" />
-                    <line x1="400" y1="27.5" x2="400" y2="38.5" />
-                    <line x1="408" y1="27.5" x2="408" y2="38.5" />
-                    <line x1="416" y1="27.5" x2="416" y2="38.5" />
-                    <line x1="424" y1="27.5" x2="424" y2="38.5" />
-                    <line x1="432" y1="27.5" x2="432" y2="38.5" />
-                    <line x1="440" y1="27.5" x2="440" y2="38.5" />
-                </g>
-
-                <!-- Bottom Row Perpendicular Parking Stalls (9 Spots: Back Curb + 10 White Dividers) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="364" y1="70.5" x2="436" y2="70.5" />
-                    <line x1="364" y1="59.5" x2="364" y2="70.5" />
-                    <line x1="372" y1="59.5" x2="372" y2="70.5" />
-                    <line x1="380" y1="59.5" x2="380" y2="70.5" />
-                    <line x1="388" y1="59.5" x2="388" y2="70.5" />
-                    <line x1="396" y1="59.5" x2="396" y2="70.5" />
-                    <line x1="404" y1="59.5" x2="404" y2="70.5" />
-                    <line x1="412" y1="59.5" x2="412" y2="70.5" />
-                    <line x1="420" y1="59.5" x2="420" y2="70.5" />
-                    <line x1="428" y1="59.5" x2="428" y2="70.5" />
-                    <line x1="436" y1="59.5" x2="436" y2="70.5" />
-                </g>
-
-                <!-- Right Column Perpendicular Parking Stalls (7 Spots: East Back Curb + 8 White Dividers) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="456.5" y1="32" x2="456.5" y2="69" />
-                    <line x1="444.5" y1="32" x2="456.5" y2="32" />
-                    <line x1="444.5" y1="37.3" x2="456.5" y2="37.3" />
-                    <line x1="444.5" y1="42.6" x2="456.5" y2="42.6" />
-                    <line x1="444.5" y1="47.9" x2="456.5" y2="47.9" />
-                    <line x1="444.5" y1="53.1" x2="456.5" y2="53.1" />
-                    <line x1="444.5" y1="58.4" x2="456.5" y2="58.4" />
-                    <line x1="444.5" y1="63.7" x2="456.5" y2="63.7" />
-                    <line x1="444.5" y1="69" x2="456.5" y2="69" />
-                </g>
-            </g>
-
-            <!-- North Parking Lot (Between Building P on Top, Building O on Right, and Building N on Bottom) -->
-            <g id="parkingLotNorthPON">
-                <!-- Unified Asphalt Base Bay + West Driveway Entrance (x=270..452, y=138..188; connects seamlessly to West Loop Road x=248) -->
-                <path d="M 248 155 L 270 155 L 270 138 L 452 138 L 452 188 L 270 188 L 270 171 L 248 171 Z" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" stroke-linejoin="round" />
-
-                <!-- Top Row Perpendicular Parking Stalls (28 Uniform Spots: 27 White Divider Lines facing Building P) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="276.5" y1="140" x2="276.5" y2="153.5" />
-                    <line x1="283" y1="140" x2="283" y2="153.5" />
-                    <line x1="289.5" y1="140" x2="289.5" y2="153.5" />
-                    <line x1="296" y1="140" x2="296" y2="153.5" />
-                    <line x1="302.5" y1="140" x2="302.5" y2="153.5" />
-                    <line x1="309" y1="140" x2="309" y2="153.5" />
-                    <line x1="315.5" y1="140" x2="315.5" y2="153.5" />
-                    <line x1="322" y1="140" x2="322" y2="153.5" />
-                    <line x1="328.5" y1="140" x2="328.5" y2="153.5" />
-                    <line x1="335" y1="140" x2="335" y2="153.5" />
-                    <line x1="341.5" y1="140" x2="341.5" y2="153.5" />
-                    <line x1="348" y1="140" x2="348" y2="153.5" />
-                    <line x1="354.5" y1="140" x2="354.5" y2="153.5" />
-                    <line x1="361" y1="140" x2="361" y2="153.5" />
-                    <line x1="367.5" y1="140" x2="367.5" y2="153.5" />
-                    <line x1="374" y1="140" x2="374" y2="153.5" />
-                    <line x1="380.5" y1="140" x2="380.5" y2="153.5" />
-                    <line x1="387" y1="140" x2="387" y2="153.5" />
-                    <line x1="393.5" y1="140" x2="393.5" y2="153.5" />
-                    <line x1="400" y1="140" x2="400" y2="153.5" />
-                    <line x1="406.5" y1="140" x2="406.5" y2="153.5" />
-                    <line x1="413" y1="140" x2="413" y2="153.5" />
-                    <line x1="419.5" y1="140" x2="419.5" y2="153.5" />
-                    <line x1="426" y1="140" x2="426" y2="153.5" />
-                    <line x1="432.5" y1="140" x2="432.5" y2="153.5" />
-                    <line x1="439" y1="140" x2="439" y2="153.5" />
-                    <line x1="445.5" y1="140" x2="445.5" y2="153.5" />
-                </g>
-
-                <!-- Bottom Row Perpendicular Parking Stalls (28 Uniform Spots: 27 White Divider Lines facing Building N) -->
-                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
-                    <line x1="276.5" y1="172.5" x2="276.5" y2="186" />
-                    <line x1="283" y1="172.5" x2="283" y2="186" />
-                    <line x1="289.5" y1="172.5" x2="289.5" y2="186" />
-                    <line x1="296" y1="172.5" x2="296" y2="186" />
-                    <line x1="302.5" y1="172.5" x2="302.5" y2="186" />
-                    <line x1="309" y1="172.5" x2="309" y2="186" />
-                    <line x1="315.5" y1="172.5" x2="315.5" y2="186" />
-                    <line x1="322" y1="172.5" x2="322" y2="186" />
-                    <line x1="328.5" y1="172.5" x2="328.5" y2="186" />
-                    <line x1="335" y1="172.5" x2="335" y2="186" />
-                    <line x1="341.5" y1="172.5" x2="341.5" y2="186" />
-                    <line x1="348" y1="172.5" x2="348" y2="186" />
-                    <line x1="354.5" y1="172.5" x2="354.5" y2="186" />
-                    <line x1="361" y1="172.5" x2="361" y2="186" />
-                    <line x1="367.5" y1="172.5" x2="367.5" y2="186" />
-                    <line x1="374" y1="172.5" x2="374" y2="186" />
-                    <line x1="380.5" y1="172.5" x2="380.5" y2="186" />
-                    <line x1="387" y1="172.5" x2="387" y2="186" />
-                    <line x1="393.5" y1="172.5" x2="393.5" y2="186" />
-                    <line x1="400" y1="172.5" x2="400" y2="186" />
-                    <line x1="406.5" y1="172.5" x2="406.5" y2="186" />
-                    <line x1="413" y1="172.5" x2="413" y2="186" />
-                    <line x1="419.5" y1="172.5" x2="419.5" y2="186" />
-                    <line x1="426" y1="172.5" x2="426" y2="186" />
-                    <line x1="432.5" y1="172.5" x2="432.5" y2="186" />
-                    <line x1="439" y1="172.5" x2="439" y2="186" />
-                    <line x1="445.5" y1="172.5" x2="445.5" y2="186" />
-                </g>
-            </g>
-            <!-- North Parking (near Baseball Stadium) -->
-            <rect x="580" y="90" width="130" height="40" rx="6" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
-
-            <!-- Central Parking Lot (Between Building C and Buildings J & D / N) -->
-            <g id="parkingLotCentralCD">
-                <!-- Asphalt Base Bay with Northwest Chamfered Driveway Entrance -->
-                <path d="M 258 355 L 278 322 L 512 322 L 512 388 L 258 388 Z" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
-                <!-- Sidewalk Curb Strip along Building C -->
-                <rect x="258" y="384" width="254" height="4" fill="#cbd5e1" />
-
-                <!-- Top Angled Stalls (Diagonal White Lines) -->
-                <g stroke="#ffffff" stroke-width="1.8" stroke-linecap="round">
-                    <line x1="288" y1="324" x2="276" y2="340" />
-                    <line x1="302" y1="324" x2="290" y2="340" />
-                    <line x1="316" y1="324" x2="304" y2="340" />
-                    <line x1="330" y1="324" x2="318" y2="340" />
-                    <line x1="344" y1="324" x2="332" y2="340" />
-                    <line x1="358" y1="324" x2="346" y2="340" />
-                    <line x1="372" y1="324" x2="360" y2="340" />
-                    <line x1="386" y1="324" x2="374" y2="340" />
-                    <line x1="400" y1="324" x2="388" y2="340" />
-                    <line x1="414" y1="324" x2="402" y2="340" />
-                    <line x1="428" y1="324" x2="416" y2="340" />
-                    <line x1="442" y1="324" x2="430" y2="340" />
-                    <line x1="456" y1="324" x2="444" y2="340" />
-                    <line x1="470" y1="324" x2="458" y2="340" />
-                    <line x1="484" y1="324" x2="472" y2="340" />
-                    <line x1="498" y1="324" x2="486" y2="340" />
-                </g>
-
-                <!-- Bottom Perpendicular Stalls (Vertical White Lines facing Building C) -->
-                <g stroke="#ffffff" stroke-width="1.8" stroke-linecap="round">
-                    <line x1="280" y1="368" x2="280" y2="384" />
-                    <line x1="292" y1="368" x2="292" y2="384" />
-                    <line x1="304" y1="368" x2="304" y2="384" />
-                    <line x1="316" y1="368" x2="316" y2="384" />
-                    <line x1="328" y1="368" x2="328" y2="384" />
-                    <line x1="340" y1="368" x2="340" y2="384" />
-                    <line x1="352" y1="368" x2="352" y2="384" />
-                    <line x1="364" y1="368" x2="364" y2="384" />
-                    <line x1="376" y1="368" x2="376" y2="384" />
-                    <line x1="388" y1="368" x2="388" y2="384" />
-                    <line x1="400" y1="368" x2="400" y2="384" />
-                    <line x1="412" y1="368" x2="412" y2="384" />
-                    <line x1="424" y1="368" x2="424" y2="384" />
-                    <line x1="436" y1="368" x2="436" y2="384" />
-                    <line x1="448" y1="368" x2="448" y2="384" />
-                    <line x1="460" y1="368" x2="460" y2="384" />
-                    <line x1="472" y1="368" x2="472" y2="384" />
-                    <line x1="484" y1="368" x2="484" y2="384" />
-                    <line x1="496" y1="368" x2="496" y2="384" />
-                    <line x1="508" y1="368" x2="508" y2="384" />
-                </g>
-            </g>
-
-            <!-- Pedestrian Path & Crosswalk Between Plaza Chilamates and Building A -->
-            <g id="pedestrianChilamatesToA">
-                <rect x="238" y="315" width="24" height="75" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.2" />
-                <!-- Zebra Crosswalk Rungs -->
-                <g stroke="#ffffff" stroke-width="3.5" stroke-linecap="butt">
-                    <line x1="240" y1="323" x2="260" y2="323" />
-                    <line x1="240" y1="331" x2="260" y2="331" />
-                    <line x1="240" y1="339" x2="260" y2="339" />
-                    <line x1="240" y1="347" x2="260" y2="347" />
-                    <line x1="240" y1="355" x2="260" y2="355" />
-                    <line x1="240" y1="363" x2="260" y2="363" />
-                    <line x1="240" y1="371" x2="260" y2="371" />
-                    <line x1="240" y1="379" x2="260" y2="379" />
-                    <line x1="240" y1="387" x2="260" y2="387" />
-                </g>
-            </g>
-        </g>
-
-        <!-- ================================================================== -->
-        <!-- 3. SPORTS FACILITIES (BASEBALL, SOCCER, JAGUAR COMPLEX)           -->
-        <!-- ================================================================== -->
-        <g id="sportsComplexLayer">
-            <!-- 3A. ESTADIO DE BÉISBOL / BASEBALL STADIUM -->
-            <g id="baseballStadium" class="bldg-shape" data-node="sportsZone" data-bldg="BÉISBOL">
-                <!-- Stadium Outer Boundary -->
-                <rect x="640" y="80" width="230" height="175" fill="#f1f5f9" stroke="#253452" stroke-width="2" />
-                <!-- Outfield Grass (Solid Green Sector Arc) -->
-                <path d="M 665 210 L 665 115 A 120 120 0 0 1 825 115 L 825 210 Z" fill="#22c55e" />
-                <!-- Infield Dirt Diamond (Solid Clay Brown) -->
-                <polygon points="745,120 780,155 745,190 710,155" fill="#c28854" stroke="#ffffff" stroke-width="2" />
-                <!-- Infield Grass Center -->
-                <polygon points="745,133 768,155 745,177 722,155" fill="#16a34a" />
-                <!-- Pitcher's Mound -->
-                <circle cx="745" cy="155" r="3.5" fill="#ffffff" />
-                <!-- Bases: Home, 1st, 2nd, 3rd -->
-                <rect x="743" y="188" width="4.5" height="4.5" fill="#ffffff" transform="rotate(45 745 190)" />
-                <rect x="778" y="153" width="4.5" height="4.5" fill="#ffffff" transform="rotate(45 780 155)" />
-                <rect x="743" y="118" width="4.5" height="4.5" fill="#ffffff" transform="rotate(45 745 120)" />
-                <rect x="708" y="153" width="4.5" height="4.5" fill="#ffffff" transform="rotate(45 710 155)" />
-            </g>
-
-            <!-- 3B. CANCHA DE FÚTBOL / SOCCER FIELD -->
-            <g id="soccerField" class="bldg-shape" data-node="sportsZone" data-bldg="FÚTBOL">
-                <!-- Pitch Outer Turf (Solid Pitch Green) -->
-                <rect x="640" y="280" width="245" height="155" fill="#15803d" stroke="#253452" stroke-width="2.5" />
-                <!-- White Pitch Markings -->
-                <g stroke="#ffffff" stroke-width="2" fill="none">
-                    <!-- Touchlines / Goal lines -->
-                    <rect x="650" y="290" width="225" height="135" />
-                    <!-- Halfway Line -->
-                    <line x1="762" y1="290" x2="762" y2="425" />
-                    <!-- Center Circle -->
-                    <circle cx="762" cy="357" r="24" />
-                    <circle cx="762" cy="357" r="2" fill="#ffffff" />
-                    <!-- Left Penalty Box & Goal -->
-                    <rect x="650" y="322" width="34" height="70" />
-                    <rect x="650" y="337" width="15" height="40" />
-                    <!-- Right Penalty Box & Goal -->
-                    <rect x="841" y="322" width="34" height="70" />
-                    <rect x="860" y="337" width="15" height="40" />
-                </g>
-            </g>
-
-            <!-- 3C. JAGUAR SPORTS COMPLEX (CENTER, GYM, TENNIS COURTS) -->
-            <g id="jaguarSportsComplex">
-                <!-- Jaguar Center (Arena) -->
-                <g class="bldg-shape" data-node="jaguarCenter" data-bldg="JAGUAR CENTER" filter="url(#bldgShadow)">
-                    <g clip-path="url(#clipJaguarCenter)">
-                        <!-- Base: #1da495 -->
-                        <rect x="690" y="465" width="90" height="90" fill="#1da495" />
-                        <!-- Lightning top slope: #48b2a9 -->
-                        <polygon points="690,465 780,465 780,510 690,510" fill="#48b2a9" />
-                        <!-- Shadow Left Triangle: #1f8383 -->
-                        <polygon points="690,465 690,555 720,510" fill="#1f8383" />
-                        <!-- Shadow Right Triangle: #1f8383 -->
-                        <polygon points="780,465 780,555 750,510" fill="#1f8383" />
-                    </g>
-                    <!-- Navy Border: #253452, Sharp Corners -->
-                    <rect x="690" y="465" width="90" height="90" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                    <!-- Official UAM Jaguar Logo (Transparent Exterior, White Interior) -->
-                    <image href="{{ url_for('static', filename='img/jaguarCenterLogo.png') }}" x="700" y="476" width="70" height="68" preserveAspectRatio="xMidYMid meet" pointer-events="none" />
-                </g>
-
-                <!-- Jaguar Gym -->
-                <g class="bldg-shape" data-node="jaguarCenter" data-bldg="JAGUAR GYM" filter="url(#bldgShadow)">
-                    <g clip-path="url(#clipJaguarGym)">
-                        <!-- Base: #1da495 -->
-                        <rect x="705" y="575" width="60" height="45" fill="#1da495" />
-                        <!-- Lightning top slope: #48b2a9 -->
-                        <polygon points="705,575 765,575 765,597 705,597" fill="#48b2a9" />
-                        <!-- Shadow Left Triangle: #1f8383 -->
-                        <polygon points="705,575 705,620 725,597" fill="#1f8383" />
-                    </g>
-                    <!-- Navy Border: #253452, Sharp Corners -->
-                    <rect x="705" y="575" width="60" height="45" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                </g>
-
-                <!-- Multipurpose / Tennis / Volleyball Courts -->
-                <g class="bldg-shape" data-node="buildingL" data-bldg="CANCHAS">
-                    <rect x="805" y="475" width="75" height="55" fill="#2563eb" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                    <rect x="812" y="482" width="61" height="41" fill="none" stroke="#ffffff" stroke-width="1.5" />
-                </g>
-
-                <!-- Grandstands (Graderías) -->
-                <g>
-                    <rect x="805" y="548" width="60" height="20" fill="#94a3b8" stroke="#253452" stroke-width="2" />
-                </g>
-
-                <!-- Building L Badge -->
-                <g class="billboard-badge">
-                    <rect x="860" y="465" width="18" height="18" class="badge-cyan" />
-                    <text x="869" y="474" class="badge-text">L</text>
-                </g>
-            </g>
-        </g>
-
-        <!-- ================================================================== -->
-        <!-- 4. OFFICIAL CAMPUS BUILDINGS (A, B, C, D, E, F, G, H, I, J, K...)   -->
-        <!-- Flat architectural styling, solid teal roofs, sharp facet ridges   -->
-        <!-- ================================================================== -->
-        <g id="buildingsLayer">
-
-            <!-- 4P. EDIFICIO P (COPÉRNICO) -->
-            <g class="bldg-shape" data-node="buildingP" data-bldg="P" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgP)">
-                    <!-- Base: #1da495 -->
-                    <rect x="250" y="80" width="220" height="48" fill="#1da495" />
-                    <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="250,80 470,80 470,104 250,104" fill="#48b2a9" />
-                    <!-- Shadow Left Triangle: #1f8383 -->
-                    <polygon points="250,80 250,128 274,104" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="250" y="80" width="220" height="48" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <!-- Badge P (Maroon) -->
-                <g class="billboard-badge">
-                    <rect x="430" y="92" width="22" height="22" class="badge-maroon" />
-                    <text x="441" y="103" class="badge-text">P</text>
-                </g>
-            </g>
-
-            <!-- 4O. EDIFICIO O (FACULTAD DE INGENIERÍA Y ARQUITECTURA - FIA & ANEXOS) -->
-            <g class="bldg-shape" data-node="buildingO" data-bldg="O" filter="url(#bldgShadow)">
-                <!-- Main Building + West Rectangle Annex -->
-                <g clip-path="url(#clipBldgO)">
-                    <!-- Base Teal: #1da495 -->
-                    <path d="M 482 145 L 538 145 L 538 233 L 482 233 L 482 221 L 467 221 L 467 171 L 482 171 Z" fill="#1da495" />
-                    <!-- Right slope: #48b2a9 -->
-                    <polygon points="538,145 510,165 510,210 538,233" fill="#48b2a9" />
-                    <!-- Top shadow triangle: #1f8383 -->
-                    <polygon points="482,145 538,145 510,165" fill="#1f8383" />
-                    <!-- Bottom shadow triangle: #1f8383 -->
-                    <polygon points="482,233 538,233 510,210" fill="#1f8383" />
-                    <!-- West annex: left shadow triangle + top slope -->
-                    <polygon points="467,171 467,221 482,196" fill="#1f8383" />
-                    <polygon points="467,171 482,171 482,196" fill="#48b2a9" />
-                </g>
-                <line x1="482" y1="171" x2="482" y2="221" stroke="#253452" stroke-width="1.8" stroke-opacity="0.6" />
-                <!-- Navy Outer Border -->
-                <path d="M 482 145 L 538 145 L 538 233 L 482 233 L 482 221 L 467 221 L 467 171 L 482 171 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-
-                <!-- South Square Annex (separate from main building, with a gap) -->
-                <g clip-path="url(#clipBldgOAnnex)">
-                    <rect x="512" y="249" width="26" height="25" fill="#48b2a9" />
-                    <!-- Bottom shadow triangle: #1f8383 -->
-                    <polygon points="512,274 538,274 525,259" fill="#1f8383" />
-                    <!-- Left slope: #1da495 -->
-                    <polygon points="512,249 525,259 512,274" fill="#1da495" />
-                </g>
-                <rect x="512" y="249" width="26" height="25" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-
-                <!-- Badge O (Amber) -->
-                <g class="billboard-badge">
-                    <rect x="499" y="166" width="22" height="22" class="badge-amber" />
-                    <text x="510" y="177" class="badge-text">O</text>
-                </g>
-            </g>
-
-            <!-- 4N. EDIFICIO N (CLÍNICAS MÉDICAS ODONTOLÓGICAS) -->
-            <g class="bldg-shape" data-node="buildingN" data-bldg="N" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgN)">
-                    <!-- Base: #1da495 -->
-                    <path d="M 275 195 L 425 195 L 425 315 L 380 315 L 380 240 L 275 240 Z" fill="#1da495" />
-                    <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="275,195 425,195 402,217 275,217" fill="#48b2a9" />
-                    <polygon points="425,195 425,315 402,292 402,217" fill="#48b2a9" />
-                    <!-- Shadow Triangles: #1f8383 -->
-                    <polygon points="275,195 275,240 297,217" fill="#1f8383" />
-                    <polygon points="380,315 425,315 402,292" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <path d="M 275 195 L 425 195 L 425 315 L 380 315 L 380 240 L 275 240 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <!-- Badge N (Magenta) -->
-                <g class="billboard-badge">
-                    <rect x="290" y="206" width="22" height="22" class="badge-magenta" />
-                    <text x="301" y="217" class="badge-text">N</text>
-                </g>
-            </g>
-
-            <!-- 4J. EDIFICIO J (LABORATORIOS DE ODONTOLOGÍA) -->
-            <g class="bldg-shape" data-node="buildingJ" data-bldg="J" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgJ)">
-                    <!-- Base: #1da495 -->
-                    <rect x="275" y="270" width="45" height="35" fill="#1da495" />
-                    <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="275,270 320,270 320,287 275,287" fill="#48b2a9" />
-                    <!-- Shadow Left Triangle: #1f8383 -->
-                    <polygon points="275,270 275,305 292,287" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="275" y="270" width="45" height="35" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <g class="billboard-badge">
-                    <rect x="286" y="276" width="22" height="22" class="badge-cyan" />
-                    <text x="297" y="287" class="badge-text">J</text>
-                </g>
-            </g>
-
-            <!-- 4D. EDIFICIO D (ODONTOLOGÍA DIGITAL CAM-CAM) -->
-            <g class="bldg-shape" data-node="buildingD" data-bldg="D" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgD)">
-                    <!-- Base: #1da495 -->
-                    <path d="M 330 270 L 372 270 L 372 305 L 365 305 L 365 317 L 337 317 L 337 305 L 330 305 Z" fill="#1da495" />
-                    <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="330,270 372,270 372,287 330,287" fill="#48b2a9" />
-                    <!-- Shadow Left Triangle: #1f8383 -->
-                    <polygon points="330,270 330,305 348,287" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <path d="M 330 270 L 372 270 L 372 305 L 365 305 L 365 317 L 337 317 L 337 305 L 330 305 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <g class="billboard-badge">
-                    <rect x="340" y="276" width="22" height="22" class="badge-green" />
-                    <text x="351" y="287" class="badge-text">D</text>
-                </g>
-            </g>
-
-            <!-- Plaza Chilamates -->
-            <g class="bldg-shape" data-node="chilamatesPlaza" data-bldg="CHILAMATES">
-                <rect x="195" y="260" width="60" height="55" fill="#cbd5e1" stroke="#253452" stroke-width="2.5" />
-                <circle cx="225" cy="287" r="12" fill="#10b981" opacity="0.6" />
-            </g>
-
-            <!-- 4A. EDIFICIO A (ATENCIÓN AL ESTUDIANTE CAE / WEST CONNECTOR) -->
-            <g class="bldg-shape" data-node="buildingA" data-bldg="A" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgA)">
-                    <!-- Base: #1da495 -->
-                    <rect x="230" y="390" width="40" height="130" fill="#1da495" />
-                    <!-- Lightning left slope: #48b2a9 -->
-                    <polygon points="230,390 250,410 250,500 230,520" fill="#48b2a9" />
-                    <!-- Shadow Triangles: #1f8383 -->
-                    <polygon points="230,390 270,390 250,410" fill="#1f8383" />
-                    <polygon points="230,520 270,520 250,500" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="230" y="390" width="40" height="130" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <!-- Badge A (Maroon) -->
-                <g class="billboard-badge">
-                    <rect x="239" y="444" width="22" height="22" class="badge-maroon" />
-                    <text x="250" y="455" class="badge-text">A</text>
-                </g>
-            </g>
-
-            <!-- 4C. EDIFICIO C (AULAS C101-C310, CÓMPUTO & TESORERÍA) -->
-            <g class="bldg-shape" data-node="buildingC" data-bldg="C" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgC)">
-                    <!-- Base: #1da495 -->
-                    <rect x="270" y="390" width="245" height="40" fill="#1da495" />
-                    <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="270,390 515,390 495,410 270,410" fill="#48b2a9" />
-                    <!-- Inward Hip Roof Facet East: #1f8383 -->
-                    <polygon points="515,390 515,430 495,410" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="270" y="390" width="245" height="40" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <!-- Badge C (Purple) -->
-                <g class="billboard-badge">
-                    <rect x="373" y="379" width="22" height="22" class="badge-purple" />
-                    <text x="384" y="390" class="badge-text">C</text>
-                </g>
-            </g>
-
-            <!-- Central Courtyard Walkway & Fountain Plaza between Buildings B & C -->
-            <g id="centralColonnade">
-                <!-- Courtyard Paved Ground -->
-                <rect x="270" y="430" width="245" height="50" fill="#dfe5ec" />
-
-                <!-- Grey Architectural Path Network (Matching Official Signage Reference) -->
-                <g id="courtyardPathsLayer">
-                    <!-- Main Longitudinal Path Runner (West to East) -->
-                    <line x1="270" y1="455" x2="515" y2="455" stroke="#64748b" stroke-width="7" stroke-linecap="butt" />
-
-                    <!-- Small Vertical Transverse Lines Located on the Middle of the Horizontal Line -->
-                    <!-- West Section: Balanced symmetrically on the horizontal runner -->
-                    <rect x="291.5" y="447" width="7" height="16" rx="1.5" fill="#64748b" />
-                    <rect x="341.5" y="447" width="7" height="16" rx="1.5" fill="#64748b" />
-
-                    <!-- East Section: Balanced symmetrically on the horizontal runner -->
-                    <rect x="423.5" y="447" width="7" height="16" rx="1.5" fill="#64748b" />
-                    <rect x="481.5" y="447" width="7" height="16" rx="1.5" fill="#64748b" />
-
-                    <!-- Center Track Highlight Line -->
-                    <line x1="270" y1="455" x2="515" y2="455" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="butt" />
-                </g>
-
-                <!-- Central Courtyard Architectural Fountains (Circular Plaza Water Features) -->
-                <g id="courtyardFountainsLayer">
-                    <!-- West Fountain (Centered between Building A and Covered Bridge) -->
-                    <circle cx="320" cy="455" r="9" fill="#64748b" />
-                    <circle cx="320" cy="455" r="6" fill="#94a3b8" stroke="#cbd5e1" stroke-width="1" />
-                    <circle cx="320" cy="455" r="2.2" fill="#ffffff" />
-
-                    <!-- East Fountain (Centered between Covered Bridge and East End) -->
-                    <circle cx="456" cy="455" r="9" fill="#64748b" />
-                    <circle cx="456" cy="455" r="6" fill="#94a3b8" stroke="#cbd5e1" stroke-width="1" />
-                    <circle cx="456" cy="455" r="2.2" fill="#ffffff" />
-                </g>
-            </g>
-
-            <!-- Connecting Ceiling Between Building C and Building B -->
-            <g id="connectorCeilingBC" class="bldg-shape" data-bldg="TECHO_BC" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipConnectorBC)">
-                    <rect x="370" y="430" width="14" height="50" fill="#1da495" />
-                    <rect x="384" y="430" width="14" height="50" fill="#48b2a9" />
-                </g>
-                <!-- Navy Side Borders -->
-                <line x1="370" y1="430" x2="370" y2="480" stroke="#253452" stroke-width="3.5" stroke-linecap="square" />
-                <line x1="398" y1="430" x2="398" y2="480" stroke="#253452" stroke-width="3.5" stroke-linecap="square" />
-            </g>
-
-            <!-- 4B. EDIFICIO B (AULAS B101-B210 & FARMACIA) -->
-            <g class="bldg-shape" data-node="buildingB" data-bldg="B" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgB)">
-                    <!-- Base: #1da495 -->
-                    <rect x="270" y="480" width="245" height="40" fill="#1da495" />
-                    <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="270,480 515,480 495,500 270,500" fill="#48b2a9" />
-                    <!-- Shadow Inward Hip Roof Facet East: #1f8383 -->
-                    <polygon points="515,480 515,520 495,500" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="270" y="480" width="245" height="40" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <!-- Badge B (Purple) -->
-                <g class="billboard-badge">
-                    <rect x="373" y="469" width="22" height="22" class="badge-purple" />
-                    <text x="384" y="480" class="badge-text">B</text>
-                </g>
-            </g>
-
-            <!-- Connecting Second Floor Bridge Between Building B and Building E (Straight Line Connector) -->
-            <g id="connectorSecondFloorBE" class="bldg-shape" data-bldg="PUENTE_BE" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipConnectorBE)">
-                    <rect x="442" y="520" width="4" height="48" fill="#1da495" />
-                    <rect x="446" y="520" width="4" height="48" fill="#48b2a9" />
-                </g>
-                <!-- Navy Side Borders (Thin straight lines connecting B and E) -->
-                <line x1="442" y1="520" x2="442" y2="568" stroke="#253452" stroke-width="2.5" stroke-linecap="square" />
-                <line x1="450" y1="520" x2="450" y2="568" stroke="#253452" stroke-width="2.5" stroke-linecap="square" />
-            </g>
-
-            <!-- 4E. EDIFICIO E (FACULTAD DE MEDICINA - EXTENDS SOUTH FROM B VIA SECOND FLOOR CONNECTOR & ANNEXES) -->
-            <g class="bldg-shape" data-node="buildingE" data-bldg="E" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgE)">
-                    <!-- Base: #1da495 -->
-                    <rect x="440" y="568" width="36" height="160" fill="#1da495" />
-                    <!-- Lightning left slope: #48b2a9 -->
-                    <polygon points="440,568 458,582 458,714 440,728" fill="#48b2a9" />
-                    <!-- Shadow Top North Hip Triangle: #1f8383 -->
-                    <polygon points="440,568 476,568 458,582" fill="#1f8383" />
-                    <!-- Shadow Bottom South Hip Triangle: #1f8383 -->
-                    <polygon points="440,728 476,728 458,714" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners (Clean Rectangle) -->
-                <rect x="440" y="568" width="36" height="160" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-
-                <!-- Southeast Vertical Annex (Full strip extending past Building E's bottom, east edge aligned with F's west edge) -->
-                <g clip-path="url(#clipBldgEAnnexVert)">
-                    <rect x="484" y="699" width="32" height="40" fill="#62b8b0" />
-                    <rect x="484" y="699" width="16" height="40" fill="#74c4bc" />
-                    <!-- Corrugated Roof Rib Lines (Horizontal) -->
-                    <g stroke="#1f8383" stroke-width="1" opacity="0.35">
-                        <line x1="484" y1="703" x2="516" y2="703" />
-                        <line x1="484" y1="707" x2="516" y2="707" />
-                        <line x1="484" y1="711" x2="516" y2="711" />
-                        <line x1="484" y1="715" x2="516" y2="715" />
-                        <line x1="484" y1="719" x2="516" y2="719" />
-                        <line x1="484" y1="723" x2="516" y2="723" />
-                        <line x1="484" y1="727" x2="516" y2="727" />
-                        <line x1="484" y1="731" x2="516" y2="731" />
-                        <line x1="484" y1="735" x2="516" y2="735" />
-                    </g>
-                </g>
-                <rect x="484" y="699" width="32" height="40" fill="none" stroke="#253452" stroke-width="3" stroke-linejoin="miter" />
-
-                <!-- South Horizontal Annex (Centered below Vertical Annex) -->
-                <g clip-path="url(#clipBldgEAnnexHoriz)">
-                    <rect x="467" y="750" width="66" height="13" fill="#62b8b0" />
-                    <rect x="467" y="750" width="66" height="6.5" fill="#74c4bc" />
-                    <!-- Corrugated Roof Rib Lines (Vertical) -->
-                    <g stroke="#1f8383" stroke-width="1" opacity="0.35">
-                        <line x1="473" y1="750" x2="473" y2="763" />
-                        <line x1="479" y1="750" x2="479" y2="763" />
-                        <line x1="485" y1="750" x2="485" y2="763" />
-                        <line x1="491" y1="750" x2="491" y2="763" />
-                        <line x1="497" y1="750" x2="497" y2="763" />
-                        <line x1="503" y1="750" x2="503" y2="763" />
-                        <line x1="509" y1="750" x2="509" y2="763" />
-                        <line x1="515" y1="750" x2="515" y2="763" />
-                        <line x1="521" y1="750" x2="521" y2="763" />
-                        <line x1="527" y1="750" x2="527" y2="763" />
-                    </g>
-                </g>
-                <rect x="467" y="750" width="66" height="13" fill="none" stroke="#253452" stroke-width="3" stroke-linejoin="miter" />
-
-                <g class="billboard-badge">
-                    <rect x="447" y="642" width="22" height="22" class="badge-navy" />
-                    <text x="458" y="653" class="badge-text">E</text>
-                </g>
-            </g>
-
-            <!-- 4H. EDIFICIO H (LABORATORIOS DE MEDICINA - UPPER BAR) -->
-            <g class="bldg-shape" data-node="buildingH" data-bldg="H" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgH)">
-                    <!-- Base: #1da495 -->
-                    <rect x="555" y="365" width="95" height="36" fill="#1da495" />
-                    <!-- Lightning top slope: #48b2a9 -->
-                    <polygon points="555,365 650,365 650,383 555,383" fill="#48b2a9" />
-                    <!-- Shadow Left Triangle: #1f8383 -->
-                    <polygon points="555,365 555,401 573,383" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="555" y="365" width="95" height="36" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <g class="billboard-badge">
-                    <rect x="592" y="372" width="22" height="22" class="badge-green" />
-                    <text x="603" y="383" class="badge-text">H</text>
-                </g>
-            </g>
-
-            <!-- 4M. EDIFICIO M (POSTGRADOS - CRUCIFORM BUILDING) -->
-            <g class="bldg-shape" data-node="buildingM" data-bldg="M" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgM)">
-                    <!-- Base: #1da495 -->
-                    <path d="M 575 425 L 620 425 L 620 495 L 575 495 L 575 477 L 560 477 L 560 443 L 575 443 Z" fill="#1da495" />
-                    <!-- Lightning top: #48b2a9 -->
-                    <polygon points="597,434 620,425 620,495 597,476" fill="#48b2a9" />
-                    <!-- Shadow Triangles: #1f8383 -->
-                    <polygon points="560,443 560,477 575,460" fill="#1f8383" />
-                    <polygon points="575,425 620,425 597,434" fill="#1f8383" />
-                    <polygon points="575,495 620,495 597,476" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <path d="M 575 425 L 620 425 L 620 495 L 575 495 L 575 477 L 560 477 L 560 443 L 575 443 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <g class="billboard-badge">
-                    <rect x="586" y="449" width="22" height="22" class="badge-teal" />
-                    <text x="597" y="460" class="badge-text">M</text>
-                </g>
-            </g>
-
-            <!-- 4G. EDIFICIO G (AUDITORIO CENTRAL & DERECHO) -->
-            <g class="bldg-shape" data-node="buildingG" data-bldg="G" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgG)">
-                    <!-- Base: #1da495 -->
-                    <rect x="516" y="568" width="58" height="44" fill="#1da495" />
-                    <!-- Lightning left slope: #48b2a9 -->
-                    <polygon points="516,568 545,582 545,598 516,612" fill="#48b2a9" />
-                    <!-- Shadow Top North Hip Triangle: #1f8383 -->
-                    <polygon points="516,568 574,568 545,582" fill="#1f8383" />
-                    <!-- Shadow Bottom South Hip Triangle: #1f8383 -->
-                    <polygon points="516,612 574,612 545,598" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="516" y="568" width="58" height="44" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <g class="billboard-badge">
-                    <rect x="534" y="579" width="22" height="22" class="badge-cyan" />
-                    <text x="545" y="590" class="badge-text">G</text>
-                </g>
-            </g>
-
-            <!-- 4F. EDIFICIO F (FACULTAD DE CIENCIAS ECONÓMICAS - FCAE) -->
-            <g class="bldg-shape" data-node="buildingF" data-bldg="F" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgF)">
-                    <!-- Base: #1da495 -->
-                    <rect x="516" y="620" width="58" height="52" fill="#1da495" />
-                    <!-- Lightning left slope: #48b2a9 -->
-                    <polygon points="516,620 545,636 545,656 516,672" fill="#48b2a9" />
-                    <!-- Shadow Top North Hip Triangle: #1f8383 -->
-                    <polygon points="516,620 574,620 545,636" fill="#1f8383" />
-                    <!-- Shadow Bottom South Hip Triangle: #1f8383 -->
-                    <polygon points="516,672 574,672 545,656" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <rect x="516" y="620" width="58" height="52" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <g class="billboard-badge">
-                    <rect x="534" y="635" width="22" height="22" class="badge-magenta" />
-                    <text x="545" y="646" class="badge-text">F</text>
-                </g>
-            </g>
-
-            <!-- Ground features near K & Plaza Central Rubén Darío (outside building groups so they are never highlighted on hover/tap) -->
-            <g id="plazaCentralRubenDario" pointer-events="none">
-                <!-- Grey Area (Área Gris Oeste del Edificio K, in alignment with Building A) -->
-                <rect id="greenAreaWestK" x="232" y="575" width="36" height="78" rx="2" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
-
-                <!-- Tiled Patio / Pavers North of K (between K and walkway from B) -->
-                <rect x="270" y="542" width="46" height="33" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1" />
-                <g stroke="#94a3b8" stroke-width="0.75" opacity="0.5">
-                    <line x1="281" y1="542" x2="281" y2="575" />
-                    <line x1="293" y1="542" x2="293" y2="575" />
-                    <line x1="305" y1="542" x2="305" y2="575" />
-                    <line x1="270" y1="553" x2="316" y2="553" />
-                    <line x1="270" y1="564" x2="316" y2="564" />
-                </g>
-
-                <!-- Plaza Terrace Base Polygon (Angled footprint bounded by K, B, and E, including the lower terrace strip below K) -->
-                <polygon points="316,542 388,542 412,566 412,673 270,673 270,653 346,653 346,627 316,583" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5" stroke-linejoin="round" />
-
-                <!-- Plaza Terrace Diagonal Hatch Texture -->
-                <polygon points="316,542 388,542 412,566 412,673 270,673 270,653 346,653 346,627 316,583" fill="url(#plazaDiagonalHatch)" />
-
-                <!-- Concentric Step Lines at NE Chamfer Corner (Curving towards Building E) -->
-                <g stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round">
-                    <line x1="388" y1="542" x2="412" y2="566" />
-                    <line x1="392" y1="542" x2="416" y2="566" />
-                    <line x1="396" y1="542" x2="420" y2="566" />
-                    <line x1="400" y1="542" x2="424" y2="566" />
-                </g>
-
-                <!-- North Entrance Steps from Building B -->
-                <g stroke="#94a3b8" stroke-width="1.2">
-                    <line x1="366" y1="536" x2="384" y2="536" />
-                    <line x1="366" y1="539" x2="384" y2="539" />
-                    <line x1="366" y1="542" x2="384" y2="542" />
-                </g>
-
-                <!-- Mini Pool with UAM Logo (Angled Fountain / Water Basin between Building K and Central Square) -->
-                <g id="uamMiniPool" transform="rotate(-38, 335, 558)">
-                    <!-- Pool Rim / Coping Border -->
-                    <rect x="313" y="549" width="44" height="18" rx="2" fill="#94a3b8" stroke="#475569" stroke-width="1" />
-                    <!-- Water Basin Interior -->
-                    <rect x="315" y="551" width="40" height="14" rx="1" fill="#38bdf8" stroke="#0284c7" stroke-width="1" />
-                    <!-- Subtle Water Shimmer / Ripple Line -->
-                    <line x1="318" y1="554" x2="351" y2="554" stroke="#ffffff" stroke-width="0.8" opacity="0.75" />
-                    <!-- Big UAM Letters Logo -->
-                    <text x="335" y="561.5" fill="#ffffff" font-weight="900" font-size="7.5" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle" letter-spacing="1.5">UAM</text>
-                </g>
-            </g>
-
-            <!-- 4K. EDIFICIO K (CAFETERÍA CENTRAL) -->
-            <g class="bldg-shape" data-node="buildingK" data-bldg="K" filter="url(#bldgShadow)">
-                <!-- Cafeteria K (Dogleg Footprint with Angled Annex matching official signage) -->
-                <g clip-path="url(#clipBldgK)">
-                    <!-- Base Teal Roof: #1da495 -->
-                    <polygon points="270,575 316,575 316,583 346,627 346,653 322,653 322,630 317,630 317,653 270,653" fill="#1da495" />
-                    <!-- Lightning / Light Roof Slopes: #48b2a9 -->
-                    <!-- Main block left slope -->
-                    <polygon points="270,575 293,588 293,635 270,653" fill="#48b2a9" />
-                    <!-- Right wing outer northeast slope -->
-                    <polygon points="316,583 346,627 346,653 334,643 334,627 316,605" fill="#48b2a9" />
-                    <!-- Shadow / Hip Roof Facets: #1f8383 -->
-                    <!-- Main block top hip triangle -->
-                    <polygon points="270,575 316,575 293,588" fill="#1f8383" />
-                    <!-- Main block bottom inverted-V hip triangle -->
-                    <polygon points="270,653 317,653 293,635" fill="#1f8383" />
-                    <!-- Right wing bottom inverted-V hip triangle -->
-                    <polygon points="322,653 346,653 334,643" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <polygon points="270,575 316,575 316,583 346,627 346,653 322,653 322,630 317,630 317,653 270,653" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <!-- Badge K (Amber) -->
-                <g class="billboard-badge">
-                    <rect x="282" y="587" width="22" height="22" class="badge-amber" />
-                    <text x="293" y="598" class="badge-text">K</text>
-                </g>
-            </g>
-
-            <!-- 4I. EDIFICIO I (RECTORÍA & BIBLIOTECA CENTRAL) -->
-            <g class="bldg-shape" data-node="buildingI" data-bldg="I" filter="url(#bldgShadow)">
-                <g clip-path="url(#clipBldgI)">
-                    <!-- Base: #1da495 -->
-                    <path d="M 633 640 L 695 640 L 695 785 L 615 785 L 615 692 L 645 692 L 645 756 L 661 756 L 661 672 L 633 672 Z" fill="#1da495" />
-                    <!-- Lightning top & east slopes: #48b2a9 -->
-                    <polygon points="633,640 695,640 678,656 650,656" fill="#48b2a9" />
-                    <polygon points="695,640 695,785 678,770 678,656" fill="#48b2a9" />
-                    <polygon points="615,692 630,708 630,770 615,785" fill="#48b2a9" />
-                    <!-- Shadow Triangles & south slope: #1f8383 -->
-                    <polygon points="633,640 633,672 650,656" fill="#1f8383" />
-                    <polygon points="615,692 645,692 630,708" fill="#1f8383" />
-                    <polygon points="615,785 695,785 678,770 630,770" fill="#1f8383" />
-                </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <path d="M 633 640 L 695 640 L 695 785 L 615 785 L 615 692 L 645 692 L 645 756 L 661 756 L 661 672 L 633 672 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
-                <!-- Billboard Badge I in Central Courtyard Slot -->
-                <g class="billboard-badge">
-                    <rect x="642" y="713" width="22" height="22" rx="4" class="badge-navy" />
-                    <text x="653" y="724" class="badge-text">I</text>
-                </g>
-            </g>
-
-            <!-- ENTRADA PRINCIPAL / SOUTH GATE -->
-            <g class="bldg-shape" data-node="mainParking" data-bldg="ENTRADA">
-                <rect x="280" y="785" width="120" height="30" fill="#253452" stroke="#253452" stroke-width="2" filter="url(#bldgShadow)" />
-            </g>
-
-        </g>
-
-        <!-- ================================================================== -->
-        <!-- 5. DIJKSTRA ANIMATED ROUTE OVERLAY                                 -->
-        <!-- ================================================================== -->
-        <g id="route2dLayer">
-            <!-- Ground Drop Shadow Polyline for 3D Route Extrusion -->
-            <polyline id="route2dShadowPolyline" points="" fill="none" stroke="#0f172a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity="0.22" />
-            <!-- Glow background line -->
-            <polyline id="route2dGlowPolyline" points="" fill="none" stroke="#38bdf8" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.5" />
-            <!-- Main dashed animated walking polyline -->
-            <polyline id="route2dPolyline" points="" fill="none" stroke="#0284c7" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="ruta-animada" />
-        </g>
-
-        <!-- Origin (Green) & Destination (Red Flag) Pin Markers -->
-        <g id="route2dPinsLayer">
-            <g id="origin2dPin" class="hidden"></g>
-            <g id="destination2dPin" class="hidden"></g>
-        </g>
-
-        </g> <!-- End #mapCameraGroup -->
-
-    </svg>
+        </svg>
 
     </div>
 
     <!-- Decoupled 2.5D HTML Overlay Layer (Un-tilted UI: Navigation Puck, Building Badges, Pins) -->
-    <!-- Positioned AFTER 3D stage in DOM so HTML overlays sit on top of 3D canvas -->
     <div id="campus25dOverlayLayer" class="campus-25d-overlay-layer absolute inset-0 pointer-events-none z-20 overflow-hidden hidden">
-        <!-- Floating Navigation Puck (Positioned at 50% X, 70% Y) -->
         <div id="wazeNavigationPuck" class="waze-puck-container pointer-events-none">
             <div class="waze-puck-shadow"></div>
             <div class="waze-puck-pulse"></div>
             <div id="wazePuckCone" class="waze-puck-cone"></div>
             <div id="wazePuckArrow" class="waze-puck-arrow">
                 <svg class="w-full h-full" viewBox="0 0 44 44" fill="none">
-                    <!-- 3D Extrusion Ridge -->
                     <path d="M 22 4 L 38 35 L 22 28 L 6 35 Z" fill="#0369a1" />
-                    <!-- Left Upper Shaded Facet -->
                     <path d="M 22 5 L 22 27 L 7 33 Z" fill="#38bdf8" />
-                    <!-- Right Upper Shaded Facet -->
                     <path d="M 22 5 L 37 33 L 22 27 Z" fill="#0284c7" />
-                    <!-- White Pin Hub -->
                     <circle cx="22" cy="22" r="3.2" fill="#ffffff" />
                 </svg>
             </div>
         </div>
-
-        <!-- Floating Badges Container (Un-tilted HTML Badges for A, B, C...) -->
         <div id="wazeBadgesContainer" class="absolute inset-0 pointer-events-none"></div>
-
-        <!-- Floating Origin & Destination Pins -->
         <div id="wazeOriginPin" class="waze-pin-origin hidden pointer-events-none"></div>
         <div id="wazeDestPin" class="waze-pin-dest hidden pointer-events-none"></div>
     </div>

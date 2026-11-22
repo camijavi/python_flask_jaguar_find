@@ -301,6 +301,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
+    // Sync anchors from single source of truth in campusMapRenderer.js
+    if (window.CAMPUS_BUILDING_ANCHORS) {
+        for (const [key, anchor] of Object.entries(window.CAMPUS_BUILDING_ANCHORS)) {
+            if (CAMPUS_BUILDINGS[key]) CAMPUS_BUILDINGS[key].anchor = anchor;
+        }
+    }
+
     let activeSelectedBuilding = null;
 
     // ----------------------------------------------------------------------------
