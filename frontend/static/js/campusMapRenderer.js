@@ -40,12 +40,12 @@
         buildingN: { x: 436, y: 260 },
         buildingO: { x: 597, y: 196 },
         buildingP: { x: 450, y: 115 },
-        mainParking: { x: 318, y: 765 },
+        mainParking: { x: 298, y: 766 },
         chilamatesPlaza: { x: 300, y: 292 },
         sportsZone: { x: 918, y: 447 },
         jaguarCenter: { x: 886, y: 623 },
-        northGate: { x: 245, y: 72 },
-        northeastGate: { x: 645, y: 18 }
+        northGate: { x: 232, y: 74 },
+        northeastGate: { x: 645, y: 16 }
     };
 
     // ----------------------------------------------------------------------------
@@ -201,37 +201,54 @@
     }
 
     // ----------------------------------------------------------------------------
-    // 2. Layer 1: Campus Perimeter & Internal Roads
+    // 2. Layer 1: Campus Perimeter & Internal Vehicle Roads
     // ----------------------------------------------------------------------------
     function renderRoads(layer) {
-        const roads = [
-            // Top perimeter avenue (Camino Segundo Acceso) curving into Tercer Acceso
-            { d: "M -2000 18 L 320 18 L 245 72 L 175 72", w: 20 },
-            { d: "M 320 18 L 3000 18", w: 20 },
-            // West campus access road (Tercer Acceso -> West Parking -> Entrada Principal)
-            { d: "M 245 72 L 265 200 L 265 460 L 298 765", w: 22 },
-            // North-South central spine road (East of P, O, H, M, G, F, I)
-            { d: "M 645 18 L 658 240 L 692 355 L 696 555 L 806 600 L 808 776", w: 20 },
-            // South main avenue (Entrada Principal across south boundary to east complex)
-            { d: "M -2000 764 L 305 764 L 820 792 L 3000 792", w: 24 },
-            // Internal connector: West road -> North PON parking & P-O corridor
-            { d: "M 265 188 L 558 188", w: 14 },
-            // Internal connector: West road -> Central CD parking
-            { d: "M 265 366 L 560 366", w: 14 },
-            // Internal connector: Spine road -> between F and SE Parking -> South Parking
-            { d: "M 696 588 L 560 588 L 560 710", w: 12 },
-            // East sports concourse between Baseball Stadium and Soccer Field
-            { d: "M 692 338 L 1140 338", w: 22, color: "#dce2ec" },
-            // East corridor between Jaguar Center/Soccer and L/Courts/East buildings
+        // 1A. Secondary walkways & parking driveways (flat pale slate, no lane dashes)
+        const connectors = [
+            // Driveway into North PON parking (between P and N)
+            { d: "M 244 186 L 330 186", w: 13, color: "#cbd5e1" },
+            // Driveway into Central CD parking (between Chilamates and A)
+            { d: "M 262 366 L 310 366", w: 13, color: "#cbd5e1" },
+            // Driveway into Upper & Lower West Parking from West Main Avenue
+            { d: "M 218 264 L 252 264", w: 15, color: "#cbd5e1" },
+            { d: "M 248 430 L 274 430", w: 15, color: "#cbd5e1" },
+            // Driveway into SE Parking & South Upper Parking from South Main Avenue
+            { d: "M 634 684 L 634 704", w: 13, color: "#cbd5e1" },
+            { d: "M 538 696 L 538 670", w: 11, color: "#cbd5e1" },
+            // Pedestrian sports concourse between Baseball Stadium and Soccer Field
+            { d: "M 708 338 L 1140 338", w: 22, color: "#dce2ec" },
+            // Pedestrian corridor between Jaguar Center/Soccer and L/Courts/East buildings
             { d: "M 988 538 L 998 840", w: 14, color: "#dce2ec" }
         ];
 
-        for (const r of roads) {
-            el("path", {
-                d: r.d,
-                "stroke-width": r.w,
-                stroke: r.color || "#c8cfde"
-            }, layer);
+        for (const r of connectors) {
+            el("path", { d: r.d, "stroke-width": r.w, stroke: r.color }, layer);
+        }
+
+        // 1B. Main Campus Vehicle Road Network (exact loop & access branches from official maps)
+        // Drawn in 3 clean layered strokes (curb edge -> asphalt -> subtle center dashes)
+        const mainVehiclePaths = [
+            // Main Entrance (Entrada Principal) -> SW Corner -> West Avenue -> NW Arch -> Top T-Junction
+            "M 298 766 L 298 704 C 294 600, 276 470, 260 340 C 248 245, 236 165, 234 92 C 232 46, 268 24, 385 17 L 645 15",
+            // Tercer Acceso (NW gate stub branching west)
+            "M 234 74 L 176 74",
+            // Camino Segundo Acceso (continuing east from Top T-Junction)
+            "M 645 15 L 1120 12",
+            // South Internal Ring (SW Corner -> East across campus -> SE rounded curve -> Central Spine North -> Top T-Junction)
+            "M 298 704 Q 300 698 316 698 L 674 704 Q 706 704 706 672 L 706 430 C 708 345, 678 270, 662 185 L 645 15",
+            // SE Branch around South of Building I -> into Jaguar Center Parking
+            "M 692 702 Q 736 742 782 746 Q 824 748 866 728"
+        ];
+
+        const roadCurb = el("g", { class: "main-road-curb", fill: "none", stroke: "#9aa8be", "stroke-width": 23, "stroke-linecap": "round", "stroke-linejoin": "round" }, layer);
+        const roadFill = el("g", { class: "main-road-asphalt", fill: "none", stroke: "#bcc6d6", "stroke-width": 19, "stroke-linecap": "round", "stroke-linejoin": "round" }, layer);
+        const roadDash = el("g", { class: "main-road-centerline", fill: "none", stroke: "#ffffff", "stroke-width": 1.3, "stroke-dasharray": "7,6", "stroke-linecap": "round", opacity: 0.72 }, layer);
+
+        for (const d of mainVehiclePaths) {
+            el("path", { d }, roadCurb);
+            el("path", { d }, roadFill);
+            el("path", { d }, roadDash);
         }
     }
 
@@ -259,20 +276,20 @@
             return g;
         }
 
-        // 2.1 Behind Building P (angled north entrance)
+        // 2.1 Behind Building P (angled north entrance, clean clearance below NW arch road)
         makeLot("parkingLotBehindP", "path", {
-            d: "M 342 22 L 420 22 L 522 25 A 6 6 0 0 1 528 31 L 528 70 A 6 6 0 0 1 522 76 L 428 76 L 342 22 Z"
+            d: "M 344 30 L 420 30 L 522 32 A 6 6 0 0 1 528 38 L 528 76 A 6 6 0 0 1 522 82 L 428 82 L 344 30 Z"
         }, (_, l) => {
-            addStallRow(l, 366, 33, 428, 72, 6, 5.5, -9, true);   // SW diagonal stalls
-            addStallRow(l, 438, 28, 506, 28, 8, 0, 11, true);     // Top row
-            addStallRow(l, 434, 72, 504, 72, 8, 0, -11, true);    // Bottom row
-            addStallRow(l, 523, 33, 523, 69, 5, -11, 0, true);    // East column
+            addStallRow(l, 368, 40, 428, 78, 6, 5.5, -9, true);   // SW diagonal stalls
+            addStallRow(l, 438, 35, 506, 35, 8, 0, 11, true);     // Top row
+            addStallRow(l, 434, 78, 504, 78, 8, 0, -11, true);    // Bottom row
+            addStallRow(l, 523, 40, 523, 75, 5, -11, 0, true);    // East column
         });
 
-        // 2.2 West Side of Building P (above Weather Station)
-        makeLot("parkingLotSideP", "rect", { x: 236, y: 96, width: 52, height: 52, rx: 4 }, (_, l) => {
-            addStallRow(l, 240, 101, 240, 143, 5, 13, 0, true);
-            addStallRow(l, 284, 101, 284, 143, 5, -13, 0, true);
+        // 2.2 West Side of Building P (East of West Main Avenue, above Weather Station)
+        makeLot("parkingLotSideP", "rect", { x: 250, y: 96, width: 46, height: 50, rx: 4 }, (_, l) => {
+            addStallRow(l, 254, 101, 254, 141, 5, 11, 0, true);
+            addStallRow(l, 292, 101, 292, 141, 5, -11, 0, true);
         });
 
         // 2.3 North Parking (Between Building P, Building O, and Building N)
@@ -283,24 +300,24 @@
             addStallRow(l, 338, 212, 530, 212, 26, 0, -13);
         });
 
-        // 2.4 Upper West Parking Lot (North of west tree line, east of Acopio)
+        // 2.4 Upper West Parking Lot (North of west tree line, West of West Main Avenue)
         makeLot("parkingLotWestUpper", "path", {
-            d: "M 78 202 L 254 202 L 254 328 L 88 328 L 88 310 L 78 202 Z"
+            d: "M 78 202 L 228 202 L 242 328 L 88 328 L 88 310 L 78 202 Z"
         }, (g, l) => {
             // Two full double-sided horizontal bays
-            addStallRow(l, 88, 206, 214, 206, 15, 0, 18, true);
-            addStallRow(l, 90, 262, 214, 262, 15, 0, -17, true);
-            addStallRow(l, 92, 268, 214, 268, 15, 0, 17, true);
-            addStallRow(l, 94, 322, 212, 322, 14, 0, -17, true);
+            addStallRow(l, 88, 206, 204, 206, 14, 0, 18, true);
+            addStallRow(l, 90, 262, 204, 262, 14, 0, -17, true);
+            addStallRow(l, 92, 268, 204, 268, 14, 0, 17, true);
+            addStallRow(l, 94, 322, 202, 322, 13, 0, -17, true);
             // Right-side moto stalls pocket
-            el("rect", { x: 222, y: 294, width: 28, height: 28, rx: 3, fill: "#cfd8e3", stroke: "#ffffff", "stroke-width": 1 }, g);
-            addStallRow(l, 224, 298, 248, 298, 5, 0, 9);
-            addStallRow(l, 224, 319, 248, 319, 5, 0, -9);
+            el("rect", { x: 208, y: 294, width: 26, height: 28, rx: 3, fill: "#cfd8e3", stroke: "#ffffff", "stroke-width": 1 }, g);
+            addStallRow(l, 210, 298, 232, 298, 4, 0, 9);
+            addStallRow(l, 210, 319, 232, 319, 4, 0, -9);
         });
 
-        // 2.5 Lower West Parking Lot (South of west tree line, west of A & K)
+        // 2.5 Lower West Parking Lot (South of west tree line, West of West Main Avenue)
         makeLot("parkingLotWestLower", "path", {
-            d: "M 76 364 L 268 364 L 268 504 L 84 494 Z"
+            d: "M 76 364 L 250 364 L 266 504 L 84 494 Z"
         }, (_, l) => {
             // Top stalls above upper tree median (y=398)
             addStallRow(l, 88, 368, 224, 368, 16, 0, 16, true);
@@ -333,51 +350,55 @@
             addStallRow(l, 754, 90, 862, 90, 12, 0, -14, true);
         });
 
-        // 2.8 East Vertical Roadside Parking Strips (East of O & East of G/F)
-        makeLot("parkingLotEastO", "rect", { x: 632, y: 204, width: 28, height: 68, rx: 4 }, (_, l) => {
-            addStallRow(l, 635, 210, 635, 266, 8, 12, 0, true);
+        // 2.8 East Vertical Roadside Parking Strips (West side of Central Spine Road)
+        makeLot("parkingLotEastO", "rect", { x: 626, y: 204, width: 24, height: 64, rx: 4 }, (_, l) => {
+            addStallRow(l, 629, 210, 629, 262, 8, 11, 0, true);
         });
-        makeLot("parkingLotEastGF", "rect", { x: 668, y: 462, width: 28, height: 112, rx: 4 }, (_, l) => {
-            addStallRow(l, 671, 468, 671, 568, 14, 13, 0, true);
+        makeLot("parkingLotEastGF", "rect", { x: 664, y: 462, width: 26, height: 110, rx: 4 }, (_, l) => {
+            addStallRow(l, 667, 468, 667, 566, 14, 12, 0, true);
         });
 
-        // 2.9 Main South Parking Lot (Large Lot South of Plaza Central & K + South Striping)
+        // 2.9 Main South Parking Lot (Upper bay above South Main Avenue + Lower striped bays below)
         makeLot("parkingLotSouthMain", "path", {
-            d: "M 310 568 L 502 568 L 516 686 L 758 708 L 756 764 L 326 738 Z"
+            d: "M 314 568 L 500 568 L 502 684 L 318 684 Z"
         }, (_, l) => {
-            // Upper main bay perimeter + center aisle stalls (clear of tree rows at y=672, 708, 744)
             addStallRow(l, 336, 574, 490, 574, 14, 0, 15, true);
-            addStallRow(l, 340, 614, 492, 620, 14, 0, -13, true);
-            addStallRow(l, 340, 618, 492, 624, 14, 0, 13);
-            addStallRow(l, 342, 658, 494, 664, 14, 0, -13, true);
-            // Lower long bays tucked cleanly between the 3 horizontal tree dividers
-            addStallRow(l, 384, 686, 502, 696, 12, 0, 12, true);
-            addStallRow(l, 380, 722, 738, 754, 32, 0, 12, true);
+            addStallRow(l, 340, 616, 490, 616, 14, 0, -13, true);
+            addStallRow(l, 340, 620, 490, 620, 14, 0, 13);
+            addStallRow(l, 342, 662, 492, 662, 14, 0, -13, true);
         });
 
-        // 2.10 South-East Parking Lot (Between E Annexes, F, and I, with I-shaped median)
+        // Lower South Parking Strip (South of the South Main Vehicle Avenue)
+        makeLot("parkingLotSouthLower", "path", {
+            d: "M 326 714 L 722 732 L 722 778 L 326 758 Z"
+        }, (_, l) => {
+            addStallRow(l, 384, 720, 690, 735, 28, 0, 12, true);
+            addStallRow(l, 382, 754, 706, 770, 29, 0, -12, true);
+        });
+
+        // 2.10 South-East Parking Lot (Between E Annexes, F, and Spine Road, with I-shaped median)
         makeLot("parkingLotSouthEF", "path", {
-            d: "M 582 598 L 686 598 L 686 678 A 14 14 0 0 1 672 692 L 582 692 Z"
+            d: "M 582 598 L 686 598 L 686 674 A 14 14 0 0 1 672 688 L 582 688 Z"
         }, (g, l) => {
             // Center I-shaped raised concrete median island
             el("path", {
-                d: "M 616 610 L 652 610 A 2.5 2.5 0 0 1 652 615 L 641 615 L 641 671 L 652 671 A 2.5 2.5 0 0 1 652 676 L 616 676 A 2.5 2.5 0 0 1 616 671 L 627 671 L 627 615 L 616 615 A 2.5 2.5 0 0 1 616 610 Z",
+                d: "M 616 610 L 652 610 A 2.5 2.5 0 0 1 652 615 L 641 615 L 641 667 L 652 667 A 2.5 2.5 0 0 1 652 672 L 616 672 A 2.5 2.5 0 0 1 616 667 L 627 667 L 627 615 L 616 615 A 2.5 2.5 0 0 1 616 610 Z",
                 fill: "#b4c0cf", stroke: "#ffffff", "stroke-width": 1.3, class: "parking-island"
             }, g);
             // 4 neat columns of stalls (west curb, left of island, right of island, east curb)
-            addStallRow(l, 586, 604, 586, 676, 10, 13, 0, true);
-            addStallRow(l, 626, 620, 626, 666, 7, -13, 0);
-            addStallRow(l, 642, 620, 642, 666, 7, 13, 0);
-            addStallRow(l, 682, 604, 682, 676, 10, -13, 0, true);
+            addStallRow(l, 586, 604, 586, 672, 10, 13, 0, true);
+            addStallRow(l, 626, 619, 626, 663, 7, -13, 0);
+            addStallRow(l, 642, 619, 642, 663, 7, 13, 0);
+            addStallRow(l, 682, 604, 682, 672, 10, -13, 0, true);
         });
 
-        // 2.11 Jaguar Center South Parking Lot (Between Building I, Jaguar Center & Jaguar Gym)
+        // 2.11 Jaguar Center South Parking Lot (Entered via SE road branch curving below Building I)
         makeLot("parkingLotJaguarCenter", "path", {
             d: "M 818 682 L 924 682 L 924 760 L 976 764 L 976 786 L 818 776 Z"
         }, (_, l) => {
             addStallRow(l, 824, 686, 918, 686, 11, 0, 15, true);
             addStallRow(l, 824, 722, 918, 722, 11, 0, -13, true);
-            addStallRow(l, 838, 742, 918, 742, 9, 0, 13, true);
+            addStallRow(l, 846, 744, 918, 744, 8, 0, 12, true);
             addStallRow(l, 824, 774, 968, 782, 16, 0, -11, true);
         });
     }
@@ -509,7 +530,7 @@
             // Edificio E (Facultad de Medicina) + Vida Estudiantil & Innovacion Annexes
             { x: 520, y: 500, w: 28, h: 156, node: "buildingE", bldg: "E", badge: "E", badgeClass: "badge-navy", badgeX: 534, badgeY: 604, orientation: "v" },
             { x: 554, y: 626, w: 24, h: 46, node: "buildingE", bldg: "E", orientation: "ribH", borderWidth: 2.5 },
-            { x: 538, y: 682, w: 54, h: 13, node: "buildingE", bldg: "E", orientation: "ribV", borderWidth: 2.5 },
+            { x: 538, y: 676, w: 54, h: 12, node: "buildingE", bldg: "E", orientation: "ribV", borderWidth: 2.5 },
             // Edificio H (Laboratorios de Medicina) + small west wing
             { x: 604, y: 354, w: 84, h: 32, node: "buildingH", bldg: "H", badge: "H", badgeClass: "badge-green", badgeX: 646, badgeY: 370, orientation: "h" },
             { x: 576, y: 356, w: 24, h: 20, node: "buildingH", bldg: "H", orientation: "h", borderWidth: 2.5 },
@@ -630,7 +651,7 @@
         const supportBuildings = [
             // West & North-Central pavilions
             { x: 60, y: 288, w: 30, h: 20 },       // Acopio
-            { x: 244, y: 150, w: 34, h: 28 },      // Estacion Meteorologica
+            { x: 254, y: 150, w: 34, h: 28 },      // Estacion Meteorologica
             { x: 284, y: 318, w: 18, h: 17 },      // Kiosko Plaza Chilamates
             { x: 528, y: 248, w: 16, h: 15 },      // Small annex 1 below O
             { x: 548, y: 248, w: 16, h: 15 },      // Small annex 2 below O
@@ -667,7 +688,7 @@
 
         // Main South Gate (Entrada Principal)
         const gate = el("g", { class: "bldg-shape", "data-node": "mainParking", "data-bldg": "ENTRADA" }, layer);
-        el("rect", { x: 292, y: 754, width: 52, height: 22, fill: ROOF_BORDER, stroke: ROOF_BORDER, "stroke-width": 2, filter: "url(#bldgShadow)" }, gate);
+        el("rect", { x: 278, y: 760, width: 40, height: 18, fill: ROOF_BORDER, stroke: ROOF_BORDER, "stroke-width": 2, filter: "url(#bldgShadow)" }, gate);
     }
 
     // ----------------------------------------------------------------------------
@@ -677,23 +698,22 @@
         // Large canopy tree rows [x1, y1, x2, y2, count]
         const largeTreeRows = [
             // West parking divider & medians
-            [86, 344, 244, 344, 9],
+            [86, 344, 240, 344, 9],
             [148, 398, 218, 398, 5],
             [150, 444, 220, 444, 5],
-            // West & east edges of South Main Parking (clean spacing beside Building E)
-            [316, 580, 334, 718, 9],
+            // West & east edges of South Main Parking (clean spacing beside West Main Avenue & Building E)
+            [316, 580, 326, 678, 7],
             [504, 514, 504, 650, 9],
             // South of Plaza Central
             [396, 562, 486, 562, 5],
-            // South parking horizontal rows (3 iconic tree dividers)
-            [390, 672, 498, 682, 6],
-            [386, 706, 516, 718, 7],
-            [562, 708, 686, 720, 7],
-            [380, 744, 744, 774, 19],
-            // East of SE Parking / West of Building I
-            [698, 596, 712, 702, 8],
-            // Between Building I and Jaguar Center
-            [818, 582, 824, 686, 7],
+            // South parking horizontal rows (framed cleanly above & below the South Main Avenue at y=700)
+            [388, 676, 496, 682, 6],
+            [382, 718, 682, 732, 16],
+            [380, 762, 716, 778, 17],
+            // East of SE Parking / West of Spine Road (between Building I & Spine Road)
+            [718, 598, 718, 692, 6],
+            // Between Building I and Jaguar Center (solid green barrier, no vehicle road)
+            [814, 584, 814, 696, 7],
             // West edge of Baseball Stadium
             [706, 134, 712, 286, 9],
             // South edge of Baseball Stadium
