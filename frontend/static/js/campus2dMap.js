@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio E • Facultad de Medicina",
             badgeClass: "badge-navy",
             badgeBg: "#1e3a8a",
-            anchor: { x: 458, y: 651 },
+            anchor: { x: 458, y: 653 },
             floors: [
                 { floor: "Piso 1", rooms: "Clínica Médica & Atención al Adolescente, SS Hombres / Mujeres, Centro de Diagnóstico, Decanatura de Medicina, Oficinas de Médicos Especialistas." }
             ]
@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio F • FACEE (Ciencias Económicas)",
             badgeClass: "badge-magenta",
             badgeBg: "#be185d",
-            anchor: { x: 541, y: 661 },
+            anchor: { x: 545, y: 646 },
             floors: [
                 { floor: "Piso 1", rooms: "Salón de Profesores FACEE, Dirección de Postgrado y Formación Continua, Decanatura FACEE, Aulas F101-F104." }
             ]
@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio G • Derecho & Auditorio",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 541, y: 591 },
+            anchor: { x: 545, y: 590 },
             floors: [
                 { floor: "Piso 1", rooms: "Decanatura FCJ, Centro de Mediación, Language Center, UAM College, Dirección de Relaciones Internacionales." },
                 { floor: "Piso 2", rooms: "Auditorio Central Rubén Darío, Sala de Juicios Orales Simulados." }
