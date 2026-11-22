@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio H • Laboratorios de Medicina",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 572, y: 383 },
+            anchor: { x: 602, y: 383 },
             floors: [
                 { floor: "Piso 1", rooms: "SS Hombres / Mujeres, Laboratorios Multidisciplinarios H101-H103, Coordinación de Laboratorios, Oficina de Sustancias Químicas, Laboratorios H105-H107." },
                 { floor: "Piso 2", rooms: "Laboratorio de Anatomía H201-H207, Quirófano de Práctica, Depósito de Reactivos." }
@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio M • Aulas & Postgrados",
             badgeClass: "badge-teal",
             badgeBg: "#0f766e",
-            anchor: { x: 567, y: 460 },
+            anchor: { x: 597, y: 460 },
             floors: [
                 { floor: "Piso 1", rooms: "Aulas de Grado M101 - M108, Coordinación de Maestrías y Especialidades." },
                 { floor: "Piso 2", rooms: "Aulas Ejecutivas M201 - M208, Sala de Coworking para Investigadores." }
