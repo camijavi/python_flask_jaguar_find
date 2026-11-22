@@ -172,7 +172,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <!-- Internal Loop to Edificio P & O -->
             <path d="M 240 70 L 240 220 L 520 220 L 520 330" stroke-width="16" />
             <!-- Internal Loop to Sports Area & Edificio I -->
-            <path d="M 520 220 L 880 220 L 880 720 L 520 720" stroke-width="18" />
+            <path d="M 520 220 L 880 220 L 880 720 L 550 720" stroke-width="18" />
             <!-- Road between C/B and E/F/G -->
             <path d="M 410 440 L 410 650 L 660 650" stroke-width="14" />
             <!-- Driveway access to Central Parking Lot between C and J/D -->
@@ -185,8 +185,62 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
         <g id="parkingLayer">
             <!-- West Parking Bay -->
             <rect x="75" y="270" width="125" height="340" rx="8" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
-            <!-- South Main Parking -->
-            <rect x="220" y="675" width="390" height="88" rx="8" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
+            <!-- South Main Parking (West Bay, below Plaza Central & Edificio K) -->
+            <rect x="220" y="675" width="212" height="88" rx="8" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
+
+            <!-- Southeast Parking Lot (Between Building E Annexes on West and Building F on North) -->
+            <g id="parkingLotSouthEF">
+                <!-- Asphalt Base Bay with Smooth Rounded Southeast Corner (Aligned to Building E Annexes & Building F) -->
+                <path d="M 516 675 L 608 675 L 608 747 A 16 16 0 0 1 592 763 L 516 763 Z" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
+
+                <!-- West Curb Line along Building E Vertical Annex East Edge -->
+                <line x1="518.5" y1="699" x2="518.5" y2="742" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" />
+
+                <!-- Center "I"-Shaped Raised Concrete Median Island (Pill Crossbars + Central Stem) -->
+                <path d="M 543.5 684 L 578.5 684 A 2.5 2.5 0 0 1 578.5 689 L 568 689 L 568 741 L 578.5 741 A 2.5 2.5 0 0 1 578.5 746 L 543.5 746 A 2.5 2.5 0 0 1 543.5 741 L 554 741 L 554 689 L 543.5 689 A 2.5 2.5 0 0 1 543.5 684 Z" fill="#b4c0cf" stroke="#ffffff" stroke-width="1.4" stroke-linejoin="round" />
+
+                <!-- Left-of-Island Perpendicular Parking Stalls (9 Stalls) -->
+                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
+                    <line x1="541" y1="694.8" x2="553.5" y2="694.8" />
+                    <line x1="541" y1="700.6" x2="553.5" y2="700.6" />
+                    <line x1="541" y1="706.3" x2="553.5" y2="706.3" />
+                    <line x1="541" y1="712.1" x2="553.5" y2="712.1" />
+                    <line x1="541" y1="717.9" x2="553.5" y2="717.9" />
+                    <line x1="541" y1="723.7" x2="553.5" y2="723.7" />
+                    <line x1="541" y1="729.4" x2="553.5" y2="729.4" />
+                    <line x1="541" y1="735.2" x2="553.5" y2="735.2" />
+                </g>
+
+                <!-- Right-of-Island Perpendicular Parking Stalls (9 Stalls) -->
+                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
+                    <line x1="568.5" y1="694.8" x2="581" y2="694.8" />
+                    <line x1="568.5" y1="700.6" x2="581" y2="700.6" />
+                    <line x1="568.5" y1="706.3" x2="581" y2="706.3" />
+                    <line x1="568.5" y1="712.1" x2="581" y2="712.1" />
+                    <line x1="568.5" y1="717.9" x2="581" y2="717.9" />
+                    <line x1="568.5" y1="723.7" x2="581" y2="723.7" />
+                    <line x1="568.5" y1="729.4" x2="581" y2="729.4" />
+                    <line x1="568.5" y1="735.2" x2="581" y2="735.2" />
+                </g>
+
+                <!-- Far-Right Perimeter Parking Stalls (Along East Curb) -->
+                <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round">
+                    <line x1="594" y1="681" x2="606" y2="681" />
+                    <line x1="594" y1="687.2" x2="606" y2="687.2" />
+                    <line x1="594" y1="693.4" x2="606" y2="693.4" />
+                    <line x1="594" y1="699.6" x2="606" y2="699.6" />
+                    <line x1="594" y1="705.8" x2="606" y2="705.8" />
+                    <line x1="594" y1="712" x2="606" y2="712" />
+                    <line x1="594" y1="718.2" x2="606" y2="718.2" />
+                    <line x1="594" y1="724.4" x2="606" y2="724.4" />
+                    <line x1="594" y1="730.6" x2="606" y2="730.6" />
+                    <line x1="594" y1="736.8" x2="606" y2="736.8" />
+                    <line x1="594" y1="743" x2="606" y2="743" />
+                </g>
+
+                <!-- East & South Perimeter Curb Line with Rounded Southeast Corner -->
+                <path d="M 606 676 L 606 745 A 15 15 0 0 1 591 760 L 542 760" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </g>
             <!-- North Parking (near Copernicus P) -->
             <rect x="270" y="90" width="150" height="40" rx="6" fill="#dfe5ec" stroke="#cbd5e1" stroke-width="1.5" />
             <!-- North Parking (near Baseball Stadium) -->
