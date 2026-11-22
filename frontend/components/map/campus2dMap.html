@@ -106,8 +106,11 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <clipPath id="clipBldgB">
                 <rect x="270" y="480" width="245" height="40" />
             </clipPath>
+            <clipPath id="clipConnectorBE">
+                <rect x="442" y="520" width="16" height="30" />
+            </clipPath>
             <clipPath id="clipBldgE">
-                <path d="M 440 520 L 476 520 L 476 715 L 491 715 L 491 735 L 425 735 L 425 715 L 440 715 Z" />
+                <rect x="440" y="550" width="36" height="185" />
             </clipPath>
             <clipPath id="clipBldgH">
                 <rect x="525" y="365" width="95" height="36" />
@@ -284,6 +287,9 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 <!-- Trees west of Edificio I (matching official signage) -->
                 <circle cx="585" cy="620" r="9"/><circle cx="585" cy="645" r="9"/><circle cx="585" cy="670" r="9"/>
                 <circle cx="585" cy="695" r="9"/><circle cx="585" cy="720" r="9"/><circle cx="585" cy="745" r="9"/><circle cx="585" cy="770" r="9"/>
+                <!-- Trees west of Edificio E (matching official signage) -->
+                <circle cx="418" cy="535" r="8.5"/><circle cx="418" cy="565" r="8.5"/><circle cx="418" cy="595" r="8.5"/>
+                <circle cx="418" cy="625" r="8.5"/><circle cx="418" cy="655" r="8.5"/><circle cx="418" cy="685" r="8.5"/><circle cx="418" cy="715" r="8.5"/>
             </g>
         </g>
 
@@ -614,18 +620,35 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
                 </g>
             </g>
 
-            <!-- 4E. EDIFICIO E (FACULTAD DE MEDICINA - EXTENDS SOUTH FROM B) -->
+            <!-- Connecting Second Floor Bridge Between Building B and Building E (Straight Line Connector) -->
+            <g id="connectorSecondFloorBE" class="bldg-shape" data-bldg="PUENTE_BE" filter="url(#bldgShadow)">
+                <g clip-path="url(#clipConnectorBE)">
+                    <rect x="442" y="520" width="8" height="30" fill="#1da495" />
+                    <rect x="450" y="520" width="8" height="30" fill="#48b2a9" />
+                    <!-- Green Corridor Walkway -->
+                    <line x1="446" y1="520" x2="446" y2="550" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.9" />
+                </g>
+                <!-- Navy Side Borders (Straight Lines connecting B and E) -->
+                <line x1="442" y1="520" x2="442" y2="550" stroke="#253452" stroke-width="3.5" stroke-linecap="square" />
+                <line x1="458" y1="520" x2="458" y2="550" stroke="#253452" stroke-width="3.5" stroke-linecap="square" />
+            </g>
+
+            <!-- 4E. EDIFICIO E (FACULTAD DE MEDICINA - EXTENDS SOUTH FROM B VIA SECOND FLOOR CONNECTOR) -->
             <g class="bldg-shape" data-node="buildingE" data-bldg="E" filter="url(#bldgShadow)">
                 <g clip-path="url(#clipBldgE)">
                     <!-- Base: #1da495 -->
-                    <path d="M 440 520 L 476 520 L 476 715 L 491 715 L 491 735 L 425 735 L 425 715 L 440 715 Z" fill="#1da495" />
+                    <rect x="440" y="550" width="36" height="185" fill="#1da495" />
                     <!-- Lightning left slope: #48b2a9 -->
-                    <polygon points="425,520 458,520 458,735 425,735" fill="#48b2a9" />
-                    <!-- Shadow Bottom Triangle: #1f8383 -->
-                    <polygon points="425,735 491,735 458,715" fill="#1f8383" />
+                    <polygon points="440,550 458,568 458,717 440,735" fill="#48b2a9" />
+                    <!-- Shadow Top North Hip Triangle: #1f8383 -->
+                    <polygon points="440,550 476,550 458,568" fill="#1f8383" />
+                    <!-- Shadow Bottom South Hip Triangle: #1f8383 -->
+                    <polygon points="440,735 476,735 458,717" fill="#1f8383" />
+                    <!-- Green Corridor Walkway -->
+                    <line x1="458" y1="568" x2="458" y2="717" stroke="#16a34a" stroke-width="2.5" stroke-dasharray="5,4" opacity="0.85" />
                 </g>
-                <!-- Navy Border: #253452, Sharp Corners -->
-                <path d="M 440 520 L 476 520 L 476 715 L 491 715 L 491 735 L 425 735 L 425 715 L 440 715 Z" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
+                <!-- Navy Border: #253452, Sharp Corners (Clean Rectangle) -->
+                <rect x="440" y="550" width="36" height="185" fill="none" stroke="#253452" stroke-width="3.5" stroke-linejoin="miter" />
                 <g class="billboard-badge">
                     <rect x="447" y="600" width="22" height="22" class="badge-navy" />
                     <text x="458" y="611" class="badge-text">E</text>
@@ -772,7 +795,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the official signage:
             <path d="M 384 410 L 384 500" />
             <path d="M 515 410 L 545 410 L 570 425 L 510 255 L 440 128" />
             <path d="M 515 500 L 545 500 L 605 459" />
-            <path d="M 458 520 L 458 725" />
+            <path d="M 458 500 L 458 725" />
             <path d="M 476 558 L 490 558" />
             <path d="M 476 628 L 490 628" />
             <path d="M 458 725 L 598 725" />
