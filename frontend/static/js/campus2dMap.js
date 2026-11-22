@@ -269,12 +269,34 @@ document.addEventListener("DOMContentLoaded", function () {
         "jaguarCenter": {
             id: "jaguarCenter",
             letter: "JC",
-            name: "Jaguar Center (Gimnasio & Complejo Deportivo)",
+            name: "Jaguar Center (Complejo Deportivo)",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 735, y: 510 },
+            anchor: { x: 886, y: 623 },
             floors: [
-                { floor: "Piso 1", rooms: "Gimnasio Universitario Jaguar Gym, Canchas Techadas de Baloncesto / Voleibol, Graderías Principales, Área de Fisioterapia." }
+                { floor: "Piso 1", rooms: "Canchas Techadas de Baloncesto / Voleibol, Graderías Principales, Acceso al Complejo Deportivo." }
+            ]
+        },
+        "jaguarGym": {
+            id: "jaguarGym",
+            letter: "JG",
+            name: "Jaguar Gym • Gimnasio Universitario",
+            badgeClass: "badge-teal",
+            badgeBg: "#0f766e",
+            anchor: { x: 955, y: 726 },
+            floors: [
+                { floor: "Piso 1", rooms: "Área de Pesas, Máquinas Cardiovasculares, Entrenamiento Funcional y Vestidores." }
+            ]
+        },
+        "physiotherapy": {
+            id: "physiotherapy",
+            letter: "FT",
+            name: "Fisioterapia • Clínica de Rehabilitación",
+            badgeClass: "badge-cyan",
+            badgeBg: "#0284c7",
+            anchor: { x: 964, y: 677 },
+            floors: [
+                { floor: "Piso 1", rooms: "Clínica de Fisioterapia, Rehabilitación Física y Deportiva, Atención a Estudiantes y Atletas." }
             ]
         },
         "northGate": {

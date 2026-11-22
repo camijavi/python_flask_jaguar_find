@@ -44,6 +44,8 @@
         chilamatesPlaza: { x: 300, y: 292 },
         sportsZone: { x: 918, y: 447 },
         jaguarCenter: { x: 886, y: 623 },
+        jaguarGym: { x: 955, y: 726 },
+        physiotherapy: { x: 964, y: 677 },
         northGate: { x: 232, y: 74 },
         northeastGate: { x: 645, y: 16 }
     };
@@ -213,9 +215,10 @@
             // Driveway into Upper & Lower West Parking from West Main Avenue
             { d: "M 218 264 L 252 264", w: 15, color: "#cbd5e1" },
             { d: "M 248 430 L 274 430", w: 15, color: "#cbd5e1" },
-            // Driveway into SE Parking & South Upper Parking from South Main Avenue
-            { d: "M 634 684 L 634 704", w: 13, color: "#cbd5e1" },
-            { d: "M 538 696 L 538 670", w: 11, color: "#cbd5e1" },
+            // Driveways from South Main Avenue into upper parking bays & center entry into North/Main-Entrance lot
+            { d: "M 634 676 L 634 696", w: 13, color: "#cbd5e1" },
+            { d: "M 484 696 L 484 734", w: 16, color: "#cbd5e1" },
+            { d: "M 678 696 L 678 742", w: 16, color: "#cbd5e1" },
             // Pedestrian sports concourse between Baseball Stadium and Soccer Field
             { d: "M 708 338 L 1140 338", w: 22, color: "#dce2ec" },
             // Pedestrian corridor between Jaguar Center/Soccer and L/Courts/East buildings
@@ -230,15 +233,15 @@
         // Drawn in 3 clean layered strokes (curb edge -> asphalt -> subtle center dashes)
         const mainVehiclePaths = [
             // Main Entrance (Entrada Principal) -> SW Corner -> West Avenue -> NW Arch -> Top T-Junction
-            "M 298 766 L 298 704 C 294 600, 276 470, 260 340 C 248 245, 236 165, 234 92 C 232 46, 268 24, 385 17 L 645 15",
+            "M 298 766 L 298 702 C 294 600, 276 470, 260 340 C 248 245, 236 165, 234 92 C 232 46, 268 24, 385 17 L 645 15",
             // Tercer Acceso (NW gate stub branching west)
             "M 234 74 L 176 74",
             // Camino Segundo Acceso (continuing east from Top T-Junction)
             "M 645 15 L 1120 12",
-            // South Internal Ring (SW Corner -> East across campus -> SE rounded curve -> Central Spine North -> Top T-Junction)
-            "M 298 704 Q 300 698 316 698 L 674 704 Q 706 704 706 672 L 706 430 C 708 345, 678 270, 662 185 L 645 15",
-            // SE Branch around South of Building I -> into Jaguar Center Parking
-            "M 692 702 Q 736 742 782 746 Q 824 748 866 728"
+            // South Internal Ring (Dead-horizontal South Avenue -> SE rounded curve -> Central Spine North -> Top T-Junction)
+            "M 298 702 Q 298 696 314 696 L 678 696 Q 706 696 706 668 L 706 430 C 708 345, 678 270, 662 185 L 645 15",
+            // SE Branch connecting SE Curve -> Building I Parking Lot -> Jaguar Center Parking
+            "M 694 696 Q 710 742 742 744 L 836 744"
         ];
 
         const roadCurb = el("g", { class: "main-road-curb", fill: "none", stroke: "#9aa8be", "stroke-width": 23, "stroke-linecap": "round", "stroke-linejoin": "round" }, layer);
@@ -358,48 +361,62 @@
             addStallRow(l, 667, 468, 667, 566, 14, 12, 0, true);
         });
 
-        // 2.9 Main South Parking Lot (Upper bay above South Main Avenue + Lower striped bays below)
+        // 2.9 Main South Parking Lot (Upper bay cleanly above the horizontal South Main Avenue)
         makeLot("parkingLotSouthMain", "path", {
-            d: "M 314 568 L 500 568 L 502 684 L 318 684 Z"
-        }, (_, l) => {
+            d: "M 314 568 L 500 568 L 500 678 L 318 678 Z"
+        }, (g, l) => {
             addStallRow(l, 336, 574, 490, 574, 14, 0, 15, true);
             addStallRow(l, 340, 616, 490, 616, 14, 0, -13, true);
             addStallRow(l, 340, 620, 490, 620, 14, 0, 13);
-            addStallRow(l, 342, 662, 492, 662, 14, 0, -13, true);
+            addStallRow(l, 342, 660, 492, 660, 14, 0, -13, true);
+            // Crisp white horizontal curb along south edge of upper lot
+            el("line", { x1: 344, y1: 672, x2: 472, y2: 672, stroke: "#ffffff", "stroke-width": 1.4, "stroke-linecap": "round" }, g);
         });
 
-        // Lower South Parking Strip (South of the South Main Vehicle Avenue)
+        // 2.9B North (Compass-North / Main-Entrance) Parking Strip — Dead-Horizontal, Separated from Main Entrance
         makeLot("parkingLotSouthLower", "path", {
-            d: "M 326 714 L 722 732 L 722 778 L 326 758 Z"
-        }, (_, l) => {
-            addStallRow(l, 384, 720, 690, 735, 28, 0, 12, true);
-            addStallRow(l, 382, 754, 706, 770, 29, 0, -12, true);
+            d: "M 342 712 L 692 712 L 692 764 L 682 764 L 682 780 L 560 780 L 560 764 L 542 764 L 542 780 L 414 780 L 414 764 L 372 764 L 376 782 L 348 782 L 342 758 Z"
+        }, (g, l) => {
+            // Crisp white horizontal planter curb dividers above the two tree blocks (with center driveway opening)
+            el("path", { d: "M 356 717 L 468 717", fill: "none", stroke: "#ffffff", "stroke-width": 1.6, "stroke-linecap": "round" }, g);
+            el("path", { d: "M 502 717 L 630 717", fill: "none", stroke: "#ffffff", "stroke-width": 1.6, "stroke-linecap": "round" }, g);
+            // Single straight horizontal row of perpendicular parking stalls split into 2 clean bays
+            addStallRow(l, 354, 742, 470, 742, 15, 0, 13);
+            addStallRow(l, 498, 742, 626, 742, 16, 0, 13);
         });
 
         // 2.10 South-East Parking Lot (Between E Annexes, F, and Spine Road, with I-shaped median)
         makeLot("parkingLotSouthEF", "path", {
-            d: "M 582 598 L 686 598 L 686 674 A 14 14 0 0 1 672 688 L 582 688 Z"
+            d: "M 582 596 L 686 596 L 686 666 A 14 14 0 0 1 672 680 L 582 680 Z"
         }, (g, l) => {
             // Center I-shaped raised concrete median island
             el("path", {
-                d: "M 616 610 L 652 610 A 2.5 2.5 0 0 1 652 615 L 641 615 L 641 667 L 652 667 A 2.5 2.5 0 0 1 652 672 L 616 672 A 2.5 2.5 0 0 1 616 667 L 627 667 L 627 615 L 616 615 A 2.5 2.5 0 0 1 616 610 Z",
+                d: "M 616 606 L 652 606 A 2.5 2.5 0 0 1 652 611 L 641 611 L 641 661 L 652 661 A 2.5 2.5 0 0 1 652 666 L 616 666 A 2.5 2.5 0 0 1 616 661 L 627 661 L 627 611 L 616 611 A 2.5 2.5 0 0 1 616 606 Z",
                 fill: "#b4c0cf", stroke: "#ffffff", "stroke-width": 1.3, class: "parking-island"
             }, g);
             // 4 neat columns of stalls (west curb, left of island, right of island, east curb)
-            addStallRow(l, 586, 604, 586, 672, 10, 13, 0, true);
-            addStallRow(l, 626, 619, 626, 663, 7, -13, 0);
-            addStallRow(l, 642, 619, 642, 663, 7, 13, 0);
-            addStallRow(l, 682, 604, 682, 672, 10, -13, 0, true);
+            addStallRow(l, 586, 602, 586, 666, 9, 13, 0, true);
+            addStallRow(l, 626, 616, 626, 656, 6, -13, 0);
+            addStallRow(l, 642, 616, 642, 656, 6, 13, 0);
+            addStallRow(l, 682, 602, 682, 666, 9, -13, 0, true);
         });
 
-        // 2.11 Jaguar Center South Parking Lot (Entered via SE road branch curving below Building I)
-        makeLot("parkingLotJaguarCenter", "path", {
-            d: "M 818 682 L 924 682 L 924 760 L 976 764 L 976 786 L 818 776 Z"
+        // 2.11 & 2.12 Unified Building I + Jaguar Gym / Jaguar Center Parking Lot
+        // Single continuous asphalt footprint matching the official close-up geometry & bottom step
+        makeLot("parkingLotJaguarGymAndI", "path", {
+            d: [
+                "M 692 710 L 804 710 L 804 744 L 814 744 L 814 680 L 928 680 Q 934 680 934 686",
+                "L 934 700 L 930 700 L 930 750 L 974 750 L 974 772 L 858 772 L 858 786",
+                "L 718 786 L 718 766 L 692 766 Z"
+            ].join(" ")
         }, (_, l) => {
-            addStallRow(l, 824, 686, 918, 686, 11, 0, 15, true);
-            addStallRow(l, 824, 722, 918, 722, 11, 0, -13, true);
-            addStallRow(l, 846, 744, 918, 744, 8, 0, 12, true);
-            addStallRow(l, 824, 774, 968, 782, 16, 0, -11, true);
+            // Building I angled parking bay (11 diagonal // stalls with white back curb)
+            addStallRow(l, 718, 715, 800, 715, 11, -7, 14, true);
+            // Jaguar Gym / Jaguar Center Parking bays (exact stall layout from official map)
+            addStallRow(l, 832, 684, 920, 684, 10, 0, 13, true);    // Top row below Jaguar Center
+            addStallRow(l, 818, 698, 818, 748, 7, 14, 0, true);     // West column beside Building I sidewalk pier
+            addStallRow(l, 926, 704, 926, 748, 7, -14, 0, true);    // East column beside Jaguar Gym
+            addStallRow(l, 818, 766, 964, 766, 22, 0, -13, true);   // Bottom straight row extending under Jaguar Gym
         });
     }
 
@@ -530,7 +547,7 @@
             // Edificio E (Facultad de Medicina) + Vida Estudiantil & Innovacion Annexes
             { x: 520, y: 500, w: 28, h: 156, node: "buildingE", bldg: "E", badge: "E", badgeClass: "badge-navy", badgeX: 534, badgeY: 604, orientation: "v" },
             { x: 554, y: 626, w: 24, h: 46, node: "buildingE", bldg: "E", orientation: "ribH", borderWidth: 2.5 },
-            { x: 538, y: 676, w: 54, h: 12, node: "buildingE", bldg: "E", orientation: "ribV", borderWidth: 2.5 },
+            { x: 534, y: 672, w: 46, h: 12, node: "buildingE", bldg: "E", orientation: "ribV", borderWidth: 2.5 },
             // Edificio H (Laboratorios de Medicina) + small west wing
             { x: 604, y: 354, w: 84, h: 32, node: "buildingH", bldg: "H", badge: "H", badgeClass: "badge-green", badgeX: 646, badgeY: 370, orientation: "h" },
             { x: 576, y: 356, w: 24, h: 20, node: "buildingH", bldg: "H", orientation: "h", borderWidth: 2.5 },
@@ -538,8 +555,10 @@
             { x: 568, y: 488, w: 48, h: 44, node: "buildingG", bldg: "G", badge: "G", badgeClass: "badge-cyan", orientation: "v" },
             // Edificio F (FACEE)
             { x: 568, y: 540, w: 48, h: 48, node: "buildingF", bldg: "F", badge: "F", badgeClass: "badge-magenta", orientation: "v" },
-            // Jaguar Gym
-            { x: 932, y: 712, w: 48, h: 42, node: "jaguarCenter", bldg: "JAGUAR GYM", orientation: "h" }
+            // Jaguar Gym (vertical hipped-roof geometry matching close-up signage, clickable navigation node)
+            { x: 934, y: 704, w: 42, h: 44, node: "jaguarGym", bldg: "JAGUAR GYM", orientation: "v" },
+            // Physiotherapy Building / Fisioterapia (horizontal hipped roof north of Jaguar Gym, clickable navigation node)
+            { x: 944, y: 666, w: 40, h: 26, node: "physiotherapy", bldg: "FISIOTERAPIA", orientation: "h", borderWidth: 2.6 }
         ];
 
         for (const cfg of rectBuildings) {
@@ -619,25 +638,25 @@
                     ["338,556 374,556 358,542", ROOF_DARK]
                 ]
             },
-            // Edificio I (Rectoria & Biblioteca Central - U-shape)
+            // Edificio I (Rectoria & Biblioteca Central - U-shape, cleanly above its own parking lot)
             {
-                node: "buildingI", bldg: "I", badge: "I", badgeClass: "badge-navy", badgeX: 762, badgeY: 656,
-                path: "M 748 598 L 798 598 L 798 704 L 728 704 L 728 634 L 752 634 L 752 680 L 774 680 L 774 622 L 748 622 Z",
+                node: "buildingI", bldg: "I", badge: "I", badgeClass: "badge-navy", badgeX: 762, badgeY: 652,
+                path: "M 748 594 L 798 594 L 798 700 L 728 700 L 728 630 L 752 630 L 752 676 L 774 676 L 774 618 L 748 618 Z",
                 facets: [
-                    ["748,598 798,598 784,612 762,612", ROOF_LIGHT],
-                    ["798,598 798,704 784,690 784,612", ROOF_LIGHT],
-                    ["728,634 740,646 740,690 728,704", ROOF_LIGHT],
-                    ["728,704 798,704 784,690 740,690", ROOF_DARK]
+                    ["748,594 798,594 784,608 762,608", ROOF_LIGHT],
+                    ["798,594 798,700 784,686 784,608", ROOF_LIGHT],
+                    ["728,630 740,642 740,686 728,700", ROOF_LIGHT],
+                    ["728,700 798,700 784,686 740,686", ROOF_DARK]
                 ]
             },
-            // Edificio L (Cultura & Complejo Deportivo)
+            // Edificio L (Cultura & Complejo Deportivo, clear pedestrian gap above Physiotherapy)
             {
-                node: "buildingL", bldg: "L", badge: "L", badgeClass: "badge-cyan", badgeX: 982, badgeY: 622,
-                path: "M 964 590 L 996 590 L 996 668 L 972 668 L 972 618 L 964 618 Z",
+                node: "buildingL", bldg: "L", badge: "L", badgeClass: "badge-cyan", badgeX: 982, badgeY: 620,
+                path: "M 964 588 L 996 588 L 996 654 L 972 654 L 972 614 L 964 614 Z",
                 facets: [
-                    ["964,590 996,590 984,606 964,606", ROOF_LIGHT],
-                    ["996,590 996,668 984,656 984,606", ROOF_LIGHT],
-                    ["972,668 996,668 984,656", ROOF_DARK]
+                    ["964,588 996,588 984,602 964,602", ROOF_LIGHT],
+                    ["996,588 996,654 984,642 984,602", ROOF_LIGHT],
+                    ["972,654 996,654 984,642", ROOF_DARK]
                 ]
             }
         ];
@@ -666,7 +685,6 @@
             { x: 944, y: 320, w: 42, h: 31 },      // Oficina de Deportes
             // East / Bottom-Right Complex
             { x: 974, y: 548, w: 28, h: 24 },      // Sanitarios Publicos
-            { x: 954, y: 676, w: 32, h: 22 },      // Fisioterapia
             { x: 1018, y: 664, w: 40, h: 30 },     // Bodega / Warehouse
             { x: 1086, y: 656, w: 48, h: 22 },     // Kiosko Jaguar Sport
             { x: 1030, y: 714, w: 36, h: 28 },     // Artes Marciales (West)
@@ -680,11 +698,6 @@
         for (const sb of supportBuildings) {
             addRectBuilding(layer, { ...sb, borderWidth: 2.2 });
         }
-
-        // Container Area (Area de Contenedores - bottom east utility pad)
-        const cont = el("g", { id: "containerArea" }, layer);
-        el("rect", { x: 914, y: 804, width: 28, height: 18, fill: "#94a3b8", stroke: ROOF_BORDER, "stroke-width": 1.8 }, cont);
-        el("line", { x1: 928, y1: 804, x2: 928, y2: 822, stroke: ROOF_BORDER, "stroke-width": 1.2 }, cont);
 
         // Main South Gate (Entrada Principal)
         const gate = el("g", { class: "bldg-shape", "data-node": "mainParking", "data-bldg": "ENTRADA" }, layer);
@@ -706,14 +719,16 @@
             [504, 514, 504, 650, 9],
             // South of Plaza Central
             [396, 562, 486, 562, 5],
-            // South parking horizontal rows (framed cleanly above & below the South Main Avenue at y=700)
-            [388, 676, 496, 682, 6],
-            [382, 718, 682, 732, 16],
-            [380, 762, 716, 778, 17],
-            // East of SE Parking / West of Spine Road (between Building I & Spine Road)
+            // South parking horizontal tree rows (dead-straight horizontal, matching close-up signage)
+            [356, 680, 466, 680, 7],      // Below South Upper Parking (left of E)
+            [616, 680, 672, 680, 3],      // Below SE Parking (right of Innovacion)
+            [358, 725, 466, 725, 7],      // North/Main-Entrance Lot upper row (left block)
+            [504, 725, 628, 725, 8],      // North/Main-Entrance Lot upper row (right block)
+            [358, 766, 688, 766, 18],     // Bottom straight perimeter tree line
+            // West side of Building I (between Spine Road and Building I)
             [718, 598, 718, 692, 6],
-            // Between Building I and Jaguar Center (solid green barrier, no vehicle road)
-            [814, 584, 814, 696, 7],
+            // Between Building I and Jaguar Center (bottom tree anchors NW corner of Jaguar Gym parking)
+            [816, 586, 816, 684, 6],
             // West edge of Baseball Stadium
             [706, 134, 712, 286, 9],
             // South edge of Baseball Stadium
@@ -729,11 +744,12 @@
             addTreeRow(layer, x1, y1, x2, y2, count, "#treeLarge");
         }
 
-        // Individual accent trees (Plaza Chilamates, near P, F, Jaguar Gym, East)
+        // Individual accent trees (Plaza Chilamates, near P, F, Main Entrance, Jaguar Center Lot, East)
         const singleTrees = [
             [304, 248], [368, 152], [338, 560], [358, 560],
+            [274, 746], [274, 766],
             [632, 574], [652, 574], [668, 574],
-            [826, 732], [856, 732], [896, 732], [954, 704], [1138, 796]
+            [866, 704], [882, 720], [916, 696], [944, 658], [1138, 796]
         ];
         for (const [x, y] of singleTrees) {
             el("use", { href: "#treeLarge", x, y }, layer);
@@ -798,17 +814,17 @@
             "M 618 560 L 646 530",
             "M 664 646 L 664 584 L 658 532",
             "M 748 606 L 720 578 L 668 528",
-            "M 796 712 L 702 712 L 702 588 L 670 530",
+            "M 796 706 L 702 706 L 702 588 L 670 530",
 
             // Sports Concourse -> Meeting Point 3 (Soccer Field)
             "M 754 338 L 876 426",
 
-            // Jaguar Center, L, Gym, Courts, East Complex -> Meeting Point 3 (Soccer Field)
+            // Jaguar Center, L, Gym, Physiotherapy, Courts, East Complex -> Meeting Point 3 (Soccer Field)
             "M 848 574 L 848 558 L 938 558 L 938 474",
-            "M 962 612 L 948 612 L 948 558 L 938 558",
-            "M 996 732 L 996 678 L 948 678 L 948 568",
-            "M 1068 818 L 1068 696 L 996 696 L 996 678",
-            "M 1054 644 L 1054 580 L 1006 580 L 950 558"
+            "M 962 612 L 942 612 L 942 558 L 938 558",
+            "M 978 724 L 978 696 L 936 696 L 936 566",
+            "M 1068 818 L 1068 696 L 986 696 L 986 678",
+            "M 1054 644 L 1054 580 L 1006 580 L 944 558"
         ];
 
         // Crisp white halo underneath so green dashed routes stay legible on dark grass & light roads

@@ -29,20 +29,22 @@ class NavigationService:
 
         cleaned = queryText.strip().lower()
 
-        # 1. Direct match with a macro nodeId (e.g. "buildingA", "mainParking")
-        if cleaned in self.graph.nodes:
-            node = self.graph.nodes[cleaned]
-            return {
-                "targetNodeId": node.nodeId,
-                "placeId": node.nodeId,
-                "displayName": node.getName(lang),
-                "category": node.category,
-                "floorLevel": node.floorLevel,
-                "locationNotes": t("navigation.main_building", lang=lang, default="Main building."),
-                "isSubPlace": False
-            }
+        # 1. Direct match with a macro nodeId or exact building name (case-insensitive)
+        for nodeId, node in self.graph.nodes.items():
+            if cleaned in (nodeId.lower(), node.name.lower(), node.getName(lang).lower()):
+                return {
+                    "targetNodeId": node.nodeId,
+                    "placeId": node.nodeId,
+                    "displayName": node.getName(lang),
+                    "category": node.category,
+                    "floorLevel": node.floorLevel,
+                    "locationNotes": t("navigation.main_building", lang=lang, default="Main building."),
+                    "isSubPlace": False
+                }
 
-        # 2. Check placesCatalog for exact placeId or keywords
+        # 2. Check placesCatalog for exact placeId/name first, then most specific (longest) keyword match
+        bestMatch = None
+        bestScore = 0
         for place in PLACES_CATALOG:
             if place["placeId"].lower() == cleaned or place["name"].lower() == cleaned:
                 return {
@@ -55,16 +57,21 @@ class NavigationService:
                     "isSubPlace": True
                 }
             for kw in place["keywords"]:
-                if kw in cleaned:
-                    return {
-                        "targetNodeId": place["parentBuildingId"],
-                        "placeId": place["placeId"],
-                        "displayName": place["name"],
-                        "category": place["category"],
-                        "floorLevel": place["floorLevel"],
-                        "locationNotes": place["locationNotes"],
-                        "isSubPlace": True
-                    }
+                kwLower = kw.lower()
+                if kwLower in cleaned and len(kwLower) > bestScore:
+                    bestScore = len(kwLower)
+                    bestMatch = place
+
+        if bestMatch:
+            return {
+                "targetNodeId": bestMatch["parentBuildingId"],
+                "placeId": bestMatch["placeId"],
+                "displayName": bestMatch["name"],
+                "category": bestMatch["category"],
+                "floorLevel": bestMatch["floorLevel"],
+                "locationNotes": bestMatch["locationNotes"],
+                "isSubPlace": True
+            }
 
         # 3. Fallback to building search by letter or name (e.g. "edificio b", "building b")
         for nodeId, node in self.graph.nodes.items():

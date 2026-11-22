@@ -116,8 +116,10 @@
                 "chilamatesPlaza": { x: 300, y: 292 },
                 "sportsZone": { x: 918, y: 447 },
                 "jaguarCenter": { x: 886, y: 623 },
-                "northGate": { x: 245, y: 72 },
-                "northeastGate": { x: 645, y: 18 }
+                "jaguarGym": { x: 955, y: 726 },
+                "physiotherapy": { x: 964, y: 677 },
+                "northGate": { x: 232, y: 74 },
+                "northeastGate": { x: 645, y: 16 }
             };
 
             this.init();
@@ -154,7 +156,7 @@
                 "buildingE": "E", "buildingF": "F", "buildingG": "G", "buildingH": "H",
                 "buildingI": "I", "buildingJ": "J", "buildingK": "K", "buildingL": "L",
                 "buildingM": "M", "buildingN": "N", "buildingO": "O", "buildingP": "P",
-                "sportsZone": "S", "jaguarCenter": "JC"
+                "sportsZone": "S", "jaguarCenter": "JC", "jaguarGym": "JG", "physiotherapy": "FT"
             };
             const nameMap = {
                 "buildingA": "Edificio A", "buildingB": "Edificio B", "buildingC": "Edificio C",
@@ -162,7 +164,8 @@
                 "buildingG": "Edificio G", "buildingH": "Edificio H", "buildingI": "Edificio I",
                 "buildingJ": "Edificio J", "buildingK": "Edificio K", "buildingL": "Edificio L",
                 "buildingM": "Edificio M", "buildingN": "Edificio N", "buildingO": "Edificio O",
-                "buildingP": "Edificio P", "sportsZone": "Campos Deportivos", "jaguarCenter": "Jaguar Center"
+                "buildingP": "Edificio P", "sportsZone": "Campos Deportivos", "jaguarCenter": "Jaguar Center",
+                "jaguarGym": "Jaguar Gym", "physiotherapy": "Fisioterapia"
             };
             const colorMap = {
                 "buildingA": "#991b1b", "buildingB": "#581c87", "buildingC": "#4c1d95",
@@ -170,7 +173,8 @@
                 "buildingG": "#0284c7", "buildingH": "#15803d", "buildingI": "#1e3a8a",
                 "buildingJ": "#0284c7", "buildingK": "#b45309", "buildingL": "#0284c7",
                 "buildingM": "#b45309", "buildingN": "#6b21a8", "buildingO": "#b45309",
-                "buildingP": "#be185d", "sportsZone": "#15803d", "jaguarCenter": "#0f766e"
+                "buildingP": "#be185d", "sportsZone": "#15803d", "jaguarCenter": "#0f766e",
+                "jaguarGym": "#0f766e", "physiotherapy": "#0284c7"
             };
             return {
                 id: nodeId,

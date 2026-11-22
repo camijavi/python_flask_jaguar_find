@@ -1496,11 +1496,21 @@ PLACES_CATALOG = [
         "placeId": "jaguarGym",
         "name": "Gimnasio JAGUAR GYM",
         "category": CampusCategory.SPORTS,
-        "parentBuildingId": "jaguarCenter",
+        "parentBuildingId": "jaguarGym",
         "floorLevel": 1,
         "isAccessible": True,
-        "locationNotes": "Jaguar Center ground level.",
+        "locationNotes": "Jaguar Gym building, southeast of Jaguar Center.",
         "keywords": ["gimnasio", "gym", "pesas", "jaguar gym", "entrenar"]
+    },
+    {
+        "placeId": "physiotherapyClinic",
+        "name": "Fisioterapia / Physiotherapy",
+        "category": CampusCategory.MEDICAL_LAB,
+        "parentBuildingId": "physiotherapy",
+        "floorLevel": 1,
+        "isAccessible": True,
+        "locationNotes": "Physiotherapy building, north of Jaguar Gym.",
+        "keywords": ["fisioterapia", "physiotherapy", "fisio", "terapia fisica", "rehabilitacion", "clinica fisioterapia"]
     },
     {
         "placeId": "baseballStadium",

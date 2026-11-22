@@ -38,7 +38,9 @@ def buildUamCampusGraph() -> DirectedGraph:
     g.addNode(Node("buildingI", "Building I (Rectorate & Central Library)", CampusCategory.ADMINISTRATIVE, 55.0, 76.0, 12.10712, -86.25721))
     g.addNode(Node("buildingH", "Building H (Medical Labs)", CampusCategory.MEDICAL_LAB, 46.0, 50.0, 12.10800, -86.25752, accessLevel="restricted"))
     g.addNode(Node("sportsZone", "Sports Fields (Baseball Stadium & Soccer Field)", CampusCategory.SPORTS, 64.0, 45.0, 12.10817, -86.25690))
-    g.addNode(Node("jaguarCenter", "Jaguar Center Complex (Gym & Sports Center)", CampusCategory.SPORTS, 64.0, 72.0, 12.10725, -86.25690))
+    g.addNode(Node("jaguarCenter", "Jaguar Center Complex (Sports Center)", CampusCategory.SPORTS, 64.0, 72.0, 12.10725, -86.25690))
+    g.addNode(Node("jaguarGym", "Jaguar Gym", CampusCategory.SPORTS, 79.0, 85.0, 12.10712, -86.25665))
+    g.addNode(Node("physiotherapy", "Physiotherapy Building", CampusCategory.MEDICAL_LAB, 80.0, 79.0, 12.10718, -86.25662))
     g.addNode(Node("buildingL", "Building L (Culture & Music)", CampusCategory.CLASSROOM, 69.0, 72.0, 12.10725, -86.25673))
     g.addNode(Node("northeastGate", "Northeast Gate (Sports Access)", CampusCategory.PARKING_LOT, 62.0, 38.0, 12.10841, -86.25697))
     g.addNode(Node("northGate", "North Gate (Copernicus / FIA Access)", CampusCategory.PARKING_LOT, 36.0, 22.0, 12.10895, -86.25786))
@@ -117,6 +119,26 @@ def buildUamCampusGraph() -> DirectedGraph:
     g.addBidirectionalWalkway("buildingI", "jaguarCenter", 70.0, isAccessible=True,
                              forwardInstruction="Cross the walkway 70m east towards Jaguar Center Complex.",
                              backwardInstruction="Walk 70m west towards Central Library (Building I).")
+
+    g.addBidirectionalWalkway("buildingI", "jaguarGym", 55.0, isAccessible=True,
+                             forwardInstruction="Cross the connected parking area 55m east towards Jaguar Gym.",
+                             backwardInstruction="Walk 55m west across the parking area towards Building I.")
+
+    g.addBidirectionalWalkway("jaguarCenter", "jaguarGym", 25.0, isAccessible=True,
+                             forwardInstruction="Walk 25m southeast past the parking lot towards Jaguar Gym.",
+                             backwardInstruction="Walk 25m northwest towards Jaguar Center.")
+
+    g.addBidirectionalWalkway("jaguarCenter", "physiotherapy", 20.0, isAccessible=True,
+                             forwardInstruction="Walk 20m east towards the Physiotherapy Building.",
+                             backwardInstruction="Walk 20m west towards Jaguar Center.")
+
+    g.addBidirectionalWalkway("jaguarGym", "physiotherapy", 15.0, isAccessible=True,
+                             forwardInstruction="Walk 15m north towards the Physiotherapy Building.",
+                             backwardInstruction="Walk 15m south towards Jaguar Gym.")
+
+    g.addBidirectionalWalkway("physiotherapy", "buildingL", 20.0, isAccessible=True,
+                             forwardInstruction="Walk 20m northeast towards Building L.",
+                             backwardInstruction="Walk 20m southwest towards the Physiotherapy Building.")
 
     g.addBidirectionalWalkway("jaguarCenter", "buildingL", 30.0, isAccessible=True,
                              forwardInstruction="Walk 30m east towards Building L (Culture & Music).",
