@@ -51,11 +51,22 @@ Features:
 
                         <!-- Action Buttons after match -->
                         <div id="gpsConfirmationButtons" class="mt-2.5 hidden flex flex-wrap items-center gap-2">
-                            <button id="btnConfirmGpsLocation" type="button" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-[11px] shadow-xs active:scale-95 transition-all">
+                            <button id="btnConfirmGpsLocation" type="button" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-[11px] shadow-xs active:scale-95 transition-all cursor-pointer">
                                 <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Sí, usar esta ubicación</span>
                             </button>
-                            <button id="btnManualDropdownToggle" type="button" class="px-3 py-1.5 rounded-lg bg-white border border-brand-300 hover:bg-brand-100 text-brand-800 font-bold text-[11px] transition-all">
-                                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>No, buscar en el listado</span>
+                            <button id="btnManualDropdownToggle" type="button" class="px-3 py-1.5 rounded-lg bg-white border border-brand-300 hover:bg-brand-100 text-brand-800 font-bold text-[11px] transition-all cursor-pointer">
+                                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>No, elegir otro edificio</span>
+                            </button>
+                        </div>
+
+                        <!-- Nearby Ambiguous Building Chips -->
+                        <div id="gpsNearbyCandidates" class="mt-2 hidden flex flex-wrap items-center gap-1.5"></div>
+
+                        <!-- Retry GPS Button (Shown on timeout / error / manual fallback) -->
+                        <div id="gpsRetryRow" class="mt-2 hidden">
+                            <button id="btnRetryReportGps" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-brand-200 hover:bg-brand-100 text-brand-700 font-bold text-[11px] transition-colors cursor-pointer">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                <span>Reintentar detección GPS</span>
                             </button>
                         </div>
                     </div>
@@ -123,10 +134,18 @@ Features:
                                 <option value="buildingP">Edificio P (Observatorio Copérnico)</option>
                             </optgroup>
                             <optgroup label="Áreas Deportivas & Exteriores">
-                                <option value="jaguarCenter">Complejo Jaguar Center (Polideportivo / Gimnasio)</option>
-                                <option value="baseballStadium">Campos Deportivos / Estadio de Béisbol</option>
-                                <option value="chilamatesPlaza">Plaza Chilamates (Kioscos & Fast Point)</option>
-                                <option value="mainParking">Estacionamiento Principal & Caseta Sur</option>
+                                <option value="jaguarCenter">Complejo Jaguar Center (Polideportivo)</option>
+                                <option value="jaguarGym">Jaguar Gym (Gimnasio Universitario)</option>
+                                <option value="physiotherapy">Edificio de Fisioterapia</option>
+                                <option value="sportsZone">Campos Deportivos (Estadio de Béisbol &amp; Cancha Fútbol)</option>
+                                <option value="chilamatesPlaza">Plaza Chilamates (Kioscos &amp; Fast Point)</option>
+                                <option value="jaguarJungle">Jaguar Jungle (Área Verde &amp; Sendero)</option>
+                                <option value="miRanchito">Mi Ranchito (Pabellón &amp; Comidas)</option>
+                                <option value="labDigitalFia">Lab Digital FIA</option>
+                                <option value="areaDeMesas">Área de Mesas (Terraza Exterior)</option>
+                                <option value="mainParking">Parqueo Principal &amp; Caseta Sur</option>
+                                <option value="northeastGate">Segundo Acceso (Camino Estadio Jaguar)</option>
+                                <option value="northGate">Tercer Acceso (Portón Copérnico)</option>
                             </optgroup>
                         </select>
                     </div>
@@ -199,6 +218,8 @@ Features:
 (function() {
     let detectedNodeId = "";
     let detectedLocationName = "";
+    let detectedCoords = null;
+    let openedWithPreselectedLocation = false;
 
     const modal = document.getElementById("reportObjectModal");
     const btnClose = document.getElementById("btnCloseReportModal");
@@ -207,14 +228,19 @@ Features:
     const formAlert = document.getElementById("reportFormAlert");
     const submitBtn = document.getElementById("btnSubmitReport");
 
+    const gpsPulseIcon = document.getElementById("gpsPulseIcon");
     const gpsStatusText = document.getElementById("gpsStatusText");
     const gpsSubText = document.getElementById("gpsSubText");
     const gpsConfirmationButtons = document.getElementById("gpsConfirmationButtons");
+    const gpsNearbyCandidates = document.getElementById("gpsNearbyCandidates");
+    const gpsRetryRow = document.getElementById("gpsRetryRow");
+    const btnRetryReportGps = document.getElementById("btnRetryReportGps");
     const btnConfirmGps = document.getElementById("btnConfirmGpsLocation");
     const btnManualToggle = document.getElementById("btnManualDropdownToggle");
-    const manualContainer = document.getElementById("manualLocationContainer");
     const locationSelect = document.getElementById("reportLocationSelect");
     const locationHidden = document.getElementById("reportLocationNode");
+    const latInput = document.getElementById("reportLatitude");
+    const lngInput = document.getElementById("reportLongitude");
 
     const photoInput = document.getElementById("reportPhotoInput");
     const photoImg = document.getElementById("reportPhotoImg");
@@ -222,15 +248,73 @@ Features:
     const photoHidden = document.getElementById("reportPhotoUrl");
     const btnRemovePhoto = document.getElementById("btnRemovePhoto");
 
+    function setSelectLocationValue(nodeId, fallbackLabel) {
+        if (!locationSelect || !nodeId) return;
+        const hasOption = Array.from(locationSelect.options).some(opt => opt.value === nodeId);
+        if (!hasOption) {
+            const dynOpt = document.createElement("option");
+            dynOpt.value = nodeId;
+            dynOpt.textContent = fallbackLabel || nodeId;
+            locationSelect.appendChild(dynOpt);
+        }
+        locationSelect.value = nodeId;
+        if (locationHidden) locationHidden.value = nodeId;
+    }
+
+    function setGpsIconState(state) {
+        if (!gpsPulseIcon) return;
+        if (state === "loading") {
+            gpsPulseIcon.className = "mt-0.5 w-4 h-4 rounded-full bg-brand-500 flex items-center justify-center text-white shrink-0 animate-pulse";
+        } else if (state === "success") {
+            gpsPulseIcon.className = "mt-0.5 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0";
+        } else {
+            gpsPulseIcon.className = "mt-0.5 w-4 h-4 rounded-full bg-slate-400 flex items-center justify-center text-white shrink-0";
+        }
+    }
+
+    function clearGpsCoords() {
+        detectedCoords = null;
+        if (latInput) latInput.value = "";
+        if (lngInput) lngInput.value = "";
+    }
+
+    function escapeHtml(text) {
+        return String(text || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    function formatDetectedLocationLabel(nearest) {
+        const bName = (nearest && nearest.buildingName ? String(nearest.buildingName) : "").trim();
+        const nName = (nearest && nearest.nodeName ? String(nearest.nodeName) : "").trim();
+        if (!bName) return nName || "Campus UAM";
+        if (!nName || nName.toLowerCase() === bName.toLowerCase() || bName.toLowerCase().includes(nName.toLowerCase())) {
+            return bName;
+        }
+        const shortBuilding = bName.split("(")[0].trim();
+        return `${shortBuilding} (${nName})`;
+    }
+
     // Open Modal Function
     window.openReportObjectDialog = function(preselectedLocation) {
         if (!modal) return;
         modal.classList.remove("hidden");
         document.body.classList.add("overflow-hidden");
 
+        detectedNodeId = "";
+        detectedLocationName = "";
+        clearGpsCoords();
+        if (gpsNearbyCandidates) {
+            gpsNearbyCandidates.innerHTML = "";
+            gpsNearbyCandidates.classList.add("hidden");
+        }
+        if (gpsRetryRow) gpsRetryRow.classList.add("hidden");
+
+        openedWithPreselectedLocation = Boolean(preselectedLocation);
         if (preselectedLocation) {
-            locationSelect.value = preselectedLocation;
-            locationHidden.value = preselectedLocation;
+            setSelectLocationValue(preselectedLocation, preselectedLocation);
         }
 
         // Trigger GPS match
@@ -242,6 +326,11 @@ Features:
         modal.classList.add("hidden");
         document.body.classList.remove("overflow-hidden");
         form.reset();
+        detectedNodeId = "";
+        detectedLocationName = "";
+        openedWithPreselectedLocation = false;
+        clearGpsCoords();
+        if (locationHidden) locationHidden.value = "";
         clearPhotoPreview();
         formAlert.classList.add("hidden");
     };
@@ -249,78 +338,190 @@ Features:
     if (btnClose) btnClose.addEventListener("click", window.closeReportObjectDialog);
     if (btnCancel) btnCancel.addEventListener("click", window.closeReportObjectDialog);
 
-    // Geolocation detection and campus nearest-gps resolution
-    async function detectCampusLocation() {
-        if (!navigator.geolocation) {
-            fallbackManualLocation("Tu navegador no soporta detección GPS.");
-            return;
-        }
+    async function resolveGpsCoordinatesOnCampus(lat, lng, accuracy) {
+        try {
+            const lang = (window.APP_CONFIG && window.APP_CONFIG.currentLang) || "spa";
+            const accParam = (typeof accuracy === "number" && !Number.isNaN(accuracy))
+                ? `&accuracy=${accuracy.toFixed(1)}`
+                : "";
+            const res = await fetch(`/api/map/nearest-gps?lat=${lat}&lng=${lng}${accParam}&lang=${lang}`);
+            const data = await res.json();
 
+            // Backend wraps match details under `data.nearest` and sets `data.outsideCampus`
+            const nearest = data && data.nearest ? data.nearest : data;
+            const isOutside = Boolean(
+                (data && data.outsideCampus === true) ||
+                (nearest && nearest.isWithinCampus === false)
+            );
+
+            if (isOutside) {
+                // Clear off-campus lat/lng so submitting a manually selected building is not rejected by perimeter validation
+                clearGpsCoords();
+                fallbackManualLocation("Estás fuera del campus UAM. Selecciona el edificio en el menú desplegable:", { showRetry: true });
+                return;
+            }
+
+            if (data && data.success && nearest && (nearest.nearestNodeId || nearest.buildingName || nearest.nodeName)) {
+                detectedNodeId = nearest.nearestNodeId || (nearest.bestMatch && nearest.bestMatch.buildingId) || "buildingA";
+                detectedLocationName = formatDetectedLocationLabel(nearest);
+                detectedCoords = { lat, lng };
+
+                // Persist validated on-campus coordinates
+                if (latInput) latInput.value = lat;
+                if (lngInput) lngInput.value = lng;
+
+                // Automatically pre-select the detected building unless the user opened Report from a specific building popover
+                if (!openedWithPreselectedLocation) {
+                    setSelectLocationValue(detectedNodeId, detectedLocationName);
+                }
+
+                const distM = Math.round(nearest.distanceMeters || 0);
+                setGpsIconState("success");
+                gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1 flex-wrap'><svg class='w-3.5 h-3.5 text-emerald-600 inline shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'/><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'/></svg><span>Ubicación detectada: <strong>${escapeHtml(detectedLocationName)}</strong></span></span>`;
+                gpsSubText.textContent = openedWithPreselectedLocation
+                    ? `Aproximadamente a ${distM}m de tu posición actual. Confirma si deseas usar esta ubicación GPS.`
+                    : `Seleccionado automáticamente (~${distM}m de tu posición). Confirma o elige otro edificio si fue en otro lugar.`;
+                gpsConfirmationButtons.classList.remove("hidden");
+                if (gpsRetryRow) gpsRetryRow.classList.add("hidden");
+
+                // Render nearby building quick-pick chips when GPS is near a building boundary
+                if (gpsNearbyCandidates) {
+                    const altCandidates = (Array.isArray(nearest.topCandidates) ? nearest.topCandidates : [])
+                        .filter(c => c && c.buildingId && c.buildingId !== detectedNodeId)
+                        .slice(0, 2);
+                    if (nearest.isAmbiguous && altCandidates.length > 0) {
+                        gpsNearbyCandidates.innerHTML = `<span class="text-[10px] font-semibold text-slate-500">¿O estabas en:</span>`;
+                        altCandidates.forEach(cand => {
+                            const chip = document.createElement("button");
+                            chip.type = "button";
+                            const shortName = (cand.buildingName || cand.name || cand.buildingId).split("(")[0].trim();
+                            chip.className = "px-2 py-0.5 rounded-full bg-white hover:bg-brand-600 hover:text-white text-brand-800 border border-brand-200 font-bold text-[10px] transition-colors cursor-pointer";
+                            chip.textContent = shortName;
+                            chip.addEventListener("click", () => {
+                                detectedNodeId = cand.buildingId;
+                                detectedLocationName = cand.buildingName || cand.name || cand.buildingId;
+                                setSelectLocationValue(detectedNodeId, detectedLocationName);
+                                gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${escapeHtml(detectedLocationName)}</strong></span>`;
+                                gpsConfirmationButtons.classList.add("hidden");
+                                gpsNearbyCandidates.classList.add("hidden");
+                            });
+                            gpsNearbyCandidates.appendChild(chip);
+                        });
+                        gpsNearbyCandidates.classList.remove("hidden");
+                    } else {
+                        gpsNearbyCandidates.innerHTML = "";
+                        gpsNearbyCandidates.classList.add("hidden");
+                    }
+                }
+            } else {
+                clearGpsCoords();
+                fallbackManualLocation("Ubicación aproximada no identificada. Por favor selecciona el edificio:", { showRetry: true });
+            }
+        } catch (e) {
+            clearGpsCoords();
+            fallbackManualLocation("No se pudo consultar el servicio de mapa. Selecciona el edificio:", { showRetry: true });
+        }
+    }
+
+    // Geolocation detection and campus nearest-gps resolution
+    async function detectCampusLocation(forceFresh = false) {
+        setGpsIconState("loading");
         gpsStatusText.textContent = "Detectando coordenadas del campus...";
         gpsSubText.textContent = "Obteniendo posición GPS para asociar el edificio más cercano...";
         gpsConfirmationButtons.classList.add("hidden");
+        if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
+        if (gpsRetryRow) gpsRetryRow.classList.add("hidden");
+
+        // Reuse a very fresh on-campus GPS reading already captured by the live map controller (< 20s old)
+        const liveGps = !forceFresh && window.campus25dController && window.campus25dController.latestGpsCoords;
+        if (liveGps && typeof liveGps.lat === "number" && typeof liveGps.lng === "number" &&
+            (Date.now() - (liveGps.timestamp || 0)) < 20000) {
+            await resolveGpsCoordinatesOnCampus(liveGps.lat, liveGps.lng, liveGps.accuracy);
+            return;
+        }
+
+        if (!navigator.geolocation) {
+            fallbackManualLocation("Tu navegador no soporta detección GPS.", { showRetry: false });
+            return;
+        }
+
+        const handleGeoError = (err, alreadyRetriedLowAcc) => {
+            // If high-accuracy GPS timed out or failed indoors, retry once with standard Wi-Fi/network positioning
+            if (!alreadyRetriedLowAcc && err && (err.code === 2 || err.code === 3)) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => resolveGpsCoordinatesOnCampus(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
+                    (err2) => handleGeoError(err2, true),
+                    { enableHighAccuracy: false, timeout: 8000, maximumAge: 30000 }
+                );
+                return;
+            }
+            clearGpsCoords();
+            const reason = err && err.code === 1
+                ? "Permiso de GPS no concedido. Selecciona el edificio manualmente:"
+                : "No se pudo obtener la señal GPS a tiempo. Selecciona el edificio o reintenta:";
+            fallbackManualLocation(reason, { showRetry: true });
+        };
 
         navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                const lat = pos.coords.latitude;
-                const lng = pos.coords.longitude;
-                document.getElementById("reportLatitude").value = lat;
-                document.getElementById("reportLongitude").value = lng;
-
-                try {
-                    const res = await fetch(`/api/map/nearest-gps?lat=${lat}&lng=${lng}&lang=spa`);
-                    const data = await res.json();
-
-                    if (data.success && data.isWithinCampus && data.buildingName) {
-                        detectedNodeId = data.nearestNodeId || data.nearestSpecificNodeId || "buildingA";
-                        detectedLocationName = `${data.buildingName}${data.nodeName ? ' (' + data.nodeName + ')' : ''}`;
-
-                        gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-brand-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'/><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'/></svg> ¿El objeto estaba en <strong>${detectedLocationName}</strong>?</span>`;
-                        gpsSubText.textContent = `Aproximadamente a ${Math.round(data.distanceMeters || 0)}m de tu posición actual.`;
-                        gpsConfirmationButtons.classList.remove("hidden");
-                    } else if (data.success && !data.isWithinCampus) {
-                        fallbackManualLocation("Estás fuera del campus UAM. Selecciona el edificio en el menú desplegable:");
-                    } else {
-                        fallbackManualLocation("Ubicación aproximada no identificada. Por favor selecciona el edificio:");
-                    }
-                } catch (e) {
-                    fallbackManualLocation("No se pudo consultar el servicio de mapa. Selecciona el edificio:");
-                }
-            },
-            (err) => {
-                fallbackManualLocation("Permiso de GPS no concedido. Selecciona el edificio manualmente:");
-            },
-            { enableHighAccuracy: true, timeout: 6000 }
+            (pos) => resolveGpsCoordinatesOnCampus(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
+            (err) => handleGeoError(err, false),
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 }
         );
     }
 
-    function fallbackManualLocation(msg) {
+    function fallbackManualLocation(msg, options = {}) {
+        setGpsIconState("manual");
         gpsStatusText.textContent = "Selección Manual de Ubicación";
         gpsSubText.textContent = msg;
         gpsConfirmationButtons.classList.add("hidden");
-        locationSelect.focus();
+        if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
+        if (gpsRetryRow) {
+            gpsRetryRow.classList.toggle("hidden", !options.showRetry);
+        }
+        if (!openedWithPreselectedLocation && locationSelect) {
+            locationSelect.focus();
+        }
+    }
+
+    if (btnRetryReportGps) {
+        btnRetryReportGps.addEventListener("click", () => {
+            detectCampusLocation(true);
+        });
     }
 
     // Confirmation buttons
     if (btnConfirmGps) {
         btnConfirmGps.addEventListener("click", () => {
-            locationHidden.value = detectedNodeId;
-            locationSelect.value = detectedNodeId;
-            gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${detectedLocationName}</strong></span>`;
+            setSelectLocationValue(detectedNodeId, detectedLocationName);
+            if (detectedCoords) {
+                if (latInput) latInput.value = detectedCoords.lat;
+                if (lngInput) lngInput.value = detectedCoords.lng;
+            }
+            setGpsIconState("success");
+            gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${escapeHtml(detectedLocationName)}</strong></span>`;
+            gpsSubText.textContent = "Ubicación del campus lista para publicar el reporte.";
             gpsConfirmationButtons.classList.add("hidden");
+            if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
         });
     }
 
     if (btnManualToggle) {
         btnManualToggle.addEventListener("click", () => {
+            clearGpsCoords();
             locationSelect.focus();
             gpsSubText.textContent = "Por favor selecciona el edificio correspondiente:";
+            gpsConfirmationButtons.classList.add("hidden");
+            if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
         });
     }
 
     if (locationSelect) {
         locationSelect.addEventListener("change", (e) => {
             locationHidden.value = e.target.value;
+            // If user manually switches to a different building than the GPS match, don't submit mismatched GPS coords
+            if (e.target.value !== detectedNodeId) {
+                clearGpsCoords();
+            }
         });
     }
 

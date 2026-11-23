@@ -170,7 +170,7 @@ def reportItem():
         try:
             latF = float(lat)
             lngF = float(lng)
-            if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=20.0):
+            if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=30.0):
                 return jsonify({
                     "success": False,
                     "error": "La ubicación seleccionada está fuera del perímetro del campus UAM."
@@ -186,7 +186,7 @@ def reportItem():
             try:
                 latF = float(parts[0])
                 lngF = float(parts[1])
-                if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=20.0):
+                if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=30.0):
                     return jsonify({
                         "success": False,
                         "error": "La ubicación indicada está fuera del perímetro del campus UAM."
