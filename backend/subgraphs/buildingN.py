@@ -53,7 +53,7 @@ def buildBuildingNSubgraph() -> BuildingSubgraph:
         name="Recepción de Clínicas Odontológicas y Archivo/Caja (Edificio N)",
         category=CampusCategory.DENTAL_LAB,
         xPercent=36.0, yPercent=33.5,
-        latitude=12.107900, longitude=-86.256960,
+        latitude=12.107871, longitude=-86.256967,
         floorLevel=1, isOutdoorAccessPoint=True,
         accessLevel="restricted",
         accessNotice=bioNotice,
@@ -82,7 +82,7 @@ def buildBuildingNSubgraph() -> BuildingSubgraph:
         name="Escaleras hacia Facultad de Odontología (FODO - Piso 1)",
         category=CampusCategory.STAIRS,
         xPercent=36.2, yPercent=32.0,
-        latitude=12.107890, longitude=-86.256975,
+        latitude=12.107871, longitude=-86.256967,
         floorLevel=1, isOutdoorAccessPoint=False,
         portalKind="stairs", buildingId="buildingN"
     ))
@@ -93,7 +93,7 @@ def buildBuildingNSubgraph() -> BuildingSubgraph:
         name="Escaleras Edificio N (Piso 2)",
         category=CampusCategory.STAIRS,
         xPercent=36.2, yPercent=32.0,
-        latitude=12.107890, longitude=-86.256975,
+        latitude=12.107871, longitude=-86.256967,
         floorLevel=2, isOutdoorAccessPoint=False,
         portalKind="stairs", buildingId="buildingN"
     ))
@@ -102,7 +102,7 @@ def buildBuildingNSubgraph() -> BuildingSubgraph:
         name="Facultad de Odontología (FODO) — Recepción Piso 2",
         category=CampusCategory.FACULTY,
         xPercent=36.5, yPercent=31.0,
-        latitude=12.107895, longitude=-86.256980,
+        latitude=12.107871, longitude=-86.256967,
         floorLevel=2, isOutdoorAccessPoint=False,
         accessLevel="restricted",
         accessNotice=bioNotice,

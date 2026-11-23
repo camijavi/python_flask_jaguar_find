@@ -160,6 +160,15 @@ def buildBuildingESubgraph() -> BuildingSubgraph:
         floorLevel=1, isOutdoorAccessPoint=False,
         portalKind="stairs", buildingId="buildingE"
     ))
+    subgraph.addNode(Node(
+        nodeId="e_die_innovation",
+        name="Dirección de Innovación y Emprendimientos (DIE)",
+        category=CampusCategory.ADMINISTRATIVE,
+        xPercent=46.8, yPercent=75.0,
+        latitude=12.109312, longitude=-86.257369,
+        floorLevel=1, isOutdoorAccessPoint=True,
+        portalKind="door", buildingId="buildingE"
+    ))
 
     # =========================================================================
     # FLOOR 2 (SEGUNDO PISO)
@@ -218,6 +227,8 @@ def buildBuildingESubgraph() -> BuildingSubgraph:
         ("e_psychology", "e_lab_clinico"),
         ("e_lab_clinico", "e_faculty_medicine"),
         ("e_faculty_medicine", "e_stairs_south_f1"),
+        ("e_faculty_medicine", "e_die_innovation"),
+        ("e_vida_estudiantil", "e_die_innovation"),
     ]
     for u, v in f1Edges:
         nU, nV = subgraph.getNode(u), subgraph.getNode(v)
@@ -243,7 +254,9 @@ def buildBuildingESubgraph() -> BuildingSubgraph:
         "cardiologyCenterE": "e_cardiology", "cardiologia": "e_cardiology",
         "accessibleRestroomE": "e_restrooms_f1", "baños e": "e_restrooms_f1", "bano accesible": "e_restrooms_f1",
         "studentLifeOfficeE": "e_vida_estudiantil", "vida estudiantil": "e_vida_estudiantil", "dve": "e_vida_estudiantil",
-        "innovationOfficeE": "e_mapa_uam_north", "die": "e_mapa_uam_north", "innovacion": "e_mapa_uam_north",
+        "innovationOfficeE": "e_die_innovation", "die": "e_die_innovation",
+        "innovacion": "e_die_innovation", "emprendimiento": "e_die_innovation",
+        "direccion de innovacion": "e_die_innovation",
         "medicalSimulatorsE2": "e_sim_center_201", "simuladores": "e_sim_center_201", "e201": "e_sim_center_201",
         "centro de simulacion": "e_sim_center_201",
         "pediatria": "e_pediatrics_control", "neonatologia": "e_pediatrics_control", "cuidados medicos": "e_pediatrics_control",

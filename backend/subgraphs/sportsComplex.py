@@ -143,7 +143,7 @@ def buildSportsZoneSubgraph() -> BuildingSubgraph:
         code="SP",
         floors=[1],
         macroNodeId="sportsZone",
-        entranceNodeIds=["sp_kiosk_jaguarcito", "sp_soccer_left"],
+        entranceNodeIds=["sp_kiosk_jaguarcito", "sp_soccer_left", "sp_baseball_stadium", "sp_soccer_field"],
         description="Campos Deportivos: Kiosko Jaguarcito, Baños Hombres y Mujeres, Bodega de Deportes, Cancha de Fútbol y Estadio de Béisbol Jaguar."
     )
 
@@ -192,12 +192,32 @@ def buildSportsZoneSubgraph() -> BuildingSubgraph:
         floorLevel=1, isOutdoorAccessPoint=True,
         portalKind="door", buildingId="sportsZone"
     ))
+    subgraph.addNode(Node(
+        nodeId="sp_soccer_field",
+        name="Campo de Fútbol Jaguar",
+        category=CampusCategory.SPORTS,
+        xPercent=77.5, yPercent=50.0,
+        latitude=12.108450, longitude=-86.258461,
+        floorLevel=1, isOutdoorAccessPoint=True,
+        portalKind="door", buildingId="sportsZone"
+    ))
+    subgraph.addNode(Node(
+        nodeId="sp_baseball_stadium",
+        name="Estadio de Béisbol (Jaguar Stadium)",
+        category=CampusCategory.SPORTS,
+        xPercent=76.5, yPercent=34.0,
+        latitude=12.107238, longitude=-86.258449,
+        floorLevel=1, isOutdoorAccessPoint=True,
+        portalKind="door", buildingId="sportsZone"
+    ))
 
     edges = [
         ("sp_kiosk_jaguarcito", "sp_restrooms_women"),
         ("sp_kiosk_jaguarcito", "sp_restrooms_men"),
         ("sp_restrooms_men", "sp_sports_warehouse"),
         ("sp_sports_warehouse", "sp_soccer_left"),
+        ("sp_soccer_left", "sp_soccer_field"),
+        ("sp_soccer_left", "sp_baseball_stadium"),
     ]
     for u, v in edges:
         nU, nV = subgraph.getNode(u), subgraph.getNode(v)
@@ -206,8 +226,10 @@ def buildSportsZoneSubgraph() -> BuildingSubgraph:
     aliases = {
         "jaguarcito": "sp_kiosk_jaguarcito", "kiosko jaguarcito": "sp_kiosk_jaguarcito",
         "bodega de deportes": "sp_sports_warehouse",
-        "cancha de futbol": "sp_soccer_left", "campo de futbol": "sp_soccer_left",
-        "estadio": "sp_soccer_left", "jaguar stadium": "sp_soccer_left",
+        "cancha de futbol": "sp_soccer_field", "campo de futbol": "sp_soccer_field",
+        "jaguar campo futbol": "sp_soccer_field", "futbol": "sp_soccer_field",
+        "estadio": "sp_baseball_stadium", "jaguar stadium": "sp_baseball_stadium",
+        "estadio de beisbol": "sp_baseball_stadium", "baseball": "sp_baseball_stadium",
     }
     for alias, nid in aliases.items():
         subgraph.registerRoomAlias(alias, nid)

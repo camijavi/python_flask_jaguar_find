@@ -468,6 +468,15 @@ def runGraphTestSuite():
         ("Biblioteca Central", 12.109547, -86.257996, "buildingI", False),
         ("Auditorio M-101", 12.108452, -86.257566, "buildingM", True),
         ("Jaguar Gym", 12.109309, -86.258508, "jaguarCenter", False),
+        ("Edificio N", 12.107871, -86.256967, "buildingN", True),
+        ("DIE (Edificio E)", 12.109312, -86.257369, "buildingE", True),
+        ("Edificio K", 12.108775, -86.256755, "buildingK", True),
+        ("Jaguar Stadium", 12.107238, -86.258449, "sportsZone", False),
+        ("Campo de Fútbol", 12.108450, -86.258461, "sportsZone", False),
+        ("Área de Mesas", 12.108195, -86.257314, "areaDeMesas", False),
+        ("1er Acceso", 12.109617, -86.256553, "mainParking", False),
+        ("2do Acceso", 12.106364, -86.258808, "northeastGate", False),
+        ("3er Acceso", 12.107223, -86.256261, "northGate", False),
     ]
     for label, lat, lng, expectedBuilding, expectFloorPrompt in gpsCases:
         match = globalNavigationService.findNearestGpsNode(lat, lng, lang="spa")

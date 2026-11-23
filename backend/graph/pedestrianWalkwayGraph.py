@@ -263,8 +263,12 @@ WALKWAY_NODES_SPEC: Dict[str, Tuple[float, float]] = {
 }
 
 
-# Ground-truth real GPS overrides directly from coordenadas.txt for key outdoor walkway anchors
+# Ground-truth real GPS overrides directly from coordenadas.txt & field updates
 REAL_GPS_OVERRIDES: Dict[str, Tuple[float, float]] = {
+    "ent_gate":             (12.109617, -86.256553),
+    "gate_second":          (12.106364, -86.258808),
+    "gate_third":           (12.107223, -86.256261),
+    "k_door_east":          (12.108775, -86.256755),
     "banpro_entry":         (12.108585, -86.256576),
     "a_front_plaza":        (12.108560, -86.256574),
     "a_door_east":          (12.108543, -86.256496),
@@ -277,6 +281,7 @@ REAL_GPS_OVERRIDES: Dict[str, Tuple[float, float]] = {
     "chil_east_top":        (12.107922, -86.256725),
     "j_entry":              (12.108145, -86.256782),
     "d_entry":              (12.108128, -86.256945),
+    "n_courtyard":          (12.107871, -86.256967),
     "n_west_mid":           (12.107741, -86.256842),
     "n_north_stairs":       (12.107742, -86.257105),
     "pon_bot_left":         (12.107696, -86.256859),
@@ -289,6 +294,7 @@ REAL_GPS_OVERRIDES: Dict[str, Tuple[float, float]] = {
     "o_terrace_mid":        (12.107664, -86.257761),
     "jj_center":            (12.108073, -86.257787),
     "mi_ranchito_entry":    (12.108058, -86.257323),
+    "mesas_pad":            (12.108195, -86.257314),
     "h_north_entry":        (12.108156, -86.257782),
     "h_south_door":         (12.108253, -86.257529),
     "m_center":             (12.108439, -86.257594),
@@ -312,7 +318,9 @@ REAL_GPS_OVERRIDES: Dict[str, Tuple[float, float]] = {
     "i_sw_corner":          (12.109467, -86.257868),
     "i_se_corner":          (12.109547, -86.257996),
     "sports_concourse_w":   (12.108100, -86.257939),
-    "sports_soccer_north":  (12.108181, -86.258504),
+    "sports_baseball_ent":  (12.107238, -86.258449),
+    "sports_concourse_m":   (12.108450, -86.258461),
+    "sports_soccer_north":  (12.108450, -86.258461),
     "jc_entry":             (12.109111, -86.258514),
     "jc_west_door":         (12.109111, -86.258514),
     "l_entry":              (12.109123, -86.258504),
@@ -762,7 +770,7 @@ BUILDING_PORTALS: Dict[str, List[str]] = {
     "jaguarCenter":    ["jc_entry", "jc_entry_right", "jc_west_door", "jc_bot_left_door"],
     "jaguarGym":       ["gym_entry"],
     "physiotherapy":   ["ft_entry"],
-    "sportsZone":      ["sports_concourse_w", "sports_concourse_m", "sports_soccer_north"],
+    "sportsZone":      ["sports_concourse_w", "sports_concourse_m", "sports_soccer_north", "sports_baseball_ent"],
     "chilamatesPlaza": ["chilamates_mid", "crosswalk_top", "chil_east_top"],
     "mainParking":     ["ent_gate"],
     "jaguarJungle":    ["jj_center"],

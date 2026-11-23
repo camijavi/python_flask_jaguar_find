@@ -37,10 +37,10 @@ def buildBuildingKSubgraph() -> BuildingSubgraph:
     ))
     subgraph.addNode(Node(
         nodeId="k_food_court",
-        name="Módulos Comerciales (Food Court) y Kiosko 1",
+        name="Módulos Comerciales (Food Court) y Kiosko 1 (Edificio K)",
         category=CampusCategory.FOOD_AREA,
         xPercent=31.8, yPercent=63.0,
-        latitude=12.108840, longitude=-86.256840,
+        latitude=12.108775, longitude=-86.256755,
         floorLevel=1, isOutdoorAccessPoint=True,
         portalKind="door", buildingId="buildingK"
     ))
@@ -49,7 +49,7 @@ def buildBuildingKSubgraph() -> BuildingSubgraph:
         name="Jaguar Shop (Edificio K)",
         category=CampusCategory.ADMINISTRATIVE,
         xPercent=31.0, yPercent=61.5,
-        latitude=12.108790, longitude=-86.256810,
+        latitude=12.108750, longitude=-86.256735,
         floorLevel=1, isOutdoorAccessPoint=False,
         buildingId="buildingK"
     ))
@@ -58,7 +58,7 @@ def buildBuildingKSubgraph() -> BuildingSubgraph:
         name="Área de Mesas y Terrazas (Edificio K - Piso 1)",
         category=CampusCategory.FOOD_AREA,
         xPercent=32.5, yPercent=64.0,
-        latitude=12.108875, longitude=-86.256870,
+        latitude=12.108805, longitude=-86.256785,
         floorLevel=1, isOutdoorAccessPoint=False,
         buildingId="buildingK"
     ))
@@ -67,7 +67,7 @@ def buildBuildingKSubgraph() -> BuildingSubgraph:
         name="Servicios Sanitarios (Hombres y Mujeres - Edificio K)",
         category=CampusCategory.RESTROOM,
         xPercent=30.5, yPercent=64.5,
-        latitude=12.108890, longitude=-86.256790,
+        latitude=12.108815, longitude=-86.256730,
         floorLevel=1, isOutdoorAccessPoint=False,
         buildingId="buildingK"
     ))
@@ -76,7 +76,7 @@ def buildBuildingKSubgraph() -> BuildingSubgraph:
         name="Escaleras hacia Terrazas y Kioskos (Piso 1)",
         category=CampusCategory.STAIRS,
         xPercent=31.5, yPercent=62.5,
-        latitude=12.108830, longitude=-86.256820,
+        latitude=12.108775, longitude=-86.256755,
         floorLevel=1, isOutdoorAccessPoint=False,
         portalKind="stairs", buildingId="buildingK"
     ))
@@ -87,7 +87,7 @@ def buildBuildingKSubgraph() -> BuildingSubgraph:
         name="Escaleras Edificio K (Piso 2)",
         category=CampusCategory.STAIRS,
         xPercent=31.5, yPercent=62.5,
-        latitude=12.108830, longitude=-86.256820,
+        latitude=12.108775, longitude=-86.256755,
         floorLevel=2, isOutdoorAccessPoint=False,
         portalKind="stairs", buildingId="buildingK"
     ))
@@ -96,7 +96,7 @@ def buildBuildingKSubgraph() -> BuildingSubgraph:
         name="Kiosko 1 y Kiosko 2 (Piso 2 - Edificio K)",
         category=CampusCategory.FOOD_AREA,
         xPercent=31.8, yPercent=62.5,
-        latitude=12.108840, longitude=-86.256840,
+        latitude=12.108775, longitude=-86.256755,
         floorLevel=2, isOutdoorAccessPoint=False,
         buildingId="buildingK"
     ))
@@ -105,7 +105,7 @@ def buildBuildingKSubgraph() -> BuildingSubgraph:
         name="Área de Mesas y Terraza Superior (Piso 2)",
         category=CampusCategory.FOOD_AREA,
         xPercent=32.5, yPercent=63.5,
-        latitude=12.108870, longitude=-86.256865,
+        latitude=12.108800, longitude=-86.256780,
         floorLevel=2, isOutdoorAccessPoint=False,
         buildingId="buildingK"
     ))
