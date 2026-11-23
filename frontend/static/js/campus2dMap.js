@@ -809,6 +809,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    const btnBldgReport = document.getElementById("btnBldgReportLost");
+    if (btnBldgReport) {
+        btnBldgReport.addEventListener("click", () => {
+            if (!activeSelectedBuilding) return;
+            const nodeId = activeSelectedBuilding.id || activeSelectedBuilding.nodeId;
+            bldgPopover.classList.add("hidden");
+            if (typeof window.openReportObjectDialog === "function") {
+                window.openReportObjectDialog(nodeId);
+            }
+        });
+    }
+
     // Attach click listeners to all SVG building shapes
     document.querySelectorAll(".bldg-shape").forEach(el => {
         el.addEventListener("click", (e) => {
@@ -934,7 +946,7 @@ document.addEventListener("DOMContentLoaded", function () {
             originPinGroup.innerHTML = `
                 <!-- Ground Contact Shadow -->
                 <ellipse cx="${startX}" cy="${startY + 2}" rx="13" ry="6" fill="#0f172a" opacity="0.4" />
-                <circle cx="${startX}" cy="${startY}" r="14" fill="#10b981" opacity="0.25" class="animate-ping" />
+                <circle cx="${startX}" cy="${startY}" r="12" fill="#10b981" opacity="0.22" />
                 <!-- Upright 3D Origin Beacon (Billboarding) -->
                 <g class="billboard-pin">
                     <line x1="${startX}" y1="${startY}" x2="${startX}" y2="${startY - 18}" stroke="#065f46" stroke-width="2.5" stroke-linecap="round"/>
@@ -954,7 +966,7 @@ document.addEventListener("DOMContentLoaded", function () {
             destPinGroup.innerHTML = `
                 <!-- Ground Contact Shadow -->
                 <ellipse cx="${endX}" cy="${endY + 2}" rx="14" ry="7" fill="#0f172a" opacity="0.45" />
-                <circle cx="${endX}" cy="${endY}" r="16" fill="#ef4444" opacity="0.25" class="animate-ping" />
+                <circle cx="${endX}" cy="${endY}" r="14" fill="#ef4444" opacity="0.22" />
                 <!-- Upright 3D Destination Pin (Billboarding) -->
                 <g class="billboard-pin">
                     <line x1="${endX}" y1="${endY}" x2="${endX}" y2="${endY - 24}" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>

@@ -127,51 +127,13 @@
 
 </div>
 
-<!-- CLAIM ITEM MODAL (FOR REGULAR USERS) -->
-<div id="claimModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
-        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-            <h3 class="text-sm font-black text-slate-900">Reclamar Pertenencia</h3>
-            <button id="btnCloseClaimModal" type="button" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs">&times;</button>
-        </div>
-        <form id="claimForm" class="p-6 space-y-4">
-            <input type="hidden" id="claimItemId" value="">
-            <div>
-                <p class="text-xs text-slate-500 mb-1">Objeto a reclamar:</p>
-                <p id="claimItemNameText" class="text-sm font-bold text-slate-900"></p>
-            </div>
-            <div>
-                <label for="claimantName" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Tu Nombre Completo *</label>
-                <input type="text" id="claimantName" required value="{{ user.get('FullName', '') }}"
-                       class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500 focus:outline-hidden">
-            </div>
-            <div>
-                <label for="claimantContact" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Teléfono o Correo de Contacto *</label>
-                <input type="text" id="claimantContact" required value="{{ user.get('Email', '') or user.get('PhoneNumber', '') }}"
-                       class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500 focus:outline-hidden">
-            </div>
-            <div>
-                <label for="claimSecretAnswer" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Respuesta / Detalle Antifraude *</label>
-                <p class="text-[11px] text-slate-400 mb-1">Describe una característica privada del objeto para demostrar propiedad.</p>
-                <input type="text" id="claimSecretAnswer" required placeholder="Ej. El sticker que tiene, fondo de pantalla, serial..."
-                       class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500 focus:outline-hidden">
-            </div>
-            <div id="claimAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
-            <div class="pt-2 flex justify-end gap-2">
-                <button id="btnCancelClaim" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Cancelar</button>
-                <button type="submit" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-sm">Enviar Solicitud</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ADMIN STATE UPDATE MODAL (FOR ADMINS) -->
+<!-- ADMIN STATE UPDATE MODAL (FOR ADMINS ONLY) -->
 {% if isAdmin %}
 <div id="adminStateModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div class="w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-amber-50">
             <h3 class="text-sm font-black text-slate-900">Actualizar Estado de Custodia</h3>
-            <button id="btnCloseAdminStateModal" type="button" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs">&times;</button>
+            <button id="btnCloseAdminStateModal" type="button" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs cursor-pointer">&times;</button>
         </div>
         <form id="adminStateForm" class="p-6 space-y-4">
             <input type="hidden" id="adminStateItemId" value="">
@@ -189,8 +151,8 @@
             </div>
             <div id="adminStateAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
             <div class="pt-2 flex justify-end gap-2">
-                <button id="btnCancelAdminState" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Cancelar</button>
-                <button type="submit" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold">Guardar Estado</button>
+                <button id="btnCancelAdminState" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 cursor-pointer">Cancelar</button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold cursor-pointer">Guardar Estado</button>
             </div>
         </form>
     </div>
@@ -317,19 +279,27 @@ document.addEventListener("DOMContentLoaded", function() {
                      <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-white/90 backdrop-blur-xs text-slate-800 shadow-xs">${getCategoryBadge(item.Category)}</span>
                    </div>`;
 
-            const adminActionBtn = isAdmin 
-                ? `<button onclick="window.openAdminStateModal(${item.Id}, '${item.ItemName.replace(/'/g, "\\'")}', ${item.LostObjectStateId})" 
-                           type="button" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
-                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                     <span>Editar Estado Ticket</span>
-                   </button>`
-                : (item.LostObjectStateId !== 3 
-                    ? `<button onclick="window.openClaimModal(${item.Id}, '${item.ItemName.replace(/'/g, "\\'")}')" 
-                               type="button" class="w-full py-2 px-3 rounded-xl bg-brand-50 hover:bg-brand-100 border border-brand-200 text-brand-800 font-bold text-xs flex items-center justify-center gap-1.5 transition">
-                         <span>Reclamar este objeto</span>
-                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                       </button>`
-                    : `<span class="block w-full py-1.5 text-center text-xs font-bold text-emerald-700 bg-emerald-50 rounded-xl">Entregado a su dueño</span>`);
+            const actionBtn = isAdmin 
+                ? `<div class="flex flex-col gap-1.5">
+                     <button onclick="window.openAdminStateModal(${item.Id}, '${item.ItemName.replace(/'/g, "\\'")}', ${item.LostObjectStateId})" 
+                             type="button" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+                       <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                       <span>Editar Estado Ticket</span>
+                     </button>
+                     <a href="/mapa?focus=${encodeURIComponent(item.Location)}&mode=25d" 
+                        class="w-full py-1.5 px-3 rounded-xl bg-slate-100 hover:bg-brand-50 border border-slate-200 text-slate-700 hover:text-brand-800 font-bold text-[11px] flex items-center justify-center gap-1.5 transition">
+                       <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                       <span>Ver en Mapa 2.5D</span>
+                     </a>
+                   </div>`
+                : `<div class="space-y-1.5">
+                     ${item.LostObjectStateId === 2 ? '<p class="text-[10px] text-sky-700 font-semibold bg-sky-50 px-2 py-1 rounded-lg border border-sky-100 flex items-center gap-1"><svg class="w-3 h-3 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Custodia en Edificio A (CAE). Presenta tu carnet o cédula.</p>' : ''}
+                     <a href="/mapa?focus=${encodeURIComponent(item.Location)}&mode=25d" 
+                        class="w-full py-2 px-3 rounded-xl bg-brand-50 hover:bg-brand-100 border border-brand-200/90 text-brand-800 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                       <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                       <span>Ver en Mapa 2.5D</span>
+                     </a>
+                   </div>`;
 
             card.innerHTML = `
                 ${photoHtml}
@@ -348,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             <span>${item.DateTimeReported ? item.DateTimeReported.split(' ')[0] : ''}</span>
                             ${item.hasSecretDetail ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200"><svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg><span>Antifraude</span></span>' : ''}
                         </div>
-                        ${adminActionBtn}
+                        ${actionBtn}
                     </div>
                 </div>
             `;
@@ -373,62 +343,6 @@ document.addEventListener("DOMContentLoaded", function() {
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), wait);
         };
-    }
-
-    // CLAIM MODAL LOGIC
-    const claimModal = document.getElementById("claimModal");
-    const btnCloseClaim = document.getElementById("btnCloseClaimModal");
-    const btnCancelClaim = document.getElementById("btnCancelClaim");
-    const claimForm = document.getElementById("claimForm");
-    const claimAlert = document.getElementById("claimAlert");
-
-    window.openClaimModal = function(id, name) {
-        document.getElementById("claimItemId").value = id;
-        document.getElementById("claimItemNameText").textContent = name;
-        claimAlert.classList.add("hidden");
-        claimModal.classList.remove("hidden");
-    };
-
-    function closeClaimModal() {
-        claimModal.classList.add("hidden");
-        claimForm.reset();
-    }
-    if (btnCloseClaim) btnCloseClaim.addEventListener("click", closeClaimModal);
-    if (btnCancelClaim) btnCancelClaim.addEventListener("click", closeClaimModal);
-
-    if (claimForm) {
-        claimForm.addEventListener("submit", async function(e) {
-            e.preventDefault();
-            const itemId = document.getElementById("claimItemId").value;
-            const payload = {
-                claimantName: document.getElementById("claimantName").value.trim(),
-                contact: document.getElementById("claimantContact").value.trim(),
-                secretAnswer: document.getElementById("claimSecretAnswer").value.trim(),
-            };
-
-            try {
-                const res = await fetch(`/api/lost-found-object/items/${itemId}/claim`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-                if (data.success) {
-                    claimAlert.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                    claimAlert.textContent = "Solicitud de reclamo registrada. Preséntate en Edificio A (CAE) con tu cédula o carnet para completar la entrega.";
-                    claimAlert.classList.remove("hidden");
-                    setTimeout(closeClaimModal, 3000);
-                } else {
-                    claimAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                    claimAlert.textContent = (data.error || "No se pudo registrar el reclamo.");
-                    claimAlert.classList.remove("hidden");
-                }
-            } catch (err) {
-                claimAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                claimAlert.textContent = "Error de conexión.";
-                claimAlert.classList.remove("hidden");
-            }
-        });
     }
 
     // ADMIN STATE UPDATE MODAL LOGIC

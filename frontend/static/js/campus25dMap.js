@@ -917,6 +917,9 @@
 
             this.syncWazeChrome();
             this.updateCompass();
+            if (typeof window.update25dLostPins === "function") {
+                window.update25dLostPins(this);
+            }
         }
 
         /**
@@ -1365,6 +1368,11 @@
                         bldgPopover.style.top = `${Math.max(84, Math.min(pos.y - 170, maxTop))}px`;
                     }
                 }
+            }
+
+            // 5. Position 2.5D Lost & Found Markers
+            if (typeof window.update25dLostPins === "function") {
+                window.update25dLostPins(this);
             }
         }
 
