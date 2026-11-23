@@ -13,7 +13,7 @@ import re
 import sqlite3
 from typing import Any, Dict, Optional
 
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, redirect
 from werkzeug.security import check_password_hash
 
 from backend.auth_guard import L, getSessionUser, sanitizeUser
@@ -254,17 +254,20 @@ def signup():
     }), 201
 
 
-@authController.route("/logout", methods=["POST"])
+@authController.route("/logout", methods=["GET", "POST"])
 def logout():
     """
-    POST /api/auth/logout
-    Terminates the active user session.
+    GET/POST /api/auth/logout
+    Terminates active session and returns to Module 1 (Interactive Campus Map).
     """
     session.pop("user", None)
-    return jsonify({
-        "success": True,
-        "message": "Logged out successfully."
-    }), 200
+    if request.is_json or request.headers.get("Accept") == "application/json":
+        return jsonify({
+            "success": True,
+            "message": "Logged out successfully.",
+            "redirect": "/"
+        }), 200
+    return redirect("/")
 
 
 @authController.route("/me", methods=["GET"])

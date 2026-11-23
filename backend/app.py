@@ -140,9 +140,9 @@ def createApp(configClass=Config) -> Flask:
 
     @app.route("/logout", methods=["GET", "POST"])
     def webLogout():
-        """Clears user session and redirects to /auth."""
+        """Clears user session and redirects to Module 1 (Interactive Campus Map)."""
         session.pop("user", None)
-        return redirect(url_for("renderLogInScreen"))
+        return redirect(url_for("renderMapScreen"))
 
     @app.route("/set-language/<lang>", methods=["GET", "POST"])
     def setLanguage(lang: str):

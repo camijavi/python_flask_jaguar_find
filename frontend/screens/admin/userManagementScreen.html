@@ -218,13 +218,25 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function getRoleBadge(userTypeId, userTypeName) {
         if (userTypeId === 1) {
-            return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-brand-50 text-brand-700 border border-brand-200">🎓 Estudiante</span>`;
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-brand-50 text-brand-700 border border-brand-200">
+                <svg class="w-3 h-3 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.08 12.08 0 0121 17.5M12 14L5.84 10.578A12.08 12.08 0 003 17.5M12 14v7"/></svg>
+                <span>Estudiante</span>
+            </span>`;
         } else if (userTypeId === 2) {
-            return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-ocean-50 text-ocean-700 border border-ocean-200">💼 Colaborador</span>`;
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-ocean-50 text-ocean-700 border border-ocean-200">
+                <svg class="w-3 h-3 text-ocean-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                <span>Colaborador</span>
+            </span>`;
         } else if (userTypeId === 3) {
-            return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">👤 Visitante</span>`;
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a3 3 0 11-6 0 3 3 0 016 0zM4 20a8 8 0 0116 0M17 11l2 2 3-3"/></svg>
+                <span>Visitante</span>
+            </span>`;
         } else if (userTypeId === 4) {
-            return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-900 text-white">🔒 Admin CAE</span>`;
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-900 text-white">
+                <svg class="w-3 h-3 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg>
+                <span>Admin CAE</span>
+            </span>`;
         }
         return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100">${userTypeName}</span>`;
     }
@@ -286,18 +298,17 @@ document.addEventListener("DOMContentLoaded", function() {
                     <div class="inline-flex items-center gap-1">
                         <button onclick="window.openResetPasswordModal(${u.Id}, '${u.FullName.replace(/'/g, "\\'")}')" 
                                 type="button" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition" title="Cambiar Contraseña">
-                            🔑
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
                         </button>
                         <button onclick="window.openChangeRoleModal(${u.Id}, '${u.FullName.replace(/'/g, "\\'")}', ${u.UserTypeId})" 
                                 type="button" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition" title="Cambiar Rol">
-                            🎭
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         </button>
                         <button onclick="window.toggleUserStatus(${u.Id}, ${isActive ? 'false' : 'true'}, '${u.FullName.replace(/'/g, "\\'")}')" 
                                 type="button" class="p-1.5 rounded-lg ${isActive ? 'text-rose-500 hover:bg-rose-50' : 'text-emerald-600 hover:bg-emerald-50'} transition" 
                                 title="${isActive ? 'Dar de baja cuenta' : 'Reactivar cuenta'}">
-                            ${isActive ? '⛔' : '⚡'}
+                            ${isActive ? '<svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>' : '<svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'}
                         </button>
-                    </div>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -341,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = await res.json();
             if (data.success) {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                alertBox.textContent = "✓ Usuario registrado correctamente.";
+                alertBox.textContent = "Usuario registrado correctamente.";
                 alertBox.classList.remove("hidden");
                 setTimeout(() => {
                     document.getElementById("createUserModal").classList.add("hidden");
@@ -350,12 +361,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 }, 800);
             } else {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                alertBox.textContent = "⚠️ " + (data.error || "Error al crear usuario.");
+                alertBox.textContent = (data.error || "Error al crear usuario.");
                 alertBox.classList.remove("hidden");
             }
         } catch (err) {
             alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-            alertBox.textContent = "⚠️ Error de conexión.";
+            alertBox.textContent = "Error de conexión.";
             alertBox.classList.remove("hidden");
         }
     });
@@ -384,19 +395,19 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = await res.json();
             if (data.success) {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                alertBox.textContent = "✓ Contraseña actualizada exitosamente.";
+                alertBox.textContent = "Contraseña actualizada exitosamente.";
                 alertBox.classList.remove("hidden");
                 setTimeout(() => {
                     document.getElementById("resetPasswordModal").classList.add("hidden");
                 }, 800);
             } else {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                alertBox.textContent = "⚠️ " + (data.error || "Error al actualizar contraseña.");
+                alertBox.textContent = (data.error || "Error al actualizar contraseña.");
                 alertBox.classList.remove("hidden");
             }
         } catch (err) {
             alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-            alertBox.textContent = "⚠️ Error de conexión.";
+            alertBox.textContent = "Error de conexión.";
             alertBox.classList.remove("hidden");
         }
     });
@@ -425,7 +436,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = await res.json();
             if (data.success) {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                alertBox.textContent = "✓ Rol actualizado.";
+                alertBox.textContent = "Rol actualizado exitosamente.";
                 alertBox.classList.remove("hidden");
                 setTimeout(() => {
                     document.getElementById("changeRoleModal").classList.add("hidden");
@@ -433,12 +444,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 }, 800);
             } else {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                alertBox.textContent = "⚠️ " + (data.error || "Error al cambiar rol.");
+                alertBox.textContent = (data.error || "Error al cambiar rol.");
                 alertBox.classList.remove("hidden");
             }
         } catch (err) {
             alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-            alertBox.textContent = "⚠️ Error de conexión.";
+            alertBox.textContent = "Error de conexión.";
             alertBox.classList.remove("hidden");
         }
     });

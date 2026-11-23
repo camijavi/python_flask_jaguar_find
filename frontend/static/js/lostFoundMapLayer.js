@@ -1,11 +1,15 @@
 /**
  * lostFoundMapLayer.js
  * ================================================================================
- * WAZE-STYLE LOST & FOUND ALERT PINS LAYER FOR JAGUARMAPS
+ * SLEEK VECTOR LOST & FOUND ALERT PINS LAYER FOR JAGUARMAPS
  * ================================================================================
- * Renders interactive Waze-style alert markers on campus nodes where items have
- * been reported lost or are held in custody. Features animated pulsing ripples,
- * item count badges, and detailed popover cards with catalog shortcuts.
+ * Renders high-fidelity, proportionate vector markers on campus nodes where items
+ * have been reported lost or held in custody. Features:
+ * - Pure SVG vector geometry conforming with official campus map aesthetics
+ * - Full 2.5D tilt & rotation compatibility via 'billboard-pin' class
+ * - Soft breathing radar ring indicator
+ * - Dynamic badge counter with crisp vector styling
+ * - Detailed popover card on click with catalog & report integration
  */
 
 (function() {
@@ -24,7 +28,6 @@
     const btnViewCatalog = document.getElementById("btnViewInCatalog");
     const btnReportHere = document.getElementById("btnReportHere");
 
-    // Coordinate mapping helper from node metadata to 1200 x 850 SVG space
     function getSvgCoordinates(pin) {
         if (pin.xPercent != null && pin.yPercent != null) {
             return {
@@ -32,7 +35,6 @@
                 y: Math.round((pin.yPercent / 100) * 850)
             };
         }
-        // Fallback: estimate from building coordinates
         return { x: 600, y: 425 };
     }
 
@@ -74,86 +76,108 @@
             const x = coords.x;
             const y = coords.y;
 
+            // Master Pin Group with billboard-pin class for 2.5D camera alignment
             const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            g.setAttribute("class", "waze-lost-pin cursor-pointer transition-transform hover:scale-110");
+            g.setAttribute("class", "waze-lost-pin cursor-pointer");
             g.setAttribute("data-node-id", pin.locationNodeId);
             g.style.cursor = "pointer";
 
-            // 1. Animated radar pulse ring (like Waze police/hazard alerts)
+            // 1. Soft Ground Contact Shadow (exact proportions of campus nodes)
+            const shadow = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+            shadow.setAttribute("cx", x);
+            shadow.setAttribute("cy", y + 1);
+            shadow.setAttribute("rx", "11");
+            shadow.setAttribute("ry", "4.5");
+            shadow.setAttribute("fill", "#0f172a");
+            shadow.setAttribute("opacity", "0.26");
+
+            // 2. Subtle translucent pulse ring (non-intrusive)
             const pulse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
             pulse.setAttribute("cx", x);
-            pulse.setAttribute("cy", y - 18);
-            pulse.setAttribute("r", "22");
-            pulse.setAttribute("fill", "#f59e0b");
-            pulse.setAttribute("opacity", "0.28");
+            pulse.setAttribute("cy", y);
+            pulse.setAttribute("r", "13");
+            pulse.setAttribute("fill", "#2f99a8");
+            pulse.setAttribute("opacity", "0.22");
             pulse.setAttribute("class", "animate-ping pointer-events-none");
 
-            // 2. Drop shadow filter reference or soft base shadow
-            const baseShadow = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-            baseShadow.setAttribute("cx", x);
-            baseShadow.setAttribute("cy", y + 2);
-            baseShadow.setAttribute("rx", "10");
-            baseShadow.setAttribute("ry", "4");
-            baseShadow.setAttribute("fill", "#0f172a");
-            baseShadow.setAttribute("opacity", "0.22");
+            // 3. Upright 3D Pin Beacon (Billboarding group)
+            const beaconGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            beaconGroup.setAttribute("class", "billboard-pin");
 
-            // 3. Waze pin body path (round top + pointer tip downwards)
-            const pinBody = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            // Symmetrical balloon/marker tip centered at (x, y)
-            const d = `M ${x} ${y} 
-                       C ${x - 6} ${y - 8}, ${x - 17} ${y - 14}, ${x - 17} ${y - 25} 
-                       A 17 17 0 1 1 ${x + 17} ${y - 25} 
-                       C ${x + 17} ${y - 14}, ${x + 6} ${y - 8}, ${x} ${y} Z`;
-            pinBody.setAttribute("d", d);
-            pinBody.setAttribute("fill", "#ffffff");
-            pinBody.setAttribute("stroke", "#ea580c"); // Institutional bright amber-orange
-            pinBody.setAttribute("stroke-width", "2.8");
-            pinBody.setAttribute("filter", "url(#bldgShadow)");
+            // Pin Needle / Stalk pointing to ground contact
+            const stalk = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            stalk.setAttribute("x1", x);
+            stalk.setAttribute("y1", y);
+            stalk.setAttribute("x2", x);
+            stalk.setAttribute("y2", y - 13);
+            stalk.setAttribute("stroke", "#1e293b");
+            stalk.setAttribute("stroke-width", "2");
+            stalk.setAttribute("stroke-linecap", "round");
 
-            // 4. Inner package icon or badge
-            const innerIcon = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            innerIcon.setAttribute("cx", x);
-            innerIcon.setAttribute("cy", y - 25);
-            innerIcon.setAttribute("r", "11");
-            innerIcon.setAttribute("fill", "#fff7ed");
+            // Outer Badge Circle (Clean white card with brand teal accent ring)
+            const badgeBg = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            const badgeCenterY = y - 24;
+            badgeBg.setAttribute("cx", x);
+            badgeBg.setAttribute("cy", badgeCenterY);
+            badgeBg.setAttribute("r", "11.5");
+            badgeBg.setAttribute("fill", "#ffffff");
+            badgeBg.setAttribute("stroke", "#2f99a8");
+            badgeBg.setAttribute("stroke-width", "2.2");
+            badgeBg.setAttribute("filter", "url(#bldgShadow)");
 
-            // Text emoji or count
-            const textIcon = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            textIcon.setAttribute("x", x);
-            textIcon.setAttribute("y", y - 21);
-            textIcon.setAttribute("text-anchor", "middle");
-            textIcon.setAttribute("font-size", "11");
-            textIcon.setAttribute("font-family", "sans-serif");
-            textIcon.textContent = "📦";
+            // Inner soft tint circle
+            const badgeInner = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            badgeInner.setAttribute("cx", x);
+            badgeInner.setAttribute("cy", badgeCenterY);
+            badgeInner.setAttribute("r", "9.5");
+            badgeInner.setAttribute("fill", "#f0fdfa");
 
-            // 5. Floating alert badge counter (top-right of pin)
-            const countBadge = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            countBadge.setAttribute("cx", x + 12);
-            countBadge.setAttribute("cy", y - 36);
-            countBadge.setAttribute("r", "7.5");
-            countBadge.setAttribute("fill", "#dc2626"); // Red notification badge
-            countBadge.setAttribute("stroke", "#ffffff");
-            countBadge.setAttribute("stroke-width", "1.5");
+            // Crisp Vector Package Icon (Isometric pure SVG paths, no emoji!)
+            const iconGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            iconGroup.setAttribute("transform", `translate(${x - 6.5}, ${badgeCenterY - 6.5})`);
+            iconGroup.innerHTML = `
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#185057" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="#5dafbb" fill-opacity="0.35"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+            `;
 
-            const countText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            countText.setAttribute("x", x + 12);
-            countText.setAttribute("y", y - 33);
-            countText.setAttribute("text-anchor", "middle");
-            countText.setAttribute("fill", "#ffffff");
-            countText.setAttribute("font-size", "8.5");
-            countText.setAttribute("font-weight", "900");
-            countText.setAttribute("font-family", "sans-serif");
-            countText.textContent = pin.itemsCount || 1;
+            beaconGroup.appendChild(stalk);
+            beaconGroup.appendChild(badgeBg);
+            beaconGroup.appendChild(badgeInner);
+            beaconGroup.appendChild(iconGroup);
 
+            // Counter Badge Pill (if 1 or more items)
+            const countX = x + 8.5;
+            const countY = badgeCenterY - 8.5;
+
+            const badgeCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            badgeCircle.setAttribute("cx", countX);
+            badgeCircle.setAttribute("cy", countY);
+            badgeCircle.setAttribute("r", "5.8");
+            badgeCircle.setAttribute("fill", "#f59e0b");
+            badgeCircle.setAttribute("stroke", "#ffffff");
+            badgeCircle.setAttribute("stroke-width", "1.2");
+
+            const badgeText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            badgeText.setAttribute("x", countX);
+            badgeText.setAttribute("y", countY + 2.2);
+            badgeText.setAttribute("text-anchor", "middle");
+            badgeText.setAttribute("fill", "#ffffff");
+            badgeText.setAttribute("font-size", "7");
+            badgeText.setAttribute("font-weight", "900");
+            badgeText.setAttribute("font-family", "system-ui, sans-serif");
+            badgeText.textContent = pin.itemsCount || 1;
+
+            beaconGroup.appendChild(badgeCircle);
+            beaconGroup.appendChild(badgeText);
+
+            g.appendChild(shadow);
             g.appendChild(pulse);
-            g.appendChild(baseShadow);
-            g.appendChild(pinBody);
-            g.appendChild(innerIcon);
-            g.appendChild(textIcon);
-            g.appendChild(countBadge);
-            g.appendChild(countText);
+            g.appendChild(beaconGroup);
 
-            // Interaction
+            // Click Handler
             g.addEventListener("click", function(e) {
                 e.stopPropagation();
                 showPinPopover(pin, x, y);
@@ -175,26 +199,30 @@
             const itemRow = document.createElement("div");
             itemRow.className = "p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-2";
 
-            const stateColor = item.lostObjectStateId === 2 ? 'bg-sky-50 text-sky-700' : 'bg-amber-50 text-amber-700';
+            const isCustody = item.lostObjectStateId === 2;
+            const stateColor = isCustody ? 'bg-sky-50 text-sky-700 border-sky-200' : 'bg-amber-50 text-amber-800 border-amber-200';
 
             itemRow.innerHTML = `
-                <div class="min-w-0">
-                    <span class="font-bold text-slate-800 text-xs block truncate leading-tight">${item.itemName}</span>
-                    <span class="text-[10px] text-slate-400">${item.dateTimeReported ? item.dateTimeReported.split(' ')[0] : ''}</span>
+                <div class="min-w-0 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shrink-0">
+                        <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    </span>
+                    <div class="min-w-0">
+                        <span class="font-bold text-slate-800 text-xs block truncate leading-tight">${item.itemName}</span>
+                        <span class="text-[10px] text-slate-400">${item.dateTimeReported ? item.dateTimeReported.split(' ')[0] : ''}</span>
+                    </div>
                 </div>
-                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold shrink-0 ${stateColor}">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold shrink-0 border ${stateColor}">
                     ${item.stateName || 'Reportado'}
                 </span>
             `;
             pinItemsList.appendChild(itemRow);
         });
 
-        // Set catalog link
         if (btnViewCatalog) {
             btnViewCatalog.href = `/lost-found-object/catalogo?q=${encodeURIComponent(pin.locationNodeId)}`;
         }
 
-        // Set report here button action
         if (btnReportHere) {
             btnReportHere.onclick = function() {
                 popover.classList.add("hidden");
@@ -204,7 +232,6 @@
             };
         }
 
-        // Position popover near center/screen
         popover.classList.remove("hidden");
         popover.style.top = "80px";
         popover.style.left = "50%";
@@ -217,7 +244,6 @@
         });
     }
 
-    // Toggle button handler
     if (toggleBtn) {
         toggleBtn.addEventListener("click", () => {
             layerVisible = !layerVisible;
@@ -231,12 +257,9 @@
         });
     }
 
-    // Refresh on custom events
     window.addEventListener("lostObjectReported", fetchAndRenderPins);
 
-    // Initial load
     document.addEventListener("DOMContentLoaded", fetchAndRenderPins);
-    // Also trigger if already loaded
     if (document.readyState === "complete" || document.readyState === "interactive") {
         fetchAndRenderPins();
     }

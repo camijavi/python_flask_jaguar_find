@@ -52,10 +52,10 @@ Features:
                         <!-- Action Buttons after match -->
                         <div id="gpsConfirmationButtons" class="mt-2.5 hidden flex flex-wrap items-center gap-2">
                             <button id="btnConfirmGpsLocation" type="button" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-[11px] shadow-xs active:scale-95 transition-all">
-                                ✓ Sí, usar esta ubicación
+                                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Sí, usar esta ubicación</span>
                             </button>
                             <button id="btnManualDropdownToggle" type="button" class="px-3 py-1.5 rounded-lg bg-white border border-brand-300 hover:bg-brand-100 text-brand-800 font-bold text-[11px] transition-all">
-                                🔍 No, buscar en el listado
+                                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>No, buscar en el listado</span>
                             </button>
                         </div>
                     </div>
@@ -88,11 +88,11 @@ Features:
                         </label>
                         <select id="reportCategory" name="category" required
                                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-hidden transition">
-                            <option value="electronics">📱 Electrónica / Dispositivos</option>
-                            <option value="documents">🪪 Documentos / Carnet UAM</option>
-                            <option value="personalItems">🎒 Artículos Personales / Termos</option>
-                            <option value="clothing">🧥 Ropa / Accesorios</option>
-                            <option value="other">📦 Otro artículo</option>
+                            <option value="electronics">Electrónica / Dispositivos</option>
+                            <option value="documents">Documentos / Carnet UAM</option>
+                            <option value="personalItems">Artículos Personales / Termos</option>
+                            <option value="clothing">Ropa / Accesorios</option>
+                            <option value="other">Otro artículo</option>
                         </select>
                     </div>
 
@@ -275,7 +275,7 @@ Features:
                         detectedNodeId = data.nearestNodeId || data.nearestSpecificNodeId || "buildingA";
                         detectedLocationName = `${data.buildingName}${data.nodeName ? ' (' + data.nodeName + ')' : ''}`;
 
-                        gpsStatusText.innerHTML = `📍 ¿El objeto estaba en <strong>${detectedLocationName}</strong>?`;
+                        gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-brand-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'/><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'/></svg> ¿El objeto estaba en <strong>${detectedLocationName}</strong>?</span>`;
                         gpsSubText.textContent = `Aproximadamente a ${Math.round(data.distanceMeters || 0)}m de tu posición actual.`;
                         gpsConfirmationButtons.classList.remove("hidden");
                     } else if (data.success && !data.isWithinCampus) {
@@ -306,7 +306,7 @@ Features:
         btnConfirmGps.addEventListener("click", () => {
             locationHidden.value = detectedNodeId;
             locationSelect.value = detectedNodeId;
-            gpsStatusText.innerHTML = `✓ Ubicación confirmada: <strong>${detectedLocationName}</strong>`;
+            gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${detectedLocationName}</strong></span>`;
             gpsConfirmationButtons.classList.add("hidden");
         });
     }
@@ -369,7 +369,7 @@ Features:
             const loc = locationHidden.value || locationSelect.value;
             if (!loc) {
                 formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                formAlert.textContent = "⚠️ Debes seleccionar o confirmar la ubicación en el campus.";
+                formAlert.textContent = "Debes seleccionar o confirmar la ubicación en el campus.";
                 formAlert.classList.remove("hidden");
                 return;
             }
@@ -399,7 +399,7 @@ Features:
 
                 if (data.success) {
                     formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                    formAlert.textContent = "✓ ¡Objeto reportado con éxito! Se ha añadido al catálogo del campus.";
+                    formAlert.textContent = "Objeto reportado con éxito. Se ha añadido al catálogo del campus.";
                     formAlert.classList.remove("hidden");
 
                     // Dispatch custom event for catalog and map refresh
@@ -416,14 +416,14 @@ Features:
                     }, 1000);
                 } else {
                     formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                    formAlert.textContent = "⚠️ " + (data.error || "Ocurrió un error al guardar el reporte.");
+                    formAlert.textContent = (data.error || "Ocurrió un error al guardar el reporte.");
                     formAlert.classList.remove("hidden");
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalHtml;
                 }
             } catch (err) {
                 formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                formAlert.textContent = "⚠️ Error de conexión con el servidor.";
+                formAlert.textContent = "Error de conexión con el servidor.";
                 formAlert.classList.remove("hidden");
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalHtml;
