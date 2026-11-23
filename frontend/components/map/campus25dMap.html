@@ -44,6 +44,14 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
         </button>
     </div>
 
+    <!-- Live Phone Compass + GPS 2.5D Rotation Toggle -->
+    <div id="liveCompassControlGroup" class="hidden items-center border-l border-slate-200 pl-1">
+        <button id="btnLiveCompass" type="button" class="px-2 py-1 rounded-full text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Rotar mapa 2.5D en vivo con brújula y GPS del teléfono">
+            <span id="liveCompassDot" class="w-2 h-2 rounded-full bg-slate-300"></span>
+            <span id="labelLiveCompass">En vivo</span>
+        </button>
+    </div>
+
     <!-- Parking Lots Visibility Highlight Toggle (Visible in 2.5D Mode) -->
     <div id="parkingControlGroup" class="hidden items-center border-l border-slate-200 pl-1">
         <button id="btnToggleParkingHighlight" type="button" class="px-1.5 py-1 rounded-full text-slate-600 hover:bg-slate-100 hover:text-sky-600 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Resaltar parqueos en vista 2.5D">
@@ -65,25 +73,27 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
             </svg>
         </div>
 
-        <!-- Distance (Crisp Ocean Blue) + Street/Destination (Vibrant Sky Blue) -->
+        <!-- Action Headline + Human Landmark Direction (Zero Meters / Zero Cardinals) -->
         <div class="flex-1 min-w-0">
-            <div class="flex items-baseline gap-2">
-                <span id="tbtStepDistance" class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-none">65 m</span>
-                <span id="tbtStepCounter" class="text-[10.5px] font-extrabold text-sky-700 bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full truncate">Paso 1 de 1</span>
+            <div class="flex items-center gap-2 flex-wrap">
+                <span id="tbtStepDistance" class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">Sigue recto</span>
+                <span id="tbtStepCounter" class="text-[10.5px] font-extrabold text-sky-700 bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full truncate">Referencia 1 de 1</span>
             </div>
-            <p id="tbtStepInstruction" class="text-[13px] sm:text-sm font-extrabold text-sky-700 leading-snug line-clamp-2 mt-1">
+            <p id="tbtStepInstruction" class="text-[12.5px] sm:text-[13px] font-semibold text-slate-700 leading-snug line-clamp-3 mt-1">
                 Inicia tu recorrido hacia el destino.
             </p>
+            <div id="tbtOrientationCue" class="hidden items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 rounded-lg px-2 py-0.5 mt-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="tbtOrientationCueText">Orientado hacia tu siguiente referencia</span>
+            </div>
             <div id="tbtNextPreview" class="text-[11px] text-slate-500 font-medium truncate mt-0.5 hidden">
                 Luego continúa recto
             </div>
-            <!-- Indoor Building P 3D Handoff Button -->
-            <div id="tbtIndoorActionRow" class="mt-2 hidden">
-                <button id="btnTbtEnterBuildingP" type="button" class="w-full py-1.5 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-extrabold text-[11px] flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer">
-                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                    </svg>
-                    <span id="labelTbtEnterBuildingP">Entrar a Edificio P • Vista 3D</span>
+            <!-- Quick Human Landmark Confirm Row ("Ya llegué aquí") -->
+            <div id="tbtConfirmRow" class="mt-2 flex items-center gap-1.5">
+                <button id="btnTbtConfirmStep" type="button" class="flex-1 py-1 px-2.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-extrabold text-[11px] flex items-center justify-center gap-1 transition-colors cursor-pointer">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    <span id="labelTbtConfirmStep">Ya llegué aquí • Siguiente</span>
                 </button>
             </div>
         </div>

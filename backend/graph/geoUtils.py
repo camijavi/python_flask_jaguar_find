@@ -12,6 +12,24 @@ from .directedGraph import DirectedGraph
 class CampusGeoUtils:
     EARTH_RADIUS_METERS = 6371000
 
+    # Calibrated Affine Projection: Real UAM WGS84 GPS <-> Official 1200x850 SVG Space
+    # Fitted via least-squares from field-measured coordinates in coordenadas.txt.
+    # Official UAM Campus Map is oriented South-Up (true compass bearing of SVG UP = 181.4 deg).
+    CALIB_LAT0 = 12.1085
+    CALIB_LNG0 = -86.2573
+    CALIB_M_PER_DEG_LAT = 111132.0
+    CALIB_M_PER_DEG_LNG = 111320.0 * math.cos(math.radians(12.1085))
+    # x = CX0 + CX_N * mNorth + CX_E * mEast
+    # y = CY0 + CY_N * mNorth + CY_E * mEast
+    CALIB_CX0 = 529.03
+    CALIB_CX_N = 0.0778
+    CALIB_CX_E = -3.2168
+    CALIB_CY0 = 441.96
+    CALIB_CY_N = 2.5386
+    CALIB_CY_E = -0.0374
+    MAP_UP_TRUE_BEARING_DEG = 181.4
+    AVG_SVG_PX_PER_METER = 2.88
+
     # Official UAM Campus Perimeter Polygon coordinates (Lat, Lng)
     # Order follows boundary vertices around UAM campus
     UAM_CAMPUS_PERIMETER: List[Tuple[float, float]] = [
@@ -24,6 +42,64 @@ class CampusGeoUtils:
         (12.106934, -86.256302),
         (12.106324, -86.258762),
     ]
+
+    @staticmethod
+    def gpsToSvg(lat: float, lng: float) -> Tuple[float, float]:
+        """Projects real WGS84 (lat, lng) onto the official 1200x850 UAM SVG canvas."""
+        mNorth = (lat - CampusGeoUtils.CALIB_LAT0) * CampusGeoUtils.CALIB_M_PER_DEG_LAT
+        mEast = (lng - CampusGeoUtils.CALIB_LNG0) * CampusGeoUtils.CALIB_M_PER_DEG_LNG
+        x = CampusGeoUtils.CALIB_CX0 + CampusGeoUtils.CALIB_CX_N * mNorth + CampusGeoUtils.CALIB_CX_E * mEast
+        y = CampusGeoUtils.CALIB_CY0 + CampusGeoUtils.CALIB_CY_N * mNorth + CampusGeoUtils.CALIB_CY_E * mEast
+        return round(x, 1), round(y, 1)
+
+    @staticmethod
+    def svgToGps(x: float, y: float) -> Tuple[float, float]:
+        """Inverse-projects 1200x850 SVG coordinates to calibrated WGS84 (lat, lng)."""
+        dx = x - CampusGeoUtils.CALIB_CX0
+        dy = y - CampusGeoUtils.CALIB_CY0
+        det = (CampusGeoUtils.CALIB_CX_N * CampusGeoUtils.CALIB_CY_E
+               - CampusGeoUtils.CALIB_CX_E * CampusGeoUtils.CALIB_CY_N)
+        mNorth = (dx * CampusGeoUtils.CALIB_CY_E - CampusGeoUtils.CALIB_CX_E * dy) / det
+        mEast = (CampusGeoUtils.CALIB_CX_N * dy - dx * CampusGeoUtils.CALIB_CY_N) / det
+        lat = CampusGeoUtils.CALIB_LAT0 + (mNorth / CampusGeoUtils.CALIB_M_PER_DEG_LAT)
+        lng = CampusGeoUtils.CALIB_LNG0 + (mEast / CampusGeoUtils.CALIB_M_PER_DEG_LNG)
+        return round(lat, 6), round(lng, 6)
+
+    @staticmethod
+    def svgDistanceToMeters(x1: float, y1: float, x2: float, y2: float) -> float:
+        """Converts an SVG walkway segment length into calibrated real-world meters."""
+        lat1, lng1 = CampusGeoUtils.svgToGps(x1, y1)
+        lat2, lng2 = CampusGeoUtils.svgToGps(x2, y2)
+        return round(max(1.0, CampusGeoUtils.calculateHaversineDistance(lat1, lng1, lat2, lng2)), 1)
+
+    @staticmethod
+    def calculateCompassBearing(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+        """Returns initial true compass bearing in degrees [0, 360) from point 1 to point 2."""
+        phi1 = math.radians(lat1)
+        phi2 = math.radians(lat2)
+        dLon = math.radians(lon2 - lon1)
+        y = math.sin(dLon) * math.cos(phi2)
+        x = math.cos(phi1) * math.sin(phi2) - math.sin(phi1) * math.cos(phi2) * math.cos(dLon)
+        return (math.degrees(math.atan2(y, x)) + 360.0) % 360.0
+
+    @staticmethod
+    def getCalibrationMetadata() -> Dict[str, float]:
+        """Exports GPS<->SVG affine calibration and true map heading offset for the 2.5D frontend."""
+        return {
+            "lat0": CampusGeoUtils.CALIB_LAT0,
+            "lng0": CampusGeoUtils.CALIB_LNG0,
+            "mPerDegLat": CampusGeoUtils.CALIB_M_PER_DEG_LAT,
+            "mPerDegLng": CampusGeoUtils.CALIB_M_PER_DEG_LNG,
+            "cx0": CampusGeoUtils.CALIB_CX0,
+            "cxN": CampusGeoUtils.CALIB_CX_N,
+            "cxE": CampusGeoUtils.CALIB_CX_E,
+            "cy0": CampusGeoUtils.CALIB_CY0,
+            "cyN": CampusGeoUtils.CALIB_CY_N,
+            "cyE": CampusGeoUtils.CALIB_CY_E,
+            "mapUpTrueBearingDeg": CampusGeoUtils.MAP_UP_TRUE_BEARING_DEG,
+            "svgWidth": 1200.0,
+            "svgHeight": 850.0,
+        }
 
     @staticmethod
     def calculateHaversineDistance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:

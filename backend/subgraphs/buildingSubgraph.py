@@ -181,8 +181,8 @@ class BuildingSubgraph:
                          else f"Destination '{destinationQuery}' not found in {self.name}."
             }
 
-        path, dist, mins, instructions = self.router.findShortestPath(
-            originId, destId, accessibleOnly=accessibleOnly, lang=lang
+        path, dist, mins, _ = self.router.findShortestPathWithEdges(
+            originId, destId, accessibleOnly=accessibleOnly
         )
 
         if not path:
@@ -191,6 +191,10 @@ class BuildingSubgraph:
                 "error": "No se encontró una ruta transitable dentro del edificio con las restricciones dadas." if lang == "spa"
                          else "No walkable indoor route found with requested accessibility restrictions."
             }
+
+        from backend.graph.humanInstructions import buildHumanIndoorSteps, formatHumanWalkingTime
+        humanSteps = buildHumanIndoorSteps(self, path, lang=lang, mode="standalone")
+        instructions = [s["instruction"] for s in humanSteps]
 
         originNode = self.graph.nodes[originId]
         destNode = self.graph.nodes[destId]
@@ -228,6 +232,8 @@ class BuildingSubgraph:
             "floorsCrossed": floorsCrossed,
             "totalDistanceMeters": dist,
             "estimatedWalkingMinutes": mins,
+            "humanDuration": formatHumanWalkingTime(dist, lang=lang),
+            "steps": humanSteps,
             "stepInstructions": instructions,
             "isAccessibleRoute": accessibleOnly
         }
