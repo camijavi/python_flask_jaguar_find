@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin sign in</title>
+    <link rel="stylesheet" href="../../static/css/screens/admin/adminSignIn.css"/>
+</head>
+<body>
+    <main>
+        <form class="sign_in" action="/login" method="post">
+            <p>Pantalla de admin</p>
+
+            <div class="campo">
+                <label for="password">Código de acceso</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password"
+                    placeholder="Código de acceso">
+            </div>
+
+            <button type="submit">Acceder</button>
+        </form>
+    </main>
+</body>
+</html>

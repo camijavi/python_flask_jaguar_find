@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>imageUploader</title>
+    <link rel="stylesheet" href="../../static/css/components/lostFoundObject/imageUploader.css">
+</head>
+<body>
+    <h2>Foto del objeto encontrado</h2>
+    <form action="upload.php" method="post" enctype="multipart/form-data">
+        <label for="fileUpload">Choose an image:</label>
+        <input type="file" id="fileUpload" name="photo" accept="image/*">
+
+        <div class="imageUploader">
+            <span class="imageUploader__placeholder" id="placeholder">Sin imagen</span>
+            <img class="imageUploader__preview" id="preview" alt="Vista previa">
+        </div>
+
+        <input type="submit" value="Upload">
+    </form>
+
+    <script src="/static/js/imageUploader.js"></script>
+</body>
+</html>

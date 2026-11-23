@@ -92,8 +92,15 @@ def createApp(configClass=Config) -> Flask:
 
     @app.route("/auth/signin")
     def renderSignIn():
-        """Login form."""
+        """sign in form."""
         return render_template("screens/auth/signInScreen.html")
+
+    @app.route("/admin/adminsignin")
+    def renderadminSignIn():
+        """sing form for admins."""
+        return render_template("screens/admin/adminSignIn.html")
+
+    
 
     @app.route("/set-language/<lang>", methods=["GET", "POST"])
     def setLanguage(lang: str):
