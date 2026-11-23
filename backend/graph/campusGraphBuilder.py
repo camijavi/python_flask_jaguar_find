@@ -91,6 +91,22 @@ def buildUamCampusGraph() -> DirectedGraph:
                              forwardInstruction="Walk 50m northwest towards Chilamates Plaza.",
                              backwardInstruction="Walk 50m southeast towards Building K.")
 
+    g.addBidirectionalWalkway("chilamatesPlaza", "buildingA", 30.0, isAccessible=True,
+                             forwardInstruction="Cross the zebra crosswalk 30m from Chilamates Plaza directly into Building A.",
+                             backwardInstruction="Exit Building A's corridor and cross the zebra crosswalk 30m into Chilamates Plaza.")
+
+    g.addBidirectionalWalkway("chilamatesPlaza", "buildingJ", 25.0, isAccessible=True,
+                             forwardInstruction="Walk 25m east from Chilamates Plaza to Building J (Dentistry Labs).",
+                             backwardInstruction="Walk 25m west from Building J into Chilamates Plaza.")
+
+    g.addBidirectionalWalkway("chilamatesPlaza", "buildingN", 35.0, isAccessible=True,
+                             forwardInstruction="Follow the internal Chilamates Plaza walkway 35m directly to Building N (Dental Clinics).",
+                             backwardInstruction="Walk 35m around Building N's west side into Chilamates Plaza.")
+
+    g.addBidirectionalWalkway("chilamatesPlaza", "buildingP", 55.0, isAccessible=True,
+                             forwardInstruction="Follow the straight walkway 55m north from Chilamates Plaza across the parking lot towards Building P (Copernicus).",
+                             backwardInstruction="Walk 55m south from Building P directly into Chilamates Plaza.")
+
     g.addBidirectionalWalkway("buildingA", "buildingB", 35.0, isAccessible=True,
                              forwardInstruction="Cross the central hallway 35m east towards Building B.",
                              backwardInstruction="Cross 35m west towards Building A.")
