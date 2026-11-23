@@ -1,0 +1,491 @@
+{% extends "screens/base.html" %}
+
+{% set es = current_language == 'spa' %}
+{% set user = session.get('user') %}
+{% set isAdmin = user and user.get('UserTypeId') == 4 %}
+
+{% block title %}{{ 'Catálogo de Objetos Perdidos' if es else 'Lost & Found Catalog' }} · JaguarFind{% endblock %}
+
+{% block head %}
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flex-1 bg-slate-50 flex flex-col min-h-0">
+
+    <!-- Top Hero Banner -->
+    <div class="bg-gradient-to-r from-ocean-900 via-brand-800 to-brand-600 text-white px-4 sm:px-6 lg:px-8 py-6 shadow-md shrink-0">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-white/20 text-white backdrop-blur-xs">
+                        JaguarFind CAE
+                    </span>
+                    {% if isAdmin %}
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-400 text-slate-900 shadow-xs">
+                        Modo Administrador
+                    </span>
+                    {% endif %}
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-black tracking-tight">
+                    {{ 'Catálogo de Objetos Perdidos' if es else 'Lost & Found Catalog' }}
+                </h1>
+                <p class="text-xs sm:text-sm text-white/85 mt-1">
+                    {{ 'Consulta objetos extraviados o encontrados en el campus de la UAM. Custodia centralizada en Edificio A.' if es else 'Search lost or found items across UAM campus. Central custody at Building A.' }}
+                </p>
+            </div>
+
+            <!-- Action: Report Object Button -->
+            <button id="btnOpenReportDialog" type="button"
+                    class="self-start sm:self-center px-4 py-2.5 rounded-xl bg-white hover:bg-brand-50 text-brand-800 text-xs sm:text-sm font-extrabold shadow-lg shadow-black/10 active:scale-95 transition-all flex items-center gap-2 cursor-pointer">
+                <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                <span>{{ 'Reportar Objeto' if es else 'Report Item' }}</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters & Search Toolbar -->
+    <div class="sticky top-14 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 lg:px-8 py-3 shadow-xs">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+            
+            <!-- Search Input -->
+            <div class="relative flex-1 max-w-md">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </span>
+                <input type="text" id="catalogSearchInput"
+                       placeholder="{{ 'Buscar por nombre, descripción o edificio...' if es else 'Search by item name, description or building...' }}"
+                       class="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-hidden transition">
+            </div>
+
+            <!-- Filters Group -->
+            <div class="flex flex-wrap items-center gap-2">
+                
+                <!-- Category Filter -->
+                <select id="filterCategory" class="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-hidden focus:border-brand-500 transition cursor-pointer">
+                    <option value="">{{ 'Todas las categorías' if es else 'All categories' }}</option>
+                    <option value="electronics">📱 {{ 'Electrónica' if es else 'Electronics' }}</option>
+                    <option value="documents">🪪 {{ 'Documentos / Carnet' if es else 'Documents' }}</option>
+                    <option value="personalItems">🎒 {{ 'Artículos Personales' if es else 'Personal Items' }}</option>
+                    <option value="clothing">🧥 {{ 'Ropa / Accesorios' if es else 'Clothing' }}</option>
+                    <option value="other">📦 {{ 'Otros' if es else 'Others' }}</option>
+                </select>
+
+                <!-- State Filter -->
+                <select id="filterState" class="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-hidden focus:border-brand-500 transition cursor-pointer">
+                    <option value="">{{ 'Todos los estados' if es else 'All statuses' }}</option>
+                    <option value="1">⚠️ {{ 'Reportado' if es else 'Reported' }}</option>
+                    <option value="2">🏢 {{ 'En Custodia (Edif. A)' if es else 'In Custody (Bldg. A)' }}</option>
+                    <option value="3">✓ {{ 'Entregado / Reclamado' if es else 'Claimed / Delivered' }}</option>
+                </select>
+
+                <!-- Refresh button -->
+                <button id="btnRefreshCatalog" type="button" class="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition" title="Actualizar">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="max-w-7xl mx-auto space-y-4">
+
+            <!-- Summary counter -->
+            <div class="flex items-center justify-between text-xs font-semibold text-slate-500">
+                <span id="catalogItemsCount">{{ 'Cargando objetos...' if es else 'Loading items...' }}</span>
+                <span class="text-brand-600">{{ 'Oficina CAE: Edificio A - Planta Baja' if es else 'CAE Office: Building A - Ground Floor' }}</span>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="catalogLoading" class="py-16 text-center">
+                <div class="inline-block w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+                <p class="text-sm font-semibold text-slate-500">{{ 'Cargando catálogo de pertenencias...' if es else 'Loading items catalog...' }}</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="catalogEmpty" class="hidden py-16 text-center max-w-sm mx-auto">
+                <div class="w-16 h-16 mx-auto rounded-3xl bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </div>
+                <h3 class="text-base font-extrabold text-slate-800">{{ 'No se encontraron objetos' if es else 'No items found' }}</h3>
+                <p class="text-xs text-slate-500 mt-1">{{ 'Intenta ajustar los filtros de búsqueda o reporta un nuevo objeto extraviado.' if es else 'Try adjusting your filters or report a new lost object.' }}</p>
+            </div>
+
+            <!-- Cards Grid Container -->
+            <div id="catalogGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- CLAIM ITEM MODAL (FOR REGULAR USERS) -->
+<div id="claimModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <h3 class="text-sm font-black text-slate-900">Reclamar Pertenencia</h3>
+            <button id="btnCloseClaimModal" type="button" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs">&times;</button>
+        </div>
+        <form id="claimForm" class="p-6 space-y-4">
+            <input type="hidden" id="claimItemId" value="">
+            <div>
+                <p class="text-xs text-slate-500 mb-1">Objeto a reclamar:</p>
+                <p id="claimItemNameText" class="text-sm font-bold text-slate-900"></p>
+            </div>
+            <div>
+                <label for="claimantName" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Tu Nombre Completo *</label>
+                <input type="text" id="claimantName" required value="{{ user.get('FullName', '') }}"
+                       class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500 focus:outline-hidden">
+            </div>
+            <div>
+                <label for="claimantContact" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Teléfono o Correo de Contacto *</label>
+                <input type="text" id="claimantContact" required value="{{ user.get('Email', '') or user.get('PhoneNumber', '') }}"
+                       class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500 focus:outline-hidden">
+            </div>
+            <div>
+                <label for="claimSecretAnswer" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Respuesta / Detalle Antifraude *</label>
+                <p class="text-[11px] text-slate-400 mb-1">Describe una característica privada del objeto para demostrar propiedad.</p>
+                <input type="text" id="claimSecretAnswer" required placeholder="Ej. El sticker que tiene, fondo de pantalla, serial..."
+                       class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500 focus:outline-hidden">
+            </div>
+            <div id="claimAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
+            <div class="pt-2 flex justify-end gap-2">
+                <button id="btnCancelClaim" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Cancelar</button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-sm">Enviar Solicitud</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ADMIN STATE UPDATE MODAL (FOR ADMINS) -->
+{% if isAdmin %}
+<div id="adminStateModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-amber-50">
+            <h3 class="text-sm font-black text-slate-900">Actualizar Estado de Custodia</h3>
+            <button id="btnCloseAdminStateModal" type="button" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs">&times;</button>
+        </div>
+        <form id="adminStateForm" class="p-6 space-y-4">
+            <input type="hidden" id="adminStateItemId" value="">
+            <div>
+                <p class="text-xs text-slate-500">Objeto:</p>
+                <p id="adminStateItemTitle" class="text-sm font-bold text-slate-900"></p>
+            </div>
+            <div>
+                <label for="adminStateSelect" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Nuevo Estado *</label>
+                <select id="adminStateSelect" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold">
+                    <option value="1">⚠️ 1: Reportado (Hallazgo en campus)</option>
+                    <option value="2">🏢 2: En Custodia (Almacenado en Edificio A - CAE)</option>
+                    <option value="3">✓ 3: Entregado / Reclamado por dueño</option>
+                </select>
+            </div>
+            <div id="adminStateAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
+            <div class="pt-2 flex justify-end gap-2">
+                <button id="btnCancelAdminState" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Cancelar</button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold">Guardar Estado</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<!-- Include the Report Object Dialog Component -->
+{% include "components/lostFoundObject/newEditReportObject.html" %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const isAdmin = {{ 'true' if isAdmin else 'false' }};
+    let allItems = [];
+
+    const grid = document.getElementById("catalogGrid");
+    const loading = document.getElementById("catalogLoading");
+    const emptyState = document.getElementById("catalogEmpty");
+    const itemsCountText = document.getElementById("catalogItemsCount");
+    const searchInput = document.getElementById("catalogSearchInput");
+    const filterCategory = document.getElementById("filterCategory");
+    const filterState = document.getElementById("filterState");
+    const btnRefresh = document.getElementById("btnRefreshCatalog");
+    const btnOpenReport = document.getElementById("btnOpenReportDialog");
+
+    // Open reporting dialog
+    if (btnOpenReport) {
+        btnOpenReport.addEventListener("click", () => {
+            if (typeof window.openReportObjectDialog === "function") {
+                window.openReportObjectDialog();
+            }
+        });
+    }
+
+    // Fetch items from API
+    async function loadCatalog() {
+        loading.classList.remove("hidden");
+        grid.classList.add("hidden");
+        emptyState.classList.add("hidden");
+
+        const cat = filterCategory.value;
+        const state = filterState.value;
+        const q = searchInput.value.trim();
+
+        let url = "/api/lost-found-object/items?";
+        if (cat) url += `category=${encodeURIComponent(cat)}&`;
+        if (state) url += `stateId=${encodeURIComponent(state)}&`;
+        if (q) url += `q=${encodeURIComponent(q)}&`;
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            loading.classList.add("hidden");
+
+            if (data.success && data.items) {
+                allItems = data.items;
+                renderCards(allItems);
+            } else {
+                renderCards([]);
+            }
+        } catch (e) {
+            loading.classList.add("hidden");
+            renderCards([]);
+        }
+    }
+
+    function getStateBadge(stateId, stateName) {
+        if (stateId === 1) {
+            return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Reportado
+            </span>`;
+        } else if (stateId === 2) {
+            return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-50 text-sky-800 border border-sky-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>En Custodia (Edif. A)
+            </span>`;
+        } else if (stateId === 3) {
+            return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Entregado
+            </span>`;
+        }
+        return `<span class="px-2 py-0.5 rounded-full text-xs bg-slate-100 text-slate-700">${stateName || 'Desconocido'}</span>`;
+    }
+
+    function getCategoryEmoji(cat) {
+        const map = {
+            electronics: "📱 Electrónica",
+            documents: "🪪 Documentos",
+            personalItems: "🎒 Personal",
+            clothing: "🧥 Ropa",
+            other: "📦 Objeto"
+        };
+        return map[cat] || "📦 Objeto";
+    }
+
+    function renderCards(items) {
+        itemsCountText.textContent = `${items.length} objeto${items.length === 1 ? '' : 's'} encontrado${items.length === 1 ? '' : 's'}`;
+        grid.innerHTML = "";
+
+        if (items.length === 0) {
+            emptyState.classList.remove("hidden");
+            grid.classList.add("hidden");
+            return;
+        }
+
+        emptyState.classList.add("hidden");
+        grid.classList.remove("hidden");
+
+        items.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col";
+
+            const photoHtml = item.PhotoUrl 
+                ? `<div class="w-full h-44 bg-slate-100 relative overflow-hidden">
+                     <img src="${item.PhotoUrl}" alt="${item.ItemName}" class="w-full h-full object-cover">
+                     <div class="absolute top-3 left-3">${getStateBadge(item.LostObjectStateId, item.StateName)}</div>
+                     <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-white/90 backdrop-blur-xs text-slate-800 shadow-xs">${getCategoryEmoji(item.Category)}</span>
+                   </div>`
+                : `<div class="w-full h-32 bg-gradient-to-br from-slate-100 to-slate-200 relative flex items-center justify-center">
+                     <span class="text-4xl text-slate-400">📦</span>
+                     <div class="absolute top-3 left-3">${getStateBadge(item.LostObjectStateId, item.StateName)}</div>
+                     <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-white/90 backdrop-blur-xs text-slate-800 shadow-xs">${getCategoryEmoji(item.Category)}</span>
+                   </div>`;
+
+            const adminActionBtn = isAdmin 
+                ? `<button onclick="window.openAdminStateModal(${item.Id}, '${item.ItemName.replace(/'/g, "\\'")}', ${item.LostObjectStateId})" 
+                           type="button" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                     <span>Editar Estado Ticket</span>
+                   </button>`
+                : (item.LostObjectStateId !== 3 
+                    ? `<button onclick="window.openClaimModal(${item.Id}, '${item.ItemName.replace(/'/g, "\\'")}')" 
+                               type="button" class="w-full py-2 px-3 rounded-xl bg-brand-50 hover:bg-brand-100 border border-brand-200 text-brand-800 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                         <span>Reclamar este objeto</span>
+                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                       </button>`
+                    : `<span class="block w-full py-1.5 text-center text-xs font-bold text-emerald-700 bg-emerald-50 rounded-xl">Entregado a su dueño</span>`);
+
+            card.innerHTML = `
+                ${photoHtml}
+                <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+                    <div>
+                        <h3 class="font-extrabold text-base text-slate-900 leading-snug line-clamp-2">${item.ItemName}</h3>
+                        <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-1">
+                            <svg class="w-3.5 h-3.5 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span class="truncate">${item.Location}</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-2 line-clamp-2">${item.Description}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 space-y-2.5">
+                        <div class="flex items-center justify-between text-[11px] text-slate-400">
+                            <span>${item.DateTimeReported ? item.DateTimeReported.split(' ')[0] : ''}</span>
+                            ${item.hasSecretDetail ? '<span class="text-amber-600 font-bold">🔒 Antifraude</span>' : ''}
+                        </div>
+                        ${adminActionBtn}
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Filter Listeners
+    searchInput.addEventListener("input", debounce(loadCatalog, 300));
+    filterCategory.addEventListener("change", loadCatalog);
+    filterState.addEventListener("change", loadCatalog);
+    btnRefresh.addEventListener("click", loadCatalog);
+
+    window.addEventListener("lostObjectReported", loadCatalog);
+
+    // Initial load
+    loadCatalog();
+
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // CLAIM MODAL LOGIC
+    const claimModal = document.getElementById("claimModal");
+    const btnCloseClaim = document.getElementById("btnCloseClaimModal");
+    const btnCancelClaim = document.getElementById("btnCancelClaim");
+    const claimForm = document.getElementById("claimForm");
+    const claimAlert = document.getElementById("claimAlert");
+
+    window.openClaimModal = function(id, name) {
+        document.getElementById("claimItemId").value = id;
+        document.getElementById("claimItemNameText").textContent = name;
+        claimAlert.classList.add("hidden");
+        claimModal.classList.remove("hidden");
+    };
+
+    function closeClaimModal() {
+        claimModal.classList.add("hidden");
+        claimForm.reset();
+    }
+    if (btnCloseClaim) btnCloseClaim.addEventListener("click", closeClaimModal);
+    if (btnCancelClaim) btnCancelClaim.addEventListener("click", closeClaimModal);
+
+    if (claimForm) {
+        claimForm.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const itemId = document.getElementById("claimItemId").value;
+            const payload = {
+                claimantName: document.getElementById("claimantName").value.trim(),
+                contact: document.getElementById("claimantContact").value.trim(),
+                secretAnswer: document.getElementById("claimSecretAnswer").value.trim(),
+            };
+
+            try {
+                const res = await fetch(`/api/lost-found-object/items/${itemId}/claim`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    claimAlert.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
+                    claimAlert.textContent = "✓ Solicitud de reclamo registrada. Preséntate en Edificio A (CAE) con tu cédula o carnet para completar la entrega.";
+                    claimAlert.classList.remove("hidden");
+                    setTimeout(closeClaimModal, 3000);
+                } else {
+                    claimAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
+                    claimAlert.textContent = "⚠️ " + (data.error || "No se pudo registrar el reclamo.");
+                    claimAlert.classList.remove("hidden");
+                }
+            } catch (err) {
+                claimAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
+                claimAlert.textContent = "⚠️ Error de conexión.";
+                claimAlert.classList.remove("hidden");
+            }
+        });
+    }
+
+    // ADMIN STATE UPDATE MODAL LOGIC
+    {% if isAdmin %}
+    const adminStateModal = document.getElementById("adminStateModal");
+    const btnCloseAdminState = document.getElementById("btnCloseAdminStateModal");
+    const btnCancelAdminState = document.getElementById("btnCancelAdminState");
+    const adminStateForm = document.getElementById("adminStateForm");
+    const adminStateAlert = document.getElementById("adminStateAlert");
+
+    window.openAdminStateModal = function(id, name, currentStateId) {
+        document.getElementById("adminStateItemId").value = id;
+        document.getElementById("adminStateItemTitle").textContent = `#${id} - ${name}`;
+        document.getElementById("adminStateSelect").value = currentStateId || 1;
+        adminStateAlert.classList.add("hidden");
+        adminStateModal.classList.remove("hidden");
+    };
+
+    function closeAdminStateModal() {
+        adminStateModal.classList.add("hidden");
+    }
+    if (btnCloseAdminState) btnCloseAdminState.addEventListener("click", closeAdminStateModal);
+    if (btnCancelAdminState) btnCancelAdminState.addEventListener("click", closeAdminStateModal);
+
+    if (adminStateForm) {
+        adminStateForm.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const itemId = document.getElementById("adminStateItemId").value;
+            const stateId = parseInt(document.getElementById("adminStateSelect").value);
+
+            try {
+                const res = await fetch(`/api/admin/items/${itemId}/state`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ stateId: stateId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    adminStateAlert.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
+                    adminStateAlert.textContent = "✓ " + data.message;
+                    adminStateAlert.classList.remove("hidden");
+                    setTimeout(() => {
+                        closeAdminStateModal();
+                        loadCatalog();
+                    }, 800);
+                } else {
+                    adminStateAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
+                    adminStateAlert.textContent = "⚠️ " + (data.error || "Error al actualizar estado.");
+                    adminStateAlert.classList.remove("hidden");
+                }
+            } catch (err) {
+                adminStateAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
+                adminStateAlert.textContent = "⚠️ Error de conexión.";
+                adminStateAlert.classList.remove("hidden");
+            }
+        });
+    }
+    {% endif %}
+});
+</script>
+{% endblock %}

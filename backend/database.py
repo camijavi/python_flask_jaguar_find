@@ -503,3 +503,61 @@ def getSystemStats(dbPath: Optional[str] = None) -> Dict[str, Any]:
         }
     finally:
         conn.close()
+
+
+def updateUserPassword(userId: int, newPassword: str, dbPath: Optional[str] = None) -> bool:
+    """Updates a user's password with secure Werkzeug hashing."""
+    passwordHash = generate_password_hash(newPassword)
+    conn = getDbConnection(dbPath)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE UserTbl SET PasswordHash = ? WHERE Id = ?;", (passwordHash, userId))
+        conn.commit()
+        return cursor.rowcount > 0
+    finally:
+        conn.close()
+
+
+def updateUserStatus(userId: int, isActive: bool, dbPath: Optional[str] = None) -> bool:
+    """Toggles active status (active or deactivated / dada de baja) for a user account."""
+    conn = getDbConnection(dbPath)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE UserTbl SET IsActive = ? WHERE Id = ?;", (1 if isActive else 0, userId))
+        conn.commit()
+        return cursor.rowcount > 0
+    finally:
+        conn.close()
+
+
+def updateUserRole(
+    userId: int,
+    newUserTypeId: int,
+    cif: Optional[str] = None,
+    govermentId: Optional[str] = None,
+    phoneNumber: Optional[str] = None,
+    dbPath: Optional[str] = None
+) -> bool:
+    """Updates the role (UserTypeId) assigned to a user, ensuring identity constraints hold."""
+    conn = getDbConnection(dbPath)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM UserTbl WHERE Id = ?;", (userId,))
+        curr = dict(cursor.fetchone() or {})
+        effCif = cif or curr.get("CIF")
+        effGov = govermentId or curr.get("GovermentId")
+        effPhone = phoneNumber or curr.get("PhoneNumber")
+        # If transitioning to Collaborator or Visitor without GovId, provide fallback or preserve
+        if newUserTypeId in (2, 3) and not effGov:
+            effGov = curr.get("CIF") or "000-000000-0000X"
+        if newUserTypeId == 3 and not effPhone:
+            effPhone = "+505 0000 0000"
+        cursor.execute("""
+            UPDATE UserTbl
+            SET UserTypeId = ?, CIF = ?, GovermentId = ?, PhoneNumber = ?
+            WHERE Id = ?;
+        """, (newUserTypeId, effCif, effGov, effPhone, userId))
+        conn.commit()
+        return cursor.rowcount > 0
+    finally:
+        conn.close()

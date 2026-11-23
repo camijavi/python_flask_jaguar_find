@@ -17,6 +17,7 @@ from backend.config import Config
 from backend.database import initDb
 from backend.controllers import registerControllers
 from backend.i18n import init_i18n, I18nManager, t, get_current_language
+from backend.auth_guard import login_required, admin_required
 
 
 def createApp(configClass=Config) -> Flask:
@@ -101,6 +102,47 @@ def createApp(configClass=Config) -> Flask:
         return render_template("screens/admin/adminSignIn.html")
 
     
+
+
+    # ==========================================================================
+    # LOST & FOUND AND ADMIN MODULE ROUTES
+    # ==========================================================================
+
+    @app.route("/lost-found-object/catalogo", methods=["GET"])
+    @login_required
+    def renderLostFoundCatalog():
+        """Renders the Lost & Found objects catalog for authenticated campus users."""
+        return render_template("screens/lostFoundObject/catalogScreen.html")
+
+    @app.route("/admin/dashboard", methods=["GET"])
+    @admin_required
+    def renderAdminDashboard():
+        """Renders the executive CAE custody dashboard for administrators."""
+        return render_template("screens/admin/adminDashboardScreen.html")
+
+    @app.route("/admin/items", methods=["GET"])
+    @admin_required
+    def renderAdminItemsManagement():
+        """Renders the ticket custody management screen for administrators."""
+        return render_template("screens/admin/itemManagementScreen.html")
+
+    @app.route("/admin/users", methods=["GET"])
+    @admin_required
+    def renderAdminUserManagement():
+        """Renders the user identity and credential control screen."""
+        return render_template("screens/admin/userManagementScreen.html")
+
+    @app.route("/admin/configuracion", methods=["GET"])
+    @admin_required
+    def renderAdminConfiguration():
+        """Renders system custody configuration and parameters."""
+        return render_template("screens/admin/configScreen.html")
+
+    @app.route("/logout", methods=["GET", "POST"])
+    def webLogout():
+        """Clears user session and redirects to /auth."""
+        session.pop("user", None)
+        return redirect(url_for("renderLogInScreen"))
 
     @app.route("/set-language/<lang>", methods=["GET", "POST"])
     def setLanguage(lang: str):

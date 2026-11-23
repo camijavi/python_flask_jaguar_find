@@ -9,37 +9,47 @@ Visitor GovId + Phone, Admin Email + Password), signup, session management,
 and user profile resolution.
 """
 
-from flask import Blueprint, request, jsonify, session
-from typing import Dict, Any, Optional
+import re
 import sqlite3
+from typing import Any, Dict, Optional
 
+from flask import Blueprint, request, jsonify, session
+from werkzeug.security import check_password_hash
+
+from backend.auth_guard import L, getSessionUser, sanitizeUser
 from backend.database import (
     createUser,
     getUserById,
     getUserByIdentifier,
     getUserByUsername,
-    authenticateAdmin,
 )
 
 authController = Blueprint("authController", __name__, url_prefix="/api/auth")
 
+INSTITUTIONAL_DOMAIN = "@uamv.edu.ni"
+MIN_PASSWORD_LENGTH = 6
+USER_TYPE_LABELS = {1: "student", 2: "collaborator", 3: "visitor", 4: "admin"}
+
 
 def _sanitizeUser(user: Dict[str, Any]) -> Dict[str, Any]:
     """Removes sensitive security fields (e.g., PasswordHash) before client return."""
-    clean = dict(user)
-    clean.pop("PasswordHash", None)
-    return clean
+    return sanitizeUser(user)
+
+
+def _homeUrlFor(user: Dict[str, Any]) -> str:
+    """Where the client should land after authenticating."""
+    return "/admin/dashboard" if user.get("UserTypeId") == 4 else "/lost-found-object/catalogo"
 
 
 @authController.route("/login", methods=["POST"])
 def login():
     """
     POST /api/auth/login
-    Authenticates user based on role or universal handle:
-    - Student: CIF (8 digits) or userName
-    - Collaborator: GovermentId or userName
-    - Visitor: GovermentId or userName
-    - Admin: Email + Password (or userName + Password)
+    Authenticates a user. The identifier depends on the role chosen in the UI:
+    - Student (1):      CIF (8 digits)          [+ password, when the account has one]
+    - Collaborator (2): GovermentId (cédula)    [+ password, when the account has one]
+    - Visitor (3):      GovermentId (cédula)    passwordless
+    - Admin (4):        Email or UserName       + password (always)
     """
     payload = request.get_json(silent=True) or request.form.to_dict() or {}
 
@@ -51,7 +61,7 @@ def login():
         or payload.get("userName")
         or payload.get("username")
     )
-    password = payload.get("password")
+    password = payload.get("password") or ""
     userTypeId = payload.get("userTypeId")
 
     if userTypeId is not None:
@@ -60,63 +70,71 @@ def login():
         except (ValueError, TypeError):
             userTypeId = None
 
-    if not identifier:
+    if not identifier or not str(identifier).strip():
         return jsonify({
             "success": False,
-            "error": "An identifier (CIF, Government ID, Email, or UserName) is required."
+            "error": L("Ingresa tu identificación (CIF, cédula o correo).",
+                       "An identifier (CIF, Government ID, Email, or UserName) is required.")
         }), 400
 
     identifier = str(identifier).strip()
-    user = None
 
-    # 1. Admin Authentication (requires email/username + password)
-    if password or userTypeId == 4 or "@" in identifier:
-        # Try direct email + password
-        user = authenticateAdmin(identifier, password)
-        # Fallback: check if username was provided instead of email
-        if not user and password:
-            uByUname = getUserByUsername(identifier)
-            if uByUname and uByUname.get("UserTypeId") == 4 and uByUname.get("Email"):
-                user = authenticateAdmin(uByUname["Email"], password)
+    # Resolve the account (role-specific lookup first, then universal handles)
+    user: Optional[Dict[str, Any]] = None
+    if userTypeId in (1, 2, 3, 4):
+        user = getUserByIdentifier(identifier, userTypeId=userTypeId)
+        if not user and userTypeId == 4:
+            candidate = getUserByUsername(identifier)
+            if candidate and candidate.get("UserTypeId") == 4:
+                user = candidate
+    if not user and userTypeId is None:
+        user = getUserByIdentifier(identifier) or getUserByUsername(identifier)
 
-        if not user:
-            return jsonify({
-                "success": False,
-                "error": "Invalid email or password for administrator."
-            }), 401
-
-    # 2. Universal / Role-based Authentication for Campus Users (Students, Collaborators, Visitors)
-    else:
-        # Check by specific role if userTypeId provided
-        if userTypeId in (1, 2, 3):
-            user = getUserByIdentifier(identifier, userTypeId=userTypeId)
-
-        # Fallback to general lookup across CIF, GovermentId, Email, and UserName
-        if not user:
-            user = getUserByIdentifier(identifier)
-
-        if not user:
-            user = getUserByUsername(identifier)
-
-        if not user:
-            return jsonify({
-                "success": False,
-                "error": f"No active user found with identifier: '{identifier}'."
-            }), 401
+    if not user:
+        if userTypeId == 4:
+            message = L("Correo o contraseña de administrador incorrectos.",
+                        "Invalid email or password for administrator.")
+        else:
+            message = L("No encontramos una cuenta con ese dato para este rol.",
+                        f"No active user found with identifier: '{identifier}'.")
+        return jsonify({"success": False, "error": message}), 401
 
     if not user.get("IsActive", 1):
         return jsonify({
             "success": False,
-            "error": "This account has been deactivated. Please contact campus administration."
+            "error": L("Esta cuenta fue dada de baja. Contacta a la administración del campus.",
+                       "This account has been deactivated. Please contact campus administration.")
         }), 403
+
+    # Password policy: admins always, students/collaborators when a password was set, visitors never
+    typeId = user.get("UserTypeId")
+    passwordHash = user.get("PasswordHash")
+    needsPassword = typeId == 4 or (typeId in (1, 2) and bool(passwordHash))
+
+    if needsPassword:
+        if not password:
+            return jsonify({
+                "success": False,
+                "passwordRequired": True,
+                "error": L("Esta cuenta requiere contraseña.", "This account requires a password.")
+            }), 401
+        if not passwordHash or not check_password_hash(passwordHash, password):
+            if typeId == 4:
+                message = L("Correo o contraseña de administrador incorrectos.",
+                            "Invalid email or password for administrator.")
+            else:
+                message = L("Contraseña incorrecta.", "Incorrect password.")
+            return jsonify({"success": False, "error": message}), 401
 
     cleanUser = _sanitizeUser(user)
     session["user"] = cleanUser
 
     return jsonify({
         "success": True,
-        "message": f"Welcome back, {cleanUser.get('FullName', 'User')}!",
-        "user": cleanUser
+        "message": L(f"¡Bienvenido/a, {cleanUser.get('FullName', 'Usuario')}!",
+                     f"Welcome back, {cleanUser.get('FullName', 'User')}!"),
+        "user": cleanUser,
+        "redirect": _homeUrlFor(cleanUser),
     }), 200
 
 
@@ -124,11 +142,11 @@ def login():
 def signup():
     """
     POST /api/auth/signup
-    Registers a new campus user adhering to conditional identity rules:
-    - Student (1): requires CIF
-    - Collaborator (2): requires GovermentId
-    - Visitor (3): requires GovermentId and PhoneNumber
-    - Admin (4): requires Email and Password
+    Public self-registration for campus users adhering to conditional identity rules:
+    - Student (1):      FullName + CIF (8 digits) + institutional email + password (>= 6)
+    - Collaborator (2): FullName + GovermentId + institutional email + password (>= 6)
+    - Visitor (3):      FullName + GovermentId + PhoneNumber (passwordless)
+    Administrators (4) are never self-registered: they are created from /admin/usuarios.
     """
     payload = request.get_json(silent=True) or request.form.to_dict() or {}
 
@@ -136,7 +154,16 @@ def signup():
     try:
         userTypeId = int(userTypeIdRaw)
     except (ValueError, TypeError):
-        return jsonify({"success": False, "error": "Invalid userTypeId format."}), 400
+        return jsonify({"success": False, "error": L("Rol inválido.", "Invalid userTypeId format.")}), 400
+
+    if userTypeId == 4:
+        return jsonify({
+            "success": False,
+            "error": L("Las cuentas de administrador no se pueden autorregistrar.",
+                       "Administrator accounts cannot be self-registered.")
+        }), 403
+    if userTypeId not in (1, 2, 3):
+        return jsonify({"success": False, "error": L("Rol inválido.", "Invalid userTypeId.")}), 400
 
     fullName = (payload.get("fullName") or "").strip()
     userName = payload.get("userName") or payload.get("username")
@@ -149,31 +176,37 @@ def signup():
     phoneNumber = str(phoneNumber).strip() if phoneNumber else None
     email = payload.get("email")
     email = str(email).strip().lower() if email else None
-    password = payload.get("password")
+    password = payload.get("password") or None
 
     if not fullName:
-        return jsonify({"success": False, "error": "FullName is required."}), 400
+        return jsonify({"success": False, "error": L("El nombre completo es obligatorio.", "FullName is required.")}), 400
 
     # Role specific validations
-    if userTypeId == 1 and not cif:
-        return jsonify({"success": False, "error": "CIF (Student ID) is required for students."}), 400
+    if userTypeId == 1:
+        if not cif or not re.fullmatch(r"\d{8}", cif):
+            return jsonify({"success": False, "error": L("El CIF debe tener exactamente 8 dígitos.",
+                                                         "CIF must be exactly 8 digits.")}), 400
     if userTypeId == 2 and not govermentId:
-        return jsonify({"success": False, "error": "Government ID (Cédula/Passport) is required for collaborators."}), 400
-    if userTypeId == 3:
-        if not govermentId or not phoneNumber:
-            return jsonify({
-                "success": False,
-                "error": "Both Government ID and PhoneNumber are required for visitors."
-            }), 400
-    if userTypeId == 4:
-        if not email or not password:
-            return jsonify({"success": False, "error": "Email and Password are required for administrators."}), 400
+        return jsonify({"success": False, "error": L("La cédula es obligatoria para colaboradores.",
+                                                     "Government ID is required for collaborators.")}), 400
+    if userTypeId == 3 and (not govermentId or not phoneNumber):
+        return jsonify({"success": False, "error": L("Los visitantes deben indicar cédula y teléfono.",
+                                                     "Both Government ID and PhoneNumber are required for visitors.")}), 400
+
+    if userTypeId in (1, 2):
+        if not email or not email.endswith(INSTITUTIONAL_DOMAIN):
+            return jsonify({"success": False, "error": L(f"Usa tu correo institucional ({INSTITUTIONAL_DOMAIN}).",
+                                                         f"Use your institutional email ({INSTITUTIONAL_DOMAIN}).")}), 400
+        if not password or len(password) < MIN_PASSWORD_LENGTH:
+            return jsonify({"success": False, "error": L(f"La contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.",
+                                                         f"Password must be at least {MIN_PASSWORD_LENGTH} characters.")}), 400
+    else:
+        password = None  # visitors are passwordless
 
     # Check for duplicate userName
-    if userName:
-        existingUname = getUserByUsername(userName)
-        if existingUname:
-            return jsonify({"success": False, "error": f"UserName '{userName}' is already in use."}), 409
+    if userName and getUserByUsername(userName):
+        return jsonify({"success": False, "error": L(f"El usuario '{userName}' ya está en uso.",
+                                                     f"UserName '{userName}' is already in use.")}), 409
 
     try:
         newUserId = createUser(
@@ -189,14 +222,19 @@ def signup():
     except sqlite3.IntegrityError as err:
         errStr = str(err).lower()
         if "cif" in errStr:
-            return jsonify({"success": False, "error": "A user with this CIF already exists."}), 409
+            msg = L("Ya existe un usuario con ese CIF.", "A user with this CIF already exists.")
+            return jsonify({"success": False, "error": msg}), 409
         if "govermentid" in errStr:
-            return jsonify({"success": False, "error": "A user with this Government ID already exists."}), 409
+            msg = L("Ya existe un usuario con esa cédula.", "A user with this Government ID already exists.")
+            return jsonify({"success": False, "error": msg}), 409
         if "email" in errStr:
-            return jsonify({"success": False, "error": "A user with this Email already exists."}), 409
+            msg = L("Ya existe un usuario con ese correo.", "A user with this Email already exists.")
+            return jsonify({"success": False, "error": msg}), 409
         if "username" in errStr:
-            return jsonify({"success": False, "error": "This UserName is already taken."}), 409
-        return jsonify({"success": False, "error": "Database constraint violation occurred."}), 400
+            msg = L("Ese nombre de usuario ya está tomado.", "This UserName is already taken.")
+            return jsonify({"success": False, "error": msg}), 409
+        return jsonify({"success": False, "error": L("Los datos no cumplen las reglas del rol.",
+                                                     "Database constraint violation occurred.")}), 400
     except Exception as err:
         return jsonify({"success": False, "error": str(err)}), 500
 
@@ -209,9 +247,10 @@ def signup():
 
     return jsonify({
         "success": True,
-        "message": "User registration completed successfully.",
+        "message": L("Registro completado.", "User registration completed successfully."),
         "userId": newUserId,
-        "user": cleanUser
+        "user": cleanUser,
+        "redirect": _homeUrlFor(cleanUser),
     }), 201
 
 

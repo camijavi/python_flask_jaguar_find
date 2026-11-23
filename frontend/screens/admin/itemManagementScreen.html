@@ -1,0 +1,12 @@
+{% extends "screens/admin/adminBase.html" %}
+
+{% block title %}Gestión de Objetos Perdidos · JaguarFind{% endblock %}
+{% block header_title %}Catálogo y Custodia de Objetos Perdidos{% endblock %}
+{% block header_subtitle %}Edición de tickets, auditoría de detalles secretos y cambio de estados (Reportado &rarr; En Custodia &rarr; Entregado){% endblock %}
+
+{% block admin_content %}
+<div class="h-full flex flex-col">
+    <!-- Embed Catalog Interface with Admin Capabilities -->
+    {% include "screens/lostFoundObject/catalogScreen.html" %}
+</div>
+{% endblock %}

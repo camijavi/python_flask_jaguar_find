@@ -1,0 +1,309 @@
+{% extends "screens/admin/adminBase.html" %}
+
+{% block title %}Dashboard Administrativo · JaguarFind{% endblock %}
+{% block header_title %}Dashboard de Custodia y Reportes{% endblock %}
+{% block header_subtitle %}Monitoreo en tiempo real de objetos extraviados, custodia en Edificio A y entregas{% endblock %}
+
+{% block admin_content %}
+<div class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
+
+    <!-- KPI Summary Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        
+        <!-- Total Reports -->
+        <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between text-slate-500 mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider">Total Reportes</span>
+                <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-black text-xs">📦</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span id="statTotalItems" class="text-2xl sm:text-3xl font-black text-slate-900">--</span>
+                <span class="text-xs font-semibold text-slate-400">histórico</span>
+            </div>
+        </div>
+
+        <!-- Reported (Pending custody) -->
+        <div class="p-5 rounded-3xl bg-white border border-amber-200/90 shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between text-amber-600 mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider">Reportados</span>
+                <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-black text-xs">⚠️</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span id="statReported" class="text-2xl sm:text-3xl font-black text-amber-700">--</span>
+                <span class="text-xs font-semibold text-amber-600">por ingresar</span>
+            </div>
+        </div>
+
+        <!-- In Custody (Edificio A) -->
+        <div class="p-5 rounded-3xl bg-white border border-brand-200 shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between text-brand-600 mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider">En Custodia CAE</span>
+                <span class="w-8 h-8 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center font-black text-xs">🏢</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span id="statInCustody" class="text-2xl sm:text-3xl font-black text-brand-700">--</span>
+                <span class="text-xs font-semibold text-brand-600">en Edificio A</span>
+            </div>
+        </div>
+
+        <!-- Claimed / Delivered -->
+        <div class="p-5 rounded-3xl bg-white border border-emerald-200 shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between text-emerald-600 mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider">Entregados</span>
+                <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xs">✓</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span id="statClaimed" class="text-2xl sm:text-3xl font-black text-emerald-700">--</span>
+                <span class="text-xs font-semibold text-emerald-600">resueltos</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Central Two-Column Info Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Column 1 & 2: Recent Reports & Custody Operations (2 cols) -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-sm font-extrabold text-slate-900">Últimos Objetos Reportados</h2>
+                        <p class="text-[11px] text-slate-500">Tickets que requieren verificación de custodia o entrega</p>
+                    </div>
+                    <a href="/admin/items" class="text-xs font-bold text-brand-600 hover:text-brand-800 transition">Ver todos &rarr;</a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-50/80 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-100">
+                                <th class="py-3 px-4">Objeto</th>
+                                <th class="py-3 px-4">Ubicación</th>
+                                <th class="py-3 px-4">Estado Actual</th>
+                                <th class="py-3 px-4">Fecha</th>
+                                <th class="py-3 px-4 text-right">Acción Rápida</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentItemsTableBody" class="divide-y divide-slate-100">
+                            <tr>
+                                <td colspan="5" class="py-8 text-center text-slate-400">Cargando tickets recientes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CAE Custody Notice Card -->
+            <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-brand-500/20 text-brand-400 flex items-center justify-center text-2xl shrink-0">
+                        🏛️
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black">Centro de Acopio Físico: Edificio A (CAE)</h3>
+                        <p class="text-xs text-slate-300 mt-0.5">
+                            Los estudiantes deben presentar su carnet o cédula y responder el detalle secreto antifraude para retirar sus pertenencias.
+                        </p>
+                    </div>
+                </div>
+                <a href="/admin/items" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shrink-0 transition">
+                    Gestionar Custodia
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Column 3: Stats Breakdown & Campus Node Activity (1 col) -->
+        <div class="space-y-6">
+
+            <!-- Category Breakdown Card -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
+                <h2 class="text-sm font-extrabold text-slate-900">Distribución por Categorías</h2>
+                <div id="categoryBreakdownContainer" class="space-y-3">
+                    <p class="text-xs text-slate-400">Calculando proporciones...</p>
+                </div>
+            </div>
+
+            <!-- System Users Metric Card -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-extrabold text-slate-900">Directorio de Usuarios</h2>
+                    <span id="statTotalUsers" class="px-2.5 py-1 rounded-full text-xs font-black bg-slate-100 text-slate-800">--</span>
+                </div>
+                <p class="text-xs text-slate-500">
+                    Estudiantes, colaboradores y visitantes con cuentas activas registradas en JaguarFind.
+                </p>
+                <a href="/admin/users" class="block w-full py-2.5 px-4 rounded-xl text-center bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition">
+                    Administrar Cuentas &rarr;
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- State Update Dialog (Shared) -->
+<div id="quickStateModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <h3 class="text-sm font-black text-slate-900">Cambiar Estado de Custodia</h3>
+            <button onclick="document.getElementById('quickStateModal').classList.add('hidden')" type="button" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+        </div>
+        <form id="quickStateForm" class="p-6 space-y-4">
+            <input type="hidden" id="quickStateItemId" value="">
+            <p id="quickStateItemName" class="text-xs font-bold text-slate-800"></p>
+            <select id="quickStateSelect" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50">
+                <option value="1">⚠️ 1: Reportado</option>
+                <option value="2">🏢 2: En Custodia (Edificio A)</option>
+                <option value="3">✓ 3: Entregado / Reclamado</option>
+            </select>
+            <div class="pt-2 flex justify-end gap-2">
+                <button onclick="document.getElementById('quickStateModal').classList.add('hidden')" type="button" class="px-3 py-1.5 rounded-lg border text-xs font-bold">Cancelar</button>
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold">Actualizar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", async function() {
+    // 1. Fetch Stats
+    try {
+        const res = await fetch("/api/admin/stats");
+        const data = await res.json();
+        if (data.success && data.stats) {
+            document.getElementById("statTotalItems").textContent = data.stats.totalItems;
+            document.getElementById("statReported").textContent = data.stats.reportedItems;
+            document.getElementById("statInCustody").textContent = data.stats.inCustodyItems;
+            document.getElementById("statClaimed").textContent = data.stats.claimedItems;
+            document.getElementById("statTotalUsers").textContent = data.stats.totalUsers + " usuarios";
+        }
+    } catch (e) {
+        console.error("Failed to load admin stats", e);
+    }
+
+    // 2. Fetch Recent Items & Category Breakdown
+    try {
+        const res = await fetch("/api/lost-found-object/items");
+        const data = await res.json();
+        if (data.success && data.items) {
+            renderRecentTable(data.items.slice(0, 6));
+            renderCategories(data.items);
+        }
+    } catch (e) {
+        console.error("Failed to load items", e);
+    }
+
+    function renderRecentTable(items) {
+        const tbody = document.getElementById("recentItemsTableBody");
+        tbody.innerHTML = "";
+        if (!items || items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-400">No hay objetos registrados aún.</td></tr>';
+            return;
+        }
+
+        items.forEach(item => {
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-slate-50 transition-colors";
+
+            let badgeHtml = "";
+            if (item.LostObjectStateId === 1) {
+                badgeHtml = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">Reportado</span>';
+            } else if (item.LostObjectStateId === 2) {
+                badgeHtml = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-800 border border-sky-200">En Custodia</span>';
+            } else {
+                badgeHtml = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">Entregado</span>';
+            }
+
+            tr.innerHTML = `
+                <td class="py-3.5 px-4 font-bold text-slate-900">${item.ItemName}</td>
+                <td class="py-3.5 px-4 text-slate-500">${item.Location}</td>
+                <td class="py-3.5 px-4">${badgeHtml}</td>
+                <td class="py-3.5 px-4 text-slate-400">${item.DateTimeReported ? item.DateTimeReported.split(' ')[0] : ''}</td>
+                <td class="py-3.5 px-4 text-right">
+                    <button onclick="window.openQuickStateModal(${item.Id}, '${item.ItemName.replace(/'/g, "\\'")}', ${item.LostObjectStateId})" 
+                            type="button" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-[11px] text-slate-700 transition">
+                        Cambiar Estado
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function renderCategories(items) {
+        const counts = { electronics: 0, documents: 0, personalItems: 0, clothing: 0, other: 0 };
+        items.forEach(i => {
+            const cat = i.Category || 'other';
+            counts[cat] = (counts[cat] || 0) + 1;
+        });
+
+        const total = items.length || 1;
+        const labels = {
+            electronics: { name: "Electrónica / Celulares", color: "bg-brand-500" },
+            documents: { name: "Documentos / Carnets", color: "bg-ocean-500" },
+            personalItems: { name: "Artículos Personales", color: "bg-amber-500" },
+            clothing: { name: "Ropa & Accesorios", color: "bg-purple-500" },
+            other: { name: "Otros", color: "bg-slate-400" }
+        };
+
+        const container = document.getElementById("categoryBreakdownContainer");
+        container.innerHTML = "";
+
+        Object.keys(counts).forEach(k => {
+            const count = counts[k];
+            const pct = Math.round((count / total) * 100);
+            const meta = labels[k] || { name: k, color: "bg-slate-400" };
+
+            const row = document.createElement("div");
+            row.className = "space-y-1";
+            row.innerHTML = `
+                <div class="flex justify-between text-xs font-semibold text-slate-700">
+                    <span>${meta.name}</span>
+                    <span class="text-slate-400">${count} (${pct}%)</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div class="h-full rounded-full ${meta.color}" style="width: ${pct}%"></div>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    window.openQuickStateModal = function(id, name, stateId) {
+        document.getElementById("quickStateItemId").value = id;
+        document.getElementById("quickStateItemName").textContent = `#${id} - ${name}`;
+        document.getElementById("quickStateSelect").value = stateId;
+        document.getElementById("quickStateModal").classList.remove("hidden");
+    };
+
+    document.getElementById("quickStateForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const itemId = document.getElementById("quickStateItemId").value;
+        const stateId = parseInt(document.getElementById("quickStateSelect").value);
+
+        try {
+            const res = await fetch(`/api/admin/items/${itemId}/state`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ stateId: stateId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById("quickStateModal").classList.add("hidden");
+                window.location.reload();
+            } else {
+                alert(data.error || "Error al actualizar");
+            }
+        } catch (e) {
+            alert("Error de conexión");
+        }
+    });
+});
+</script>
+{% endblock %}

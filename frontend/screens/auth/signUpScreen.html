@@ -2,6 +2,8 @@
 {% from "components/auth/authMacros.html" import field, select, roleBadge with context %}
 
 {% set es = current_language == 'spa' %}
+{% set rolMap = {'estudiante': 1, 'colaborador': 2, 'visitante': 3} %}
+{% set userTypeId = rolMap.get(rol, 1) %}
 
 {% block title %}{{ 'Crear una cuenta' if es else 'Create account' }} · JaguarFind{% endblock %}
 
@@ -11,9 +13,10 @@
 
 {% block content %}
 <section class="auth-hero flex-1 flex items-start sm:items-center justify-center px-4 py-6 sm:py-10">
-    <form class="options w-full max-w-lg md:max-w-2xl bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xl p-6 sm:p-8 flex flex-col gap-6"
-          method="post" action="/api/auth/register">
+    <form id="signUpForm" class="options w-full max-w-lg md:max-w-2xl bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xl p-6 sm:p-8 flex flex-col gap-6"
+          method="post" action="/api/auth/signup">
         <input type="hidden" name="rol" id="rol" value="{{ rol }}">
+        <input type="hidden" name="userTypeId" id="userTypeId" value="{{ userTypeId }}">
 
         <div class="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3 sm:gap-5 pb-5 border-b border-slate-200">
             <img src="{{ url_for('static', filename='img/jaguarLogo.jpg') }}" alt="Jaguar Find"
@@ -26,34 +29,37 @@
             </div>
         </div>
 
+        <!-- Alert Container -->
+        <div id="signUpAlert" class="hidden rounded-xl p-3.5 text-xs font-semibold flex items-center gap-2"></div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
-        {{ field('nombre', 'Nombre completo' if es else 'Full name', 'user', full=true) }}
+            {{ field('nombre', 'Nombre completo' if es else 'Full name', 'user', full=true) }}
 
-        {% if rol == 'visitante' %}
-            {{ field('correoPersonal', 'Correo electrónico' if es else 'Email', 'mail', 'email', 'correo@ejemplo.com') }}
-            {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id') }}
-        {% else %}
-            {{ field('correo', 'Correo institucional' if es else 'Institutional email', 'mail', 'email', 'usuario@uamv.edu.ni') }}
-            {{ field('password', 'Contraseña' if es else 'Password', 'lock', 'password', '', 'minlength="6"') }}
-            {% if rol == 'estudiante' %}
-                {{ field('cif', 'Número CIF' if es else 'CIF number', 'hash', 'text', '8 dígitos' if es else '8 digits', 'pattern="\\d{8}" maxlength="8"') }}
-
-                {{ field('carrera', 'Carrera' if es else 'Degree program', 'book') }}
-                {{ select('facultad', 'Facultad' if es else 'Faculty', 'school', [
-                    ('FIA', 'Ingeniería y Arquitectura' if es else 'Engineering & Architecture'),
-                    ('FODO', 'Odontología' if es else 'Dentistry'),
-                    ('FCM', 'Ciencias Médicas' if es else 'Medical Sciences'),
-                    ('FCE', 'Ciencias Económicas y Administrativas' if es else 'Economic & Administrative Sciences'),
-                    ('FCJ', 'Ciencias Jurídicas' if es else 'Legal Sciences')], full=true) }}
+            {% if rol == 'visitante' %}
+                {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id') }}
+                {{ field('telefono', 'Número de Teléfono' if es else 'Phone Number', 'phone', 'tel', '+505 8888 1234') }}
+                {{ field('correoPersonal', 'Correo electrónico' if es else 'Email', 'mail', 'email', 'correo@ejemplo.com', full=true) }}
             {% else %}
-                {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', full=true) }}
+                {{ field('correo', 'Correo institucional' if es else 'Institutional email', 'mail', 'email', 'usuario@uamv.edu.ni') }}
+                {{ field('password', 'Contraseña' if es else 'Password', 'lock', 'password', '', 'minlength="6"') }}
+                {% if rol == 'estudiante' %}
+                    {{ field('cif', 'Número CIF' if es else 'CIF number', 'hash', 'text', '8 dígitos' if es else '8 digits', 'pattern="\\d{8}" maxlength="8"') }}
+                    {{ field('carrera', 'Carrera' if es else 'Degree program', 'book') }}
+                    {{ select('facultad', 'Facultad' if es else 'Faculty', 'school', [
+                        ('FIA', 'Ingeniería y Arquitectura' if es else 'Engineering & Architecture'),
+                        ('FODO', 'Odontología' if es else 'Dentistry'),
+                        ('FCM', 'Ciencias Médicas' if es else 'Medical Sciences'),
+                        ('FCE', 'Ciencias Económicas y Administrativas' if es else 'Economic & Administrative Sciences'),
+                        ('FCJ', 'Ciencias Jurídicas' if es else 'Legal Sciences')], full=true) }}
+                {% else %}
+                    {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', full=true) }}
+                {% endif %}
             {% endif %}
-        {% endif %}
         </div>
 
-        <button type="submit"
-                class="w-full px-4 py-3 rounded-xl text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 shadow-md shadow-brand-500/30 active:scale-95 transition-all">
-            {{ 'Registrarme' if es else 'Sign up' }}
+        <button id="btnSubmitSignUp" type="submit"
+                class="w-full px-4 py-3 rounded-xl text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 shadow-md shadow-brand-500/30 active:scale-95 transition-all flex items-center justify-center gap-2">
+            <span>{{ 'Registrarme' if es else 'Sign up' }}</span>
         </button>
 
         <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
@@ -62,4 +68,66 @@
         </div>
     </form>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("signUpForm");
+    const alertBox = document.getElementById("signUpAlert");
+    const submitBtn = document.getElementById("btnSubmitSignUp");
+
+    function showAlert(msg, isSuccess = false) {
+        if (!alertBox) return;
+        alertBox.className = "rounded-xl p-3.5 text-xs font-semibold flex items-center gap-2 " + 
+            (isSuccess ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-rose-50 text-rose-800 border border-rose-200");
+        alertBox.innerHTML = (isSuccess ? "✓ " : "⚠️ ") + msg;
+        alertBox.classList.remove("hidden");
+    }
+
+    form.addEventListener("submit", async function(e) {
+        e.preventDefault();
+        alertBox.classList.add("hidden");
+        submitBtn.disabled = true;
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="inline-block animate-spin mr-1">↻</span> {{ "Procesando..." if es else "Processing..." }}';
+
+        const formData = new FormData(form);
+        const payload = {
+            userTypeId: parseInt(formData.get("userTypeId") || "1"),
+            fullName: formData.get("nombre"),
+            email: formData.get("correo") || formData.get("correoPersonal") || "",
+            password: formData.get("password") || "",
+            cif: formData.get("cif") || "",
+            govermentId: formData.get("cedula") || "",
+            phoneNumber: formData.get("telefono") || "",
+            faculty: formData.get("facultad") || "",
+            career: formData.get("carrera") || ""
+        };
+
+        try {
+            const res = await fetch("/api/auth/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAlert(data.message || '{{ "Registro completado exitosamente." if es else "Registration successful." }}', true);
+                setTimeout(() => {
+                    window.location.href = data.redirect || "/lost-found-object/catalogo";
+                }, 800);
+            } else {
+                showAlert(data.error || '{{ "Error al procesar registro." if es else "Error registering user." }}', false);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        } catch (err) {
+            showAlert('{{ "Error de conexión con el servidor." if es else "Network connection error." }}', false);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    });
+});
+</script>
 {% endblock %}

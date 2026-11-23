@@ -1,0 +1,434 @@
+<!--
+================================================================================
+NEW / EDIT REPORT OBJECT MODAL DIALOG (newEditReportObject.html)
+================================================================================
+Interactive dialog for reporting lost or found objects on UAM campus.
+Features:
+- Automated GPS coordinate detection matching against campus graph & subgraphs
+- Disambiguation banner: "¿El objeto estaba en el Edificio X, Salón Y?"
+- Manual searchable campus dropdown fallback
+- Image preview uploader (DataURL base64)
+- Anti-fraud secret verification detail field
+- Full responsive styling matching the JaguarFind teal/ocean design system
+================================================================================
+-->
+
+<div id="reportObjectModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-200">
+    <div class="relative w-full max-w-xl max-h-[92vh] flex flex-col bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-black">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div>
+                    <h2 class="text-lg font-extrabold text-slate-900 leading-tight">Reportar Objeto Perdido</h2>
+                    <p class="text-xs text-slate-500">Publica un objeto extraviado o encontrado en el campus</p>
+                </div>
+            </div>
+            <button id="btnCloseReportModal" type="button" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Scrollable Form Body -->
+        <div class="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+
+            <!-- GPS Campus Smart Detection Banner -->
+            <div id="gpsLocationBanner" class="p-3.5 rounded-2xl bg-brand-50 border border-brand-200/80 text-xs">
+                <div class="flex items-start gap-3">
+                    <span id="gpsPulseIcon" class="mt-0.5 w-4 h-4 rounded-full bg-brand-500 flex items-center justify-center text-white shrink-0 animate-pulse">
+                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                    </span>
+                    <div class="flex-1">
+                        <p id="gpsStatusText" class="font-bold text-brand-900 leading-snug">
+                            Consultando ubicación en el campus...
+                        </p>
+                        <p id="gpsSubText" class="text-brand-700 mt-0.5">
+                            Permite el acceso a ubicación para detectar el edificio o aula automáticamente.
+                        </p>
+
+                        <!-- Action Buttons after match -->
+                        <div id="gpsConfirmationButtons" class="mt-2.5 hidden flex flex-wrap items-center gap-2">
+                            <button id="btnConfirmGpsLocation" type="button" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-[11px] shadow-xs active:scale-95 transition-all">
+                                ✓ Sí, usar esta ubicación
+                            </button>
+                            <button id="btnManualDropdownToggle" type="button" class="px-3 py-1.5 rounded-lg bg-white border border-brand-300 hover:bg-brand-100 text-brand-800 font-bold text-[11px] transition-all">
+                                🔍 No, buscar en el listado
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Fields -->
+            <form id="reportObjectForm" class="space-y-4">
+                <input type="hidden" id="reportLocationNode" name="location" value="">
+                <input type="hidden" id="reportLatitude" name="latitude" value="">
+                <input type="hidden" id="reportLongitude" name="longitude" value="">
+                <input type="hidden" id="reportPhotoUrl" name="photoUrl" value="">
+
+                <!-- Item Name -->
+                <div>
+                    <label for="reportItemName" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                        Nombre del Objeto <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="text" id="reportItemName" name="itemName" required
+                           placeholder="Ej. Calculadora Casio fx-991LA, Termo Yeti Azul, Carnet CIF..."
+                           class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-hidden transition">
+                </div>
+
+                <!-- Category & Campus Location Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <!-- Category -->
+                    <div>
+                        <label for="reportCategory" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                            Categoría <span class="text-rose-500">*</span>
+                        </label>
+                        <select id="reportCategory" name="category" required
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-hidden transition">
+                            <option value="electronics">📱 Electrónica / Dispositivos</option>
+                            <option value="documents">🪪 Documentos / Carnet UAM</option>
+                            <option value="personalItems">🎒 Artículos Personales / Termos</option>
+                            <option value="clothing">🧥 Ropa / Accesorios</option>
+                            <option value="other">📦 Otro artículo</option>
+                        </select>
+                    </div>
+
+                    <!-- Campus Location (Manual Dropdown) -->
+                    <div id="manualLocationContainer">
+                        <label for="reportLocationSelect" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                            Ubicación en el Campus <span class="text-rose-500">*</span>
+                        </label>
+                        <select id="reportLocationSelect" required
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-hidden transition">
+                            <option value="" disabled selected>Selecciona un edificio o lugar...</option>
+                            <optgroup label="Edificios Principales">
+                                <option value="buildingA">Edificio A (Atención al Estudiante CAE / Recepción)</option>
+                                <option value="buildingB">Edificio B (Aulas B-101 a B-106 / Farmacia)</option>
+                                <option value="buildingC">Edificio C (Laboratorios MAC & Cómputo / Caja)</option>
+                                <option value="buildingD">Edificio D (Laboratorios de Odontología Digital)</option>
+                                <option value="buildingE">Edificio E (Facultad de Medicina & Simuladores)</option>
+                                <option value="buildingF">Edificio F (Facultad de Ciencias Económicas)</option>
+                                <option value="buildingG">Edificio G (Facultad de Derecho & Auditorio Central)</option>
+                                <option value="buildingH">Edificio H (Aulas de Pregrado & Posgrado)</option>
+                                <option value="buildingI">Edificio I (Rectoría & Biblioteca Central)</option>
+                                <option value="buildingJ">Edificio J (Laboratorios Multiuso Odontología)</option>
+                                <option value="buildingK">Edificio K (Cafetería Central / Jaguar Corner)</option>
+                                <option value="buildingL">Edificio L (Salones Ejecutivos)</option>
+                                <option value="buildingM">Edificio M (Aulas y Posgrados)</option>
+                                <option value="buildingN">Edificio N (Clínicas Odontológicas UAM)</option>
+                                <option value="buildingO">Edificio O (Facultad de Ingeniería FIA / Robótica)</option>
+                                <option value="buildingP">Edificio P (Observatorio Copérnico)</option>
+                            </optgroup>
+                            <optgroup label="Áreas Deportivas & Exteriores">
+                                <option value="jaguarCenter">Complejo Jaguar Center (Polideportivo / Gimnasio)</option>
+                                <option value="baseballStadium">Campos Deportivos / Estadio de Béisbol</option>
+                                <option value="chilamatesPlaza">Plaza Chilamates (Kioscos & Fast Point)</option>
+                                <option value="mainParking">Estacionamiento Principal & Caseta Sur</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="reportDescription" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                        Descripción Pública <span class="text-rose-500">*</span>
+                    </label>
+                    <textarea id="reportDescription" name="description" rows="2" required
+                              placeholder="Indica color, marca o circunstancias donde fue encontrado o extraviado..."
+                              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-hidden transition"></textarea>
+                </div>
+
+                <!-- Anti-Fraud Secret Detail -->
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                    <label for="reportSecretDetail" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg>
+                        <span>Detalle Secreto / Pregunta Antifraude (Privado)</span>
+                    </label>
+                    <p class="text-[11px] text-slate-500 mb-2">
+                        Un detalle que solo el dueño real conoce (ej. "calcomanía en la parte trasera", "nombre grabado"). No se mostrará en el catálogo público y servirá a los administradores para verificar a quien lo reclame.
+                    </p>
+                    <input type="text" id="reportSecretDetail" name="secretDetail"
+                           placeholder="Ej. Tiene una calcomanía del Jaguar en la esquina inferior izquierda"
+                           class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:border-brand-500 focus:ring-3 focus:ring-brand-500/15 focus:outline-hidden transition">
+                </div>
+
+                <!-- Photo Uploader with Instant Preview -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                        Foto del Objeto (Opcional)
+                    </label>
+                    <div class="flex items-center gap-4">
+                        <label for="reportPhotoInput" class="flex-1 flex flex-col items-center justify-center p-4 border-2 border-dashed border-slate-200 hover:border-brand-400 rounded-2xl cursor-pointer bg-slate-50 hover:bg-brand-50/40 transition-colors">
+                            <svg class="w-6 h-6 text-slate-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span class="text-xs font-semibold text-slate-600">Subir imagen o tomar foto</span>
+                            <span class="text-[10px] text-slate-400">PNG, JPG, WEBP hasta 5MB</span>
+                            <input type="file" id="reportPhotoInput" accept="image/*" class="hidden">
+                        </label>
+                        <div id="reportPhotoPreviewContainer" class="w-20 h-20 rounded-2xl border border-slate-200 bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 relative">
+                            <span id="reportPhotoPlaceholder" class="text-[10px] text-slate-400 font-semibold">Sin foto</span>
+                            <img id="reportPhotoImg" src="" alt="Vista previa" class="w-full h-full object-cover hidden">
+                            <button id="btnRemovePhoto" type="button" class="hidden absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-xs font-bold" title="Eliminar foto">&times;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button & Alert -->
+                <div id="reportFormAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
+
+                <div class="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <button id="btnCancelReport" type="button" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold transition">
+                        Cancelar
+                    </button>
+                    <button id="btnSubmitReport" type="submit" class="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-xs font-bold shadow-md shadow-brand-500/25 transition flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span>Publicar Reporte</span>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function() {
+    let detectedNodeId = "";
+    let detectedLocationName = "";
+
+    const modal = document.getElementById("reportObjectModal");
+    const btnClose = document.getElementById("btnCloseReportModal");
+    const btnCancel = document.getElementById("btnCancelReport");
+    const form = document.getElementById("reportObjectForm");
+    const formAlert = document.getElementById("reportFormAlert");
+    const submitBtn = document.getElementById("btnSubmitReport");
+
+    const gpsStatusText = document.getElementById("gpsStatusText");
+    const gpsSubText = document.getElementById("gpsSubText");
+    const gpsConfirmationButtons = document.getElementById("gpsConfirmationButtons");
+    const btnConfirmGps = document.getElementById("btnConfirmGpsLocation");
+    const btnManualToggle = document.getElementById("btnManualDropdownToggle");
+    const manualContainer = document.getElementById("manualLocationContainer");
+    const locationSelect = document.getElementById("reportLocationSelect");
+    const locationHidden = document.getElementById("reportLocationNode");
+
+    const photoInput = document.getElementById("reportPhotoInput");
+    const photoImg = document.getElementById("reportPhotoImg");
+    const photoPlaceholder = document.getElementById("reportPhotoPlaceholder");
+    const photoHidden = document.getElementById("reportPhotoUrl");
+    const btnRemovePhoto = document.getElementById("btnRemovePhoto");
+
+    // Open Modal Function
+    window.openReportObjectDialog = function(preselectedLocation) {
+        if (!modal) return;
+        modal.classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+
+        if (preselectedLocation) {
+            locationSelect.value = preselectedLocation;
+            locationHidden.value = preselectedLocation;
+        }
+
+        // Trigger GPS match
+        detectCampusLocation();
+    };
+
+    window.closeReportObjectDialog = function() {
+        if (!modal) return;
+        modal.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+        form.reset();
+        clearPhotoPreview();
+        formAlert.classList.add("hidden");
+    };
+
+    if (btnClose) btnClose.addEventListener("click", window.closeReportObjectDialog);
+    if (btnCancel) btnCancel.addEventListener("click", window.closeReportObjectDialog);
+
+    // Geolocation detection and campus nearest-gps resolution
+    async function detectCampusLocation() {
+        if (!navigator.geolocation) {
+            fallbackManualLocation("Tu navegador no soporta detección GPS.");
+            return;
+        }
+
+        gpsStatusText.textContent = "Detectando coordenadas del campus...";
+        gpsSubText.textContent = "Obteniendo posición GPS para asociar el edificio más cercano...";
+        gpsConfirmationButtons.classList.add("hidden");
+
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                document.getElementById("reportLatitude").value = lat;
+                document.getElementById("reportLongitude").value = lng;
+
+                try {
+                    const res = await fetch(`/api/map/nearest-gps?lat=${lat}&lng=${lng}&lang=spa`);
+                    const data = await res.json();
+
+                    if (data.success && data.isWithinCampus && data.buildingName) {
+                        detectedNodeId = data.nearestNodeId || data.nearestSpecificNodeId || "buildingA";
+                        detectedLocationName = `${data.buildingName}${data.nodeName ? ' (' + data.nodeName + ')' : ''}`;
+
+                        gpsStatusText.innerHTML = `📍 ¿El objeto estaba en <strong>${detectedLocationName}</strong>?`;
+                        gpsSubText.textContent = `Aproximadamente a ${Math.round(data.distanceMeters || 0)}m de tu posición actual.`;
+                        gpsConfirmationButtons.classList.remove("hidden");
+                    } else if (data.success && !data.isWithinCampus) {
+                        fallbackManualLocation("Estás fuera del campus UAM. Selecciona el edificio en el menú desplegable:");
+                    } else {
+                        fallbackManualLocation("Ubicación aproximada no identificada. Por favor selecciona el edificio:");
+                    }
+                } catch (e) {
+                    fallbackManualLocation("No se pudo consultar el servicio de mapa. Selecciona el edificio:");
+                }
+            },
+            (err) => {
+                fallbackManualLocation("Permiso de GPS no concedido. Selecciona el edificio manualmente:");
+            },
+            { enableHighAccuracy: true, timeout: 6000 }
+        );
+    }
+
+    function fallbackManualLocation(msg) {
+        gpsStatusText.textContent = "Selección Manual de Ubicación";
+        gpsSubText.textContent = msg;
+        gpsConfirmationButtons.classList.add("hidden");
+        locationSelect.focus();
+    }
+
+    // Confirmation buttons
+    if (btnConfirmGps) {
+        btnConfirmGps.addEventListener("click", () => {
+            locationHidden.value = detectedNodeId;
+            locationSelect.value = detectedNodeId;
+            gpsStatusText.innerHTML = `✓ Ubicación confirmada: <strong>${detectedLocationName}</strong>`;
+            gpsConfirmationButtons.classList.add("hidden");
+        });
+    }
+
+    if (btnManualToggle) {
+        btnManualToggle.addEventListener("click", () => {
+            locationSelect.focus();
+            gpsSubText.textContent = "Por favor selecciona el edificio correspondiente:";
+        });
+    }
+
+    if (locationSelect) {
+        locationSelect.addEventListener("change", (e) => {
+            locationHidden.value = e.target.value;
+        });
+    }
+
+    // Photo preview handling (FileReader)
+    if (photoInput) {
+        photoInput.addEventListener("change", function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert("La imagen excede el límite de 5MB.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                photoImg.src = evt.target.result;
+                photoImg.classList.remove("hidden");
+                photoPlaceholder.classList.add("hidden");
+                photoHidden.value = evt.target.result;
+                btnRemovePhoto.classList.remove("hidden");
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function clearPhotoPreview() {
+        if (photoImg) photoImg.src = "";
+        if (photoImg) photoImg.classList.add("hidden");
+        if (photoPlaceholder) photoPlaceholder.classList.remove("hidden");
+        if (photoHidden) photoHidden.value = "";
+        if (photoInput) photoInput.value = "";
+        if (btnRemovePhoto) btnRemovePhoto.classList.add("hidden");
+    }
+
+    if (btnRemovePhoto) {
+        btnRemovePhoto.addEventListener("click", clearPhotoPreview);
+    }
+
+    // Form submission
+    if (form) {
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            formAlert.classList.add("hidden");
+
+            const loc = locationHidden.value || locationSelect.value;
+            if (!loc) {
+                formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
+                formAlert.textContent = "⚠️ Debes seleccionar o confirmar la ubicación en el campus.";
+                formAlert.classList.remove("hidden");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            const originalHtml = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="inline-block animate-spin mr-1">↻</span> Guardando...';
+
+            const payload = {
+                itemName: document.getElementById("reportItemName").value.trim(),
+                category: document.getElementById("reportCategory").value,
+                location: loc,
+                description: document.getElementById("reportDescription").value.trim(),
+                secretDetail: (document.getElementById("reportSecretDetail").value || "").trim(),
+                photoUrl: photoHidden.value || null,
+                latitude: document.getElementById("reportLatitude").value || null,
+                longitude: document.getElementById("reportLongitude").value || null,
+            };
+
+            try {
+                const res = await fetch("/api/lost-found-object/items", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
+                    formAlert.textContent = "✓ ¡Objeto reportado con éxito! Se ha añadido al catálogo del campus.";
+                    formAlert.classList.remove("hidden");
+
+                    // Dispatch custom event for catalog and map refresh
+                    window.dispatchEvent(new CustomEvent("lostObjectReported", { detail: data }));
+
+                    setTimeout(() => {
+                        window.closeReportObjectDialog();
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalHtml;
+                        // Reload if on catalog screen
+                        if (window.location.pathname.includes("/catalogo") || window.location.pathname.includes("/items")) {
+                            window.location.reload();
+                        }
+                    }, 1000);
+                } else {
+                    formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
+                    formAlert.textContent = "⚠️ " + (data.error || "Ocurrió un error al guardar el reporte.");
+                    formAlert.classList.remove("hidden");
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHtml;
+                }
+            } catch (err) {
+                formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
+                formAlert.textContent = "⚠️ Error de conexión con el servidor.";
+                formAlert.classList.remove("hidden");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHtml;
+            }
+        });
+    }
+})();
+</script>
