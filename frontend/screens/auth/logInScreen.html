@@ -1,19 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>log in screen</title>
-    <link rel = "stylesheet" href="../../static/css/screens/auth/logInScreen.css"/>
-</head>
+{% extends "screens/base.html" %}
 
-<body>
-    <main>
-        <section class="options">
-            <p>Jaguar Find</p>
-            <a class="btn" href="/auth/options">Sign up</a>
-            <a class="btn" href="/auth/signin">Sign in</a>
-        </section>
-    </main>
-</body>
-</html>
+{% block title %}{{ t('nav.lost_found', default='Lost & Found') }} · JaguarFind{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/screens/auth/logInScreen.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="auth-hero flex-1 flex items-center justify-center px-4 py-10">
+    <div class="options w-full max-w-sm bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xl p-8 flex flex-col items-center gap-5">
+        <div class="w-14 h-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+        </div>
+
+        <div class="text-center">
+            <h1 class="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-brand-900 to-brand-600 bg-clip-text text-transparent">Jaguar Find</h1>
+            <p class="mt-1 text-sm text-slate-500">{{ t('auth.login_subtitle', default='Inicia sesión o regístrate para gestionar objetos perdidos' if current_language == 'spa' else 'Sign in or sign up to manage lost objects') }}</p>
+        </div>
+
+        <div class="w-full flex flex-col gap-3">
+            <a class="btn w-full text-center px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 shadow-sm active:scale-95 transition-all"
+               href="/auth/options">{{ 'Registrarse' if current_language == 'spa' else 'Sign up' }}</a>
+            <a class="btn w-full text-center px-4 py-2.5 rounded-xl text-sm font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 active:scale-95 transition-all"
+               href="/auth/signin">{{ 'Iniciar sesión' if current_language == 'spa' else 'Sign in' }}</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
