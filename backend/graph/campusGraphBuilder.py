@@ -52,8 +52,36 @@ def buildUamCampusGraph() -> DirectedGraph:
     # 2. Walkways / Edges with Physical Distance in Meters and Accessibility
     # Walkways are bidirectional, modeled as symmetric pairs of directed edges (u -> v) and (v -> u)
     g.addBidirectionalWalkway("mainParking", "buildingK", 65.0, isAccessible=True,
-                             forwardInstruction="Walk 65m north towards Central Cafeteria (Building K).",
-                             backwardInstruction="Walk 65m south towards Main Parking.")
+                             forwardInstruction="Walk 65m straight from Main Entrance towards Central Cafeteria (Building K).",
+                             backwardInstruction="Walk 65m along the main sidewalk back to Main Parking & Entrance.")
+
+    g.addBidirectionalWalkway("mainParking", "buildingA", 90.0, isAccessible=True,
+                             forwardInstruction="Walk 90m straight along the main sidewalk past Building K and the bank towards Building A.",
+                             backwardInstruction="Walk 90m straight along the main sidewalk past Building K towards Main Entrance.")
+
+    g.addBidirectionalWalkway("mainParking", "buildingE", 95.0, isAccessible=True,
+                             forwardInstruction="Turn right at the Main Entrance and follow the south avenue sidewalk 95m towards Building E (Medicine).",
+                             backwardInstruction="Follow the south avenue sidewalk 95m back towards Main Parking & Entrance.")
+
+    g.addBidirectionalWalkway("mainParking", "buildingI", 150.0, isAccessible=True,
+                             forwardInstruction="Turn right at the Main Entrance and follow the south avenue sidewalk 150m directly to Rectorate & Central Library (Building I).",
+                             backwardInstruction="Follow the south avenue sidewalk 150m from Building I back to Main Entrance.")
+
+    g.addBidirectionalWalkway("buildingA", "buildingC", 30.0, isAccessible=True,
+                             forwardInstruction="Follow the indoor corridor 30m from Building A into Building C (Computer Labs & Cashier).",
+                             backwardInstruction="Follow Building C's corridor 30m towards Building A.")
+
+    g.addBidirectionalWalkway("buildingB", "buildingE", 35.0, isAccessible=True,
+                             forwardInstruction="Cross the covered 2nd-floor skybridge 35m from Building B directly to Building E (Medicine).",
+                             backwardInstruction="Cross the covered 2nd-floor skybridge 35m from Building E directly to Building B.")
+
+    g.addBidirectionalWalkway("buildingC", "buildingM", 30.0, isAccessible=True,
+                             forwardInstruction="Exit Building C's west corridor and walk 30m to Building M's main entrance.",
+                             backwardInstruction="Exit Building M's main entrance and walk 30m into Building C's west corridor.")
+
+    g.addBidirectionalWalkway("buildingE", "buildingG", 25.0, isAccessible=True,
+                             forwardInstruction="Cross the interior courtyard walkway 25m from Building E to Building G (Law & Auditorium).",
+                             backwardInstruction="Cross the interior courtyard walkway 25m from Building G to Building E (Medicine).")
 
     g.addBidirectionalWalkway("buildingK", "buildingA", 45.0, isAccessible=True,
                              forwardInstruction="Advance 45m northeast towards Building A (Student Services).",
@@ -62,6 +90,22 @@ def buildUamCampusGraph() -> DirectedGraph:
     g.addBidirectionalWalkway("buildingK", "chilamatesPlaza", 50.0, isAccessible=True,
                              forwardInstruction="Walk 50m northwest towards Chilamates Plaza.",
                              backwardInstruction="Walk 50m southeast towards Building K.")
+
+    g.addBidirectionalWalkway("chilamatesPlaza", "buildingA", 30.0, isAccessible=True,
+                             forwardInstruction="Cross the zebra crosswalk 30m from Chilamates Plaza directly into Building A.",
+                             backwardInstruction="Exit Building A's corridor and cross the zebra crosswalk 30m into Chilamates Plaza.")
+
+    g.addBidirectionalWalkway("chilamatesPlaza", "buildingJ", 25.0, isAccessible=True,
+                             forwardInstruction="Walk 25m east from Chilamates Plaza to Building J (Dentistry Labs).",
+                             backwardInstruction="Walk 25m west from Building J into Chilamates Plaza.")
+
+    g.addBidirectionalWalkway("chilamatesPlaza", "buildingN", 35.0, isAccessible=True,
+                             forwardInstruction="Follow the internal Chilamates Plaza walkway 35m directly to Building N (Dental Clinics).",
+                             backwardInstruction="Walk 35m around Building N's west side into Chilamates Plaza.")
+
+    g.addBidirectionalWalkway("chilamatesPlaza", "buildingP", 55.0, isAccessible=True,
+                             forwardInstruction="Follow the straight walkway 55m north from Chilamates Plaza across the parking lot towards Building P (Copernicus).",
+                             backwardInstruction="Walk 55m south from Building P directly into Chilamates Plaza.")
 
     g.addBidirectionalWalkway("buildingA", "buildingB", 35.0, isAccessible=True,
                              forwardInstruction="Cross the central hallway 35m east towards Building B.",

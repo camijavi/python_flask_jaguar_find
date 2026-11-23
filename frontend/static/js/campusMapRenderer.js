@@ -715,29 +715,24 @@
         el("rect", { x: 548, y: 488, width: 32, height: 92, rx: 2, fill: "#cbd5e1", opacity: 0.65 }, pads); // Between E & G/F
         el("rect", { x: 752, y: 584, width: 68, height: 118, rx: 2, fill: "#cbd5e1", opacity: 0.55 }, pads); // Around Building I
 
-        // 4E. Jaguar Jungle (Botanical Garden & Central Walkway Hub between Building O, Main Spine Road, Mi Ranchito & Building H)
+        // 4E. Jaguar Jungle (Lush Botanical Grove & Central Walkway Hub between Building O, Main Spine Road, Mi Ranchito & Building H)
         const jj = el("g", { id: "jaguarJungle", class: "bldg-shape", "data-node": "jaguarJungle", "data-bldg": "JAGUAR JUNGLE" }, layer);
-        // Organic shaded garden footprint snugly bounded by O (top), Spine Road (right), H (bottom), and Mi Ranchito (left)
+        // Clean botanical lawn bed snugly bounded by O (top), Spine Road (right), H (bottom), and Mi Ranchito (left)
         el("path", {
-            d: "M 584 266 L 646 266 Q 655 266 658 275 C 664 294, 672 314, 680 332 Q 684 342 672 344 L 586 344 Q 574 344 574 332 L 574 278 Q 574 266 584 266 Z",
-            fill: "#cfeeda", stroke: "#52b788", "stroke-width": 1.5, "stroke-linejoin": "round"
-        }, jj);
-        // Inner soft botanical lawn contour highlight
-        el("path", {
-            d: "M 590 273 L 642 273 Q 650 273 653 282 C 658 298, 665 314, 671 329 Q 674 337 665 338 L 590 338 Q 581 338 581 329 L 581 282 Q 581 273 590 273 Z",
-            fill: "#b7e4c7", opacity: 0.45
+            d: "M 580 266 L 648 266 Q 655 266 658 274 C 664 294, 672 314, 680 334 Q 682 344 672 344 L 582 344 Q 574 344 574 336 L 574 274 Q 574 266 580 266 Z",
+            fill: "#d8f3dc", stroke: "#86b89a", "stroke-width": 1.1, "stroke-linejoin": "round"
         }, jj);
 
         // Interconnected Pedestrian Walkways linking Building O, Spine Road, Building H, Mi Ranchito, Lab Digital FIA, Area de Mesas & C/M
         const jjWalkways = [
             // North-South curved garden path: Building O terrace -> Jaguar Jungle -> Building H
             "M 638 260 C 636 276, 624 292, 628 312 C 632 328, 641 340, 640 354",
-            // East-West garden path: Main Spine Road edge -> Jaguar Jungle -> Mi Ranchito / Lab Digital FIA corridor
+            // East-West garden path: Main Spine Road edge -> Jaguar Jungle -> Mi Ranchito / Area de Mesas corridor
             "M 674 318 C 655 320, 642 317, 628 316 C 608 316, 584 322, 558 324",
-            // Eastern pedestrian corridor: Mi Ranchito -> Lab Digital FIA -> Area de Mesas -> Building C / M passage
+            // Eastern pedestrian corridor: Mi Ranchito -> Area de Mesas -> Building C / M passage
             "M 558 310 L 558 324 L 554 388 L 574 390 L 574 428",
-            // Short feeder branch into moved Lab Digital FIA
-            "M 536 328 L 558 328"
+            // Connecting pass between Lab Digital FIA (south side) and Area de Mesas (north edge)
+            "M 520 340 L 555 340"
         ];
         const jjPathCasing = el("g", { fill: "none", stroke: "#94a3b8", "stroke-width": 7.4, "stroke-linecap": "butt", "stroke-linejoin": "round", "pointer-events": "none" }, layer);
         const jjPathFill = el("g", { fill: "none", stroke: "#e8edf3", "stroke-width": 5.4, "stroke-linecap": "round", "stroke-linejoin": "round", "pointer-events": "none" }, layer);
@@ -1045,18 +1040,68 @@
             addTreeRow(layer, x1, y1, x2, y2, count, "#treeLarge");
         }
 
-        // Individual accent trees (near P, Plaza Chilamates perimeter, below J, Jaguar Jungle canopy, K/Plaza Central, Banpro, Main Entrance, G/F, Jaguar Gym Lot, East Complex)
+        // Individual accent trees (near P, Plaza Chilamates perimeter, below J, K/Plaza Central, Banpro, Main Entrance, G/F, Jaguar Gym Lot, East Complex)
         const singleTrees = [
             [362, 150], [262, 314], [344, 345], [354, 562],
             [202, 528], [244, 746], [244, 766],
-            // Lush shaded canopy trees inside Jaguar Jungle quadrants (clear of walkways)
-            [594, 286], [612, 279], [593, 306], [648, 290], [656, 305], [598, 333], [656, 333],
             [700, 585],
             [880, 704], [896, 720], [930, 696],
             [992, 577], [966, 594], [966, 614], [966, 632], [960, 662], [1146, 756]
         ];
         for (const [x, y] of singleTrees) {
             el("use", { href: "#treeLarge", x, y }, layer);
+        }
+
+        // Dense, layered tropical foliage filling all 4 quadrants of Jaguar Jungle (clear of curved walkways)
+        const jjFoliage = el("g", { id: "jaguarJungleFoliage" }, layer);
+        // Varied organic canopy clusters: [cx, cy, r, fill, stroke, hi]
+        const jjCanopies = [
+            // Quadrant 1: Top-Left dense grove (x=578..620, y=271..310)
+            [584, 276, 6.2, "#2d6a4f", "#1b4332", "#40916c"],
+            [595, 274, 5.4, "#3b5e54", "#28423b", "#527d70"],
+            [607, 275, 6.4, "#2d6a4f", "#1b4332", "#52b788"],
+            [618, 275, 5.0, "#40916c", "#2d6a4f", "#74c69d"],
+            [582, 288, 5.6, "#40916c", "#2d6a4f", "#74c69d"],
+            [593, 286, 6.8, "#2d6a4f", "#1b4332", "#40916c"],
+            [606, 288, 5.6, "#3b5e54", "#28423b", "#527d70"],
+            [616, 287, 4.8, "#40916c", "#2d6a4f", "#74c69d"],
+            [584, 300, 6.0, "#3b5e54", "#28423b", "#527d70"],
+            [596, 300, 5.8, "#40916c", "#2d6a4f", "#74c69d"],
+            [608, 301, 6.0, "#2d6a4f", "#1b4332", "#52b788"],
+            [617, 302, 4.5, "#3b5e54", "#28423b", "#527d70"],
+            [582, 310, 4.2, "#40916c", "#2d6a4f", "#74c69d"],
+            [592, 310, 4.0, "#2d6a4f", "#1b4332", "#52b788"],
+            [602, 309, 3.8, "#40916c", "#2d6a4f", "#74c69d"],
+            // Quadrant 2: Top-Right grove hugging Spine Road (x=638..664, y=272..309)
+            [646, 274, 5.6, "#2d6a4f", "#1b4332", "#40916c"],
+            [654, 282, 5.2, "#40916c", "#2d6a4f", "#74c69d"],
+            [643, 286, 5.8, "#3b5e54", "#28423b", "#527d70"],
+            [650, 295, 6.2, "#2d6a4f", "#1b4332", "#52b788"],
+            [660, 296, 4.8, "#40916c", "#2d6a4f", "#74c69d"],
+            [641, 302, 5.2, "#40916c", "#2d6a4f", "#74c69d"],
+            [652, 306, 5.4, "#3b5e54", "#28423b", "#527d70"],
+            [663, 307, 4.6, "#2d6a4f", "#1b4332", "#52b788"],
+            // Quadrant 3: Bottom-Left lush border strip (x=578..624, y=327..340)
+            [583, 333, 5.4, "#2d6a4f", "#1b4332", "#40916c"],
+            [593, 335, 5.6, "#40916c", "#2d6a4f", "#74c69d"],
+            [604, 333, 5.8, "#3b5e54", "#28423b", "#527d70"],
+            [615, 334, 5.4, "#2d6a4f", "#1b4332", "#52b788"],
+            [624, 336, 4.4, "#40916c", "#2d6a4f", "#74c69d"],
+            [588, 339, 3.8, "#3b5e54", "#28423b", "#527d70"],
+            [599, 339, 4.0, "#2d6a4f", "#1b4332", "#52b788"],
+            [610, 339, 3.8, "#40916c", "#2d6a4f", "#74c69d"],
+            // Quadrant 4: Bottom-Right grove (x=644..674, y=327..340)
+            [647, 333, 5.4, "#2d6a4f", "#1b4332", "#52b788"],
+            [657, 334, 5.8, "#3b5e54", "#28423b", "#527d70"],
+            [668, 334, 5.2, "#40916c", "#2d6a4f", "#74c69d"],
+            [652, 339, 3.8, "#40916c", "#2d6a4f", "#74c69d"],
+            [663, 339, 4.0, "#2d6a4f", "#1b4332", "#52b788"],
+            [673, 338, 3.6, "#3b5e54", "#28423b", "#527d70"]
+        ];
+        for (const [cx, cy, r, fill, stroke, hi] of jjCanopies) {
+            el("circle", { cx: (cx + 0.8).toFixed(1), cy: (cy + 1.1).toFixed(1), r, fill: "#0f172a", opacity: 0.14 }, jjFoliage);
+            el("circle", { cx, cy, r, fill, stroke, "stroke-width": 0.75 }, jjFoliage);
+            el("circle", { cx: (cx - r * 0.28).toFixed(1), cy: (cy - r * 0.28).toFixed(1), r: (r * 0.42).toFixed(1), fill: hi, opacity: 0.72 }, jjFoliage);
         }
 
         // Small manicured bush / hedge rows [x1, y1, x2, y2, count]
@@ -1069,9 +1114,6 @@
             [521, 346, 527, 386, 6],
             [532, 346, 538, 386, 6],
             [544, 353, 546, 365, 2],
-            // Botanical accent shrubs inside Jaguar Jungle
-            [610, 298, 616, 304, 2],
-            [614, 332, 622, 335, 2],
             // Below H (5 bushes) & double vertical 6+6 bush column east of M (+14px)
             [608, 393, 642, 393, 5],
             [680, 434, 680, 464, 6],
