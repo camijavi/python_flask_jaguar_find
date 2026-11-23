@@ -109,9 +109,6 @@
             this.tbtNextPreview = document.getElementById("tbtNextPreview");
             this.tbtManeuverIcon = document.getElementById("tbtManeuverIcon");
             this.btnCloseTbt = document.getElementById("btnCloseTbtBanner");
-            this.tbtIndoorActionRow = document.getElementById("tbtIndoorActionRow");
-            this.btnTbtEnterBuildingP = document.getElementById("btnTbtEnterBuildingP");
-            this.labelTbtEnterBuildingP = document.getElementById("labelTbtEnterBuildingP");
 
             // Waze Bottom Trip Summary, Floating Dials & Action Tray Elements
             this.wazeBottomBar = document.getElementById("wazeBottomBar");
@@ -139,7 +136,6 @@
             this.btnTbtPlay = document.getElementById("btnTbtPlaySimulation");
             this.labelSimPlay = document.getElementById("labelSimPlay");
             this.isTrayOpen = false;
-            this.indoorHandoffTimer = null;
 
             // Map building coordinates lookup (single source of truth from campusMapRenderer.js)
             this.buildingAnchors = window.CAMPUS_BUILDING_ANCHORS || {
@@ -266,15 +262,6 @@
                 badgeEl.addEventListener("click", (e) => {
                     e.stopPropagation();
                     this.focusBuilding(nodeId, { zoom: 2.85, animate: true });
-                    if (nodeId === "buildingP") {
-                        setTimeout(() => {
-                            if (typeof window.openBuildingMap === "function") {
-                                window.openBuildingMap("buildingP");
-                            } else if (typeof window.openBuildingPModal === "function") {
-                                window.openBuildingPModal();
-                            }
-                        }, 380);
-                    }
                 });
 
                 fragment.appendChild(badgeEl);
@@ -354,7 +341,7 @@
                 this.btnTbtConfirmStep.addEventListener("click", (e) => {
                     e.stopPropagation();
                     this.stopSimulation();
-                    this.nextStep({ triggerIndoorIfAtEnd: true });
+                    this.nextStep();
                 });
             }
 
@@ -433,15 +420,7 @@
             if (this.btnTbtNextStep) {
                 this.btnTbtNextStep.addEventListener("click", () => {
                     this.stopSimulation();
-                    this.nextStep({ triggerIndoorIfAtEnd: true });
-                });
-            }
-
-            // Indoor Building P 3D Waze Handoff Button
-            if (this.btnTbtEnterBuildingP) {
-                this.btnTbtEnterBuildingP.addEventListener("click", () => {
-                    this.stopSimulation();
-                    this.launchBuildingPIndoorWaze();
+                    this.nextStep();
                 });
             }
 
@@ -1195,13 +1174,14 @@
             if (this.tbtStepCounter) this.tbtStepCounter.textContent = "Vista 2.5D";
             if (this.tbtStepDistance) this.tbtStepDistance.textContent = cleanName;
             if (this.tbtStepInstruction) this.tbtStepInstruction.textContent = subtitle;
+
             if (this.tbtNextPreview) {
                 this.tbtNextPreview.classList.remove("hidden");
-                if (bldgData.id === "buildingP") {
-                    this.tbtNextPreview.textContent = "Toca para abrir Maqueta Isométrica 3D (3 Pisos)";
-                } else {
-                    this.tbtNextPreview.textContent = "Toca «Ir aquí» para iniciar navegación JaguarFind";
-                }
+                this.tbtNextPreview.textContent = "Toca «Ir aquí» para iniciar navegación JaguarFind";
+            }
+
+            if (this.btnTbtConfirmStep && this.btnTbtConfirmStep.parentElement) {
+                this.btnTbtConfirmStep.parentElement.classList.add("hidden");
             }
 
             if (this.wazeActiveRoadPill) {
@@ -1209,17 +1189,8 @@
                 this.wazeActiveRoadPill.classList.remove("hidden");
             }
 
-            if (bldgData.id === "buildingP") {
-                this.tbtBanner.style.cursor = "pointer";
-                this.tbtBanner.onclick = () => {
-                    if (typeof window.openBuildingPIsometricModal === "function") {
-                        window.openBuildingPIsometricModal();
-                    }
-                };
-            } else {
-                this.tbtBanner.onclick = null;
-                this.tbtBanner.style.cursor = "default";
-            }
+            this.tbtBanner.onclick = null;
+            this.tbtBanner.style.cursor = "default";
             if (this.tbtManeuverIcon) {
                 this.tbtManeuverIcon.innerHTML = `
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1476,86 +1447,21 @@
         }
 
         /**
-         * Checks whether the calculated route targets Building P or a classroom/facility inside Building P
-         */
-        isBuildingPRoute(routeData) {
-            if (!routeData) return false;
-            const pathIds = routeData.pathNodeIds || [];
-            const lastNodeId = pathIds.length > 0 ? pathIds[pathIds.length - 1] : null;
-            if (routeData.destinationNodeId === "buildingP" || lastNodeId === "buildingP") {
-                return true;
-            }
-            const destStr = String(routeData.destinationPlaceId || routeData.destination || "").toLowerCase();
-            return (
-                destStr.includes("classroomp") ||
-                destStr.includes("salón p-") ||
-                destStr.includes("salon p-") ||
-                destStr.includes("aula p") ||
-                destStr.includes("copernic") ||
-                destStr.includes("observator") ||
-                destStr.includes("edificio p")
-            );
-        }
-
-        /**
-         * Launches the 3D Building P Indoor Map in Waze Hallway Navigation Mode
-         */
-        launchBuildingPIndoorWaze() {
-            if (!this.currentRoute) return;
-            if (this.indoorHandoffTimer) {
-                clearTimeout(this.indoorHandoffTimer);
-                this.indoorHandoffTimer = null;
-            }
-
-            const route = this.currentRoute;
-            const pathIds = route.pathNodeIds || [];
-            let recommendedEntrance = route.recommendedIndoorEntrance;
-            if (!recommendedEntrance) {
-                if (route.isAccessibleRoute) {
-                    recommendedEntrance = "F1-ENT-E";
-                } else if (pathIds.length >= 2 && (pathIds[pathIds.length - 2] === "buildingO" || pathIds[pathIds.length - 2] === "buildingH")) {
-                    recommendedEntrance = "F1-ENT-O";
-                } else {
-                    recommendedEntrance = "F1-ENT-W";
-                }
-            }
-
-            const selDest = window.currentSelectedDestination || {};
-            const targetQuery = route.destinationPlaceId || selDest.placeId || route.destination || selDest.title || "F5-501";
-            const payload = {
-                origin: recommendedEntrance,
-                destination: targetQuery,
-                autoStartWaze: true,
-                fromCampusRoute: true,
-                campusOriginName: route.origin || "Campus UAM"
-            };
-
-            if (typeof window.openBuildingPModal === "function") {
-                window.openBuildingPModal(payload);
-            } else if (typeof window.openBuildingMap === "function") {
-                window.openBuildingMap("buildingP", payload);
-            }
-        }
-
-        /**
          * Global Route Calculated Handler
          */
         onRouteCalculated(routeData) {
-            if (this.indoorHandoffTimer) {
-                clearTimeout(this.indoorHandoffTimer);
-                this.indoorHandoffTimer = null;
-            }
-
             this.currentRoute = routeData;
             this.currentStepIndex = 0;
 
             const hasSteps = Array.isArray(routeData && routeData.steps) && routeData.steps.length > 0;
             const hasPath = Array.isArray(routeData && routeData.pathCoordinates) && routeData.pathCoordinates.length >= 2;
             if (!routeData || (!hasSteps && !hasPath)) {
-                if (this.isBuildingPRoute(routeData)) {
-                    this.launchBuildingPIndoorWaze();
-                }
                 return;
+            }
+
+            // Restore human landmark confirm button when switching from building focus back to active route
+            if (this.btnTbtConfirmStep && this.btnTbtConfirmStep.parentElement) {
+                this.btnTbtConfirmStep.parentElement.classList.remove("hidden");
             }
 
             // Draw exact backend Dijkstra pedestrian walkway polyline
@@ -1572,25 +1478,8 @@
                 this.zoomScale = routeZoom;
             }
 
-            // Reveal Indoor Building P 3D button if destination is inside Building P
-            if (this.tbtIndoorActionRow) {
-                if (this.isBuildingPRoute(routeData)) {
-                    this.tbtIndoorActionRow.classList.remove("hidden");
-                    if (this.labelTbtEnterBuildingP) {
-                        this.labelTbtEnterBuildingP.textContent = `Navegar Dentro de Edificio P → ${routeData.destination || "Salón"}`;
-                    }
-                } else {
-                    this.tbtIndoorActionRow.classList.add("hidden");
-                }
-            }
-
             this.showNavigationBanner();
             this.goToStep(0);
-
-            // If live GPS/compass is already running, stay anchored to user; otherwise preview step 0 cleanly
-            if (!this.isLiveCompassActive && routeData.isIndoorOnly && this.isBuildingPRoute(routeData)) {
-                this.launchBuildingPIndoorWaze();
-            }
         }
 
         drawRoutePolylines(routeData) {
@@ -1619,18 +1508,11 @@
         }
 
         onRouteCleared() {
-            if (this.indoorHandoffTimer) {
-                clearTimeout(this.indoorHandoffTimer);
-                this.indoorHandoffTimer = null;
-            }
             this.currentRoute = null;
             this.currentStepIndex = 0;
             this.stopSimulation();
             this.hideNavigationBanner();
             this.toggleActionTray(false);
-            if (this.tbtIndoorActionRow) {
-                this.tbtIndoorActionRow.classList.add("hidden");
-            }
             if (this.tbtOrientationCue) {
                 this.tbtOrientationCue.classList.add("hidden");
             }
@@ -1890,7 +1772,7 @@
                 if (tLat && tLng) {
                     const distToMilestone = this.haversineMeters(latitude, longitude, tLat, tLng);
                     if (distToMilestone <= 10.5) {
-                        this.nextStep({ keepLivePosition: true, triggerIndoorIfAtEnd: true });
+                        this.nextStep({ keepLivePosition: true });
                     }
                 }
             }
@@ -2057,29 +1939,13 @@
             const steps = this.getActiveStepsList();
             if (this.currentStepIndex < steps.length - 1) {
                 this.goToStep(this.currentStepIndex + 1, options);
-                if (this.currentStepIndex === steps.length - 1 && this.isBuildingPRoute(this.currentRoute)) {
-                    if (this.autoOpenIndoorOnArrival || options.triggerIndoorIfAtEnd) {
-                        this.stopSimulation();
-                        if (this.indoorHandoffTimer) clearTimeout(this.indoorHandoffTimer);
-                        this.indoorHandoffTimer = setTimeout(() => {
-                            this.launchBuildingPIndoorWaze();
-                        }, 1100);
-                    }
-                }
             } else {
                 this.stopSimulation();
-                if (options.triggerIndoorIfAtEnd && this.isBuildingPRoute(this.currentRoute)) {
-                    this.launchBuildingPIndoorWaze();
-                }
             }
         }
 
         prevStep() {
             if (!this.currentRoute) return;
-            if (this.indoorHandoffTimer) {
-                clearTimeout(this.indoorHandoffTimer);
-                this.indoorHandoffTimer = null;
-            }
             if (this.currentStepIndex > 0) {
                 this.goToStep(this.currentStepIndex - 1);
             }
@@ -2170,17 +2036,16 @@
             if (this.isSimulating) {
                 this.stopSimulation();
             } else {
-                this.startSimulation({ autoOpenIndoorOnArrival: true });
+                this.startSimulation();
             }
         }
 
-        startSimulation(options = {}) {
+        startSimulation() {
             const steps = this.getActiveStepsList();
             if (!this.currentRoute || steps.length === 0) return;
             if (this.isLiveCompassActive) this.stopLiveCompassNavigation();
 
             this.isSimulating = true;
-            this.autoOpenIndoorOnArrival = options.autoOpenIndoorOnArrival !== false;
             if (this.labelSimPlay) this.labelSimPlay.textContent = "Pausa";
 
             if (this.currentStepIndex >= steps.length - 1) {
