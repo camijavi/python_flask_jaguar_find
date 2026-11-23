@@ -932,6 +932,11 @@
 
         resolveSvgPoint(coord) {
             if (!coord) return { x: 600, y: 425 };
+            if (window.CAMPUS_MICRO_WALKWAYS && coord.nodeId) {
+                const microId = window.CAMPUS_MICRO_WALKWAYS.macroToMicro[coord.nodeId];
+                const microNode = microId && window.CAMPUS_MICRO_WALKWAYS.nodes[microId];
+                if (microNode) return { x: microNode.x, y: microNode.y };
+            }
             const known = this.buildingAnchors[coord.nodeId];
             if (known) return { x: known.x, y: known.y };
             return {
@@ -1515,10 +1520,16 @@
 
         drawRoutePolylines(routeData) {
             if (!routeData || !routeData.pathCoordinates) return;
-            const points = routeData.pathCoordinates.map(coord => {
-                const pt = this.resolveSvgPoint(coord);
-                return `${pt.x},${pt.y}`;
-            }).join(" ");
+            let resolvedPts = [];
+            if (typeof window.resolveMicroCampusRoute === "function") {
+                resolvedPts = window.resolveMicroCampusRoute(routeData.pathCoordinates, {
+                    accessibleOnly: Boolean(routeData.isAccessibleRoute)
+                });
+            }
+            const points = (resolvedPts.length >= 2
+                ? resolvedPts
+                : routeData.pathCoordinates.map(coord => this.resolveSvgPoint(coord))
+            ).map(pt => `${pt.x},${pt.y}`).join(" ");
 
             const shadow = document.getElementById("route2dShadowPolyline");
             const glow = document.getElementById("route2dGlowPolyline");

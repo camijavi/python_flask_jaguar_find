@@ -905,33 +905,39 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ----------------------------------------------------------------------------
-    // 6. Global Dijkstra Route Visualization
+    // 6. Global Dijkstra Route Visualization (Sidewalk-Hugging Micro-Walkway Routing)
     // ----------------------------------------------------------------------------
     window.addEventListener("jaguarMapRouteCalculated", function (e) {
         const route = e.detail;
         if (!route || !route.pathCoordinates || route.pathCoordinates.length < 2) return;
 
-        // Resolve exact points on the 1200x850 official SVG canvas
-        const points = route.pathCoordinates.map(coord => {
-            const known = CAMPUS_BUILDINGS[coord.nodeId];
-            if (known && known.anchor) {
-                return `${known.anchor.x},${known.anchor.y}`;
-            }
-            // Fallback percentage to 1200x850
-            const x = Math.round(((coord.xPercent || 50) / 100) * 1200);
-            const y = Math.round(((coord.yPercent || 50) / 100) * 850);
-            return `${x},${y}`;
-        }).join(" ");
+        // Resolve real sidewalk/corridor micro-waypoints respecting walls, doors & 2nd-floor bridges
+        let resolvedPts = [];
+        if (typeof window.resolveMicroCampusRoute === "function") {
+            resolvedPts = window.resolveMicroCampusRoute(route.pathCoordinates, {
+                accessibleOnly: Boolean(route.isAccessibleRoute)
+            });
+        }
+        if (resolvedPts.length < 2) {
+            resolvedPts = route.pathCoordinates.map(coord => {
+                const known = CAMPUS_BUILDINGS[coord.nodeId];
+                if (known && known.anchor) return { x: known.anchor.x, y: known.anchor.y };
+                return {
+                    x: Math.round(((coord.xPercent || 50) / 100) * 1200),
+                    y: Math.round(((coord.yPercent || 50) / 100) * 850)
+                };
+            });
+        }
+
+        const points = resolvedPts.map(pt => `${pt.x},${pt.y}`).join(" ");
 
         if (routeShadowPolyline) routeShadowPolyline.setAttribute("points", points);
         if (routePolyline) routePolyline.setAttribute("points", points);
         if (routeGlowPolyline) routeGlowPolyline.setAttribute("points", points);
 
         // Draw Origin Pin (Ground Shadow + Upright 3D Billboard Pin)
-        const startCoord = route.pathCoordinates[0];
-        const startKnown = CAMPUS_BUILDINGS[startCoord.nodeId];
-        const startX = startKnown ? startKnown.anchor.x : Math.round(((startCoord.xPercent || 50) / 100) * 1200);
-        const startY = startKnown ? startKnown.anchor.y : Math.round(((startCoord.yPercent || 50) / 100) * 850);
+        const startX = resolvedPts[0].x;
+        const startY = resolvedPts[0].y;
 
         if (originPinGroup) {
             originPinGroup.innerHTML = `
@@ -949,10 +955,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Draw Destination Pin (Ground Shadow + Upright 3D Billboard Flag)
-        const endCoord = route.pathCoordinates[route.pathCoordinates.length - 1];
-        const endKnown = CAMPUS_BUILDINGS[endCoord.nodeId];
-        const endX = endKnown ? endKnown.anchor.x : Math.round(((endCoord.xPercent || 50) / 100) * 1200);
-        const endY = endKnown ? endKnown.anchor.y : Math.round(((endCoord.yPercent || 50) / 100) * 850);
+        const endPt = resolvedPts[resolvedPts.length - 1];
+        const endX = endPt.x;
+        const endY = endPt.y;
 
         if (destPinGroup) {
             destPinGroup.innerHTML = `
