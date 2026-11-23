@@ -602,7 +602,10 @@ document.addEventListener("DOMContentLoaded", function() {
         categories: [],
         currentRoute: null,
         isSpeaking: false,
-        activeSpeechIndex: 0
+        activeSpeechIndex: 0,
+        audioElement: null,
+        speechController: null,
+        speechObjectUrl: null
     };
 
     // DOM Elements - Hoisted safely to top of DOMContentLoaded
@@ -1350,19 +1353,27 @@ document.addEventListener("DOMContentLoaded", function() {
         btnReset.classList.remove("hidden");
     }
 
-    // 10. Voice TTS Synthesis (Web Speech API)
+    // 10. Azure Neural Speech synthesis
+    function stopAzureSpeech() {
+        if (state.speechController) state.speechController.abort();
+        if (state.audioElement) {
+            state.audioElement.pause();
+            state.audioElement.src = "";
+        }
+        if (state.speechObjectUrl) {
+            URL.revokeObjectURL(state.speechObjectUrl);
+            state.speechObjectUrl = null;
+        }
+        state.isSpeaking = false;
+        voiceIconContainer.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`;
+        if (voiceBtnText) voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
+    }
+
     btnVoice.addEventListener("click", function(e) {
         e.stopPropagation();
-        if (!("speechSynthesis" in window)) {
-            alert("Tu navegador no soporta síntesis de voz (Web Speech API).");
-            return;
-        }
 
         if (state.isSpeaking) {
-            window.speechSynthesis.cancel();
-            state.isSpeaking = false;
-            voiceIconContainer.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`;
-            if (voiceBtnText) voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
+            stopAzureSpeech();
             return;
         }
 
@@ -1372,19 +1383,16 @@ document.addEventListener("DOMContentLoaded", function() {
         voiceIconContainer.innerHTML = `<svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" stroke-width="2"></rect></svg>`;
         if (voiceBtnText) voiceBtnText.textContent = window.t('map.voice_stop', 'Detener');
 
-        const lang = window.APP_CONFIG.currentLang === "spa" ? "es-ES" : "en-US";
+        const language = window.APP_CONFIG.currentLang === "spa" ? "es-MX" : "en-US";
         const steps = state.currentRoute.stepInstructions;
         let stepIdx = 0;
 
-        function speakNextStep() {
+        async function speakNextStep() {
             if (!state.isSpeaking || stepIdx >= steps.length) {
-                state.isSpeaking = false;
-                voiceIconContainer.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`;
-                if (voiceBtnText) voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
+                stopAzureSpeech();
                 return;
             }
 
-            // Highlight active step in DOM
             document.querySelectorAll("#routeStepsList li").forEach(li => li.classList.remove("ring-2", "ring-brand-500", "bg-brand-50"));
             const activeLi = document.getElementById(`routeStep_${stepIdx}`);
             if (activeLi) {
@@ -1392,22 +1400,33 @@ document.addEventListener("DOMContentLoaded", function() {
                 activeLi.scrollIntoView({ behavior: "smooth", block: "nearest" });
             }
 
-            const utterance = new SpeechSynthesisUtterance(steps[stepIdx]);
-            utterance.lang = lang;
-            utterance.rate = 1.0;
+            state.speechController = new AbortController();
+            try {
+                const response = await fetch("/api/map/speech/synthesize", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: steps[stepIdx], language }),
+                    signal: state.speechController.signal
+                });
+                if (!response.ok) throw new Error("Azure Speech synthesis failed");
 
-            utterance.onend = () => {
-                stepIdx++;
-                speakNextStep();
-            };
-
-            utterance.onerror = () => {
-                state.isSpeaking = false;
-                voiceIconContainer.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`;
-                if (voiceBtnText) voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
-            };
-
-            window.speechSynthesis.speak(utterance);
+                const blob = await response.blob();
+                state.speechObjectUrl = URL.createObjectURL(blob);
+                state.audioElement = new Audio(state.speechObjectUrl);
+                state.audioElement.onended = () => {
+                    URL.revokeObjectURL(state.speechObjectUrl);
+                    state.speechObjectUrl = null;
+                    stepIdx++;
+                    speakNextStep();
+                };
+                state.audioElement.onerror = stopAzureSpeech;
+                await state.audioElement.play();
+            } catch (error) {
+                if (error.name !== "AbortError") {
+                    alert("No se pudo reproducir la guía de voz con Azure Speech.");
+                    stopAzureSpeech();
+                }
+            }
         }
 
         speakNextStep();
@@ -1444,10 +1463,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         if (state.isSpeaking) {
-            window.speechSynthesis.cancel();
-            state.isSpeaking = false;
-            voiceIconContainer.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`;
-            if (voiceBtnText) voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
+            stopAzureSpeech();
         }
 
         window.dispatchEvent(new CustomEvent("jaguarMapRouteCleared"));
