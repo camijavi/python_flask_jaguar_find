@@ -46,9 +46,15 @@
             const res = await fetch("/api/lost-found-object/map-pins");
             const data = await res.json();
 
-            if (!data.success || !data.pins) {
+            if (!data.success || !data.pins || data.requiresAuth) {
                 if (layerGroup) layerGroup.innerHTML = "";
                 if (container25d) container25d.innerHTML = "";
+                if (badgeCounter) {
+                    badgeCounter.textContent = "0";
+                    badgeCounter.classList.add("hidden");
+                }
+                if (popover) popover.classList.add("hidden");
+                activePinsData = [];
                 return;
             }
 

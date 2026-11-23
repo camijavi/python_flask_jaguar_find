@@ -38,11 +38,13 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
             <button id="btnToggleEmergencyLayer" type="button" aria-pressed="true" class="w-9 h-9 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 flex items-center justify-center transition-colors cursor-pointer" title="Puntos de Encuentro y Rutas de Evacuación">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </button>
-            <!-- Lost & Found Waze Alert Layer Toggle -->
+            <!-- Lost & Found Waze Alert Layer Toggle (Visible only for authenticated users) -->
+            {% if session.get('user') %}
             <button id="btnToggleLostObjectsLayer" type="button" aria-pressed="true" class="relative w-9 h-9 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 flex items-center justify-center transition-colors cursor-pointer" title="Capa de Objetos Perdidos (Alertas Waze)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 <span id="mapLostPinsBadgeCount" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center shadow-xs hidden">0</span>
             </button>
+            {% endif %}
             <button id="btnToggleWalkwaysLayer"  type="button" aria-pressed="true" class="w-9 h-9 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-700 flex items-center justify-center transition-colors cursor-pointer" title="Mostrar / Ocultar Red Peatonal Micro (Pasillos, Puentes y Muros)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="4.5" r="2" stroke-width="2.1"></circle>
