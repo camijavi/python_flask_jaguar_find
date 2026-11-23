@@ -1,59 +1,17 @@
-body {
-    background-image: url("https://nicaraguainvestiga.com/wp-content/uploads/2021/10/UAM.jpeg");
+.auth-hero {
+    background-image:
+        linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.5)),
+        url("/static/img/UAM.jpeg");
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    margin: 0;
-    font-family: Arial;
-    font-weight: 300; 
-    font-size: 30px;
 }
 
-
-.sign_in {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    background-color: white;
-    width: 300px;
-    padding: 30px;
-    border: 15;
-    border-radius: 5px;
-    margin: 50px auto;
+/* Responsive: let page grow with content (tall forms on small phones) */
+html:has(.auth-hero), body:has(.auth-hero) { height: auto; min-height: 100%; }
+body:has(.auth-hero) { min-height: 100vh; min-height: 100dvh; }
+.auth-hero { background-attachment: scroll; min-height: calc(100dvh - 3.5rem); }
+@media (max-width: 480px) {
+    .auth-hero { padding-left: 0.75rem; padding-right: 0.75rem; }
 }
 
-input {
-    font-size: 16px;
-    padding: 6px 15px;
-    width: 100%;
-    box-sizing: border-box;
-    border-radius: 5px;
-    border:1px solid gray;
-}
-
-input::placeholder {
-    font-size: 18px;   
-    color: #999;       
-}
-
-.sign_in button {
-    cursor: pointer;
-    color:white;
-    background-color: #0099A8;
-    border-radius: 5px;
-    border:  solid #0099A8;
-    padding: 12px 24px;
-}
-
-.sign_in button:hover {
-    transform: scale(1.05);
-}
-
-label{
-    font-size: 18px;
-    color: #0B545B;
-    font-weight: 550;
-    display: block;
-}
+.auth-hero { flex-shrink: 0; }

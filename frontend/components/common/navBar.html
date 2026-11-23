@@ -74,6 +74,11 @@
 
             </div>
         </div>
+        <!-- Mobile navigation links (desktop nav is hidden below md) -->
+        <nav class="md:hidden flex items-center gap-1 pb-2 -mt-1 overflow-x-auto">
+            <a href="{{ url_for('renderMapScreen') }}" class="flex-1 text-center px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap {% if request.path in ['/', '/map', '/mapa'] %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">{{ t('nav.map', default='Campus Map') }}</a>
+            <a href="{{ url_for('renderLogInScreen') }}" class="flex-1 text-center px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap {% if request.path.startswith('/auth') %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">{{ t('nav.lost_found', default='Lost & Found') }}</a>
+        </nav>
     </div>
 </header>
 

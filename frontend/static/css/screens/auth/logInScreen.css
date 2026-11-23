@@ -11,3 +11,13 @@
 .options .btn:hover {
     transform: translateY(-1px);
 }
+
+/* Responsive: let page grow with content (tall forms on small phones) */
+html:has(.auth-hero), body:has(.auth-hero) { height: auto; min-height: 100%; }
+body:has(.auth-hero) { min-height: 100vh; min-height: 100dvh; }
+.auth-hero { background-attachment: scroll; min-height: calc(100dvh - 3.5rem); }
+@media (max-width: 480px) {
+    .auth-hero { padding-left: 0.75rem; padding-right: 0.75rem; }
+}
+
+.auth-hero { flex-shrink: 0; }

@@ -1,36 +1,48 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar sesión</title>
-    <link rel="stylesheet" href="../../static/css/screens/auth/signInScreen.css"/>
-</head>
-<body>
-    <main>
-        <form class="sign_in" action="/login" method="post">
-            <p>Inicia sesión</p>
+{% extends "screens/base.html" %}
+{% from "components/auth/authMacros.html" import field, roleBadge with context %}
 
-            <div class="campo">
-                <label for="user">Nombre de usuario</label>
-                <input 
-                    type="text" 
-                    id="user" 
-                    name="user"
-                    placeholder="Nombre de usuario">
-            </div>
+{% set es = current_language == 'spa' %}
+{% set rol = request.args.get('rol', 'estudiante') %}
+{% if rol not in ['estudiante', 'colaborador', 'visitante'] %}{% set rol = 'estudiante' %}{% endif %}
 
-            <div class="campo">
-                <label for="password">Contraseña</label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    name="password"
-                    placeholder="Contraseña">
-            </div>
+{% block title %}{{ 'Iniciar sesión' if es else 'Sign in' }} · JaguarFind{% endblock %}
 
-            <button type="submit">Acceder</button>
-        </form>
-    </main>
-</body>
-</html>
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/screens/auth/signInScreen.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="auth-hero flex-1 flex items-start sm:items-center justify-center px-4 py-6 sm:py-10">
+    <form class="sign_in w-full max-w-md bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xl p-6 sm:p-8 flex flex-col gap-5"
+          action="/login" method="post">
+        <input type="hidden" name="rol" value="{{ rol }}">
+
+        <div class="flex flex-col items-center text-center gap-3">
+            <img src="{{ url_for('static', filename='img/jaguarLogo.jpg') }}" alt="Jaguar Find"
+                 class="w-16 h-16 object-contain rounded-full bg-ocean-50 ring-4 ring-brand-200 shadow">
+            <h1 class="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-ocean-900 to-brand-500 bg-clip-text text-transparent">
+                {{ 'Inicia sesión' if es else 'Sign in' }}
+            </h1>
+            {{ roleBadge(rol, es) }}
+        </div>
+
+        {% if rol == 'visitante' %}
+            {{ field('user', 'Correo electrónico' if es else 'Email', 'mail', 'email', 'correo@ejemplo.com') }}
+            {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', 'text', '001-000000-0000X') }}
+        {% else %}
+            {{ field('user', 'Correo institucional' if es else 'Institutional email', 'mail', 'email', 'usuario@uamv.edu.ni') }}
+            {{ field('password', 'Contraseña' if es else 'Password', 'lock', 'password', '••••••') }}
+        {% endif %}
+
+        <button type="submit"
+                class="w-full px-4 py-3 rounded-xl text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 shadow-md shadow-brand-500/30 active:scale-95 transition-all">
+            {{ 'Acceder' if es else 'Sign in' }}
+        </button>
+
+        <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
+            <a href="/auth/options?mode=signin" class="font-semibold text-slate-500 hover:text-brand-700">← {{ 'Cambiar rol' if es else 'Change role' }}</a>
+            <a href="/auth/signup?rol={{ rol }}" class="font-semibold text-ocean-700 hover:text-ocean-900">{{ 'Crear cuenta' if es else 'Create account' }}</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

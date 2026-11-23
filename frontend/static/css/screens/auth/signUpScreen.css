@@ -1,53 +1,17 @@
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: left;
-    padding: 15px 70px 15px 15px;
-    color: #0B545B;
+.auth-hero {
+    background-image:
+        linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.5)),
+        url("/static/img/UAM.jpeg");
+    background-size: cover;
+    background-position: center;
 }
 
-[data-rol] {
-    display: none;
+/* Responsive: let page grow with content (tall forms on small phones) */
+html:has(.auth-hero), body:has(.auth-hero) { height: auto; min-height: 100%; }
+body:has(.auth-hero) { min-height: 100vh; min-height: 100dvh; }
+.auth-hero { background-attachment: scroll; min-height: calc(100dvh - 3.5rem); }
+@media (max-width: 480px) {
+    .auth-hero { padding-left: 0.75rem; padding-right: 0.75rem; }
 }
 
-[data-rol].visible {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-}
-
-.campo {
-    width: 250px;
-    box-sizing: border-box;
-    padding: 8px 5px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-}
-
-.campo label {
-    width: 100%;
-    text-align: left;
-}
-
-input, select {
-    padding: 9px;
-    border: 1px solid #0099A8;
-    border-radius: 5px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-button {
-    cursor: pointer;
-    color: white;
-    background-color: #0099A8;
-    border-radius: 5px;
-    border: solid #0099A8;
-    padding: 12px 24px;
-}
-
-button:hover {
-    transform: scale(1.05);
-}
+.auth-hero { flex-shrink: 0; }
