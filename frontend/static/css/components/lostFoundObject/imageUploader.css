@@ -1,0 +1,24 @@
+.imageUploader {
+    width: 280px;
+    height: 280px;
+    border: 2px dashed #999;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #f7f7f7;
+    margin: 12px 0;
+}
+
+.imageUploader__preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* "contain" si no quieres recortar */
+    display: none;
+}
+
+.imageUploader__placeholder {
+    color: #888;
+    font-size: 14px;
+}

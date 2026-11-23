@@ -30,7 +30,7 @@
             this.focusedBuildingAnchor = null;
             this.targetZoomScale = undefined;
 
-            // Camera Vector Animation State
+            // Camera Vector Animation State (camera look-at point in SVG space)
             this.cameraGroup = document.getElementById("mapCameraGroup");
             this.currentUserX = undefined;
             this.currentUserY = undefined;
@@ -40,12 +40,35 @@
             this.targetHeading = 0;
             this.tweenAnimId = null;
 
+            // Decoupled User Navigation Arrow State (true user position on map, independent of camera pan/overview)
+            this.userSvgX = 400;
+            this.userSvgY = 500;
+            this.userSvgHeading = 0;
+            this.hasUserPosition = false;
+            this.isFollowingUser = true;
+            this.userAnimId = null;
+            this.simAnimId = null;
+            this.simLastTimestamp = 0;
+
+            // Active Route Polyline & Continuous Progress State
+            this.activeRoutePolyline = [];
+            this.totalRoutePx = 0;
+            this.totalRouteMeters = 0;
+            this.stepSpans = [];
+            this.routeProgressDistPx = 0;
+            this.routeProgressRatio = 0;
+            this.routeUsedGpsOrigin = false;
+            this.hasGpsLockOnRoute = false;
+
             // DOM References
             this.viewport = document.getElementById("campus25dViewport");
             this.stage = document.getElementById("campusMapWrapper");
             this.svg = document.getElementById("officialCampus2dSvg");
             this.horizon = document.getElementById("campusHorizonAtmosphere");
             this.compassRose = document.getElementById("compassRose");
+            this.user2dArrowLayer = document.getElementById("user2dArrowLayer");
+            this.user2dArrowGroup = document.getElementById("user2dArrowGroup");
+            this.user2dArrowRotator = document.getElementById("user2dArrowRotator");
 
             // Decoupled HTML Overlays Layer
             this.overlayLayer = document.getElementById("campus25dOverlayLayer");
@@ -69,19 +92,26 @@
             this.btnLiveCompass = document.getElementById("btnLiveCompass");
             this.liveCompassDot = document.getElementById("liveCompassDot");
             this.labelLiveCompass = document.getElementById("labelLiveCompass");
+            this.btnTbtLiveGps = document.getElementById("btnTbtLiveGps");
+            this.tbtLiveGpsDot = document.getElementById("tbtLiveGpsDot");
+            this.labelTbtLiveGps = document.getElementById("labelTbtLiveGps");
             this.parkingGroup = document.getElementById("parkingControlGroup");
             this.btnToggleParking = document.getElementById("btnToggleParkingHighlight");
             this.isParkingHighlighted = false;
 
-            // Live Phone Compass + Continuous GPS State
+            // Continuous Live GPS + Optional Phone Compass State
+            this.isLiveGpsActive = false;
             this.isLiveCompassActive = false;
+            this.gpsStatus = "idle"; // "idle" | "searching" | "tracking" | "outside" | "denied" | "unsupported"
             this.gpsWatchId = null;
             this.smoothedCompassDeg = null;
             this.latestCompassDeg = null;
             this.latestGpsCoords = null;
+            this.lastGpsAnchor = null;
+            this.initialGpsOnRoute = null;
             this._boundOrientationHandler = (ev) => this.handleDeviceOrientation(ev);
             this._compassRafPending = false;
-            // Calibrated UAM GPS <-> SVG Affine Parameters (synced with /api/map/calibration)
+            // Calibrated UAM GPS <-> SVG Affine Parameters + Campus Perimeter (synced with /api/map/calibration)
             this.calibration = {
                 lat0: 12.1085,
                 lng0: -86.2573,
@@ -94,6 +124,17 @@
                 cyN: 2.5386,
                 cyE: -0.0374,
                 mapUpTrueBearingDeg: 181.4,
+                avgSvgPxPerMeter: 2.88,
+                perimeter: [
+                    { lat: 12.109617, lng: -86.259097 },
+                    { lat: 12.109665, lng: -86.256455 },
+                    { lat: 12.108771, lng: -86.255659 },
+                    { lat: 12.107598, lng: -86.255665 },
+                    { lat: 12.107639, lng: -86.256172 },
+                    { lat: 12.107263, lng: -86.256262 },
+                    { lat: 12.106934, lng: -86.256302 },
+                    { lat: 12.106324, lng: -86.258762 },
+                ],
             };
 
             // Waze Top Banner Elements
@@ -318,20 +359,26 @@
                 this.btnToggleHeadingUp.addEventListener("click", () => {
                     this.isHeadingUp = !this.isHeadingUp;
                     this.updateHeadingControls();
-                    if (this.currentRoute) {
-                        this.goToStep(this.currentStepIndex);
-                    } else {
-                        this.heading = 0;
-                        this.applyTransform();
-                        this.updateOverlays();
-                        this.updateCompass(true);
+                    if (this.isFollowingUser && !this.isOverview) {
+                        this.currentHeading = this.isHeadingUp ? (this.userSvgHeading || 0) : 0;
+                        this.targetHeading = this.currentHeading;
                     }
+                    this.applyTransform();
+                    this.updateOverlays();
+                    this.update2dUserArrow();
+                    this.updateCompass(true);
                 });
             }
 
-            // Live Phone Compass + Continuous GPS toggle
+            // Live Phone Compass + Continuous GPS toggles (top pill & TBT banner pill for mobile/desktop)
             if (this.btnLiveCompass) {
                 this.btnLiveCompass.addEventListener("click", () => {
+                    this.toggleLiveCompassNavigation();
+                });
+            }
+            if (this.btnTbtLiveGps) {
+                this.btnTbtLiveGps.addEventListener("click", (e) => {
+                    e.stopPropagation();
                     this.toggleLiveCompassNavigation();
                 });
             }
@@ -345,7 +392,7 @@
                 });
             }
 
-            // Sync calibrated GPS <-> SVG parameters from backend
+            // Sync calibrated GPS <-> SVG parameters + campus perimeter from backend
             fetch("/api/map/calibration")
                 .then(r => r.json())
                 .then(d => {
@@ -355,15 +402,32 @@
                 })
                 .catch(() => {});
 
-            // Snap blue puck immediately when user taps "Obtener vía GPS" in sidebar
+            // Snap blue puck immediately when user taps "Obtener vía GPS" in sidebar and begin live tracking
             window.addEventListener("jaguarGpsLocationUpdated", (e) => {
                 const info = e.detail || {};
-                if (info.userSvgPosition && typeof info.userSvgPosition.x === "number") {
-                    if (!this.is25dActive) {
-                        this.setMode(true, { pitch: 48, zoom: this.getResponsiveZoom(2.2), skipDefaultCenter: true });
-                    }
-                    this.anchorToLowerThird(info.userSvgPosition.x, info.userSvgPosition.y, this.currentHeading || 0, true);
+                if (typeof info.lat === "number" && typeof info.lng === "number") {
+                    this.latestGpsCoords = {
+                        lat: info.lat,
+                        lng: info.lng,
+                        accuracy: info.accuracy || 15,
+                        timestamp: Date.now(),
+                    };
                 }
+                if (info.userSvgPosition && typeof info.userSvgPosition.x === "number") {
+                    this.userSvgX = info.userSvgPosition.x;
+                    this.userSvgY = info.userSvgPosition.y;
+                    this.hasUserPosition = true;
+                    this.isFollowingUser = true;
+                    this.isOverview = false;
+                    this.update2dUserArrow();
+
+                    if (this.is25dActive) {
+                        this.anchorToLowerThird(this.userSvgX, this.userSvgY, this.userSvgHeading || 0, true);
+                    } else if (typeof window.campus2dCenterOnPoint === "function") {
+                        window.campus2dCenterOnPoint(this.userSvgX, this.userSvgY);
+                    }
+                }
+                this.startLiveGpsTracking({ auto: true });
             });
 
             // Parking Lots highlight toggle
@@ -373,39 +437,25 @@
                 });
             }
 
-            // Waze Re-center button (anchors camera back to user lower third)
+            // Waze Re-center button (re-engages user follow mode & anchors camera back to live user arrow)
             if (this.btnWazeRecenter) {
                 this.btnWazeRecenter.addEventListener("click", () => {
-                    this.isOverview = false;
-                    this.pitch = this.pitch >= 50 ? 52 : 45;
-                    this.updatePitchControls(this.pitch);
-                    this.zoomScale = this.getResponsiveZoom(2.2);
-                    if (this.currentRoute) {
-                        this.goToStep(this.currentStepIndex);
-                    } else {
-                        this.centerOnCampusLowerThird();
-                    }
+                    this.recenterOnUser();
                 });
             }
 
-            // Waze Overview button (toggles follow mode vs full campus overview)
+            // Waze Overview button (toggles follow mode vs full campus overview while keeping user arrow at true position)
             if (this.btnWazeOverview) {
                 this.btnWazeOverview.addEventListener("click", () => {
                     this.isOverview = !this.isOverview;
                     if (this.isOverview) {
+                        this.isFollowingUser = false;
                         this.pitch = 35;
                         this.updatePitchControls(this.pitch);
-                        this.zoomScale = this.getResponsiveZoom(1.15);
+                        this.targetZoomScale = this.getResponsiveZoom(1.15);
                         this.anchorToLowerThird(500, 430, 0, true);
                     } else {
-                        this.pitch = 45;
-                        this.updatePitchControls(this.pitch);
-                        this.zoomScale = this.getResponsiveZoom(2.2);
-                        if (this.currentRoute) {
-                            this.goToStep(this.currentStepIndex);
-                        } else {
-                            this.centerOnCampusLowerThird();
-                        }
+                        this.recenterOnUser();
                     }
                 });
             }
@@ -511,10 +561,10 @@
                     if (this.currentRoute) {
                         this.isOverview = false;
                         if (!this.is25dActive) {
-                            this.setMode(true, { pitch: 52, zoom: this.getResponsiveZoom(2.35), skipDefaultCenter: true });
+                            this.setMode(true, { pitch: 52, zoom: this.getResponsiveZoom(2.4), skipDefaultCenter: true });
                         }
                         this.showNavigationBanner();
-                        this.goToStep(this.currentStepIndex);
+                        this.recenterOnUser();
                     } else {
                         openPlanner();
                     }
@@ -543,7 +593,14 @@
                 } else if (e.key.toLowerCase() === "h" && this.is25dActive) {
                     this.isHeadingUp = !this.isHeadingUp;
                     this.updateHeadingControls();
-                    this.goToStep(this.currentStepIndex);
+                    if (this.isFollowingUser && !this.isOverview) {
+                        this.currentHeading = this.isHeadingUp ? (this.userSvgHeading || 0) : 0;
+                        this.targetHeading = this.currentHeading;
+                    }
+                    this.applyTransform();
+                    this.updateOverlays();
+                    this.update2dUserArrow();
+                    this.updateCompass(true);
                 } else if (e.key.toLowerCase() === "c" && this.is25dActive) {
                     if (this.btnWazeRecenter) this.btnWazeRecenter.click();
                 }
@@ -604,6 +661,7 @@
 
                 if (isRotating) {
                     const deltaX = clientX - startRotX;
+                    this.isFollowingUser = false;
                     this.currentHeading = (startHeading - deltaX * 0.45) % 360;
                     this.applyTransform();
                     this.updateOverlays();
@@ -619,6 +677,9 @@
                 lastY = clientY;
 
                 if (deltaX === 0 && deltaY === 0) return;
+
+                // User manually panned camera: detach follow mode so user arrow stays at true map location
+                this.isFollowingUser = false;
 
                 // Mathematical inverse 2.5D perspective projection
                 const vw = this.viewport.clientWidth || 1000;
@@ -742,6 +803,9 @@
                     }
 
                     const angleDiff = currentAngle - initialAngle;
+                    if (Math.abs(angleDiff) > 3) {
+                        this.isFollowingUser = false;
+                    }
                     this.currentHeading = (initialHeading - angleDiff) % 360;
 
                     this.applyTransform();
@@ -852,12 +916,23 @@
 
                 if (options.skipDefaultCenter) {
                     this.syncWazeChrome();
+                    this.update2dUserArrow();
                     return;
                 }
 
                 if (this.currentRoute) {
                     this.showNavigationBanner();
-                    this.goToStep(this.currentStepIndex);
+                    if (this.hasUserPosition) {
+                        this.isFollowingUser = true;
+                        this.isOverview = false;
+                        this.anchorToLowerThird(this.userSvgX, this.userSvgY, this.userSvgHeading || 0, false);
+                    } else {
+                        this.goToStep(this.currentStepIndex);
+                    }
+                } else if (this.hasUserPosition) {
+                    this.isFollowingUser = true;
+                    this.showExploreHud();
+                    this.anchorToLowerThird(this.userSvgX, this.userSvgY, this.userSvgHeading || 0, false);
                 } else {
                     this.heading = 0;
                     this.showExploreHud();
@@ -888,7 +963,7 @@
                 if (this.headingGroup) this.headingGroup.classList.add("hidden");
                 if (this.liveCompassGroup) this.liveCompassGroup.classList.add("hidden");
                 if (this.parkingGroup) this.parkingGroup.classList.add("hidden");
-                if (this.isLiveCompassActive) this.stopLiveCompassNavigation();
+                // Preserve live GPS tracking across 2D <-> 2.5D mode switches so the 2D user arrow keeps tracking!
 
                 this.pitch = 0;
                 this.heading = 0;
@@ -913,10 +988,14 @@
                 if (typeof window.updateCampusCompass === "function") {
                     window.updateCampusCompass(0, true);
                 }
+                this.update2dUserArrow();
             }
 
             this.syncWazeChrome();
             this.updateCompass();
+            if (typeof window.update25dLostPins === "function") {
+                window.update25dLostPins(this);
+            }
         }
 
         /**
@@ -1092,6 +1171,8 @@
 
             this.focusedBuildingId = nodeId;
             this.focusedBuildingAnchor = anchor;
+            // Detach camera follow so inspecting a building does not teleport the user arrow
+            this.isFollowingUser = false;
 
             const was25d = this.is25dActive;
             if (!this.is25dActive) {
@@ -1209,7 +1290,58 @@
 
         centerOnCampusLowerThird() {
             // Default center point near Plaza Central / Edificio B (x: 400, y: 500)
-            this.anchorToLowerThird(400, 500, 0, false);
+            if (!this.hasUserPosition) {
+                this.userSvgX = 400;
+                this.userSvgY = 500;
+                this.userSvgHeading = 0;
+            }
+            this.isFollowingUser = true;
+            this.isOverview = false;
+            this.anchorToLowerThird(this.userSvgX, this.userSvgY, this.userSvgHeading || 0, false);
+        }
+
+        recenterOnUser(options = {}) {
+            this.isFollowingUser = true;
+            this.isOverview = false;
+            const animate = options.animate !== false;
+            const x = this.hasUserPosition ? this.userSvgX : 400;
+            const y = this.hasUserPosition ? this.userSvgY : 500;
+            const h = this.hasUserPosition ? (this.userSvgHeading || 0) : 0;
+
+            if (this.is25dActive) {
+                this.pitch = this.currentRoute ? 52 : (this.pitch >= 50 ? 52 : 45);
+                this.updatePitchControls(this.pitch);
+                this.targetZoomScale = this.getResponsiveZoom(this.currentRoute ? 2.42 : 2.2);
+                if (!animate) {
+                    this.zoomScale = this.targetZoomScale;
+                    this.targetZoomScale = undefined;
+                }
+                this.anchorToLowerThird(x, y, this.isHeadingUp ? h : 0, animate);
+            } else if (typeof window.campus2dCenterOnPoint === "function") {
+                window.campus2dCenterOnPoint(x, y);
+            }
+            this.update2dUserArrow();
+        }
+
+        update2dUserArrow() {
+            if (!this.user2dArrowLayer) {
+                this.user2dArrowLayer = document.getElementById("user2dArrowLayer");
+                this.user2dArrowGroup = document.getElementById("user2dArrowGroup");
+                this.user2dArrowRotator = document.getElementById("user2dArrowRotator");
+            }
+            if (!this.user2dArrowLayer || !this.user2dArrowGroup) return;
+
+            const shouldShow = Boolean(this.hasUserPosition || this.currentRoute);
+            this.user2dArrowLayer.classList.toggle("hidden", !shouldShow);
+            if (!shouldShow) return;
+
+            const x = Number.isFinite(this.userSvgX) ? this.userSvgX : 400;
+            const y = Number.isFinite(this.userSvgY) ? this.userSvgY : 500;
+            const rot = -(this.userSvgHeading || 0);
+            this.user2dArrowGroup.setAttribute("transform", `translate(${x.toFixed(1)}, ${y.toFixed(1)})`);
+            if (this.user2dArrowRotator) {
+                this.user2dArrowRotator.setAttribute("transform", `rotate(${rot.toFixed(1)})`);
+            }
         }
 
         /**
@@ -1303,20 +1435,44 @@
                 }
             }
 
-            // 2. Rotate Navigation Puck Arrow
+            // 2. Position & Rotate Decoupled Navigation Puck at True User SVG Coordinates
+            if (this.puckContainer) {
+                const uPos = this.projectToScreen(this.userSvgX, this.userSvgY);
+                if (uPos && uPos.y >= 10 && uPos.y <= vh + 45 && uPos.x >= -60 && uPos.x <= vw + 60) {
+                    this.puckContainer.style.display = "flex";
+                    this.puckContainer.style.left = `${uPos.x.toFixed(1)}px`;
+                    this.puckContainer.style.top = `${uPos.y.toFixed(1)}px`;
+                    const puckScale = (this.isFollowingUser && !this.isOverview)
+                        ? 1.0
+                        : Math.min(1.12, Math.max(0.62, uPos.k * 0.96));
+                    this.puckContainer.style.transform = `translate(-50%, -50%) scale(${puckScale.toFixed(3)})`;
+                } else {
+                    this.puckContainer.style.display = "none";
+                }
+            }
+
             if (this.puckArrow) {
-                // In Heading-Up mode, arrow points straight UP (0°). In North-Up, arrow points along bearing.
-                const arrowRot = this.isHeadingUp ? 0 : -(this.currentHeading || 0);
+                // Relative arrow rotation = cameraBearing - userSvgHeading
+                // In Heading-Up follow mode (cameraBearing === userSvgHeading), arrow points straight UP (0°).
+                // In Overview, North-Up, or manual pan/rotate, arrow points accurately down the user's walking heading!
+                const cameraBearing = this.isHeadingUp ? (this.currentHeading || 0) : 0;
+                const arrowRot = this.normalizeAngle180(cameraBearing - (this.userSvgHeading || 0));
                 this.puckArrow.style.transform = `rotate(${arrowRot.toFixed(2)}deg)`;
                 if (this.puckCone) {
                     this.puckCone.style.transform = `rotate(${arrowRot.toFixed(2)}deg)`;
                 }
             }
 
-            // 3. Position Destination & Origin Pins
-            if (this.currentRoute && this.currentRoute.pathCoordinates && this.currentRoute.pathCoordinates.length >= 2) {
-                const coords = this.currentRoute.pathCoordinates;
-                const endPt = this.resolveSvgPoint(coords[coords.length - 1]);
+            // 3. Position Destination & Origin Pins (aligned with exact walkway route endpoints)
+            const hasPolyline = Array.isArray(this.activeRoutePolyline) && this.activeRoutePolyline.length >= 2;
+            const hasMacroCoords = Boolean(this.currentRoute && this.currentRoute.pathCoordinates && this.currentRoute.pathCoordinates.length >= 2);
+            if (this.currentRoute && (hasPolyline || hasMacroCoords)) {
+                const startPt = hasPolyline
+                    ? this.activeRoutePolyline[0]
+                    : this.resolveSvgPoint(this.currentRoute.pathCoordinates[0]);
+                const endPt = hasPolyline
+                    ? this.activeRoutePolyline[this.activeRoutePolyline.length - 1]
+                    : this.resolveSvgPoint(this.currentRoute.pathCoordinates[this.currentRoute.pathCoordinates.length - 1]);
                 const endPos = this.projectToScreen(endPt.x, endPt.y);
 
                 if (this.wazeDestPin) {
@@ -1330,7 +1486,6 @@
                     }
                 }
 
-                const startPt = this.resolveSvgPoint(coords[0]);
                 const startPos = this.projectToScreen(startPt.x, startPt.y);
                 if (this.wazeOriginPin) {
                     if (startPos && startPos.y >= 20 && startPos.y <= vh) {
@@ -1365,6 +1520,11 @@
                         bldgPopover.style.top = `${Math.max(84, Math.min(pos.y - 170, maxTop))}px`;
                     }
                 }
+            }
+
+            // 5. Position 2.5D Lost & Found Markers
+            if (typeof window.update25dLostPins === "function") {
+                window.update25dLostPins(this);
             }
         }
 
@@ -1450,11 +1610,19 @@
          * Global Route Calculated Handler
          */
         onRouteCalculated(routeData) {
+            this.stopSimulation();
+            this.cancelUserAnimation();
+
             this.currentRoute = routeData;
             this.currentStepIndex = 0;
+            this.routeUsedGpsOrigin = Boolean(routeData && routeData.usedGpsOrigin);
+            this.hasGpsLockOnRoute = false;
+            this.initialGpsOnRoute = null;
+            this.routeProgressDistPx = 0;
+            this.routeProgressRatio = 0;
 
             const hasSteps = Array.isArray(routeData && routeData.steps) && routeData.steps.length > 0;
-            const hasPath = Array.isArray(routeData && routeData.pathCoordinates) && routeData.pathCoordinates.length >= 2;
+            const hasPath = Array.isArray(routeData && routeData.pathCoordinates) && routeData.pathCoordinates.length >= 1;
             if (!routeData || (!hasSteps && !hasPath)) {
                 return;
             }
@@ -1464,11 +1632,23 @@
                 this.btnTbtConfirmStep.parentElement.classList.remove("hidden");
             }
 
-            // Draw exact backend Dijkstra pedestrian walkway polyline
+            // Build dense walkway polyline + step progress spans and draw route polylines
+            this.buildActiveRouteIndex(routeData);
             this.drawRoutePolylines(routeData);
 
-            // Switch to 2.5D Waze-style perspective view (Heading-Up)
+            // Seed user navigation arrow cleanly at route start pointing along first walkway segment
+            const startSample = this.samplePolylineAtDistance(0);
+            if (startSample) {
+                this.userSvgX = startSample.x;
+                this.userSvgY = startSample.y;
+                this.userSvgHeading = startSample.headingDeg;
+                this.hasUserPosition = true;
+            }
+
+            // Switch to 2.5D Waze-style perspective view (Heading-Up, following user arrow)
             this.isHeadingUp = true;
+            this.isFollowingUser = true;
+            this.isOverview = false;
             this.updateHeadingControls();
             const routeZoom = this.getResponsiveZoom(2.4);
             if (!this.is25dActive) {
@@ -1479,52 +1659,685 @@
             }
 
             this.showNavigationBanner();
-            this.goToStep(0);
+            this.goToStep(0, { instant: true });
+            this.update2dUserArrow();
+
+            // Automatically start continuous live GPS tracking so the user arrow follows real walking progress!
+            this.startLiveGpsTracking({ auto: true });
+
+            // If we already hold a fresh on-campus GPS reading (< 15s old), apply it immediately
+            if (this.latestGpsCoords && (Date.now() - (this.latestGpsCoords.timestamp || 0)) < 15000) {
+                this.handleLiveGpsPosition({
+                    coords: {
+                        latitude: this.latestGpsCoords.lat,
+                        longitude: this.latestGpsCoords.lng,
+                        accuracy: this.latestGpsCoords.accuracy,
+                        heading: null,
+                        speed: null,
+                    },
+                });
+            }
+        }
+
+        // ====================================================================
+        // ROUTE POLYLINE INDEXING, SAMPLING & PROGRESS VISUALS
+        // ====================================================================
+        buildActiveRouteIndex(routeData) {
+            this.activeRoutePolyline = [];
+            this.totalRoutePx = 0;
+            this.totalRouteMeters = 0;
+            this.stepSpans = [];
+
+            if (!routeData) return;
+
+            let rawPts = [];
+            if (Array.isArray(routeData.walkwayPath) && routeData.walkwayPath.length >= 2) {
+                rawPts = routeData.walkwayPath.map(pt => ({
+                    nodeId: pt.nodeId || null,
+                    name: pt.name || "",
+                    buildingId: pt.buildingId || null,
+                    x: Number(pt.x),
+                    y: Number(pt.y),
+                    lat: typeof pt.lat === "number" ? pt.lat : null,
+                    lng: typeof pt.lng === "number" ? pt.lng : null,
+                }));
+            } else if (Array.isArray(routeData.pathCoordinates) && routeData.pathCoordinates.length >= 2) {
+                if (typeof window.resolveMicroCampusRoute === "function") {
+                    const microPts = window.resolveMicroCampusRoute(routeData.pathCoordinates, {
+                        accessibleOnly: Boolean(routeData.isAccessibleRoute)
+                    });
+                    if (Array.isArray(microPts) && microPts.length >= 2) {
+                        rawPts = microPts.map(pt => ({
+                            nodeId: pt.nodeId || null,
+                            name: pt.name || "",
+                            buildingId: null,
+                            x: Number(pt.x),
+                            y: Number(pt.y),
+                            lat: null,
+                            lng: null,
+                        }));
+                    }
+                }
+                if (rawPts.length < 2) {
+                    rawPts = routeData.pathCoordinates.map(coord => {
+                        const pt = this.resolveSvgPoint(coord);
+                        return {
+                            nodeId: coord.nodeId || null,
+                            name: coord.name || "",
+                            buildingId: coord.nodeId || null,
+                            x: pt.x,
+                            y: pt.y,
+                            lat: typeof coord.lat === "number" ? coord.lat : null,
+                            lng: typeof coord.lng === "number" ? coord.lng : null,
+                        };
+                    });
+                }
+            } else if (Array.isArray(routeData.pathCoordinates) && routeData.pathCoordinates.length === 1) {
+                const c0 = routeData.pathCoordinates[0];
+                const pt = this.resolveSvgPoint(c0);
+                rawPts = [{
+                    nodeId: c0.nodeId || null,
+                    name: c0.name || "",
+                    buildingId: c0.nodeId || null,
+                    x: pt.x,
+                    y: pt.y,
+                    lat: typeof c0.lat === "number" ? c0.lat : null,
+                    lng: typeof c0.lng === "number" ? c0.lng : null,
+                }];
+            }
+
+            if (rawPts.length === 0) return;
+
+            const pxPerMeter = (this.calibration && this.calibration.avgSvgPxPerMeter) || 2.88;
+            let cumPx = 0;
+            let cumMeters = 0;
+            const polyline = [];
+
+            for (let i = 0; i < rawPts.length; i++) {
+                const p = rawPts[i];
+                let lat = p.lat;
+                let lng = p.lng;
+                if (lat === null || lng === null) {
+                    const inv = this.svgToGps(p.x, p.y);
+                    lat = inv.lat;
+                    lng = inv.lng;
+                }
+                if (polyline.length > 0) {
+                    const prev = polyline[polyline.length - 1];
+                    const segPx = Math.hypot(p.x - prev.x, p.y - prev.y);
+                    // Skip exact duplicate consecutive vertices
+                    if (segPx < 0.05 && i < rawPts.length - 1) {
+                        continue;
+                    }
+                    const segM = (prev.lat !== null && lat !== null)
+                        ? this.haversineMeters(prev.lat, prev.lng, lat, lng)
+                        : (segPx / pxPerMeter);
+                    cumPx += segPx;
+                    cumMeters += Math.max(segPx / pxPerMeter * 0.25, segM);
+                }
+                polyline.push({
+                    nodeId: p.nodeId,
+                    name: p.name,
+                    buildingId: p.buildingId,
+                    x: p.x,
+                    y: p.y,
+                    lat: lat,
+                    lng: lng,
+                    cumDistPx: cumPx,
+                    cumDistMeters: cumMeters,
+                });
+            }
+
+            this.activeRoutePolyline = polyline;
+            this.totalRoutePx = cumPx;
+            this.totalRouteMeters = (routeData.totalDistanceMeters && routeData.totalDistanceMeters > 0)
+                ? routeData.totalDistanceMeters
+                : cumMeters;
+
+            // Map every step in getActiveStepsList() to its [startDistPx, endDistPx] span along polyline
+            const steps = this.getActiveStepsList();
+            let cursorIdx = 0;
+            const findNearestVertex = (tx, ty, fromIdx) => {
+                if (typeof tx !== "number" || typeof ty !== "number") return fromIdx;
+                let bestIdx = fromIdx;
+                let bestDist = Infinity;
+                for (let j = fromIdx; j < polyline.length; j++) {
+                    const d = Math.hypot(polyline[j].x - tx, polyline[j].y - ty);
+                    if (d < bestDist) {
+                        bestDist = d;
+                        bestIdx = j;
+                    }
+                }
+                return bestIdx;
+            };
+
+            this.stepSpans = steps.map((step, idx) => {
+                const isFinal = idx === steps.length - 1;
+                if (polyline.length === 1) {
+                    return { stepIndex: idx, startDistPx: 0, endDistPx: 0, startVertexIdx: 0, endVertexIdx: 0 };
+                }
+                if (isFinal) {
+                    const lastIdx = polyline.length - 1;
+                    return {
+                        stepIndex: idx,
+                        startDistPx: polyline[lastIdx].cumDistPx,
+                        endDistPx: polyline[lastIdx].cumDistPx,
+                        startVertexIdx: lastIdx,
+                        endVertexIdx: lastIdx,
+                    };
+                }
+
+                let startV = cursorIdx;
+                let endV = cursorIdx;
+                const nodeIds = Array.isArray(step.nodeIds) ? step.nodeIds : [];
+
+                if (nodeIds.length > 0) {
+                    const firstId = nodeIds[0];
+                    const lastId = nodeIds[nodeIds.length - 1];
+                    let foundStart = -1;
+                    for (let j = cursorIdx; j < polyline.length; j++) {
+                        if (polyline[j].nodeId === firstId) {
+                            foundStart = j;
+                            break;
+                        }
+                    }
+                    startV = foundStart >= 0 ? foundStart : findNearestVertex(step.x, step.y, cursorIdx);
+
+                    let foundEnd = -1;
+                    for (let j = startV; j < polyline.length; j++) {
+                        if (polyline[j].nodeId === lastId) {
+                            foundEnd = j;
+                            break;
+                        }
+                    }
+                    endV = foundEnd >= 0
+                        ? foundEnd
+                        : findNearestVertex(
+                            step.targetX !== undefined ? step.targetX : step.x,
+                            step.targetY !== undefined ? step.targetY : step.y,
+                            startV
+                        );
+                } else {
+                    startV = findNearestVertex(step.x, step.y, cursorIdx);
+                    endV = findNearestVertex(
+                        step.targetX !== undefined ? step.targetX : step.x,
+                        step.targetY !== undefined ? step.targetY : step.y,
+                        startV
+                    );
+                }
+
+                if (endV < startV) endV = startV;
+                cursorIdx = endV;
+
+                return {
+                    stepIndex: idx,
+                    startDistPx: polyline[startV].cumDistPx,
+                    endDistPx: polyline[endV].cumDistPx,
+                    startVertexIdx: startV,
+                    endVertexIdx: endV,
+                };
+            });
+        }
+
+        samplePolylineAtDistance(distPx) {
+            const poly = this.activeRoutePolyline;
+            if (!poly || poly.length === 0) return null;
+            if (poly.length === 1 || this.totalRoutePx <= 0.01) {
+                const p0 = poly[0];
+                return {
+                    x: p0.x,
+                    y: p0.y,
+                    lat: p0.lat,
+                    lng: p0.lng,
+                    segIdx: 0,
+                    t: 0,
+                    headingDeg: this.userSvgHeading || 0,
+                    trueBearingDeg: null,
+                    distPx: 0,
+                    progressRatio: 1,
+                };
+            }
+
+            const clamped = Math.max(0, Math.min(this.totalRoutePx, distPx));
+            let segIdx = 0;
+            for (let i = 0; i < poly.length - 1; i++) {
+                if (clamped <= poly[i + 1].cumDistPx || i === poly.length - 2) {
+                    segIdx = i;
+                    break;
+                }
+            }
+
+            const p1 = poly[segIdx];
+            const p2 = poly[segIdx + 1];
+            const segLen = Math.max(0.001, p2.cumDistPx - p1.cumDistPx);
+            const t = Math.max(0, Math.min(1, (clamped - p1.cumDistPx) / segLen));
+
+            const x = p1.x + (p2.x - p1.x) * t;
+            const y = p1.y + (p2.y - p1.y) * t;
+            const lat = p1.lat + (p2.lat - p1.lat) * t;
+            const lng = p1.lng + (p2.lng - p1.lng) * t;
+
+            // Use a slight lookahead so ultra-short doorway segments don't cause heading flicker
+            let aim = p2;
+            if (Math.hypot(p2.x - x, p2.y - y) < 8 && segIdx + 2 < poly.length) {
+                aim = poly[segIdx + 2];
+            } else if (Math.hypot(p2.x - p1.x, p2.y - p1.y) < 1 && segIdx > 0) {
+                aim = p1;
+            }
+            const headingDeg = (Math.hypot(aim.x - x, aim.y - y) >= 0.5)
+                ? this.calculateHeadingAngle({ x, y }, aim)
+                : this.calculateHeadingAngle(p1, p2);
+            const trueBearingDeg = (lat !== null && aim.lat !== null && Math.hypot(aim.x - x, aim.y - y) >= 0.5)
+                ? this.calculateCompassBearing(lat, lng, aim.lat, aim.lng)
+                : null;
+
+            return {
+                x,
+                y,
+                lat,
+                lng,
+                segIdx,
+                t,
+                headingDeg,
+                trueBearingDeg,
+                distPx: clamped,
+                progressRatio: clamped / this.totalRoutePx,
+            };
+        }
+
+        projectGpsToRoute(lat, lng) {
+            const poly = this.activeRoutePolyline;
+            if (!poly || poly.length < 2) return null;
+
+            const mPerDegLat = (this.calibration && this.calibration.mPerDegLat) || 111132.0;
+            const mPerDegLng = 111320.0 * Math.cos((lat * Math.PI) / 180);
+
+            let best = null;
+            let bestScore = Infinity;
+
+            for (let i = 0; i < poly.length - 1; i++) {
+                const a = poly[i];
+                const b = poly[i + 1];
+                if (a.lat === null || a.lng === null || b.lat === null || b.lng === null) continue;
+
+                const ax = (a.lng - lng) * mPerDegLng;
+                const ay = (a.lat - lat) * mPerDegLat;
+                const bx = (b.lng - lng) * mPerDegLng;
+                const by = (b.lat - lat) * mPerDegLat;
+
+                const dx = bx - ax;
+                const dy = by - ay;
+                const segLenSq = dx * dx + dy * dy;
+
+                let t = 0;
+                if (segLenSq > 1e-6) {
+                    // Closest point to origin (user GPS at (0, 0)): t = -dot(a, d) / |d|^2
+                    t = Math.max(0, Math.min(1, -(ax * dx + ay * dy) / segLenSq));
+                }
+
+                const projEast = ax + dx * t;
+                const projNorth = ay + dy * t;
+                const perpMeters = Math.hypot(projEast, projNorth);
+
+                const candDistPx = a.cumDistPx + (b.cumDistPx - a.cumDistPx) * t;
+                // Asymmetric forward-progress continuity bias (like Waze/Google Maps HMM matching):
+                // gently favors advancing forward along the route and resists GPS jitter pulling backward,
+                // while still allowing genuine backtracking if the user walks >15m back.
+                let continuityPenalty = 0;
+                if (this.hasGpsLockOnRoute) {
+                    const deltaPx = candDistPx - this.routeProgressDistPx;
+                    if (deltaPx >= 0) {
+                        continuityPenalty = Math.min(4.0, deltaPx * 0.004);
+                    } else {
+                        continuityPenalty = Math.min(14.0, Math.abs(deltaPx) * 0.06);
+                    }
+                }
+                const score = perpMeters + continuityPenalty;
+
+                if (score < bestScore) {
+                    bestScore = score;
+                    const x = a.x + (b.x - a.x) * t;
+                    const y = a.y + (b.y - a.y) * t;
+                    const snapLat = a.lat + (b.lat - a.lat) * t;
+                    const snapLng = a.lng + (b.lng - a.lng) * t;
+
+                    let aim = b;
+                    if (Math.hypot(b.x - x, b.y - y) < 8 && i + 2 < poly.length) {
+                        aim = poly[i + 2];
+                    }
+                    const headingDeg = (Math.hypot(aim.x - x, aim.y - y) >= 0.5)
+                        ? this.calculateHeadingAngle({ x, y }, aim)
+                        : this.calculateHeadingAngle(a, b);
+                    const trueBearingDeg = (aim.lat !== null)
+                        ? this.calculateCompassBearing(snapLat, snapLng, aim.lat, aim.lng)
+                        : null;
+
+                    best = {
+                        x,
+                        y,
+                        lat: snapLat,
+                        lng: snapLng,
+                        perpMeters,
+                        cumDistPx: candDistPx,
+                        segIdx: i,
+                        t,
+                        headingDeg,
+                        trueBearingDeg,
+                        progressRatio: this.totalRoutePx > 0 ? candDistPx / this.totalRoutePx : 1,
+                    };
+                }
+            }
+
+            return best;
         }
 
         drawRoutePolylines(routeData) {
             if (!routeData) return;
-            let resolvedPts = [];
-            if (Array.isArray(routeData.walkwayPath) && routeData.walkwayPath.length >= 2) {
-                resolvedPts = routeData.walkwayPath.map(pt => ({ x: Math.round(pt.x), y: Math.round(pt.y) }));
-            } else if (Array.isArray(routeData.pathCoordinates) && routeData.pathCoordinates.length >= 2) {
-                if (typeof window.resolveMicroCampusRoute === "function") {
-                    resolvedPts = window.resolveMicroCampusRoute(routeData.pathCoordinates, {
-                        accessibleOnly: Boolean(routeData.isAccessibleRoute)
-                    });
-                }
-                if (resolvedPts.length < 2) {
-                    resolvedPts = routeData.pathCoordinates.map(coord => this.resolveSvgPoint(coord));
-                }
+            if (!this.activeRoutePolyline || this.activeRoutePolyline.length === 0) {
+                this.buildActiveRouteIndex(routeData);
             }
-            const points = resolvedPts.map(pt => `${pt.x},${pt.y}`).join(" ");
+            this.updateRouteProgressVisuals(this.routeProgressDistPx || 0, { updateMetrics: false });
+        }
 
+        updateRouteProgressVisuals(distPx, options = {}) {
+            const poly = this.activeRoutePolyline;
+            const traveledEl = document.getElementById("route2dTraveledPolyline");
             const shadow = document.getElementById("route2dShadowPolyline");
             const glow = document.getElementById("route2dGlowPolyline");
             const main = document.getElementById("route2dPolyline");
-            if (shadow) shadow.setAttribute("points", points);
-            if (glow) glow.setAttribute("points", points);
-            if (main) main.setAttribute("points", points);
+
+            if (!poly || poly.length < 2) {
+                const fallbackPts = poly && poly.length === 1
+                    ? `${Math.round(poly[0].x)},${Math.round(poly[0].y)} ${Math.round(poly[0].x)},${Math.round(poly[0].y)}`
+                    : "";
+                if (traveledEl) traveledEl.setAttribute("points", "");
+                if (shadow) shadow.setAttribute("points", fallbackPts);
+                if (glow) glow.setAttribute("points", fallbackPts);
+                if (main) main.setAttribute("points", fallbackPts);
+                return;
+            }
+
+            const clamped = Math.max(0, Math.min(this.totalRoutePx, distPx || 0));
+            this.routeProgressDistPx = clamped;
+            this.routeProgressRatio = this.totalRoutePx > 0 ? (clamped / this.totalRoutePx) : 1;
+
+            const showSplit = options.showSplit !== false && clamped > 1.5;
+            if (!showSplit) {
+                const fullPoints = poly.map(pt => `${Math.round(pt.x)},${Math.round(pt.y)}`).join(" ");
+                if (traveledEl) traveledEl.setAttribute("points", "");
+                if (shadow) shadow.setAttribute("points", fullPoints);
+                if (glow) glow.setAttribute("points", fullPoints);
+                if (main) main.setAttribute("points", fullPoints);
+            } else {
+                const sample = this.samplePolylineAtDistance(clamped);
+                const curStr = `${sample.x.toFixed(1)},${sample.y.toFixed(1)}`;
+                const traveledPts = [];
+                for (let i = 0; i <= sample.segIdx; i++) {
+                    traveledPts.push(`${poly[i].x.toFixed(1)},${poly[i].y.toFixed(1)}`);
+                }
+                traveledPts.push(curStr);
+
+                const remainingPts = [curStr];
+                for (let i = sample.segIdx + 1; i < poly.length; i++) {
+                    remainingPts.push(`${poly[i].x.toFixed(1)},${poly[i].y.toFixed(1)}`);
+                }
+
+                if (traveledEl) traveledEl.setAttribute("points", traveledPts.join(" "));
+                const remStr = remainingPts.length >= 2 ? remainingPts.join(" ") : "";
+                if (shadow) shadow.setAttribute("points", remStr);
+                if (glow) glow.setAttribute("points", remStr);
+                if (main) main.setAttribute("points", remStr);
+            }
+
+            // Live ETA, dial, and progress bar sync
+            if (options.updateMetrics !== false && this.currentRoute) {
+                const steps = this.getActiveStepsList();
+                const isFinal = this.routeProgressRatio >= 0.985 || (steps.length > 0 && this.currentStepIndex >= steps.length - 1);
+                const totalMinutes = Math.max(1, this.currentRoute.estimatedWalkingMinutes || 1);
+                const remRatio = Math.max(0, 1 - this.routeProgressRatio);
+                const remMinutes = isFinal ? 0 : Math.max(1, Math.ceil(totalMinutes * remRatio));
+
+                if (this.wazeProgressBar) {
+                    const pct = isFinal ? 100 : Math.round(this.routeProgressRatio * 100);
+                    this.wazeProgressBar.style.width = `${pct}%`;
+                }
+                if (this.wazeDialValue) {
+                    this.wazeDialValue.textContent = isFinal ? "✓" : `~${remMinutes}`;
+                }
+                if (this.wazeDialUnit) {
+                    this.wazeDialUnit.textContent = isFinal ? "fin" : "min";
+                }
+                if (this.wazeEtaTime) {
+                    if (isFinal) {
+                        this.wazeEtaTime.textContent = "Llegaste";
+                    } else {
+                        const arrivalDate = new Date(Date.now() + remMinutes * 60000);
+                        this.wazeEtaTime.textContent = arrivalDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+                    }
+                }
+                if (this.wazeTripMeta && steps.length > 0) {
+                    const step = steps[this.currentStepIndex] || steps[steps.length - 1];
+                    const landmark = (step && step.landmark) || "Campus UAM";
+                    const stepsLeft = Math.max(0, steps.length - 1 - this.currentStepIndex);
+                    this.wazeTripMeta.textContent = isFinal
+                        ? `${landmark} • Destino alcanzado`
+                        : `~${remMinutes} min • ${stepsLeft} ${stepsLeft === 1 ? "referencia" : "referencias"}`;
+                }
+            }
+        }
+
+        // ====================================================================
+        // DECOUPLED USER POSE ANIMATION (GLIDES ARROW + OPTIONAL CAMERA FOLLOW)
+        // ====================================================================
+        cancelUserAnimation() {
+            if (this.userAnimId) {
+                cancelAnimationFrame(this.userAnimId);
+                this.userAnimId = null;
+            }
+        }
+
+        setUserPose(x, y, headingDeg, options = {}) {
+            this.userSvgX = x;
+            this.userSvgY = y;
+            if (typeof headingDeg === "number" && Number.isFinite(headingDeg)) {
+                this.userSvgHeading = headingDeg;
+            }
+            this.hasUserPosition = true;
+
+            const shouldFollowCamera = options.syncCamera !== false && this.isFollowingUser && !this.isOverview;
+            if (shouldFollowCamera && this.is25dActive) {
+                this.currentUserX = x;
+                this.currentUserY = y;
+                this.targetUserX = x;
+                this.targetUserY = y;
+                if (this.isHeadingUp) {
+                    this.currentHeading = this.userSvgHeading;
+                    this.targetHeading = this.userSvgHeading;
+                }
+                this.applyTransform();
+            }
+
+            if (this.is25dActive) {
+                this.updateOverlays();
+            }
+            this.update2dUserArrow();
+        }
+
+        animateUserTo(targetX, targetY, targetHeadingDeg, options = {}) {
+            this.cancelUserAnimation();
+            const duration = options.duration !== undefined ? options.duration : 450;
+            const followCamera = options.syncCamera !== false && this.isFollowingUser && !this.isOverview;
+
+            if (followCamera && this.tweenAnimId) {
+                cancelAnimationFrame(this.tweenAnimId);
+                this.tweenAnimId = null;
+            }
+
+            if (duration <= 0 || !this.hasUserPosition) {
+                this.setUserPose(targetX, targetY, targetHeadingDeg, { syncCamera: followCamera });
+                return;
+            }
+
+            const startX = this.userSvgX;
+            const startY = this.userSvgY;
+            const startH = this.userSvgHeading || 0;
+            const destH = typeof targetHeadingDeg === "number" ? targetHeadingDeg : startH;
+            const diffH = this.normalizeAngle180(destH - startH);
+
+            const startCamX = this.currentUserX !== undefined ? this.currentUserX : startX;
+            const startCamY = this.currentUserY !== undefined ? this.currentUserY : startY;
+            const startCamH = this.currentHeading || 0;
+            const diffCamH = this.normalizeAngle180(destH - startCamH);
+
+            const startTime = performance.now();
+            const frame = (now) => {
+                const progress = Math.min(1, (now - startTime) / duration);
+                const ease = 1 - Math.pow(1 - progress, 3);
+
+                const curX = startX + (targetX - startX) * ease;
+                const curY = startY + (targetY - startY) * ease;
+                const curH = startH + diffH * ease;
+
+                this.userSvgX = curX;
+                this.userSvgY = curY;
+                this.userSvgHeading = curH;
+                this.hasUserPosition = true;
+
+                if (this.isFollowingUser && !this.isOverview && this.is25dActive) {
+                    this.currentUserX = startCamX + (targetX - startCamX) * ease;
+                    this.currentUserY = startCamY + (targetY - startCamY) * ease;
+                    this.targetUserX = targetX;
+                    this.targetUserY = targetY;
+                    if (this.isHeadingUp) {
+                        this.currentHeading = startCamH + diffCamH * ease;
+                        this.targetHeading = destH;
+                    }
+                    this.applyTransform();
+                }
+
+                if (this.is25dActive) {
+                    this.updateOverlays();
+                }
+                this.update2dUserArrow();
+
+                if (progress < 1) {
+                    this.userAnimId = requestAnimationFrame(frame);
+                } else {
+                    this.userAnimId = null;
+                }
+            };
+
+            this.userAnimId = requestAnimationFrame(frame);
+        }
+
+        animateAlongRoute(fromDistPx, toDistPx, options = {}) {
+            this.cancelUserAnimation();
+            if (this.tweenAnimId && this.isFollowingUser && !this.isOverview) {
+                cancelAnimationFrame(this.tweenAnimId);
+                this.tweenAnimId = null;
+            }
+
+            const deltaPx = Math.abs(toDistPx - fromDistPx);
+            const duration = options.duration !== undefined
+                ? options.duration
+                : Math.min(950, Math.max(420, deltaPx * 3.2));
+
+            if (duration <= 0 || deltaPx < 0.5 || this.activeRoutePolyline.length < 2) {
+                const s = this.samplePolylineAtDistance(toDistPx);
+                if (s) {
+                    const heading = (this.isLiveCompassActive && this.latestCompassDeg !== null)
+                        ? this.userSvgHeading
+                        : s.headingDeg;
+                    this.setUserPose(s.x, s.y, heading);
+                    this.updateRouteProgressVisuals(toDistPx);
+                }
+                return;
+            }
+
+            const startZ = this.zoomScale || this.getResponsiveZoom(2.4);
+            const targetZ = this.targetZoomScale !== undefined ? this.targetZoomScale : startZ;
+            const startTime = performance.now();
+
+            const frame = (now) => {
+                const progress = Math.min(1, (now - startTime) / duration);
+                // Smooth ease-in-out along the walkway path
+                const ease = progress < 0.5
+                    ? 2 * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                const curDist = fromDistPx + (toDistPx - fromDistPx) * ease;
+                const sample = this.samplePolylineAtDistance(curDist);
+                if (sample) {
+                    const desiredH = (this.isLiveCompassActive && this.latestCompassDeg !== null)
+                        ? this.userSvgHeading
+                        : sample.headingDeg;
+                    const diffH = this.normalizeAngle180(desiredH - (this.userSvgHeading || 0));
+                    const smoothH = (this.userSvgHeading || 0) + diffH * 0.25;
+
+                    if (this.isFollowingUser && !this.isOverview && this.is25dActive) {
+                        this.zoomScale = startZ + (targetZ - startZ) * ease;
+                    }
+                    this.setUserPose(sample.x, sample.y, smoothH);
+                    this.updateRouteProgressVisuals(curDist);
+                }
+
+                if (progress < 1) {
+                    this.userAnimId = requestAnimationFrame(frame);
+                } else {
+                    this.userAnimId = null;
+                    this.targetZoomScale = undefined;
+                    const finalSample = this.samplePolylineAtDistance(toDistPx);
+                    if (finalSample) {
+                        const finalH = (this.isLiveCompassActive && this.latestCompassDeg !== null)
+                            ? this.userSvgHeading
+                            : finalSample.headingDeg;
+                        this.setUserPose(finalSample.x, finalSample.y, finalH);
+                        this.updateRouteProgressVisuals(toDistPx);
+                    }
+                }
+            };
+
+            this.userAnimId = requestAnimationFrame(frame);
         }
 
         onRouteCleared() {
             this.currentRoute = null;
             this.currentStepIndex = 0;
+            this.activeRoutePolyline = [];
+            this.totalRoutePx = 0;
+            this.totalRouteMeters = 0;
+            this.stepSpans = [];
+            this.routeProgressDistPx = 0;
+            this.routeProgressRatio = 0;
+            this.routeUsedGpsOrigin = false;
+            this.hasGpsLockOnRoute = false;
+            this.initialGpsOnRoute = null;
+
             this.stopSimulation();
+            this.cancelUserAnimation();
             this.hideNavigationBanner();
             this.toggleActionTray(false);
             if (this.tbtOrientationCue) {
                 this.tbtOrientationCue.classList.add("hidden");
             }
 
+            const traveledEl = document.getElementById("route2dTraveledPolyline");
             const shadow = document.getElementById("route2dShadowPolyline");
             const glow = document.getElementById("route2dGlowPolyline");
             const main = document.getElementById("route2dPolyline");
+            if (traveledEl) traveledEl.setAttribute("points", "");
             if (shadow) shadow.setAttribute("points", "");
             if (glow) glow.setAttribute("points", "");
             if (main) main.setAttribute("points", "");
 
+            // If user did not explicitly activate live compass mode, stop automatic route GPS watcher
+            if (!this.isLiveCompassActive) {
+                this.stopLiveGpsTracking();
+                this.hasUserPosition = false;
+            }
+
             this.syncWazeChrome();
+            this.update2dUserArrow();
 
             if (this.is25dActive) {
                 if (!this.isLiveCompassActive) this.heading = 0;
@@ -1548,6 +2361,7 @@
                 this.wazeBottomBar.classList.remove("hidden");
             }
             this.syncWazeChrome();
+            this.updateLiveCompassButtonUI();
         }
 
         showExploreHud() {
@@ -1581,7 +2395,7 @@
         }
 
         // ====================================================================
-        // LIVE 2.5D PHONE COMPASS ROTATION + CONTINUOUS GPS TRACKING
+        // LIVE GPS ROUTE-MATCHING + OPTIONAL PHONE COMPASS ROTATION
         // ====================================================================
         gpsToSvg(lat, lng) {
             const c = this.calibration;
@@ -1595,6 +2409,20 @@
             };
         }
 
+        svgToGps(x, y) {
+            const c = this.calibration;
+            const dx = x - c.cx0;
+            const dy = y - c.cy0;
+            const det = c.cxN * c.cyE - c.cxE * c.cyN;
+            if (Math.abs(det) < 1e-9) return { lat: c.lat0, lng: c.lng0 };
+            const mNorth = (dx * c.cyE - c.cxE * dy) / det;
+            const mEast = (c.cxN * dy - dx * c.cyN) / det;
+            return {
+                lat: c.lat0 + mNorth / c.mPerDegLat,
+                lng: c.lng0 + mEast / c.mPerDegLng,
+            };
+        }
+
         haversineMeters(lat1, lng1, lat2, lng2) {
             const R = 6371000;
             const toRad = (deg) => (deg * Math.PI) / 180;
@@ -1605,27 +2433,135 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
 
+        calculateCompassBearing(lat1, lng1, lat2, lng2) {
+            const toRad = (deg) => (deg * Math.PI) / 180;
+            const phi1 = toRad(lat1);
+            const phi2 = toRad(lat2);
+            const dLng = toRad(lng2 - lng1);
+            const y = Math.sin(dLng) * Math.cos(phi2);
+            const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLng);
+            return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+        }
+
+        pointToSegmentDistanceMeters(lat, lng, lat1, lng1, lat2, lng2) {
+            const latMid = (((lat1 + lat2) / 2) * Math.PI) / 180;
+            const mPerDegLat = 111132.954 - 559.822 * Math.cos(2 * latMid);
+            const mPerDegLng = 111412.84 * Math.cos(latMid);
+
+            const px = (lng - lng1) * mPerDegLng;
+            const py = (lat - lat1) * mPerDegLat;
+            const dx = (lng2 - lng1) * mPerDegLng;
+            const dy = (lat2 - lat1) * mPerDegLat;
+            const segLenSq = dx * dx + dy * dy;
+            if (segLenSq === 0) return Math.hypot(px, py);
+
+            const t = Math.max(0, Math.min(1, (px * dx + py * dy) / segLenSq));
+            return Math.hypot(px - t * dx, py - t * dy);
+        }
+
+        isPointInPolygon(lat, lng, polygon) {
+            const n = polygon.length;
+            let inside = false;
+            let p1 = polygon[0];
+            for (let i = 1; i <= n; i++) {
+                const p2 = polygon[i % n];
+                if (Math.min(p1.lat, p2.lat) < lat && lat <= Math.max(p1.lat, p2.lat)) {
+                    if (p1.lat !== p2.lat) {
+                        const xinters = ((lat - p1.lat) * (p2.lng - p1.lng)) / (p2.lat - p1.lat) + p1.lng;
+                        if (p1.lng === p2.lng || lng <= xinters) {
+                            inside = !inside;
+                        }
+                    }
+                }
+                p1 = p2;
+            }
+            return inside;
+        }
+
+        isWithinCampusPerimeter(lat, lng, bufferMeters = 40) {
+            const polygon = (this.calibration && Array.isArray(this.calibration.perimeter) && this.calibration.perimeter.length >= 3)
+                ? this.calibration.perimeter
+                : null;
+            if (!polygon) return true;
+            if (this.isPointInPolygon(lat, lng, polygon)) return true;
+            if (bufferMeters > 0) {
+                for (let i = 0; i < polygon.length; i++) {
+                    const p1 = polygon[i];
+                    const p2 = polygon[(i + 1) % polygon.length];
+                    if (this.pointToSegmentDistanceMeters(lat, lng, p1.lat, p1.lng, p2.lat, p2.lng) <= bufferMeters) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         normalizeAngle180(deg) {
             let a = ((deg + 180) % 360 + 360) % 360 - 180;
             return a;
         }
 
+        startLiveGpsTracking(options = {}) {
+            if (!navigator.geolocation) {
+                this.gpsStatus = "unsupported";
+                this.updateLiveCompassButtonUI();
+                return;
+            }
+
+            this.isLiveGpsActive = true;
+            if (this.gpsWatchId !== null) {
+                this.updateLiveCompassButtonUI();
+                return;
+            }
+
+            this.gpsStatus = "searching";
+            this.updateLiveCompassButtonUI();
+
+            this.gpsWatchId = navigator.geolocation.watchPosition(
+                (pos) => this.handleLiveGpsPosition(pos),
+                (err) => {
+                    console.warn("Live GPS watchPosition warning:", err && err.message);
+                    if (err && err.code === 1) {
+                        this.gpsStatus = "denied";
+                        this.isLiveGpsActive = false;
+                        if (this.gpsWatchId !== null) {
+                            navigator.geolocation.clearWatch(this.gpsWatchId);
+                            this.gpsWatchId = null;
+                        }
+                    }
+                    this.updateLiveCompassButtonUI();
+                },
+                { enableHighAccuracy: true, maximumAge: 1500, timeout: 15000 }
+            );
+        }
+
+        stopLiveGpsTracking() {
+            this.isLiveGpsActive = false;
+            this.gpsStatus = "idle";
+            if (this.gpsWatchId !== null && navigator.geolocation) {
+                navigator.geolocation.clearWatch(this.gpsWatchId);
+                this.gpsWatchId = null;
+            }
+            this.updateLiveCompassButtonUI();
+        }
+
         async toggleLiveCompassNavigation() {
             if (this.isLiveCompassActive) {
-                this.stopLiveCompassNavigation();
+                this.stopLiveCompassNavigation({ keepGps: Boolean(this.currentRoute) });
             } else {
                 await this.startLiveCompassNavigation();
             }
         }
 
         async startLiveCompassNavigation() {
-            // Ensure 2.5D mode and Heading-Up are enabled
-            if (!this.is25dActive) {
-                this.setMode(true, { pitch: 52, zoom: this.getResponsiveZoom(2.4), skipDefaultCenter: true });
-            }
-            this.isHeadingUp = true;
-            this.updateHeadingControls();
             this.stopSimulation();
+            this.isFollowingUser = true;
+            this.isOverview = false;
+
+            if (this.is25dActive) {
+                this.isHeadingUp = true;
+                this.updateHeadingControls();
+            }
 
             // iOS 13+ Safari requires explicit permission inside a user click gesture
             if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
@@ -1649,27 +2585,20 @@
             }
             window.addEventListener("deviceorientation", this._boundOrientationHandler, true);
 
-            // Start continuous high-accuracy GPS tracking
-            if (navigator.geolocation) {
-                if (this.gpsWatchId !== null) {
-                    navigator.geolocation.clearWatch(this.gpsWatchId);
-                }
-                this.gpsWatchId = navigator.geolocation.watchPosition(
-                    (pos) => this.handleLiveGpsPosition(pos),
-                    (err) => console.warn("Live GPS watchPosition warning:", err.message),
-                    { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
-                );
+            // Ensure continuous high-accuracy GPS tracking is running & re-center on user
+            this.startLiveGpsTracking({ auto: false });
+            if (this.hasUserPosition) {
+                this.recenterOnUser();
             }
         }
 
-        stopLiveCompassNavigation() {
+        stopLiveCompassNavigation(options = {}) {
             this.isLiveCompassActive = false;
             window.removeEventListener("deviceorientationabsolute", this._boundOrientationHandler, true);
             window.removeEventListener("deviceorientation", this._boundOrientationHandler, true);
 
-            if (this.gpsWatchId !== null && navigator.geolocation) {
-                navigator.geolocation.clearWatch(this.gpsWatchId);
-                this.gpsWatchId = null;
+            if (!options.keepGps) {
+                this.stopLiveGpsTracking();
             }
             if (this.tbtOrientationCue) {
                 this.tbtOrientationCue.classList.add("hidden");
@@ -1679,24 +2608,54 @@
         }
 
         updateLiveCompassButtonUI() {
-            if (!this.btnLiveCompass) return;
-            if (this.isLiveCompassActive) {
-                this.btnLiveCompass.classList.remove("text-slate-600", "hover:bg-emerald-50");
-                this.btnLiveCompass.classList.add("bg-emerald-500", "text-white", "shadow-xs");
-                if (this.liveCompassDot) {
-                    this.liveCompassDot.className = "w-2 h-2 rounded-full bg-white animate-pulse";
+            // 1. Top-left 2.5D mode pill button
+            if (this.btnLiveCompass) {
+                if (this.isLiveCompassActive) {
+                    this.btnLiveCompass.classList.remove("text-slate-600", "hover:bg-emerald-50", "bg-sky-50", "text-sky-700");
+                    this.btnLiveCompass.classList.add("bg-emerald-500", "text-white", "shadow-xs");
+                    if (this.liveCompassDot) this.liveCompassDot.className = "w-2 h-2 rounded-full bg-white animate-pulse";
+                    if (this.labelLiveCompass) this.labelLiveCompass.textContent = "En vivo";
+                } else if (this.isLiveGpsActive && this.gpsStatus === "tracking") {
+                    this.btnLiveCompass.classList.remove("bg-emerald-500", "text-white", "shadow-xs", "text-slate-600");
+                    this.btnLiveCompass.classList.add("bg-sky-50", "text-sky-700", "hover:bg-emerald-50");
+                    if (this.liveCompassDot) this.liveCompassDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                    if (this.labelLiveCompass) this.labelLiveCompass.textContent = "GPS";
+                } else {
+                    this.btnLiveCompass.classList.remove("bg-emerald-500", "text-white", "shadow-xs", "bg-sky-50", "text-sky-700");
+                    this.btnLiveCompass.classList.add("text-slate-600", "hover:bg-emerald-50");
+                    if (this.liveCompassDot) {
+                        this.liveCompassDot.className = this.gpsStatus === "searching"
+                            ? "w-2 h-2 rounded-full bg-amber-400 animate-pulse"
+                            : "w-2 h-2 rounded-full bg-slate-300";
+                    }
+                    if (this.labelLiveCompass) this.labelLiveCompass.textContent = "En vivo";
                 }
-            } else {
-                this.btnLiveCompass.classList.remove("bg-emerald-500", "text-white", "shadow-xs");
-                this.btnLiveCompass.classList.add("text-slate-600", "hover:bg-emerald-50");
-                if (this.liveCompassDot) {
-                    this.liveCompassDot.className = "w-2 h-2 rounded-full bg-slate-300";
+            }
+
+            // 2. Always-visible TBT banner live GPS / Compass pill (accessible on mobile < 1024px & desktop!)
+            if (this.btnTbtLiveGps) {
+                if (this.isLiveCompassActive) {
+                    this.btnTbtLiveGps.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white border border-emerald-600 shadow-2xs transition-colors cursor-pointer";
+                    if (this.tbtLiveGpsDot) this.tbtLiveGpsDot.className = "w-1.5 h-1.5 rounded-full bg-white animate-pulse";
+                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = "En vivo";
+                } else if (this.isLiveGpsActive && this.gpsStatus === "tracking") {
+                    this.btnTbtLiveGps.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors cursor-pointer";
+                    if (this.tbtLiveGpsDot) this.tbtLiveGpsDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
+                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = "GPS activo";
+                } else if (this.isLiveGpsActive && this.gpsStatus === "searching") {
+                    this.btnTbtLiveGps.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-50 hover:bg-emerald-50 text-sky-700 border border-sky-200 transition-colors cursor-pointer";
+                    if (this.tbtLiveGpsDot) this.tbtLiveGpsDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse";
+                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = "GPS...";
+                } else {
+                    this.btnTbtLiveGps.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200 transition-colors cursor-pointer";
+                    if (this.tbtLiveGpsDot) this.tbtLiveGpsDot.className = "w-1.5 h-1.5 rounded-full bg-slate-400";
+                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = "En vivo";
                 }
             }
         }
 
         handleDeviceOrientation(event) {
-            if (!this.isLiveCompassActive || !this.is25dActive || !this.isHeadingUp) return;
+            if (!this.isLiveCompassActive) return;
 
             let rawHeading = null;
             if (typeof event.webkitCompassHeading === "number" && !Number.isNaN(event.webkitCompassHeading)) {
@@ -1711,7 +2670,7 @@
 
             if (rawHeading === null) return;
 
-            // Circular exponential smoothing to keep 2.5D rotation steady without jitter
+            // Circular exponential smoothing to keep rotation steady without jitter
             if (this.smoothedCompassDeg === null) {
                 this.smoothedCompassDeg = rawHeading;
             } else {
@@ -1724,71 +2683,290 @@
                 this._compassRafPending = true;
                 requestAnimationFrame(() => {
                     this._compassRafPending = false;
-                    if (!this.isLiveCompassActive || !this.is25dActive) return;
+                    if (!this.isLiveCompassActive) return;
 
-                    // Convert true compass heading to SVG camera rotation (calibrated UAM mapUpTrueBearingDeg = 181.4°)
+                    // Convert true compass heading to SVG heading (calibrated UAM mapUpTrueBearingDeg = 181.4°)
                     const mapUpBearing = (this.calibration && this.calibration.mapUpTrueBearingDeg) || 181.4;
                     const svgHeading = this.normalizeAngle180(mapUpBearing - this.latestCompassDeg);
-                    this.currentHeading = svgHeading;
-                    this.targetHeading = svgHeading;
-                    this.applyTransform();
-                    this.updateOverlays();
-                    this.updateCompass(false);
+                    this.userSvgHeading = svgHeading;
+
+                    if (this.is25dActive) {
+                        if (this.isHeadingUp && this.isFollowingUser && !this.isOverview) {
+                            this.currentHeading = svgHeading;
+                            this.targetHeading = svgHeading;
+                            this.applyTransform();
+                        }
+                        this.updateOverlays();
+                        this.updateCompass(false);
+                    }
+                    this.update2dUserArrow();
                     this.updateOrientationCue();
                 });
             }
         }
 
         handleLiveGpsPosition(pos) {
-            if (!this.isLiveCompassActive || !pos || !pos.coords) return;
-            const { latitude, longitude, accuracy, heading } = pos.coords;
-            this.latestGpsCoords = { lat: latitude, lng: longitude, accuracy: accuracy || 20 };
+            if (!this.isLiveGpsActive && !this.isLiveCompassActive) return;
+            if (!pos || !pos.coords) return;
 
-            // Ignore extremely noisy indoor readings (> 35m error)
-            if (accuracy && accuracy > 35) return;
-
-            const svgPt = this.gpsToSvg(latitude, longitude);
-            // If phone has no compass sensor, fall back to GPS movement heading when walking
-            if (this.smoothedCompassDeg === null && typeof heading === "number" && !Number.isNaN(heading)) {
-                const mapUpBearing = (this.calibration && this.calibration.mapUpTrueBearingDeg) || 181.4;
-                this.currentHeading = this.normalizeAngle180(mapUpBearing - heading);
-                this.targetHeading = this.currentHeading;
+            const { latitude, longitude, accuracy, heading, speed } = pos.coords;
+            if (typeof latitude !== "number" || typeof longitude !== "number" || Number.isNaN(latitude) || Number.isNaN(longitude)) {
+                return;
             }
 
-            // Smoothly anchor blue puck to real user GPS position on campus map
-            this.currentUserX = svgPt.x;
-            this.currentUserY = svgPt.y;
-            this.targetUserX = svgPt.x;
-            this.targetUserY = svgPt.y;
-            this.applyTransform();
-            this.updateOverlays();
+            this.latestGpsCoords = {
+                lat: latitude,
+                lng: longitude,
+                accuracy: typeof accuracy === "number" ? accuracy : 20,
+                timestamp: Date.now(),
+            };
 
-            // Auto-advance step when user walks within ~10m of current step's target landmark
+            // Reject severely coarse IP / cell-tower fixes (> 85m)
+            if (typeof accuracy === "number" && accuracy > 85) return;
+
+            // Validate campus perimeter so off-campus users are never snapped onto the SVG canvas border
+            if (!this.isWithinCampusPerimeter(latitude, longitude, 40)) {
+                this.gpsStatus = "outside";
+                this.updateLiveCompassButtonUI();
+                return;
+            }
+
+            this.gpsStatus = "tracking";
+            this.updateLiveCompassButtonUI();
+
+            // Do not fight an active route simulation preview
+            if (this.isSimulating) return;
+
+            const mapUpBearing = (this.calibration && this.calibration.mapUpTrueBearingDeg) || 181.4;
+            const rawSvgPt = this.gpsToSvg(latitude, longitude);
+
+            // Track physical walking displacement between GPS anchors for bearing fallback & remote-preview detection
+            if (!this.initialGpsOnRoute) {
+                this.initialGpsOnRoute = { lat: latitude, lng: longitude };
+            }
+            const movedSinceStart = this.haversineMeters(
+                this.initialGpsOnRoute.lat, this.initialGpsOnRoute.lng,
+                latitude, longitude
+            );
+
+            let movementSvgHeading = null;
+            if (this.lastGpsAnchor) {
+                const movedMeters = this.haversineMeters(
+                    this.lastGpsAnchor.lat, this.lastGpsAnchor.lng,
+                    latitude, longitude
+                );
+                if (movedMeters >= 2.2) {
+                    const moveBearing = this.calculateCompassBearing(
+                        this.lastGpsAnchor.lat, this.lastGpsAnchor.lng,
+                        latitude, longitude
+                    );
+                    movementSvgHeading = this.normalizeAngle180(mapUpBearing - moveBearing);
+                    this.lastGpsAnchor = { lat: latitude, lng: longitude, x: rawSvgPt.x, y: rawSvgPt.y, timestamp: Date.now() };
+                }
+            } else {
+                this.lastGpsAnchor = { lat: latitude, lng: longitude, x: rawSvgPt.x, y: rawSvgPt.y, timestamp: Date.now() };
+            }
+
+            // CASE A: Active Route Navigation -> GPS-space map matching directly onto walkwayPath!
+            if (this.currentRoute && this.activeRoutePolyline && this.activeRoutePolyline.length >= 2) {
+                const match = this.projectGpsToRoute(latitude, longitude);
+                if (!match) return;
+
+                // Activate live tracking onto this route when user:
+                // - used GPS as origin, OR explicitly toggled "En vivo", OR is already locked,
+                // - OR is within 65m of the route corridor, OR physically started walking (>= 3.5m) on campus!
+                const shouldTrackRoute = Boolean(
+                    this.isLiveCompassActive ||
+                    this.routeUsedGpsOrigin ||
+                    this.hasGpsLockOnRoute ||
+                    match.perpMeters <= 65 ||
+                    movedSinceStart >= 3.5
+                );
+                if (!shouldTrackRoute) return;
+                this.hasGpsLockOnRoute = true;
+
+                // Dynamic snap corridor accounts for GPS accuracy near buildings (16m..30m)
+                const snapRadiusMeters = Math.min(30, Math.max(16, (accuracy || 12) * 1.45));
+                const isSnappedToRoute = match.perpMeters <= snapRadiusMeters;
+
+                const targetX = isSnappedToRoute ? match.x : rawSvgPt.x;
+                const targetY = isSnappedToRoute ? match.y : rawSvgPt.y;
+
+                // Heading priority cascade so the arrow ALWAYS points the direction the user walks:
+                // 1. Live phone magnetometer compass (if active)
+                // 2. GPS hardware course heading (when moving)
+                // 3. Route segment forward tangent (when snapped to route) / computed GPS walking vector
+                let targetHeading = this.userSvgHeading || 0;
+                const hasValidGpsHeading = typeof heading === "number" && !Number.isNaN(heading) && heading >= 0 &&
+                    (speed === null || speed === undefined || Number.isNaN(speed) || speed >= 0.4);
+
+                if (this.isLiveCompassActive && this.smoothedCompassDeg !== null) {
+                    targetHeading = this.normalizeAngle180(mapUpBearing - this.smoothedCompassDeg);
+                } else if (isSnappedToRoute) {
+                    // When walking along the route without compass, align smoothly along the walkway toward destination
+                    // (unless GPS explicitly shows user walking backward along the corridor)
+                    if (movementSvgHeading !== null) {
+                        const diffToRoute = Math.abs(this.normalizeAngle180(movementSvgHeading - match.headingDeg));
+                        targetHeading = diffToRoute <= 95 ? match.headingDeg : movementSvgHeading;
+                    } else if (hasValidGpsHeading) {
+                        const gpsH = this.normalizeAngle180(mapUpBearing - heading);
+                        const diffToRoute = Math.abs(this.normalizeAngle180(gpsH - match.headingDeg));
+                        targetHeading = diffToRoute <= 95 ? match.headingDeg : gpsH;
+                    } else {
+                        targetHeading = match.headingDeg;
+                    }
+                } else if (hasValidGpsHeading) {
+                    targetHeading = this.normalizeAngle180(mapUpBearing - heading);
+                } else if (movementSvgHeading !== null) {
+                    targetHeading = movementSvgHeading;
+                } else {
+                    // Off-route and stationary: point toward the nearest point on the route
+                    targetHeading = this.calculateHeadingAngle({ x: rawSvgPt.x, y: rawSvgPt.y }, { x: match.x, y: match.y });
+                }
+
+                // Update traveled/remaining route line & progress metrics
+                this.updateRouteProgressVisuals(match.cumDistPx, { showSplit: isSnappedToRoute });
+
+                // Smoothly animate user arrow (and camera if following) to live position
+                this.animateUserTo(targetX, targetY, targetHeading, { duration: 480 });
+
+                // Dynamically sync turn-by-turn step from continuous progress & milestone proximity
+                this.syncStepFromProgress(latitude, longitude, match);
+                this.updateOrientationCue();
+                return;
+            }
+
+            // CASE B: Explore Mode (no active route) -> live blue user arrow glides across campus
+            let exploreHeading = this.userSvgHeading || 0;
+            if (this.isLiveCompassActive && this.smoothedCompassDeg !== null) {
+                exploreHeading = this.normalizeAngle180(mapUpBearing - this.smoothedCompassDeg);
+            } else if (typeof heading === "number" && !Number.isNaN(heading) && heading >= 0 && (speed === null || speed === undefined || speed >= 0.4)) {
+                exploreHeading = this.normalizeAngle180(mapUpBearing - heading);
+            } else if (movementSvgHeading !== null) {
+                exploreHeading = movementSvgHeading;
+            }
+
+            this.animateUserTo(rawSvgPt.x, rawSvgPt.y, exploreHeading, { duration: 480 });
+        }
+
+        syncStepFromProgress(lat, lng, match) {
             const steps = this.getActiveStepsList();
-            if (steps.length > 0 && this.currentStepIndex < steps.length - 1) {
-                const activeStep = steps[this.currentStepIndex];
-                const tLat = activeStep.targetLat || activeStep.lat;
-                const tLng = activeStep.targetLng || activeStep.lng;
-                if (tLat && tLng) {
-                    const distToMilestone = this.haversineMeters(latitude, longitude, tLat, tLng);
-                    if (distToMilestone <= 10.5) {
-                        this.nextStep({ keepLivePosition: true });
+            if (!steps || steps.length === 0) return;
+
+            let targetStepIdx = this.currentStepIndex;
+            const lastIdx = steps.length - 1;
+
+            // 1. Check arrival at outdoor route endpoint / final destination
+            // If destination has an indoor entry leg (e.g. room on 2nd floor), advance to the first indoor
+            // destination step when arriving at the building door rather than skipping indoor directions.
+            let outdoorArrivalStepIdx = lastIdx;
+            if (steps[lastIdx] && steps[lastIdx].isIndoor && Array.isArray(this.stepSpans) && this.stepSpans.length === steps.length) {
+                for (let k = lastIdx; k >= 0; k--) {
+                    if (steps[k].isIndoor && this.stepSpans[k].startDistPx >= this.totalRoutePx - 2) {
+                        outdoorArrivalStepIdx = k;
+                    } else {
+                        break;
                     }
                 }
             }
+
+            const finalStep = steps[lastIdx];
+            const destLat = (this.activeRoutePolyline.length > 0 ? this.activeRoutePolyline[this.activeRoutePolyline.length - 1].lat : null) ||
+                (finalStep && (finalStep.targetLat || finalStep.lat));
+            const destLng = (this.activeRoutePolyline.length > 0 ? this.activeRoutePolyline[this.activeRoutePolyline.length - 1].lng : null) ||
+                (finalStep && (finalStep.targetLng || finalStep.lng));
+
+            if ((destLat && destLng && this.haversineMeters(lat, lng, destLat, destLng) <= 11.0) ||
+                (match && match.progressRatio >= 0.96 && match.perpMeters <= 18)) {
+                targetStepIdx = Math.max(this.currentStepIndex, outdoorArrivalStepIdx);
+            } else if (match && Array.isArray(this.stepSpans) && this.stepSpans.length === steps.length) {
+                // 2. Match current polyline distance to step spans (prefer active outdoor spans when moving)
+                const distPx = match.cumDistPx;
+                for (let i = 0; i < lastIdx; i++) {
+                    const span = this.stepSpans[i];
+                    const spanLen = span.endDistPx - span.startDistPx;
+                    // Skip completed zero-length origin indoor steps once user has moved along outdoor walkway
+                    if (spanLen <= 1 && span.endDistPx <= 1 && distPx > 14) {
+                        continue;
+                    }
+                    // Advance slightly early (~16px ≈ 5.5m) before reaching corner so turn instruction previews smoothly
+                    const triggerEnd = spanLen > 24 ? (span.endDistPx - 14) : span.endDistPx;
+                    if (distPx <= triggerEnd) {
+                        targetStepIdx = i;
+                        break;
+                    }
+                    targetStepIdx = Math.min(lastIdx, i + 1);
+                }
+            }
+
+            // 3. Fallback GPS proximity check ONLY when polyline spans are unavailable
+            if (targetStepIdx < lastIdx && (!Array.isArray(this.stepSpans) || this.stepSpans.length !== steps.length)) {
+                const s = steps[targetStepIdx];
+                const tLat = s && (s.targetLat || s.lat);
+                const tLng = s && (s.targetLng || s.lng);
+                if (tLat && tLng && this.haversineMeters(lat, lng, tLat, tLng) <= 8.0) {
+                    targetStepIdx = targetStepIdx + 1;
+                }
+            }
+
+            if (targetStepIdx !== this.currentStepIndex) {
+                this.currentStepIndex = targetStepIdx;
+                this.applyActiveStepUI(targetStepIdx);
+            }
+        }
+
+        applyActiveStepUI(stepIndex) {
+            const steps = this.getActiveStepsList();
+            if (!this.currentRoute || steps.length === 0) return;
+            const idx = Math.max(0, Math.min(steps.length - 1, stepIndex));
+            const step = steps[idx];
+            const nextStep = idx < steps.length - 1 ? steps[idx + 1] : null;
+
+            // Highlight active building badge along the route
+            if (this.badgesContainer && step.buildingId) {
+                this.badgesContainer.querySelectorAll(".waze-bldg-badge").forEach(badge => {
+                    badge.classList.toggle("waze-badge-focused", badge.id === `wazeBadge_${step.buildingId}`);
+                });
+            }
+
+            // Highlight active step in the sidebar directions panel
+            document.querySelectorAll("#routeStepsList li").forEach((li, i) => {
+                if (i === idx) {
+                    li.classList.add("ring-2", "ring-brand-500", "bg-brand-50/80");
+                    li.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                } else {
+                    li.classList.remove("ring-2", "ring-brand-500", "bg-brand-50/80");
+                }
+            });
+
+            this.updateBannerUI(idx, steps.length, step, nextStep);
+            this.updateOrientationCue();
         }
 
         updateOrientationCue() {
             if (!this.tbtOrientationCue || !this.tbtOrientationCueText) return;
             const steps = this.getActiveStepsList();
             const step = steps[this.currentStepIndex];
-            if (!this.isLiveCompassActive || this.latestCompassDeg === null || !step || typeof step.nextBearingDeg !== "number") {
+
+            // Prefer live true bearing of the exact route segment user is walking on
+            let targetBearing = null;
+            if (this.activeRoutePolyline && this.activeRoutePolyline.length >= 2) {
+                const sample = this.samplePolylineAtDistance(this.routeProgressDistPx || 0);
+                if (sample && typeof sample.trueBearingDeg === "number") {
+                    targetBearing = sample.trueBearingDeg;
+                }
+            }
+            if (targetBearing === null && step && typeof step.nextBearingDeg === "number") {
+                targetBearing = step.nextBearingDeg;
+            }
+
+            if (!this.isLiveCompassActive || this.latestCompassDeg === null || targetBearing === null || (step && step.maneuver === "arrive")) {
                 this.tbtOrientationCue.classList.add("hidden");
                 this.tbtOrientationCue.classList.remove("flex");
                 return;
             }
 
-            const diff = this.normalizeAngle180(step.nextBearingDeg - this.latestCompassDeg);
+            const diff = this.normalizeAngle180(targetBearing - this.latestCompassDeg);
             const absDiff = Math.abs(diff);
             let cueText = "";
             let isAligned = false;
@@ -1878,7 +3056,8 @@
         }
 
         /**
-         * Navigates to a specific human landmark step along the walkway route
+         * Navigates to a specific human landmark step along the walkway route,
+         * smoothly gliding the user arrow along actual walkway segments!
          */
         goToStep(stepIndex, options = {}) {
             const steps = this.getActiveStepsList();
@@ -1890,48 +3069,51 @@
 
             const step = steps[stepIndex];
             const nextStep = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
-            const currentPt = { x: step.x || 600, y: step.y || 425 };
-            const aimPt = (step.targetX !== undefined && (step.targetX !== step.x || step.targetY !== step.y))
-                ? { x: step.targetX, y: step.targetY }
-                : (nextStep ? { x: nextStep.x, y: nextStep.y } : currentPt);
-
-            // Compute walkway heading unless real phone compass is driving heading live
-            let headingDeg = this.currentHeading || 0;
-            if (!this.isLiveCompassActive) {
-                if (aimPt.x !== currentPt.x || aimPt.y !== currentPt.y) {
-                    headingDeg = this.calculateHeadingAngle(currentPt, aimPt);
-                } else if (stepIndex > 0) {
-                    const prevS = steps[stepIndex - 1];
-                    headingDeg = this.calculateHeadingAngle({ x: prevS.x, y: prevS.y }, currentPt);
-                }
-            }
-
             const isFinalStep = stepIndex === steps.length - 1;
+
             this.pitch = isFinalStep ? 50 : 52;
             this.targetZoomScale = this.getResponsiveZoom(isFinalStep ? 2.75 : 2.42);
-
-            // Highlight active building badge along the route
-            if (this.badgesContainer && step.buildingId) {
-                this.badgesContainer.querySelectorAll(".waze-bldg-badge").forEach(badge => {
-                    badge.classList.toggle("waze-badge-focused", badge.id === `wazeBadge_${step.buildingId}`);
-                });
-            }
-
-            // Highlight active step in the sidebar directions panel
-            document.querySelectorAll("#routeStepsList li").forEach((li, idx) => {
-                if (idx === stepIndex) {
-                    li.classList.add("ring-2", "ring-brand-500", "bg-brand-50/80");
-                } else {
-                    li.classList.remove("ring-2", "ring-brand-500", "bg-brand-50/80");
-                }
-            });
+            this.isFollowingUser = true;
+            this.isOverview = false;
 
             if (!options.keepLivePosition) {
-                this.anchorToLowerThird(currentPt.x, currentPt.y, headingDeg);
+                const span = this.stepSpans && this.stepSpans[stepIndex];
+                if (span && this.activeRoutePolyline && this.activeRoutePolyline.length >= 2 && this.totalRoutePx > 1) {
+                    const targetDistPx = span.startDistPx;
+                    if (options.instant) {
+                        const sample = this.samplePolylineAtDistance(targetDistPx);
+                        if (sample) {
+                            this.zoomScale = this.targetZoomScale;
+                            this.targetZoomScale = undefined;
+                            const heading = (this.isLiveCompassActive && this.latestCompassDeg !== null)
+                                ? this.userSvgHeading
+                                : sample.headingDeg;
+                            this.setUserPose(sample.x, sample.y, heading);
+                            this.updateRouteProgressVisuals(targetDistPx);
+                        }
+                    } else {
+                        this.animateAlongRoute(this.routeProgressDistPx || 0, targetDistPx);
+                    }
+                } else {
+                    const currentPt = { x: step.x || 600, y: step.y || 425 };
+                    const aimPt = (step.targetX !== undefined && (step.targetX !== step.x || step.targetY !== step.y))
+                        ? { x: step.targetX, y: step.targetY }
+                        : (nextStep ? { x: nextStep.x, y: nextStep.y } : currentPt);
+
+                    let headingDeg = this.userSvgHeading || 0;
+                    if (!this.isLiveCompassActive) {
+                        if (aimPt.x !== currentPt.x || aimPt.y !== currentPt.y) {
+                            headingDeg = this.calculateHeadingAngle(currentPt, aimPt);
+                        } else if (stepIndex > 0) {
+                            const prevS = steps[stepIndex - 1];
+                            headingDeg = this.calculateHeadingAngle({ x: prevS.x, y: prevS.y }, currentPt);
+                        }
+                    }
+                    this.animateUserTo(currentPt.x, currentPt.y, headingDeg, { duration: options.instant ? 0 : 480 });
+                }
             }
 
-            this.updateBannerUI(stepIndex, steps.length, step, nextStep);
-            this.updateOrientationCue();
+            this.applyActiveStepUI(stepIndex);
         }
 
         nextStep(options = {}) {
@@ -1996,9 +3178,12 @@
                 this.tbtManeuverIcon.innerHTML = this.getManeuverIconPath((step && step.maneuver) || "straight");
             }
 
-            // Circular dial: human walking minutes remaining (NOT meters!)
+            // Circular dial & progress bar: use continuous polyline ratio if available, else step ratio
             const totalMinutes = this.currentRoute ? Math.max(1, this.currentRoute.estimatedWalkingMinutes || 1) : 1;
-            const remainingRatio = totalSteps > 1 ? Math.max(0, (totalSteps - 1 - stepIdx) / (totalSteps - 1)) : 0;
+            const progressRatio = (this.totalRoutePx > 1)
+                ? (isFinal ? 1 : Math.max(0, Math.min(1, this.routeProgressRatio)))
+                : (totalSteps > 1 ? stepIdx / (totalSteps - 1) : 1);
+            const remainingRatio = Math.max(0, 1 - progressRatio);
             const remMinutes = isFinal ? 0 : Math.max(1, Math.ceil(totalMinutes * remainingRatio));
 
             if (this.wazeDialValue) {
@@ -2025,7 +3210,7 @@
             }
 
             if (this.wazeProgressBar) {
-                const progressPct = totalSteps > 1 ? Math.round((stepIdx / (totalSteps - 1)) * 100) : 100;
+                const progressPct = isFinal ? 100 : Math.round(progressRatio * 100);
                 this.wazeProgressBar.style.width = `${progressPct}%`;
             }
 
@@ -2043,29 +3228,96 @@
         startSimulation() {
             const steps = this.getActiveStepsList();
             if (!this.currentRoute || steps.length === 0) return;
-            if (this.isLiveCompassActive) this.stopLiveCompassNavigation();
+            if (this.isLiveCompassActive) this.stopLiveCompassNavigation({ keepGps: true });
+            this.cancelUserAnimation();
 
             this.isSimulating = true;
+            this.isFollowingUser = true;
+            this.isOverview = false;
             if (this.labelSimPlay) this.labelSimPlay.textContent = "Pausa";
 
-            if (this.currentStepIndex >= steps.length - 1) {
-                this.goToStep(0);
+            // Indoor-only single-point route fallback (step interval)
+            if (!this.activeRoutePolyline || this.activeRoutePolyline.length < 2 || this.totalRoutePx <= 1) {
+                if (this.currentStepIndex >= steps.length - 1) {
+                    this.goToStep(0, { instant: true });
+                }
+                if (this.simInterval) clearInterval(this.simInterval);
+                this.simInterval = setInterval(() => {
+                    const activeSteps = this.getActiveStepsList();
+                    if (!this.currentRoute || activeSteps.length === 0) {
+                        this.stopSimulation();
+                        return;
+                    }
+                    if (this.currentStepIndex < activeSteps.length - 1) {
+                        this.nextStep();
+                    } else {
+                        this.stopSimulation();
+                    }
+                }, 2000);
+                return;
             }
 
-            if (this.simInterval) clearInterval(this.simInterval);
-            this.simInterval = setInterval(() => {
-                const activeSteps = this.getActiveStepsList();
-                if (!this.currentRoute || activeSteps.length === 0) {
-                    this.stopSimulation();
+            // Smooth continuous walkway walking simulation along every segment & turn!
+            if (this.routeProgressDistPx >= this.totalRoutePx - 2 || this.currentStepIndex >= steps.length - 1) {
+                this.routeProgressDistPx = 0;
+                this.routeProgressRatio = 0;
+                this.currentStepIndex = 0;
+                this.applyActiveStepUI(0);
+            }
+
+            const speedPxPerSec = Math.max(48, Math.min(95, this.totalRoutePx / 9.5));
+            this.simLastTimestamp = performance.now();
+
+            const tick = (now) => {
+                if (!this.isSimulating || !this.currentRoute) {
+                    this.simAnimId = null;
                     return;
                 }
 
-                if (this.currentStepIndex < activeSteps.length - 1) {
-                    this.nextStep();
-                } else {
-                    this.stopSimulation();
+                const dtSec = Math.min(0.1, Math.max(0.001, (now - this.simLastTimestamp) / 1000));
+                this.simLastTimestamp = now;
+
+                const nextDist = Math.min(this.totalRoutePx, (this.routeProgressDistPx || 0) + speedPxPerSec * dtSec);
+                const sample = this.samplePolylineAtDistance(nextDist);
+                if (sample) {
+                    const diffH = this.normalizeAngle180(sample.headingDeg - (this.userSvgHeading || 0));
+                    const smoothH = (this.userSvgHeading || 0) + diffH * Math.min(1, dtSec * 8.5);
+
+                    this.setUserPose(sample.x, sample.y, smoothH);
+                    this.updateRouteProgressVisuals(nextDist);
+
+                    // Sync step banner cleanly as the simulated walker crosses each landmark
+                    const activeSteps = this.getActiveStepsList();
+                    const lastStepIdx = activeSteps.length - 1;
+                    let matchedStep = this.currentStepIndex;
+                    if (nextDist >= this.totalRoutePx - 1) {
+                        matchedStep = lastStepIdx;
+                    } else if (Array.isArray(this.stepSpans) && this.stepSpans.length === activeSteps.length) {
+                        for (let i = 0; i < lastStepIdx; i++) {
+                            const span = this.stepSpans[i];
+                            const spanLen = span.endDistPx - span.startDistPx;
+                            if (spanLen <= 1 && span.endDistPx <= 1 && nextDist > 8) continue;
+                            if (nextDist <= span.endDistPx - 6) {
+                                matchedStep = i;
+                                break;
+                            }
+                            matchedStep = Math.min(lastStepIdx, i + 1);
+                        }
+                    }
+                    if (matchedStep !== this.currentStepIndex) {
+                        this.currentStepIndex = matchedStep;
+                        this.applyActiveStepUI(matchedStep);
+                    }
                 }
-            }, 2200);
+
+                if (nextDist >= this.totalRoutePx - 0.5) {
+                    this.stopSimulation();
+                    return;
+                }
+                this.simAnimId = requestAnimationFrame(tick);
+            };
+
+            this.simAnimId = requestAnimationFrame(tick);
         }
 
         stopSimulation() {
@@ -2074,6 +3326,10 @@
             if (this.simInterval) {
                 clearInterval(this.simInterval);
                 this.simInterval = null;
+            }
+            if (this.simAnimId) {
+                cancelAnimationFrame(this.simAnimId);
+                this.simAnimId = null;
             }
         }
     }

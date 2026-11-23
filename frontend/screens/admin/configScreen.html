@@ -1,0 +1,89 @@
+{% extends "screens/admin/adminBase.html" %}
+
+{% block title %}Configuración del Sistema · JaguarFind{% endblock %}
+{% block header_title %}Configuración y Parámetros del Sistema{% endblock %}
+{% block header_subtitle %}Información institucional del campus UAM y estado de los servicios de custodia{% endblock %}
+
+{% block admin_content %}
+<div class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-4xl mx-auto">
+
+    <!-- Campus Custody Info Card -->
+    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div class="flex items-center gap-3 pb-4 border-b border-slate-100">
+            <div class="w-10 h-10 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0"><svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg></div>
+            <div>
+                <h2 class="text-sm font-extrabold text-slate-900">Sede Principal de Custodia Física</h2>
+                <p class="text-xs text-slate-500">Ubicación designada para la entrega de objetos perdidos</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Edificio & Oficina</span>
+                <p class="font-bold text-slate-900 text-sm">Edificio A — Planta Baja (Recepción / CAE)</p>
+                <p class="text-slate-500">Atención al Estudiante y Servicios Académicos</p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Horario de Atención</span>
+                <p class="font-bold text-slate-900 text-sm">Lunes a Viernes · 8:00 AM – 5:00 PM</p>
+                <p class="text-slate-500">Sábados: 8:00 AM – 12:00 MD</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security & Anti-Fraud Verification Settings -->
+    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <h2 class="text-sm font-extrabold text-slate-900">Protocolo Antifraude de Entrega</h2>
+        <div class="space-y-3 text-xs text-slate-600">
+            <div class="flex items-start gap-3 p-3 rounded-2xl bg-amber-50/60 border border-amber-200/80">
+                <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0"><svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg></span>
+                <div>
+                    <span class="font-bold text-slate-900 block">Detalle Secreto Obligatorio</span>
+                    <span class="text-slate-600">Al reclamar un objeto de alto valor (laptops, celulares, calculadoras), el solicitante debe coincidir con la respuesta o características físicas que no aparecen en la foto pública.</span>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-3 rounded-2xl bg-sky-50/60 border border-sky-200/80">
+                <span class="w-8 h-8 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0"><svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg></span>
+                <div>
+                    <span class="font-bold text-slate-900 block">Identificación Oficial Requerida</span>
+                    <span class="text-slate-600">El retiro de cualquier artículo exige verificar el carnet estudiantil CIF vigente o la cédula de identidad nacional física.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Version & Technical Architecture -->
+    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <h2 class="text-sm font-extrabold text-slate-900">Información del Sistema</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-semibold">
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <span class="block text-[10px] text-slate-400 uppercase font-bold">Plataforma</span>
+                <span class="text-slate-800">JaguarFind & JaguarMaps</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <span class="block text-[10px] text-slate-400 uppercase font-bold">Versión</span>
+                <span class="text-brand-600 font-black">2.0.0 (Release)</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <span class="block text-[10px] text-slate-400 uppercase font-bold">Base de Datos</span>
+                <span class="text-slate-800">SQLite3 Relacional</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <span class="block text-[10px] text-slate-400 uppercase font-bold">Motor de Rutas</span>
+                <span class="text-slate-800">Dijkstra + 18 Subgrafos</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <span class="block text-[10px] text-slate-400 uppercase font-bold">Institución</span>
+                <span class="text-slate-800">UAM Nicaragua</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                <span class="block text-[10px] text-slate-400 uppercase font-bold">Estado del Servicio</span>
+                <span class="inline-flex items-center gap-1 text-emerald-600 font-black"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><span>Operacional</span></span>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

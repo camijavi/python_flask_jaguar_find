@@ -38,7 +38,14 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
             <button id="btnToggleEmergencyLayer" type="button" aria-pressed="true" class="w-9 h-9 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 flex items-center justify-center transition-colors cursor-pointer" title="Puntos de Encuentro y Rutas de Evacuación">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </button>
-            <button id="btnToggleWalkwaysLayer" type="button" aria-pressed="true" class="w-9 h-9 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-700 flex items-center justify-center transition-colors cursor-pointer" title="Mostrar / Ocultar Red Peatonal Micro (Pasillos, Puentes y Muros)">
+            <!-- Lost & Found Waze Alert Layer Toggle (Visible only for authenticated users) -->
+            {% if session.get('user') %}
+            <button id="btnToggleLostObjectsLayer" type="button" aria-pressed="true" class="relative w-9 h-9 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 flex items-center justify-center transition-colors cursor-pointer" title="Capa de Objetos Perdidos (Alertas Waze)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                <span id="mapLostPinsBadgeCount" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center shadow-xs hidden">0</span>
+            </button>
+            {% endif %}
+            <button id="btnToggleWalkwaysLayer"  type="button" aria-pressed="true" class="w-9 h-9 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-700 flex items-center justify-center transition-colors cursor-pointer" title="Mostrar / Ocultar Red Peatonal Micro (Pasillos, Puentes y Muros)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="4.5" r="2" stroke-width="2.1"></circle>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.1" d="M9.5 10.5l2.5 1.8 3-1.3M12 12.3V16l-2.8 4.5M12 16l3.2 4.2M7.5 13.5l2-3"></path>
@@ -56,6 +63,38 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
         <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full border-t-2 border-dashed border-violet-600 inline-block"></span>Puente 2P</span>
         <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-500 inline-block"></span>Puerta</span>
         <span class="inline-flex items-center gap-1 text-rose-600"><span class="font-black leading-none">&times;</span>Bloqueado</span>
+    </div>
+
+    
+    <!-- Waze-style Lost & Found Pin Detail Popover -->
+    <div id="lostFoundPinPopover" class="absolute z-30 bg-white rounded-3xl shadow-2xl border border-slate-200 p-4 w-[calc(100%-24px)] max-w-sm text-xs text-slate-800 hidden transition-all pointer-events-auto">
+        <div class="flex items-start justify-between gap-2 mb-2 pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm font-bold">
+                    <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </span>
+                <div>
+                    <span id="lostPinNodeName" class="font-extrabold text-slate-900 text-sm block leading-tight"></span>
+                    <span id="lostPinCountSubtitle" class="text-[10px] text-slate-400 font-semibold"></span>
+                </div>
+            </div>
+            <button id="btnCloseLostPinPopover" type="button" class="text-slate-400 hover:text-slate-600 cursor-pointer p-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div id="lostPinItemsList" class="space-y-2 mb-3 max-h-48 overflow-y-auto pr-1"></div>
+        <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+            <button id="btnFocus25dPin" type="button" class="py-2 px-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-800 font-bold text-[11px] flex items-center justify-center gap-1 transition cursor-pointer" title="Ver en perspectiva 2.5D">
+                <svg class="w-3.5 h-3.5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                <span>2.5D</span>
+            </button>
+            <a id="btnViewInCatalog" href="/lost-found-object/catalogo" class="flex-1 py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[11px] text-center transition">
+                Ver en Catálogo
+            </a>
+            <button id="btnReportHere" type="button" class="flex-1 py-2 px-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-[11px] text-center transition shadow-xs cursor-pointer">
+                + Reportar Aquí
+            </button>
+        </div>
     </div>
 
     <!-- Active Building Popover -->
@@ -78,6 +117,10 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
             <button id="btnSetBldgDestination" type="button" class="flex-1 py-2 px-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold text-[11px] text-center transition-colors inline-flex items-center justify-center gap-1 cursor-pointer">
                 <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                 <span>Ir aquí</span>
+            </button>
+            <button id="btnBldgReportLost" type="button" class="py-2 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200/80 text-amber-800 font-bold text-[11px] text-center transition-colors inline-flex items-center justify-center gap-1 cursor-pointer" title="Reportar objeto extraviado en este edificio">
+                <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Reportar</span>
             </button>
         </div>
     </div>
@@ -157,15 +200,33 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
 
                 <!-- 8. JaguarFind Blue & Light-Blue Navigation Route Overlay -->
                 <g id="route2dLayer">
+                    <polyline id="route2dTraveledPolyline" points="" fill="none" stroke="#94a3b8" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.5" />
                     <polyline id="route2dShadowPolyline" points="" fill="none" stroke="#0284c7" stroke-width="14.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.92" />
                     <polyline id="route2dGlowPolyline" points="" fill="none" stroke="#38bdf8" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="1" />
                     <polyline id="route2dPolyline" points="" fill="none" stroke="#e0f2fe" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ruta-animada" />
                 </g>
 
                 <!-- 9. Origin & Destination Pin Markers -->
+                <!-- 10. Waze-style Lost & Found Alert Pins Layer -->
+                <g id="lostFoundMapPinsLayer"></g>
+
                 <g id="route2dPinsLayer">
                     <g id="origin2dPin" class="hidden"></g>
                     <g id="destination2dPin" class="hidden"></g>
+                </g>
+
+                <!-- 11. Live 2D User Navigation Arrow (Hidden in 2.5D where upright HTML puck takes over) -->
+                <g id="user2dArrowLayer" class="hidden" pointer-events="none">
+                    <g id="user2dArrowGroup" transform="translate(400, 500)">
+                        <circle class="user-2d-pulse" cx="0" cy="0" r="14" fill="none" stroke="#38bdf8" stroke-width="2.2" />
+                        <circle cx="0" cy="0" r="15" fill="#38bdf8" opacity="0.2" stroke="#ffffff" stroke-width="1.5" />
+                        <g id="user2dArrowRotator" transform="rotate(0)">
+                            <polygon points="0,0 -14,-28 14,-28" fill="#38bdf8" opacity="0.26" />
+                            <path d="M 0 -13 L 11 10 C 11.7 11.4 10.4 12.8 9 12.2 L 0 8.5 L -9 12.2 C -10.4 12.8 -11.7 11.4 -11 10 Z" fill="#0284c7" transform="translate(0, 1.8)" />
+                            <path d="M 0 -14 L 10.5 8.5 C 11.2 9.9 10 11.2 8.6 10.6 L 0 7 L -8.6 10.6 C -10 11.2 -11.2 9.9 -10.5 8.5 Z" fill="#38bdf8" stroke="#ffffff" stroke-width="2.1" stroke-linejoin="round" />
+                            <circle cx="0" cy="0.5" r="2.3" fill="#0369a1" stroke="#ffffff" stroke-width="1" />
+                        </g>
+                    </g>
                 </g>
             </g>
         </svg>
@@ -194,6 +255,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
             <div id="wazeActiveRoadPill" class="waze-road-pill hidden">Campus UAM</div>
         </div>
         <div id="wazeBadgesContainer" class="absolute inset-0 pointer-events-none"></div>
+        <div id="wazeLostPinsContainer" class="absolute inset-0 pointer-events-none z-20"></div>
         <div id="wazeOriginPin" class="waze-pin-origin hidden pointer-events-none"></div>
         <div id="wazeDestPin" class="waze-pin-dest hidden pointer-events-none"></div>
     </div>

@@ -170,7 +170,7 @@ def reportItem():
         try:
             latF = float(lat)
             lngF = float(lng)
-            if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=20.0):
+            if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=30.0):
                 return jsonify({
                     "success": False,
                     "error": "La ubicación seleccionada está fuera del perímetro del campus UAM."
@@ -186,7 +186,7 @@ def reportItem():
             try:
                 latF = float(parts[0])
                 lngF = float(parts[1])
-                if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=20.0):
+                if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=30.0):
                     return jsonify({
                         "success": False,
                         "error": "La ubicación indicada está fuera del perímetro del campus UAM."
@@ -275,7 +275,18 @@ def getMapPins():
     GET /api/lost-found-object/map-pins
     Aggregates active lost and in-custody items by campus node to display
     interactive badge markers on the campus map.
+    Only available to authenticated campus users.
     """
+    currentUser = session.get("user")
+    if not currentUser:
+        return jsonify({
+            "success": True,
+            "totalPins": 0,
+            "totalActiveItems": 0,
+            "pins": [],
+            "requiresAuth": True
+        }), 200
+
     activeItems = getAllLostObjects()
     # Filter only Reported (1) or In Custody (2)
     activeItems = [i for i in activeItems if i.get("LostObjectStateId") in (1, 2)]

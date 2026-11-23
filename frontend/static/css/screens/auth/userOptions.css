@@ -1,0 +1,82 @@
+.auth-hero {
+    background-image:
+        linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.5)),
+        url("/static/img/UAM.jpeg");
+    background-size: cover;
+    background-position: center;
+}
+
+.role-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 28px 24px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.role-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.28);
+}
+.role-card h2 { font-size: 1.25rem; font-weight: 800; color: #0f172a; }
+.role-card p  { font-size: 0.875rem; color: #64748b; }
+.role-body { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; }
+
+.role-icon {
+    width: 64px; height: 64px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 1rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.role-cta {
+    margin-top: 8px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 22px;
+    border-radius: 0.75rem;
+    font-size: 0.875rem; font-weight: 700;
+    color: #fff; background: #2f99a8;
+    box-shadow: 0 4px 10px rgba(47, 153, 168, 0.3);
+    transition: background-color 0.2s;
+}
+.role-card:hover .role-cta { background: #28828f; }
+
+/* Responsive: let page grow with content (tall forms on small phones) */
+html:has(.auth-hero), body:has(.auth-hero) { height: auto; min-height: 100%; }
+body:has(.auth-hero) { min-height: 100vh; min-height: 100dvh; }
+.auth-hero { background-attachment: scroll; min-height: calc(100dvh - 3.5rem); }
+@media (max-width: 480px) {
+    .auth-hero { padding-left: 0.75rem; padding-right: 0.75rem; }
+}
+
+/* Never clip content: hero grows with its content */
+.auth-hero { flex-shrink: 0; }
+
+/* Phones: compact horizontal role rows so all three fit on screen */
+@media (max-width: 767px) {
+    .role-card {
+        flex-direction: row;
+        text-align: left;
+        gap: 14px;
+        padding: 14px 16px;
+    }
+    .role-card:hover { transform: none; }
+    .role-body { align-items: flex-start; gap: 2px; min-width: 0; }
+    .role-card h2 { font-size: 1.05rem; }
+    .role-card p  { font-size: 0.8rem; line-height: 1.3; }
+    .role-icon { width: 52px; height: 52px; flex-shrink: 0; }
+    .role-cta {
+        margin-top: 0; padding: 0; width: 36px; height: 36px;
+        justify-content: center; font-size: 0; flex-shrink: 0; border-radius: 9999px;
+    }
+}
+@media (max-width: 360px) {
+    .role-card p { display: none; }
+}

@@ -83,8 +83,8 @@ class CampusGeoUtils:
         return (math.degrees(math.atan2(y, x)) + 360.0) % 360.0
 
     @staticmethod
-    def getCalibrationMetadata() -> Dict[str, float]:
-        """Exports GPS<->SVG affine calibration and true map heading offset for the 2.5D frontend."""
+    def getCalibrationMetadata() -> Dict[str, object]:
+        """Exports GPS<->SVG affine calibration, campus perimeter, and true map heading offset for the frontend."""
         return {
             "lat0": CampusGeoUtils.CALIB_LAT0,
             "lng0": CampusGeoUtils.CALIB_LNG0,
@@ -97,8 +97,10 @@ class CampusGeoUtils:
             "cyN": CampusGeoUtils.CALIB_CY_N,
             "cyE": CampusGeoUtils.CALIB_CY_E,
             "mapUpTrueBearingDeg": CampusGeoUtils.MAP_UP_TRUE_BEARING_DEG,
+            "avgSvgPxPerMeter": CampusGeoUtils.AVG_SVG_PX_PER_METER,
             "svgWidth": 1200.0,
             "svgHeight": 850.0,
+            "perimeter": CampusGeoUtils.getCampusPerimeter(),
         }
 
     @staticmethod

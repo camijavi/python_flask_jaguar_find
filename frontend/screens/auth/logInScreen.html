@@ -1,0 +1,27 @@
+{% extends "screens/base.html" %}
+
+{% block title %}{{ t('nav.lost_found', default='Lost & Found') }} · JaguarFind{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/screens/auth/logInScreen.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="auth-hero flex-1 flex items-start sm:items-center justify-center px-4 py-6 sm:py-10">
+    <div class="options w-full max-w-sm bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xl p-6 sm:p-8 flex flex-col items-center gap-5">
+        <img src="{{ url_for('static', filename='img/jaguarLogo.png') }}" alt="Jaguar Find" class="w-28 h-28 object-contain">
+
+        <div class="text-center">
+            <h1 class="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-ocean-900 to-brand-500 bg-clip-text text-transparent">Jaguar Find</h1>
+            <p class="mt-1 text-sm text-slate-500">{{ t('auth.login_subtitle', default='Inicia sesión o regístrate para gestionar objetos perdidos' if current_language == 'spa' else 'Sign in or sign up to manage lost objects') }}</p>
+        </div>
+
+        <div class="w-full flex flex-col gap-3">
+            <a class="btn w-full text-center px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 shadow-md shadow-brand-500/30 active:scale-95 transition-all"
+               href="/auth/options?mode=signup">{{ 'Registrarse' if current_language == 'spa' else 'Sign up' }}</a>
+            <a class="btn w-full text-center px-4 py-2.5 rounded-xl text-sm font-bold text-ocean-700 bg-ocean-50 hover:bg-ocean-100 border border-ocean-200 active:scale-95 transition-all"
+               href="/auth/options?mode=signin">{{ 'Iniciar sesión' if current_language == 'spa' else 'Sign in' }}</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
