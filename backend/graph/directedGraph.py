@@ -19,13 +19,17 @@ class DirectedEdge:
         distanceMeters: float,
         isAccessible: bool = True,
         stepInstruction: str = "",
-        edgeKey: Optional[str] = None
+        edgeKey: Optional[str] = None,
+        walkwayType: str = "ground",
+        landmarkRef: str = ""
     ):
         self.targetNodeId = targetNodeId
-        self.distanceMeters = distanceMeters
+        self.distanceMeters = max(0.5, float(distanceMeters))
         self.isAccessible = isAccessible
         self.stepInstruction = stepInstruction
         self.edgeKey = edgeKey
+        self.walkwayType = walkwayType      # "ground" | "indoor" | "level2" | "stairs" | "ramp" | "crosswalk"
+        self.landmarkRef = landmarkRef
 
     def getInstruction(self, lang: str = "eng") -> str:
         """Returns localized step instruction, falling back to English/default stepInstruction."""
@@ -39,13 +43,15 @@ class DirectedEdge:
             "distanceMeters": self.distanceMeters,
             "isAccessible": self.isAccessible,
             "stepInstruction": self.stepInstruction,
-            "edgeKey": self.edgeKey
+            "edgeKey": self.edgeKey,
+            "walkwayType": self.walkwayType,
+            "landmarkRef": self.landmarkRef,
         }
 
 
 class Node:
     """
-    Represents a physical building entrance, pedestrian gate, or junction on the UAM campus.
+    Represents a physical building entrance, pedestrian gate, walkway waypoint, or room on the UAM campus.
     """
     def __init__(
         self,
@@ -59,7 +65,13 @@ class Node:
         floorLevel: int = 1,
         accessLevel: str = "public",        # "public", "restricted", "facultyOnly"
         accessNotice: Optional[str] = None, # Notice displayed upon arrival (e.g. biosecurity)
-        isOutdoorAccessPoint: bool = True
+        isOutdoorAccessPoint: bool = True,
+        xSvg: Optional[float] = None,
+        ySvg: Optional[float] = None,
+        portalKind: Optional[str] = None,   # "door" | "corridor" | "stairs" | "ramp" | "crosswalk" | "skybridge" | "gate" | "plaza"
+        buildingId: Optional[str] = None,
+        landmarkNameSpa: Optional[str] = None,
+        landmarkNameEng: Optional[str] = None
     ):
         self.nodeId = nodeId
         self.name = name                    # Default internal name in English
@@ -72,10 +84,20 @@ class Node:
         self.accessLevel = accessLevel
         self.accessNotice = accessNotice
         self.isOutdoorAccessPoint = isOutdoorAccessPoint
+        self.xSvg = xSvg if xSvg is not None else round((xPercent / 100.0) * 1200.0, 1)
+        self.ySvg = ySvg if ySvg is not None else round((yPercent / 100.0) * 850.0, 1)
+        self.portalKind = portalKind
+        self.buildingId = buildingId
+        self.landmarkNameSpa = landmarkNameSpa
+        self.landmarkNameEng = landmarkNameEng
         self.outgoingEdges: List[DirectedEdge] = []
 
     def getName(self, lang: str = "eng") -> str:
         """Returns localized node name, falling back to default self.name."""
+        if lang == "spa" and self.landmarkNameSpa:
+            return self.landmarkNameSpa
+        if lang == "eng" and self.landmarkNameEng:
+            return self.landmarkNameEng
         return t(f"nodes.{self.nodeId}", lang=lang, default=self.name)
 
     def getAccessNotice(self, lang: str = "eng") -> Optional[str]:
@@ -92,12 +114,16 @@ class Node:
             "category": self.category,
             "xPercent": self.xPercent,
             "yPercent": self.yPercent,
+            "xSvg": self.xSvg,
+            "ySvg": self.ySvg,
             "latitude": self.latitude,
             "longitude": self.longitude,
             "floorLevel": self.floorLevel,
             "accessLevel": self.accessLevel,
             "accessNotice": self.getAccessNotice(lang),
-            "isOutdoorAccessPoint": self.isOutdoorAccessPoint
+            "isOutdoorAccessPoint": self.isOutdoorAccessPoint,
+            "portalKind": self.portalKind,
+            "buildingId": self.buildingId,
         }
 
 
@@ -119,12 +145,22 @@ class DirectedGraph:
         distanceMeters: float,
         isAccessible: bool = True,
         stepInstruction: str = "",
-        edgeKey: Optional[str] = None
+        edgeKey: Optional[str] = None,
+        walkwayType: str = "ground",
+        landmarkRef: str = ""
     ) -> None:
         """Adds a single directed edge from source to target (u -> v)."""
         if sourceNodeId in self.nodes and targetNodeId in self.nodes:
             key = edgeKey or f"{sourceNodeId}_{targetNodeId}"
-            edge = DirectedEdge(targetNodeId, distanceMeters, isAccessible, stepInstruction, edgeKey=key)
+            edge = DirectedEdge(
+                targetNodeId,
+                distanceMeters,
+                isAccessible,
+                stepInstruction,
+                edgeKey=key,
+                walkwayType=walkwayType,
+                landmarkRef=landmarkRef,
+            )
             self.nodes[sourceNodeId].addOutgoingEdge(edge)
 
     def addBidirectionalWalkway(
@@ -136,7 +172,9 @@ class DirectedGraph:
         forwardInstruction: str = "",
         backwardInstruction: str = "",
         forwardEdgeKey: Optional[str] = None,
-        backwardEdgeKey: Optional[str] = None
+        backwardEdgeKey: Optional[str] = None,
+        walkwayType: str = "ground",
+        landmarkRef: str = ""
     ) -> None:
         """
         Creates two opposite directed edges (u -> v) and (v -> u)
@@ -144,8 +182,14 @@ class DirectedGraph:
         """
         fwdKey = forwardEdgeKey or f"{nodeAId}_{nodeBId}"
         bwdKey = backwardEdgeKey or f"{nodeBId}_{nodeAId}"
-        self.addDirectedEdge(nodeAId, nodeBId, distanceMeters, isAccessible, forwardInstruction, edgeKey=fwdKey)
-        self.addDirectedEdge(nodeBId, nodeAId, distanceMeters, isAccessible, backwardInstruction, edgeKey=bwdKey)
+        self.addDirectedEdge(
+            nodeAId, nodeBId, distanceMeters, isAccessible, forwardInstruction,
+            edgeKey=fwdKey, walkwayType=walkwayType, landmarkRef=landmarkRef
+        )
+        self.addDirectedEdge(
+            nodeBId, nodeAId, distanceMeters, isAccessible, backwardInstruction,
+            edgeKey=bwdKey, walkwayType=walkwayType, landmarkRef=landmarkRef
+        )
 
     def getNode(self, nodeId: str) -> Optional[Node]:
         return self.nodes.get(nodeId)

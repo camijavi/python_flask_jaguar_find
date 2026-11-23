@@ -38,10 +38,24 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
             <button id="btnToggleEmergencyLayer" type="button" aria-pressed="true" class="w-9 h-9 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 flex items-center justify-center transition-colors cursor-pointer" title="Puntos de Encuentro y Rutas de Evacuación">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </button>
+            <button id="btnToggleWalkwaysLayer" type="button" aria-pressed="true" class="w-9 h-9 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-700 flex items-center justify-center transition-colors cursor-pointer" title="Mostrar / Ocultar Red Peatonal Micro (Pasillos, Puentes y Muros)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="4.5" r="2" stroke-width="2.1"></circle>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.1" d="M9.5 10.5l2.5 1.8 3-1.3M12 12.3V16l-2.8 4.5M12 16l3.2 4.2M7.5 13.5l2-3"></path>
+                </svg>
+            </button>
         </div>
 
         <!-- Circular Waze Compass (Floats right below the toolbar on the right edge) -->
         {% include "components/map/compass.html" %}
+    </div>
+
+    <!-- Compact Light-Theme Micro-Walkways Legend Pill (Visible on Desktop when Walkways Layer is ON) -->
+    <div id="walkwaysLegendPill" class="hidden lg:flex items-center gap-2.5 absolute top-[62px] left-4 z-20 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-pink-200/90 shadow-md shadow-pink-900/8 text-[10.5px] font-bold text-slate-700 pointer-events-none select-none">
+        <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full bg-pink-500 inline-block"></span>Peatonal P1</span>
+        <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full border-t-2 border-dashed border-violet-600 inline-block"></span>Puente 2P</span>
+        <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-500 inline-block"></span>Puerta</span>
+        <span class="inline-flex items-center gap-1 text-rose-600"><span class="font-black leading-none">&times;</span>Bloqueado</span>
     </div>
 
     <!-- Active Building Popover -->
@@ -137,6 +151,9 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
 
                 <!-- 7. Emergency Layer: Safe Areas, Meeting Points & Evacuation Routes -->
                 <g id="emergencyEvacuationLayer" pointer-events="none"></g>
+
+                <!-- 7B. Toggleable Micro-Level Pedestrian Walkways Layer (Sidewalks, Doors, 2F Bridges & Wall Barriers) -->
+                <g id="pedestrianWalkwaysLayer" pointer-events="none"></g>
 
                 <!-- 8. JaguarFind Blue & Light-Blue Navigation Route Overlay -->
                 <g id="route2dLayer">

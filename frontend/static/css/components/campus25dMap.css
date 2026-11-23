@@ -449,6 +449,11 @@
     }
 }
 
+/* Hide walkways legend pill during active turn-by-turn navigation so HUD stays unobstructed */
+.campus-tbt-active #walkwaysLegendPill {
+    display: none !important;
+}
+
 /* On desktop (>= 1024px), keep right toolbar at top-4 and compact left mode pill during active TBT so it never collides with the centered banner when sidebar is open */
 @media (min-width: 1024px) {
     .campus-tbt-active .waze-right-stack {

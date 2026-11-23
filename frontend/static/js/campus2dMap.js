@@ -691,17 +691,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     <span class="text-slate-600">${f.rooms}</span>
                 </div>
             `).join("");
-
-            if (bldgData.id === "buildingP") {
-                popoverFacilities.innerHTML += `
-                    <div class="mt-2.5 pt-2 border-t border-slate-100">
-                        <button type="button" onclick="if(typeof window.openBuildingPIsometricModal==='function') window.openBuildingPIsometricModal();" class="w-full py-1.5 px-2 bg-pink-800 hover:bg-pink-900 text-white rounded-lg font-bold text-[11px] shadow-sm flex items-center justify-center gap-1.5 transition-colors">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            <span>Ver Vista Isométrica 3D</span>
-                        </button>
-                    </div>
-                `;
-            }
         }
 
         // Highlight shape in SVG
@@ -834,17 +823,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     showBuildingPopover(bldgData, bldgData.anchor);
                 }
 
-                // If building is Building P, open the 3D model with super WOW animation after zooming in
-                if (nodeId === "buildingP") {
-                    setTimeout(() => {
-                        if (typeof window.openBuildingMap === "function") {
-                            window.openBuildingMap("buildingP");
-                        } else if (typeof window.openBuildingPModal === "function") {
-                            window.openBuildingPModal();
-                        }
-                    }, 400);
-                }
-
                 // On small devices, close directory sidebar menu so the focused building is immediately visible
                 if (window.innerWidth < 1024 && typeof window.toggleNavigateMapSidebar === "function") {
                     window.toggleNavigateMapSidebar(false);
@@ -905,33 +883,52 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ----------------------------------------------------------------------------
-    // 6. Global Dijkstra Route Visualization
+    // 6. Global Dijkstra Route Visualization (Sidewalk-Hugging Micro-Walkway Routing)
     // ----------------------------------------------------------------------------
     window.addEventListener("jaguarMapRouteCalculated", function (e) {
         const route = e.detail;
-        if (!route || !route.pathCoordinates || route.pathCoordinates.length < 2) return;
+        if (!route) return;
 
-        // Resolve exact points on the 1200x850 official SVG canvas
-        const points = route.pathCoordinates.map(coord => {
-            const known = CAMPUS_BUILDINGS[coord.nodeId];
-            if (known && known.anchor) {
-                return `${known.anchor.x},${known.anchor.y}`;
+        // 1. Prefer backend Dijkstra real pedestrian walkwayPath (single source of truth synced with instructions!)
+        let resolvedPts = [];
+        if (Array.isArray(route.walkwayPath) && route.walkwayPath.length >= 2) {
+            resolvedPts = route.walkwayPath.map(pt => ({ x: Math.round(pt.x), y: Math.round(pt.y) }));
+        } else if (route.pathCoordinates && route.pathCoordinates.length >= 2) {
+            // Fallback to client micro-router if walkwayPath absent
+            if (typeof window.resolveMicroCampusRoute === "function") {
+                resolvedPts = window.resolveMicroCampusRoute(route.pathCoordinates, {
+                    accessibleOnly: Boolean(route.isAccessibleRoute)
+                });
             }
-            // Fallback percentage to 1200x850
-            const x = Math.round(((coord.xPercent || 50) / 100) * 1200);
-            const y = Math.round(((coord.yPercent || 50) / 100) * 850);
-            return `${x},${y}`;
-        }).join(" ");
+            if (resolvedPts.length < 2) {
+                resolvedPts = route.pathCoordinates.map(coord => {
+                    const known = CAMPUS_BUILDINGS[coord.nodeId];
+                    if (known && known.anchor) return { x: known.anchor.x, y: known.anchor.y };
+                    return {
+                        x: Math.round(((coord.xPercent || 50) / 100) * 1200),
+                        y: Math.round(((coord.yPercent || 50) / 100) * 850)
+                    };
+                });
+            }
+        } else if (route.pathCoordinates && route.pathCoordinates.length === 1) {
+            // Indoor-only single-building route
+            const c0 = route.pathCoordinates[0];
+            const known = CAMPUS_BUILDINGS[c0.nodeId];
+            const pt = (known && known.anchor) ? known.anchor : { x: Math.round(c0.x || 600), y: Math.round(c0.y || 425) };
+            resolvedPts = [pt, pt];
+        } else {
+            return;
+        }
+
+        const points = resolvedPts.map(pt => `${pt.x},${pt.y}`).join(" ");
 
         if (routeShadowPolyline) routeShadowPolyline.setAttribute("points", points);
         if (routePolyline) routePolyline.setAttribute("points", points);
         if (routeGlowPolyline) routeGlowPolyline.setAttribute("points", points);
 
         // Draw Origin Pin (Ground Shadow + Upright 3D Billboard Pin)
-        const startCoord = route.pathCoordinates[0];
-        const startKnown = CAMPUS_BUILDINGS[startCoord.nodeId];
-        const startX = startKnown ? startKnown.anchor.x : Math.round(((startCoord.xPercent || 50) / 100) * 1200);
-        const startY = startKnown ? startKnown.anchor.y : Math.round(((startCoord.yPercent || 50) / 100) * 850);
+        const startX = resolvedPts[0].x;
+        const startY = resolvedPts[0].y;
 
         if (originPinGroup) {
             originPinGroup.innerHTML = `
@@ -949,10 +946,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Draw Destination Pin (Ground Shadow + Upright 3D Billboard Flag)
-        const endCoord = route.pathCoordinates[route.pathCoordinates.length - 1];
-        const endKnown = CAMPUS_BUILDINGS[endCoord.nodeId];
-        const endX = endKnown ? endKnown.anchor.x : Math.round(((endCoord.xPercent || 50) / 100) * 1200);
-        const endY = endKnown ? endKnown.anchor.y : Math.round(((endCoord.yPercent || 50) / 100) * 850);
+        const endPt = resolvedPts[resolvedPts.length - 1];
+        const endX = endPt.x;
+        const endY = endPt.y;
 
         if (destPinGroup) {
             destPinGroup.innerHTML = `

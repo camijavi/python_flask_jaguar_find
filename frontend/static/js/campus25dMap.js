@@ -65,21 +65,50 @@
             this.headingGroup = document.getElementById("headingControlGroup");
             this.btnToggleHeadingUp = document.getElementById("btnToggleHeadingUp");
             this.iconHeadingMode = document.getElementById("iconHeadingMode");
+            this.liveCompassGroup = document.getElementById("liveCompassControlGroup");
+            this.btnLiveCompass = document.getElementById("btnLiveCompass");
+            this.liveCompassDot = document.getElementById("liveCompassDot");
+            this.labelLiveCompass = document.getElementById("labelLiveCompass");
             this.parkingGroup = document.getElementById("parkingControlGroup");
             this.btnToggleParking = document.getElementById("btnToggleParkingHighlight");
             this.isParkingHighlighted = false;
+
+            // Live Phone Compass + Continuous GPS State
+            this.isLiveCompassActive = false;
+            this.gpsWatchId = null;
+            this.smoothedCompassDeg = null;
+            this.latestCompassDeg = null;
+            this.latestGpsCoords = null;
+            this._boundOrientationHandler = (ev) => this.handleDeviceOrientation(ev);
+            this._compassRafPending = false;
+            // Calibrated UAM GPS <-> SVG Affine Parameters (synced with /api/map/calibration)
+            this.calibration = {
+                lat0: 12.1085,
+                lng0: -86.2573,
+                mPerDegLat: 111132.0,
+                mPerDegLng: 111320.0 * Math.cos((12.1085 * Math.PI) / 180),
+                cx0: 529.03,
+                cxN: 0.0778,
+                cxE: -3.2168,
+                cy0: 441.96,
+                cyN: 2.5386,
+                cyE: -0.0374,
+                mapUpTrueBearingDeg: 181.4,
+            };
 
             // Waze Top Banner Elements
             this.tbtBanner = document.getElementById("turnByTurnBanner");
             this.tbtStepCounter = document.getElementById("tbtStepCounter");
             this.tbtStepDistance = document.getElementById("tbtStepDistance");
             this.tbtStepInstruction = document.getElementById("tbtStepInstruction");
+            this.tbtOrientationCue = document.getElementById("tbtOrientationCue");
+            this.tbtOrientationCueText = document.getElementById("tbtOrientationCueText");
+            this.tbtConfirmRow = document.getElementById("tbtConfirmRow");
+            this.btnTbtConfirmStep = document.getElementById("btnTbtConfirmStep");
+            this.labelTbtConfirmStep = document.getElementById("labelTbtConfirmStep");
             this.tbtNextPreview = document.getElementById("tbtNextPreview");
             this.tbtManeuverIcon = document.getElementById("tbtManeuverIcon");
             this.btnCloseTbt = document.getElementById("btnCloseTbtBanner");
-            this.tbtIndoorActionRow = document.getElementById("tbtIndoorActionRow");
-            this.btnTbtEnterBuildingP = document.getElementById("btnTbtEnterBuildingP");
-            this.labelTbtEnterBuildingP = document.getElementById("labelTbtEnterBuildingP");
 
             // Waze Bottom Trip Summary, Floating Dials & Action Tray Elements
             this.wazeBottomBar = document.getElementById("wazeBottomBar");
@@ -107,7 +136,6 @@
             this.btnTbtPlay = document.getElementById("btnTbtPlaySimulation");
             this.labelSimPlay = document.getElementById("labelSimPlay");
             this.isTrayOpen = false;
-            this.indoorHandoffTimer = null;
 
             // Map building coordinates lookup (single source of truth from campusMapRenderer.js)
             this.buildingAnchors = window.CAMPUS_BUILDING_ANCHORS || {
@@ -234,15 +262,6 @@
                 badgeEl.addEventListener("click", (e) => {
                     e.stopPropagation();
                     this.focusBuilding(nodeId, { zoom: 2.85, animate: true });
-                    if (nodeId === "buildingP") {
-                        setTimeout(() => {
-                            if (typeof window.openBuildingMap === "function") {
-                                window.openBuildingMap("buildingP");
-                            } else if (typeof window.openBuildingPModal === "function") {
-                                window.openBuildingPModal();
-                            }
-                        }, 380);
-                    }
                 });
 
                 fragment.appendChild(badgeEl);
@@ -310,6 +329,43 @@
                 });
             }
 
+            // Live Phone Compass + Continuous GPS toggle
+            if (this.btnLiveCompass) {
+                this.btnLiveCompass.addEventListener("click", () => {
+                    this.toggleLiveCompassNavigation();
+                });
+            }
+
+            // Human Landmark Confirm ("Ya llegué aquí • Siguiente") button
+            if (this.btnTbtConfirmStep) {
+                this.btnTbtConfirmStep.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    this.stopSimulation();
+                    this.nextStep();
+                });
+            }
+
+            // Sync calibrated GPS <-> SVG parameters from backend
+            fetch("/api/map/calibration")
+                .then(r => r.json())
+                .then(d => {
+                    if (d && d.success && d.calibration) {
+                        this.calibration = Object.assign({}, this.calibration, d.calibration);
+                    }
+                })
+                .catch(() => {});
+
+            // Snap blue puck immediately when user taps "Obtener vía GPS" in sidebar
+            window.addEventListener("jaguarGpsLocationUpdated", (e) => {
+                const info = e.detail || {};
+                if (info.userSvgPosition && typeof info.userSvgPosition.x === "number") {
+                    if (!this.is25dActive) {
+                        this.setMode(true, { pitch: 48, zoom: this.getResponsiveZoom(2.2), skipDefaultCenter: true });
+                    }
+                    this.anchorToLowerThird(info.userSvgPosition.x, info.userSvgPosition.y, this.currentHeading || 0, true);
+                }
+            });
+
             // Parking Lots highlight toggle
             if (this.btnToggleParking) {
                 this.btnToggleParking.addEventListener("click", () => {
@@ -364,15 +420,7 @@
             if (this.btnTbtNextStep) {
                 this.btnTbtNextStep.addEventListener("click", () => {
                     this.stopSimulation();
-                    this.nextStep({ triggerIndoorIfAtEnd: true });
-                });
-            }
-
-            // Indoor Building P 3D Waze Handoff Button
-            if (this.btnTbtEnterBuildingP) {
-                this.btnTbtEnterBuildingP.addEventListener("click", () => {
-                    this.stopSimulation();
-                    this.launchBuildingPIndoorWaze();
+                    this.nextStep();
                 });
             }
 
@@ -791,6 +839,7 @@
                 }
                 if (this.pitchGroup) this.pitchGroup.classList.remove("hidden");
                 if (this.headingGroup) this.headingGroup.classList.remove("hidden");
+                if (this.liveCompassGroup) this.liveCompassGroup.classList.remove("hidden");
                 if (this.parkingGroup) this.parkingGroup.classList.remove("hidden");
 
                 // Clear 2D transform on SVG element so #mapCameraGroup controls the viewport
@@ -837,7 +886,9 @@
                 }
                 if (this.pitchGroup) this.pitchGroup.classList.add("hidden");
                 if (this.headingGroup) this.headingGroup.classList.add("hidden");
+                if (this.liveCompassGroup) this.liveCompassGroup.classList.add("hidden");
                 if (this.parkingGroup) this.parkingGroup.classList.add("hidden");
+                if (this.isLiveCompassActive) this.stopLiveCompassNavigation();
 
                 this.pitch = 0;
                 this.heading = 0;
@@ -932,6 +983,11 @@
 
         resolveSvgPoint(coord) {
             if (!coord) return { x: 600, y: 425 };
+            if (window.CAMPUS_MICRO_WALKWAYS && coord.nodeId) {
+                const microId = window.CAMPUS_MICRO_WALKWAYS.macroToMicro[coord.nodeId];
+                const microNode = microId && window.CAMPUS_MICRO_WALKWAYS.nodes[microId];
+                if (microNode) return { x: microNode.x, y: microNode.y };
+            }
             const known = this.buildingAnchors[coord.nodeId];
             if (known) return { x: known.x, y: known.y };
             return {
@@ -1118,13 +1174,14 @@
             if (this.tbtStepCounter) this.tbtStepCounter.textContent = "Vista 2.5D";
             if (this.tbtStepDistance) this.tbtStepDistance.textContent = cleanName;
             if (this.tbtStepInstruction) this.tbtStepInstruction.textContent = subtitle;
+
             if (this.tbtNextPreview) {
                 this.tbtNextPreview.classList.remove("hidden");
-                if (bldgData.id === "buildingP") {
-                    this.tbtNextPreview.textContent = "Toca para abrir Maqueta Isométrica 3D (3 Pisos)";
-                } else {
-                    this.tbtNextPreview.textContent = "Toca «Ir aquí» para iniciar navegación JaguarFind";
-                }
+                this.tbtNextPreview.textContent = "Toca «Ir aquí» para iniciar navegación JaguarFind";
+            }
+
+            if (this.btnTbtConfirmStep && this.btnTbtConfirmStep.parentElement) {
+                this.btnTbtConfirmStep.parentElement.classList.add("hidden");
             }
 
             if (this.wazeActiveRoadPill) {
@@ -1132,17 +1189,8 @@
                 this.wazeActiveRoadPill.classList.remove("hidden");
             }
 
-            if (bldgData.id === "buildingP") {
-                this.tbtBanner.style.cursor = "pointer";
-                this.tbtBanner.onclick = () => {
-                    if (typeof window.openBuildingPIsometricModal === "function") {
-                        window.openBuildingPIsometricModal();
-                    }
-                };
-            } else {
-                this.tbtBanner.onclick = null;
-                this.tbtBanner.style.cursor = "default";
-            }
+            this.tbtBanner.onclick = null;
+            this.tbtBanner.style.cursor = "default";
             if (this.tbtManeuverIcon) {
                 this.tbtManeuverIcon.innerHTML = `
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1399,91 +1447,27 @@
         }
 
         /**
-         * Checks whether the calculated route targets Building P or a classroom/facility inside Building P
-         */
-        isBuildingPRoute(routeData) {
-            if (!routeData) return false;
-            const pathIds = routeData.pathNodeIds || [];
-            const lastNodeId = pathIds.length > 0 ? pathIds[pathIds.length - 1] : null;
-            if (routeData.destinationNodeId === "buildingP" || lastNodeId === "buildingP") {
-                return true;
-            }
-            const destStr = String(routeData.destinationPlaceId || routeData.destination || "").toLowerCase();
-            return (
-                destStr.includes("classroomp") ||
-                destStr.includes("salón p-") ||
-                destStr.includes("salon p-") ||
-                destStr.includes("aula p") ||
-                destStr.includes("copernic") ||
-                destStr.includes("observator") ||
-                destStr.includes("edificio p")
-            );
-        }
-
-        /**
-         * Launches the 3D Building P Indoor Map in Waze Hallway Navigation Mode
-         */
-        launchBuildingPIndoorWaze() {
-            if (!this.currentRoute) return;
-            if (this.indoorHandoffTimer) {
-                clearTimeout(this.indoorHandoffTimer);
-                this.indoorHandoffTimer = null;
-            }
-
-            const route = this.currentRoute;
-            const pathIds = route.pathNodeIds || [];
-            let recommendedEntrance = route.recommendedIndoorEntrance;
-            if (!recommendedEntrance) {
-                if (route.isAccessibleRoute) {
-                    recommendedEntrance = "F1-ENT-E";
-                } else if (pathIds.length >= 2 && (pathIds[pathIds.length - 2] === "buildingO" || pathIds[pathIds.length - 2] === "buildingH")) {
-                    recommendedEntrance = "F1-ENT-O";
-                } else {
-                    recommendedEntrance = "F1-ENT-W";
-                }
-            }
-
-            const selDest = window.currentSelectedDestination || {};
-            const targetQuery = route.destinationPlaceId || selDest.placeId || route.destination || selDest.title || "F5-501";
-            const payload = {
-                origin: recommendedEntrance,
-                destination: targetQuery,
-                autoStartWaze: true,
-                fromCampusRoute: true,
-                campusOriginName: route.origin || "Campus UAM"
-            };
-
-            if (typeof window.openBuildingPModal === "function") {
-                window.openBuildingPModal(payload);
-            } else if (typeof window.openBuildingMap === "function") {
-                window.openBuildingMap("buildingP", payload);
-            }
-        }
-
-        /**
          * Global Route Calculated Handler
          */
         onRouteCalculated(routeData) {
-            if (this.indoorHandoffTimer) {
-                clearTimeout(this.indoorHandoffTimer);
-                this.indoorHandoffTimer = null;
-            }
-
             this.currentRoute = routeData;
             this.currentStepIndex = 0;
 
-            if (!routeData || !routeData.pathCoordinates || routeData.pathCoordinates.length < 2) {
-                // If user routed within Building P alone (single macro node buildingP), open Building P directly in Waze mode
-                if (this.isBuildingPRoute(routeData)) {
-                    this.launchBuildingPIndoorWaze();
-                }
+            const hasSteps = Array.isArray(routeData && routeData.steps) && routeData.steps.length > 0;
+            const hasPath = Array.isArray(routeData && routeData.pathCoordinates) && routeData.pathCoordinates.length >= 2;
+            if (!routeData || (!hasSteps && !hasPath)) {
                 return;
             }
 
-            // Ensure route polyline points are populated in SVG
+            // Restore human landmark confirm button when switching from building focus back to active route
+            if (this.btnTbtConfirmStep && this.btnTbtConfirmStep.parentElement) {
+                this.btnTbtConfirmStep.parentElement.classList.remove("hidden");
+            }
+
+            // Draw exact backend Dijkstra pedestrian walkway polyline
             this.drawRoutePolylines(routeData);
 
-            // Automatically switch to Waze-style 2.5D navigation view (52° Waze perspective, Heading-Up)
+            // Switch to 2.5D Waze-style perspective view (Heading-Up)
             this.isHeadingUp = true;
             this.updateHeadingControls();
             const routeZoom = this.getResponsiveZoom(2.4);
@@ -1494,31 +1478,26 @@
                 this.zoomScale = routeZoom;
             }
 
-            // Reveal Indoor Building P Waze 3D button if destination is inside Building P
-            if (this.tbtIndoorActionRow) {
-                if (this.isBuildingPRoute(routeData)) {
-                    this.tbtIndoorActionRow.classList.remove("hidden");
-                    if (this.labelTbtEnterBuildingP) {
-                        this.labelTbtEnterBuildingP.textContent = `Navegar Dentro de Edificio P → ${routeData.destination || "Salón"}`;
-                    }
-                } else {
-                    this.tbtIndoorActionRow.classList.add("hidden");
-                }
-            }
-
             this.showNavigationBanner();
             this.goToStep(0);
-
-            // Automatically animate the outdoor Waze journey building-by-building and hand off to Building P on arrival!
-            this.startSimulation({ autoOpenIndoorOnArrival: true });
         }
 
         drawRoutePolylines(routeData) {
-            if (!routeData || !routeData.pathCoordinates) return;
-            const points = routeData.pathCoordinates.map(coord => {
-                const pt = this.resolveSvgPoint(coord);
-                return `${pt.x},${pt.y}`;
-            }).join(" ");
+            if (!routeData) return;
+            let resolvedPts = [];
+            if (Array.isArray(routeData.walkwayPath) && routeData.walkwayPath.length >= 2) {
+                resolvedPts = routeData.walkwayPath.map(pt => ({ x: Math.round(pt.x), y: Math.round(pt.y) }));
+            } else if (Array.isArray(routeData.pathCoordinates) && routeData.pathCoordinates.length >= 2) {
+                if (typeof window.resolveMicroCampusRoute === "function") {
+                    resolvedPts = window.resolveMicroCampusRoute(routeData.pathCoordinates, {
+                        accessibleOnly: Boolean(routeData.isAccessibleRoute)
+                    });
+                }
+                if (resolvedPts.length < 2) {
+                    resolvedPts = routeData.pathCoordinates.map(coord => this.resolveSvgPoint(coord));
+                }
+            }
+            const points = resolvedPts.map(pt => `${pt.x},${pt.y}`).join(" ");
 
             const shadow = document.getElementById("route2dShadowPolyline");
             const glow = document.getElementById("route2dGlowPolyline");
@@ -1529,17 +1508,13 @@
         }
 
         onRouteCleared() {
-            if (this.indoorHandoffTimer) {
-                clearTimeout(this.indoorHandoffTimer);
-                this.indoorHandoffTimer = null;
-            }
             this.currentRoute = null;
             this.currentStepIndex = 0;
             this.stopSimulation();
             this.hideNavigationBanner();
             this.toggleActionTray(false);
-            if (this.tbtIndoorActionRow) {
-                this.tbtIndoorActionRow.classList.add("hidden");
+            if (this.tbtOrientationCue) {
+                this.tbtOrientationCue.classList.add("hidden");
             }
 
             const shadow = document.getElementById("route2dShadowPolyline");
@@ -1552,7 +1527,7 @@
             this.syncWazeChrome();
 
             if (this.is25dActive) {
-                this.heading = 0;
+                if (!this.isLiveCompassActive) this.heading = 0;
                 this.showExploreHud();
                 this.centerOnCampusLowerThird();
             } else {
@@ -1576,7 +1551,6 @@
         }
 
         showExploreHud() {
-            // In 2.5D explore mode (no active route), keep the top unobstructed so mode pill & map shine
             if (this.tbtBanner) {
                 this.tbtBanner.classList.add("hidden");
             }
@@ -1606,46 +1580,344 @@
             this.stopSimulation();
         }
 
-        /**
-         * Navigates to a specific step along the outdoor campus route, adjusting Waze camera bearing & zoom per building
-         */
-        goToStep(stepIndex) {
-            if (!this.currentRoute || !this.currentRoute.pathCoordinates) return;
-            const coords = this.currentRoute.pathCoordinates;
-            const instructions = this.currentRoute.stepInstructions || [];
+        // ====================================================================
+        // LIVE 2.5D PHONE COMPASS ROTATION + CONTINUOUS GPS TRACKING
+        // ====================================================================
+        gpsToSvg(lat, lng) {
+            const c = this.calibration;
+            const mNorth = (lat - c.lat0) * c.mPerDegLat;
+            const mEast = (lng - c.lng0) * c.mPerDegLng;
+            const x = c.cx0 + c.cxN * mNorth + c.cxE * mEast;
+            const y = c.cy0 + c.cyN * mNorth + c.cyE * mEast;
+            return {
+                x: Math.max(40, Math.min(1160, Math.round(x * 10) / 10)),
+                y: Math.max(15, Math.min(835, Math.round(y * 10) / 10)),
+            };
+        }
 
-            if (stepIndex < 0) stepIndex = 0;
-            if (stepIndex >= coords.length) stepIndex = coords.length - 1;
-            this.currentStepIndex = stepIndex;
+        haversineMeters(lat1, lng1, lat2, lng2) {
+            const R = 6371000;
+            const toRad = (deg) => (deg * Math.PI) / 180;
+            const dLat = toRad(lat2 - lat1);
+            const dLng = toRad(lng2 - lng1);
+            const a = Math.sin(dLat / 2) ** 2 +
+                      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
 
-            const currentCoord = coords[stepIndex];
-            const currentPt = this.resolveSvgPoint(currentCoord);
-            const nextPt = stepIndex < coords.length - 1
-                ? this.resolveSvgPoint(coords[stepIndex + 1])
-                : (coords.length > 1 ? this.resolveSvgPoint(coords[stepIndex - 1]) : currentPt);
+        normalizeAngle180(deg) {
+            let a = ((deg + 180) % 360 + 360) % 360 - 180;
+            return a;
+        }
 
-            // Compute segment bearing so Waze camera looks straight down the active campus walkway
-            let headingDeg = 0;
-            if (stepIndex < coords.length - 1) {
-                headingDeg = this.calculateHeadingAngle(currentPt, nextPt);
-            } else if (coords.length > 1) {
-                const prevPt = this.resolveSvgPoint(coords[coords.length - 2]);
-                headingDeg = this.calculateHeadingAngle(prevPt, currentPt);
+        async toggleLiveCompassNavigation() {
+            if (this.isLiveCompassActive) {
+                this.stopLiveCompassNavigation();
+            } else {
+                await this.startLiveCompassNavigation();
+            }
+        }
+
+        async startLiveCompassNavigation() {
+            // Ensure 2.5D mode and Heading-Up are enabled
+            if (!this.is25dActive) {
+                this.setMode(true, { pitch: 52, zoom: this.getResponsiveZoom(2.4), skipDefaultCenter: true });
+            }
+            this.isHeadingUp = true;
+            this.updateHeadingControls();
+            this.stopSimulation();
+
+            // iOS 13+ Safari requires explicit permission inside a user click gesture
+            if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+                try {
+                    const perm = await DeviceOrientationEvent.requestPermission();
+                    if (perm !== "granted") {
+                        console.warn("Compass permission denied by user.");
+                    }
+                } catch (err) {
+                    console.warn("Compass permission request failed:", err);
+                }
             }
 
-            // Adjust Waze zoom & pitch per building segment (closer zoom as we reach destination building)
-            const isFinalOutdoorBuilding = stepIndex === coords.length - 1;
-            this.pitch = isFinalOutdoorBuilding ? 50 : 52;
-            this.targetZoomScale = this.getResponsiveZoom(isFinalOutdoorBuilding ? 2.75 : 2.42);
+            this.isLiveCompassActive = true;
+            this.smoothedCompassDeg = null;
+            this.updateLiveCompassButtonUI();
+
+            // Prefer absolute orientation (true north) on Android Chrome; fallback to deviceorientation (iOS webkitCompassHeading)
+            if ("ondeviceorientationabsolute" in window) {
+                window.addEventListener("deviceorientationabsolute", this._boundOrientationHandler, true);
+            }
+            window.addEventListener("deviceorientation", this._boundOrientationHandler, true);
+
+            // Start continuous high-accuracy GPS tracking
+            if (navigator.geolocation) {
+                if (this.gpsWatchId !== null) {
+                    navigator.geolocation.clearWatch(this.gpsWatchId);
+                }
+                this.gpsWatchId = navigator.geolocation.watchPosition(
+                    (pos) => this.handleLiveGpsPosition(pos),
+                    (err) => console.warn("Live GPS watchPosition warning:", err.message),
+                    { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 }
+                );
+            }
+        }
+
+        stopLiveCompassNavigation() {
+            this.isLiveCompassActive = false;
+            window.removeEventListener("deviceorientationabsolute", this._boundOrientationHandler, true);
+            window.removeEventListener("deviceorientation", this._boundOrientationHandler, true);
+
+            if (this.gpsWatchId !== null && navigator.geolocation) {
+                navigator.geolocation.clearWatch(this.gpsWatchId);
+                this.gpsWatchId = null;
+            }
+            if (this.tbtOrientationCue) {
+                this.tbtOrientationCue.classList.add("hidden");
+                this.tbtOrientationCue.classList.remove("flex");
+            }
+            this.updateLiveCompassButtonUI();
+        }
+
+        updateLiveCompassButtonUI() {
+            if (!this.btnLiveCompass) return;
+            if (this.isLiveCompassActive) {
+                this.btnLiveCompass.classList.remove("text-slate-600", "hover:bg-emerald-50");
+                this.btnLiveCompass.classList.add("bg-emerald-500", "text-white", "shadow-xs");
+                if (this.liveCompassDot) {
+                    this.liveCompassDot.className = "w-2 h-2 rounded-full bg-white animate-pulse";
+                }
+            } else {
+                this.btnLiveCompass.classList.remove("bg-emerald-500", "text-white", "shadow-xs");
+                this.btnLiveCompass.classList.add("text-slate-600", "hover:bg-emerald-50");
+                if (this.liveCompassDot) {
+                    this.liveCompassDot.className = "w-2 h-2 rounded-full bg-slate-300";
+                }
+            }
+        }
+
+        handleDeviceOrientation(event) {
+            if (!this.isLiveCompassActive || !this.is25dActive || !this.isHeadingUp) return;
+
+            let rawHeading = null;
+            if (typeof event.webkitCompassHeading === "number" && !Number.isNaN(event.webkitCompassHeading)) {
+                // iOS Safari provides direct clockwise degrees from magnetic north [0..360)
+                rawHeading = event.webkitCompassHeading;
+            } else if (typeof event.alpha === "number" && !Number.isNaN(event.alpha)) {
+                // Android / W3C absolute orientation: alpha is CCW from north
+                const screenAngle = (window.screen && window.screen.orientation && window.screen.orientation.angle)
+                    || window.orientation || 0;
+                rawHeading = (360 - event.alpha + screenAngle) % 360;
+            }
+
+            if (rawHeading === null) return;
+
+            // Circular exponential smoothing to keep 2.5D rotation steady without jitter
+            if (this.smoothedCompassDeg === null) {
+                this.smoothedCompassDeg = rawHeading;
+            } else {
+                const delta = this.normalizeAngle180(rawHeading - this.smoothedCompassDeg);
+                this.smoothedCompassDeg = (this.smoothedCompassDeg + delta * 0.22 + 360) % 360;
+            }
+            this.latestCompassDeg = this.smoothedCompassDeg;
+
+            if (!this._compassRafPending) {
+                this._compassRafPending = true;
+                requestAnimationFrame(() => {
+                    this._compassRafPending = false;
+                    if (!this.isLiveCompassActive || !this.is25dActive) return;
+
+                    // Convert true compass heading to SVG camera rotation (calibrated UAM mapUpTrueBearingDeg = 181.4°)
+                    const mapUpBearing = (this.calibration && this.calibration.mapUpTrueBearingDeg) || 181.4;
+                    const svgHeading = this.normalizeAngle180(mapUpBearing - this.latestCompassDeg);
+                    this.currentHeading = svgHeading;
+                    this.targetHeading = svgHeading;
+                    this.applyTransform();
+                    this.updateOverlays();
+                    this.updateCompass(false);
+                    this.updateOrientationCue();
+                });
+            }
+        }
+
+        handleLiveGpsPosition(pos) {
+            if (!this.isLiveCompassActive || !pos || !pos.coords) return;
+            const { latitude, longitude, accuracy, heading } = pos.coords;
+            this.latestGpsCoords = { lat: latitude, lng: longitude, accuracy: accuracy || 20 };
+
+            // Ignore extremely noisy indoor readings (> 35m error)
+            if (accuracy && accuracy > 35) return;
+
+            const svgPt = this.gpsToSvg(latitude, longitude);
+            // If phone has no compass sensor, fall back to GPS movement heading when walking
+            if (this.smoothedCompassDeg === null && typeof heading === "number" && !Number.isNaN(heading)) {
+                const mapUpBearing = (this.calibration && this.calibration.mapUpTrueBearingDeg) || 181.4;
+                this.currentHeading = this.normalizeAngle180(mapUpBearing - heading);
+                this.targetHeading = this.currentHeading;
+            }
+
+            // Smoothly anchor blue puck to real user GPS position on campus map
+            this.currentUserX = svgPt.x;
+            this.currentUserY = svgPt.y;
+            this.targetUserX = svgPt.x;
+            this.targetUserY = svgPt.y;
+            this.applyTransform();
+            this.updateOverlays();
+
+            // Auto-advance step when user walks within ~10m of current step's target landmark
+            const steps = this.getActiveStepsList();
+            if (steps.length > 0 && this.currentStepIndex < steps.length - 1) {
+                const activeStep = steps[this.currentStepIndex];
+                const tLat = activeStep.targetLat || activeStep.lat;
+                const tLng = activeStep.targetLng || activeStep.lng;
+                if (tLat && tLng) {
+                    const distToMilestone = this.haversineMeters(latitude, longitude, tLat, tLng);
+                    if (distToMilestone <= 10.5) {
+                        this.nextStep({ keepLivePosition: true });
+                    }
+                }
+            }
+        }
+
+        updateOrientationCue() {
+            if (!this.tbtOrientationCue || !this.tbtOrientationCueText) return;
+            const steps = this.getActiveStepsList();
+            const step = steps[this.currentStepIndex];
+            if (!this.isLiveCompassActive || this.latestCompassDeg === null || !step || typeof step.nextBearingDeg !== "number") {
+                this.tbtOrientationCue.classList.add("hidden");
+                this.tbtOrientationCue.classList.remove("flex");
+                return;
+            }
+
+            const diff = this.normalizeAngle180(step.nextBearingDeg - this.latestCompassDeg);
+            const absDiff = Math.abs(diff);
+            let cueText = "";
+            let isAligned = false;
+
+            if (absDiff <= 25) {
+                cueText = "¡Bien orientado! Sigue de frente";
+                isAligned = true;
+            } else if (absDiff >= 145) {
+                cueText = "Da media vuelta para seguir el camino";
+            } else if (diff > 25 && diff <= 65) {
+                cueText = "Gira un poco a tu derecha para alinearte";
+            } else if (diff > 65) {
+                cueText = "Gira a tu derecha hacia el camino";
+            } else if (diff < -25 && diff >= -65) {
+                cueText = "Gira un poco a tu izquierda para alinearte";
+            } else {
+                cueText = "Gira a tu izquierda hacia el camino";
+            }
+
+            this.tbtOrientationCueText.textContent = cueText;
+            this.tbtOrientationCue.classList.remove("hidden");
+            this.tbtOrientationCue.classList.add("flex");
+            if (isAligned) {
+                this.tbtOrientationCue.className = "flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 rounded-lg px-2 py-0.5 mt-1.5";
+            } else {
+                this.tbtOrientationCue.className = "flex items-center gap-1.5 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 rounded-lg px-2 py-0.5 mt-1.5";
+            }
+        }
+
+        // ====================================================================
+        // STEP-BY-STEP HUMAN LANDMARK NAVIGATION (SYNCED WITH WALKWAY GRAPH)
+        // ====================================================================
+        getActiveStepsList() {
+            if (!this.currentRoute) return [];
+            if (Array.isArray(this.currentRoute.steps) && this.currentRoute.steps.length > 0) {
+                return this.currentRoute.steps;
+            }
+            const coords = this.currentRoute.pathCoordinates || [];
+            const instructions = this.currentRoute.stepInstructions || [];
+            return coords.map((c, idx) => {
+                const pt = this.resolveSvgPoint(c);
+                return {
+                    index: idx,
+                    instruction: instructions[idx] || `Avanza hacia ${c.name || "el siguiente punto"}`,
+                    headline: idx === coords.length - 1 ? "Has llegado" : "Sigue recto",
+                    maneuver: idx === coords.length - 1 ? "arrive" : "straight",
+                    landmark: c.name ? c.name.split("(")[0].trim() : "Campus UAM",
+                    x: pt.x,
+                    y: pt.y,
+                    targetX: pt.x,
+                    targetY: pt.y,
+                    lat: c.lat,
+                    lng: c.lng,
+                    buildingId: c.nodeId,
+                };
+            });
+        }
+
+        getManeuverIconPath(maneuver) {
+            switch (maneuver) {
+                case "arrive":
+                    return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M4 21V5m0 0h11l-2.5 4.5L15 14H4"/>`;
+                case "right":
+                case "slight_right":
+                    return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 20v-7a5 5 0 015-5h5m0 0l-4-4m4 4l-4 4"/>`;
+                case "left":
+                case "slight_left":
+                    return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M16 20v-7a5 5 0 00-5-5H6m0 0l4-4M6 8l4 4"/>`;
+                case "uturn":
+                    return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M9 14l-4-4 4-4m-4 4h9a4 4 0 110 8h-3"/>`;
+                case "stairs_up":
+                case "stairs_down":
+                case "stairs":
+                    return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M3 19h4v-4h4v-4h4V7h5"/>`;
+                case "ramp":
+                    return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M3 18L20 7m0 0h-5m5 0v5"/>`;
+                case "crosswalk":
+                    return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M4 7h16M4 12h16M4 17h16"/>`;
+                case "skybridge":
+                    return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M3 14h18M5 14a7 7 0 0114 0M6 14v5m12-5v5"/>`;
+                case "enter":
+                case "exit":
+                    return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"/>`;
+                default:
+                    return `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 20V5m0 0l-5 5m5-5l5 5"/>`;
+            }
+        }
+
+        /**
+         * Navigates to a specific human landmark step along the walkway route
+         */
+        goToStep(stepIndex, options = {}) {
+            const steps = this.getActiveStepsList();
+            if (!this.currentRoute || steps.length === 0) return;
+
+            if (stepIndex < 0) stepIndex = 0;
+            if (stepIndex >= steps.length) stepIndex = steps.length - 1;
+            this.currentStepIndex = stepIndex;
+
+            const step = steps[stepIndex];
+            const nextStep = stepIndex < steps.length - 1 ? steps[stepIndex + 1] : null;
+            const currentPt = { x: step.x || 600, y: step.y || 425 };
+            const aimPt = (step.targetX !== undefined && (step.targetX !== step.x || step.targetY !== step.y))
+                ? { x: step.targetX, y: step.targetY }
+                : (nextStep ? { x: nextStep.x, y: nextStep.y } : currentPt);
+
+            // Compute walkway heading unless real phone compass is driving heading live
+            let headingDeg = this.currentHeading || 0;
+            if (!this.isLiveCompassActive) {
+                if (aimPt.x !== currentPt.x || aimPt.y !== currentPt.y) {
+                    headingDeg = this.calculateHeadingAngle(currentPt, aimPt);
+                } else if (stepIndex > 0) {
+                    const prevS = steps[stepIndex - 1];
+                    headingDeg = this.calculateHeadingAngle({ x: prevS.x, y: prevS.y }, currentPt);
+                }
+            }
+
+            const isFinalStep = stepIndex === steps.length - 1;
+            this.pitch = isFinalStep ? 50 : 52;
+            this.targetZoomScale = this.getResponsiveZoom(isFinalStep ? 2.75 : 2.42);
 
             // Highlight active building badge along the route
-            if (this.badgesContainer && currentCoord && currentCoord.nodeId) {
+            if (this.badgesContainer && step.buildingId) {
                 this.badgesContainer.querySelectorAll(".waze-bldg-badge").forEach(badge => {
-                    badge.classList.toggle("waze-badge-focused", badge.id === `wazeBadge_${currentCoord.nodeId}`);
+                    badge.classList.toggle("waze-badge-focused", badge.id === `wazeBadge_${step.buildingId}`);
                 });
             }
 
-            // Highlight corresponding step in the directions panel
+            // Highlight active step in the sidebar directions panel
             document.querySelectorAll("#routeStepsList li").forEach((li, idx) => {
                 if (idx === stepIndex) {
                     li.classList.add("ring-2", "ring-brand-500", "bg-brand-50/80");
@@ -1654,135 +1926,102 @@
                 }
             });
 
-            // Anchor current step in lower third (70% down)
-            this.anchorToLowerThird(currentPt.x, currentPt.y, headingDeg);
-
-            // Update Turn-by-Turn Banner & Bottom Trip Summary
-            let instructionText = instructions[stepIndex] || `Avanza hacia ${currentCoord.name || "el siguiente edificio"}`;
-            if (isFinalOutdoorBuilding && this.isBuildingPRoute(this.currentRoute)) {
-                instructionText = `Llegaste a Edificio P • Entrando a navegación interior 3D hacia ${this.currentRoute.destination}...`;
+            if (!options.keepLivePosition) {
+                this.anchorToLowerThird(currentPt.x, currentPt.y, headingDeg);
             }
-            const nextInstruction = stepIndex < instructions.length - 1 ? instructions[stepIndex + 1] : null;
-            this.updateBannerUI(stepIndex, coords.length, instructionText, nextInstruction);
+
+            this.updateBannerUI(stepIndex, steps.length, step, nextStep);
+            this.updateOrientationCue();
         }
 
         nextStep(options = {}) {
             if (!this.currentRoute) return;
-            const totalOutdoor = this.currentRoute.pathCoordinates.length;
-            if (this.currentStepIndex < totalOutdoor - 1) {
-                this.goToStep(this.currentStepIndex + 1);
-                // If we just arrived at the final outdoor node (e.g. buildingP) during auto-simulation or step click, hand off to indoor 3D Waze view
-                if (this.currentStepIndex === totalOutdoor - 1 && this.isBuildingPRoute(this.currentRoute)) {
-                    if (this.autoOpenIndoorOnArrival || options.triggerIndoorIfAtEnd) {
-                        this.stopSimulation();
-                        if (this.indoorHandoffTimer) clearTimeout(this.indoorHandoffTimer);
-                        this.indoorHandoffTimer = setTimeout(() => {
-                            this.launchBuildingPIndoorWaze();
-                        }, 1100);
-                    }
-                }
+            const steps = this.getActiveStepsList();
+            if (this.currentStepIndex < steps.length - 1) {
+                this.goToStep(this.currentStepIndex + 1, options);
             } else {
                 this.stopSimulation();
-                if (options.triggerIndoorIfAtEnd && this.isBuildingPRoute(this.currentRoute)) {
-                    this.launchBuildingPIndoorWaze();
-                }
             }
         }
 
         prevStep() {
             if (!this.currentRoute) return;
-            if (this.indoorHandoffTimer) {
-                clearTimeout(this.indoorHandoffTimer);
-                this.indoorHandoffTimer = null;
-            }
             if (this.currentStepIndex > 0) {
                 this.goToStep(this.currentStepIndex - 1);
             }
         }
 
-        updateBannerUI(stepIdx, totalSteps, instruction, nextInstruction) {
-            const currentCoord = this.currentRoute && this.currentRoute.pathCoordinates
-                ? this.currentRoute.pathCoordinates[stepIdx]
-                : null;
-            const nextCoord = this.currentRoute && this.currentRoute.pathCoordinates && stepIdx < totalSteps - 1
-                ? this.currentRoute.pathCoordinates[stepIdx + 1]
-                : null;
-            const currShort = currentCoord && currentCoord.name ? currentCoord.name.split("(")[0].trim() : "Campus UAM";
-            const nextShort = nextCoord && nextCoord.name ? nextCoord.name.split("(")[0].trim() : "";
+        updateBannerUI(stepIdx, totalSteps, step, nextStep) {
+            const isFinal = stepIdx === totalSteps - 1;
+            const headline = (step && step.headline) || (isFinal ? "Has llegado" : "Sigue recto");
+            const instruction = (step && step.instruction) || "";
+            const landmark = (step && step.landmark) || "Campus UAM";
 
             if (this.tbtStepCounter) {
-                this.tbtStepCounter.textContent = `Paso ${stepIdx + 1}/${totalSteps}`;
+                this.tbtStepCounter.textContent = `Referencia ${stepIdx + 1} de ${totalSteps}`;
+            }
+            if (this.tbtStepDistance) {
+                this.tbtStepDistance.textContent = headline;
             }
             if (this.tbtStepInstruction) {
-                // Waze sky-blue headline: concise route direction ("Edificio K > Plaza Chilamates" or step text)
-                this.tbtStepInstruction.textContent = nextShort ? `${currShort} > ${nextShort}` : instruction;
+                this.tbtStepInstruction.textContent = instruction;
             }
             if (this.wazeActiveRoadPill) {
-                this.wazeActiveRoadPill.textContent = currShort;
+                this.wazeActiveRoadPill.textContent = landmark;
                 this.wazeActiveRoadPill.classList.remove("hidden");
             }
 
-            const totalMeters = this.currentRoute ? (this.currentRoute.totalDistanceMeters || 140) : 140;
-            const stepsRemaining = Math.max(0, totalSteps - 1 - stepIdx);
-            const remainingMeters = Math.round((stepsRemaining / Math.max(1, totalSteps - 1)) * totalMeters);
-
-            if (this.tbtStepDistance) {
-                const approxStepM = Math.max(15, Math.round(totalMeters / Math.max(1, totalSteps - 1)));
-                this.tbtStepDistance.textContent = stepIdx === totalSteps - 1
-                    ? (this.isBuildingPRoute(this.currentRoute) ? "Edificio P" : "Llegaste")
-                    : `${approxStepM} m`;
-            }
-
             if (this.tbtNextPreview) {
-                if (instruction && nextShort) {
-                    this.tbtNextPreview.textContent = instruction;
-                    this.tbtNextPreview.classList.remove("hidden");
-                } else if (nextInstruction) {
-                    this.tbtNextPreview.textContent = `Luego: ${nextInstruction.replace(/^(\d+\.\s*)/, '').slice(0, 52)}`;
+                if (nextStep && nextStep.headline) {
+                    this.tbtNextPreview.textContent = `Luego: ${nextStep.headline} → ${nextStep.landmark || ""}`;
                     this.tbtNextPreview.classList.remove("hidden");
                 } else {
                     this.tbtNextPreview.classList.add("hidden");
                 }
             }
 
-            // Iconic bold pure-white Waze Maneuver Arrows (Curved turn / Straight / Flag)
-            if (this.tbtManeuverIcon) {
-                const lower = instruction.toLowerCase();
-                if (stepIdx === totalSteps - 1 || lower.includes("llegado") || lower.includes("llegaste") || lower.includes("destino") || lower.includes("arrived")) {
-                    this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M4 21V5m0 0h11l-2.5 4.5L15 14H4"/>`;
-                } else if (lower.includes("derecha") || lower.includes("right") || lower.includes("este") || lower.includes("east")) {
-                    this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 20v-7a5 5 0 015-5h5m0 0l-4-4m4 4l-4 4"/>`;
-                } else if (lower.includes("izquierda") || lower.includes("left") || lower.includes("oeste") || lower.includes("west")) {
-                    this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M16 20v-7a5 5 0 00-5-5H6m0 0l4-4M6 8l4 4"/>`;
-                } else if (lower.includes("escalera") || lower.includes("gradas") || lower.includes("stairs")) {
-                    this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M3 19h4v-4h4v-4h4V7h5"/>`;
+            if (this.tbtConfirmRow && this.labelTbtConfirmStep) {
+                if (isFinal) {
+                    this.tbtConfirmRow.classList.add("hidden");
                 } else {
-                    this.tbtManeuverIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 20V5m0 0l-5 5m5-5l5 5"/>`;
+                    this.tbtConfirmRow.classList.remove("hidden");
+                    this.labelTbtConfirmStep.textContent = nextStep && nextStep.landmark
+                        ? `Ya llegué aquí • Ir a ${nextStep.landmark.slice(0, 22)}`
+                        : "Ya llegué aquí • Siguiente";
                 }
             }
 
-            // Update Waze Dark Circular Gauge Dial (live remaining meters like Waze's circular speed dial)
+            // Geometric maneuver arrow from backend walkway analysis
+            if (this.tbtManeuverIcon) {
+                this.tbtManeuverIcon.innerHTML = this.getManeuverIconPath((step && step.maneuver) || "straight");
+            }
+
+            // Circular dial: human walking minutes remaining (NOT meters!)
+            const totalMinutes = this.currentRoute ? Math.max(1, this.currentRoute.estimatedWalkingMinutes || 1) : 1;
+            const remainingRatio = totalSteps > 1 ? Math.max(0, (totalSteps - 1 - stepIdx) / (totalSteps - 1)) : 0;
+            const remMinutes = isFinal ? 0 : Math.max(1, Math.ceil(totalMinutes * remainingRatio));
+
             if (this.wazeDialValue) {
-                this.wazeDialValue.textContent = stepIdx === totalSteps - 1 ? "0" : String(remainingMeters);
+                this.wazeDialValue.textContent = isFinal ? "✓" : `~${remMinutes}`;
             }
             if (this.wazeDialUnit) {
-                this.wazeDialUnit.textContent = "m";
+                this.wazeDialUnit.textContent = isFinal ? "fin" : "min";
             }
 
-            // Update Waze Crisp White Bottom Dock (Clock ETA on top, "4 min • 285 m" below — exact Waze style!)
-            const estMinutes = Math.max(1, Math.ceil(remainingMeters / 50));
+            // Bottom Dock: Arrival clock + human summary (time + landmarks remaining)
             const now = new Date();
-            const arrivalDate = new Date(now.getTime() + (stepIdx === totalSteps - 1 ? 0 : estMinutes) * 60000);
-            const timeStr = arrivalDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            const arrivalDate = new Date(now.getTime() + remMinutes * 60000);
+            const timeStr = arrivalDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
 
             if (this.wazeEtaTime) {
-                this.wazeEtaTime.textContent = stepIdx === totalSteps - 1 ? "Llegada" : timeStr;
+                this.wazeEtaTime.textContent = isFinal ? "Llegaste" : timeStr;
             }
 
+            const stepsLeft = Math.max(0, totalSteps - 1 - stepIdx);
             if (this.wazeTripMeta) {
-                this.wazeTripMeta.textContent = stepIdx === totalSteps - 1
-                    ? `${currShort} • Ruta completada`
-                    : `${estMinutes} min • ${remainingMeters} m`;
+                this.wazeTripMeta.textContent = isFinal
+                    ? `${landmark} • Destino alcanzado`
+                    : `${this.currentRoute.humanDuration || `~${remMinutes} min`} • ${stepsLeft} ${stepsLeft === 1 ? "referencia" : "referencias"}`;
             }
 
             if (this.wazeProgressBar) {
@@ -1797,33 +2036,36 @@
             if (this.isSimulating) {
                 this.stopSimulation();
             } else {
-                this.startSimulation({ autoOpenIndoorOnArrival: true });
+                this.startSimulation();
             }
         }
 
-        startSimulation(options = {}) {
-            if (!this.currentRoute || !this.currentRoute.pathCoordinates) return;
+        startSimulation() {
+            const steps = this.getActiveStepsList();
+            if (!this.currentRoute || steps.length === 0) return;
+            if (this.isLiveCompassActive) this.stopLiveCompassNavigation();
+
             this.isSimulating = true;
-            this.autoOpenIndoorOnArrival = options.autoOpenIndoorOnArrival !== false;
             if (this.labelSimPlay) this.labelSimPlay.textContent = "Pausa";
 
-            if (this.currentStepIndex >= this.currentRoute.pathCoordinates.length - 1) {
+            if (this.currentStepIndex >= steps.length - 1) {
                 this.goToStep(0);
             }
 
             if (this.simInterval) clearInterval(this.simInterval);
             this.simInterval = setInterval(() => {
-                if (!this.currentRoute) {
+                const activeSteps = this.getActiveStepsList();
+                if (!this.currentRoute || activeSteps.length === 0) {
                     this.stopSimulation();
                     return;
                 }
 
-                if (this.currentStepIndex < this.currentRoute.pathCoordinates.length - 1) {
+                if (this.currentStepIndex < activeSteps.length - 1) {
                     this.nextStep();
                 } else {
                     this.stopSimulation();
                 }
-            }, 1350);
+            }, 2200);
         }
 
         stopSimulation() {

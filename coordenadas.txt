@@ -1,0 +1,367 @@
+Banpro = 12.108585,-86.256576 
+
+
+//// CHILAMATE ////
+Escalera desde plazoleta Chilamate hacía edificio P  = 12.107922,-86.256725
+Rampa desde el edificio N hacia plazoleta chilamate (viceversa) = 12.107246,-86.256017
+Servicios sanitarios, edificio N, junto al chilamate =  12.107741,-86.256842
+
+//// EDIFICIO P ////
+
+PRIMER PISO - EDIFICIO P:
+Escaleras izquierdas para ir del paso peatonal al edificio P (izquierda): 12.107584,-86.256779 
+Escaleras del Edificio P izquierda (este) para subir de piso: 12.107470,-86.256753 
+
+Bebedero 1er piso del P y salón P101: 12.107460,-86.256743
+P102 =  12.107431,-86.256783 
+P103 = 12.107439,-86.256947  
+P104 = 12.107455,-86.256981 
+P105 = 12.107453,-86.257149  
+P106 = 12.107467,-86.257202  
+P107 = 12.107450,-86.257270  
+P108 = 12.107477,-86.257206  
+
+Servicios sanitarios, (hombres: izquierda, mujeres: derecha) = 12.107441,-86.257422 
+
+Escaleras del Edificio P derecha (oeste) para subir de piso = 12.107410,-86.257431 
+Escaleras desde el edificio P, para ir hasta el edificio O = 12.107453,-86.257413
+12.106991,-86.258233 Rampa del estacionamiento hacia el p, están enfrente del o
+
+
+SEGUNDO PISO - EDIFICIO P:
+P201 = 12.107484,-86.256721
+Bebedero segundo piso = 12.107434,-86.256781
+P202 = 12.107428,-86.256817
+P203 = 12.107447,-86.256957
+P204 = 12.107434,-86.257043
+P205 = 12.107492,-86.257090
+P206 = 12.107413,-86.257153
+P207 = 12.107427,-86.257217
+P208 = 12.107402,-86.257297
+Bebedero, segundo piso del P = 12.107407,-86.257298
+Servicios Sanitarios, segundo piso, edificio P = 12.107480,-86.257337
+
+
+
+TERCER PISO - EDIFICIO P:
+P301 = 12.107461,-86.256717
+1er bebedero del P, 3er piso = 12.107434,-86.256751
+P302 = 12.107462,-86.256862
+P303 = 12.107443,-86.256934
+P304 = 12.107442,-86.256936
+P305 = 12.107443,-86.256999
+P306 = 12.107454,-86.257114
+P308 = 12.107435,-86.257136
+P307 = 12.107461,-86.257145
+Baño del P, 3er piso = 12.107468,-86.257189
+Para el cuarto y 5to piso utilizaremos la escalera este e indicaremos que debe seguir cada piso de esta escalera para llegar a su destino (P401/ Observatorio Copernico) =  12.107470,-86.256753 
+
+
+
+
+
+//// EDIFICIO C ////
+
+PRIMER PISO - EDIFICIO C:
+Auditorio C101 = 12.108528,-86.256743
+C102 = 12.108549,-86.256848
+C103 = 12.108527,-86.256908
+Bebedero de agua = 12.108527,-86.256908
+C104 = 12.108583,-86.256918
+Rampa = 12.108394,-86.256997
+Caja UAM = 12.108446,-86.257021
+Mapa UAM de la universidad en físico = 12.108446,-86.257021
+C105, Tesorería = 12.108557,-86.257120
+C106 = 12.108522,-86.257194
+Laboratorio MAC 107 = 12.108540,-86.257206
+Laboratorio de Computación Acai-Erasmus+ (C-108) = 12.108531,-86.257233
+Auditorio 109 = 12.108581,-86.257279
+
+SEGUNDO PISO - EDIFICIO C:
+C201, Laboratorio de Computación = 12.108453,-86.256760
+C202, Laboratorio de Computación = 12.108415,-86.256742
+Laboratorio MAC C203 = 12.108528,-86.256800
+C204, Laboratorio de Computación = 12.108510,-86.256951
+Bebedero de agua = 12.108510,-86.256951
+C205, Laboratorio de Computación = 12.108433,-86.257043
+C206, Bodega de Logística Académica = 12.108435,-86.257044
+Sanitarios hombres = 12.108423,-86.257051
+Sanitarios mujeres = 12.108423,-86.257051
+Mapa UAM = 12.108423,-86.257051
+C210 = 12.108491,-86.257192
+C209 = 12.108496,-86.257203
+C211 = 12.108500,-86.257267
+TERCER PISO - EDIFICIO C:
+C-301 = 12.108406,-86.256819
+C-302 = 12.108418,-86.256821
+C-303 = 12.108434,-86.256861
+C-304 = 12.108415,-86.257020
+C-306, Coordinación de Compras = 12.108402,-86.257035
+C-307 = 12.108395,-86.257064
+C-308 = 12.108397,-86.257083
+C-309 = 12.108420,-86.257240
+C-310 = 12.108376,-86.257292
+Escaleras para subir de piso, edificio C (este) = 12.108422, -86.256732
+Escaleras para subir de piso, edificio C (oeste) = 12.108511, -86.257316
+Escaleras entre edificio a y c (se unen) = 12.108424,-86.256697  
+
+ 
+
+//// EDIFICIO D ////
+Laboratorio de Odontología Digital CAM-CAM = 12.108046,-86.256819
+Aula D102 = 12.108029,-86.256911
+Oficina de Servicio al Cliente = 12.108128,-86.256945
+Sala de Reunión = 12.108128,-86.256945
+Mapa UAM de la universidad en físico = 12.108128,-86.256945
+
+
+//// EDIFICIO J ////
+Lab Odonto J101 = 12.108126,-86.256780
+Lab Odonto J102 = 12.108094,-86.256756
+Baños hombres = 12.108030,-86.256830
+Baños mujeres = 12.108070,-86.256815
+Mapa UAM en físico en edificio J = 12.108097,-86.256693
+//// EDIFICIO M ////
+M-101, Auditorio = 12.108452,-86.257566 (norte)
+M-102, Auditorio = 12.108439,-86.257594 (norte)
+M-201 y M-202 = 12.108402,-86.257582 (norte)
+M-203 y M-204 = 12.108437,-86.257556 (sur)
+M-301 y M-302 = 12.108493,-86.257603 (norte)
+M-303 y M-304 = Coordenadas no proporcionadas. Están al lado, en la parte sur del edificio. 
+Escaleras al M, desde el edificio B para subir a la parte del M (desde el camino hacia = 12.108525,-86.257453 
+Baños del M = 12.108366,-86.257520 (sur)
+Bebedero del M = 12.108426,-86.257560 (sur)
+Cuarto de Servicios del M, Dirección de Investigación y Extensión Universitaria y Dirección Ambiental y Energética = 12.108331,-86.257559 (sur)
+Escaleras del M = 12.108447,-86.257612 (sur)
+//// EDIFICIO B ////
+B-101 y Farmacia del Valle = 12.108563,-86.256783
+B-103 y B-104 = 12.108585,-86.256858
+B-105 y B-106 = 12.108568,-86.256991
+B-107 = 12.108610,-86.257099
+B-108 y B-109 = 12.108575,-86.257225
+B-201 = 12.108556,-86.256730
+B-202 y B-203 = 12.108527,-86.256795
+B-204 y B-205 = 12.108552,-86.256826
+B-206 = 12.108558,-86.256985
+B-207 y B-208 = 12.108507,-86.257117
+B-209 y B-210 = 12.108525,-86.257271
+
+Bebedero del B al C (conexión) = 12.108545,-86.257057 (primer piso)
+Escaleras del segundo piso al B = 12.108517,-86.257256 
+Baños y bebedero del B = 12.108590,-86.257332 (primer piso)
+//// EDIFICIO H ////
+H-101 = 12.108272,-86.257569
+H-102 e I-108 = 12.108265,-86.257549
+Laboratorio H-104 = 12.108263,-86.257695
+Laboratorio H-105 = 12.108200,-86.257812
+Laboratorio H-106 y H-107 = 12.108156,-86.257708
+Laboratorio de Ciencias de los Alimentos = 12.108156,-86.257647
+Baños del H (primer piso)= 12.108255,-86.257537
+H-201 = 12.108236,-86.257552
+H-202 = 12.108231,-86.257608
+H-203 y H-204 = 12.108270,-86.257560
+H-205 y H-206 = 12.108211,-86.257727
+Responsable de Laboratorios y Necroteca = 12.108304,-86.257660
+Escaleras del H = 12.108156,-86.257782
+//// EDIFICIO G ////
+Facultad de Ciencias Jurídicas, Humanidades y Relaciones Internacionales = 12.108630,-86.257479
+Language Center, UAM College y Mapa en físico de la universidad = 12.108779,-86.257498
+Auditorio Central / Auditorio Rubén Darío = 12.108695,-86.257600
+Escaleras al H del lado del C = 12.108253,-86.257529
+Baños del G = 12.108652,-86.257520
+Escaleras del G = 12.108652,-86.257520
+Escaleras y rampa entre el G y F, y escaleras del Auditorio Central = 12.108801,-86.257410
+
+
+
+
+//// EDIFICIO A ////
+
+PRIMER PISO - EDIFICIO A
+centro de atención al estudiante (cae) /  zona común, dirección de mercadeo y admisión, registro académico, cartera y cobro, dirección académica, cartera y cobro, dirección financiera, objetos perdido = 12.108543, -86.256496
+Recepción (objetos perdidos) y Registro Académico = 12.108417,-86.256656 
+fuera del edificio
+    cajeros automáticos (bac y lafise)= 12.108560, -86.256574
+Mapa UAM, en físico = 12.108560, -86.256574
+A-101, Contabilidad y cajeros al lado = 12.108503,-86.256678
+SEGUNDO PISO - EDIFICIO A
+A-201, Departamento Administrativo = 12.108543,-86.256609
+A-203, Dirección de Tecnología de la Información y Comunicación = 12.108412,-86.256682
+A-204, Mercadeo y Publicidad = 12.108412,-86.256682
+A-205, Dirección de Recursos Humanos = 12.108416,-86.256709
+
+TERCER PISO - EDIFICIO A: 
+dirección de producción audiovisual (DPA), Set de grabación ciclorama, estudio de sonido, oficinas auxiliares DPA, control máster, set de radio= 12.108418,-86.256706
+
+El tercer piso es la misma coordenada para todas esas áreas.
+
+//// EDIFICIO F ////
+Facultad de Marketing y Diseño y Ciencias de la Comunicación, y Facultad de Ciencias Administrativas y Económicas = 12.108938,-86.257431
+Dirección de Posgrado y Educación Continua = 12.108939,-86.257347
+Vida Estudiantil = 12.109070,-86.257354
+Escaleras y rampas del F al Salón de Profesores, y mapa físico de la UAM = 12.108908,-86.257390
+Escaleras y rampas hacia el edificio I-102 = 12.108939,-86.257347
+//// EDIFICIO F ////
+
+    Facultad de Ingeniería y Arquitectura: 12.107664, -86.257761 (o-101)
+    Lab mecánica de suelos: 12.107535, -86.257643 (o-102)
+    área de exhibición: 
+    Lab resistencia de materiales: (o-104) 12.107502, -86.257586
+    área de mezclado: 
+    área de curado: 
+    técnicos de lab: 
+    lab mecánica de fluidos: 
+    Baños hombres: 12.108151, -86.257888
+    baños mujeres: 12.108151, -86.257888
+    sala de maestros fia (anexo norte):  12.108229, -86.257948
+Coordinación de gestión integral de riesgos de desastres (105): 12.107545, -86.257437
+Mapa UAM: 12.107478, -86.257555
+
+Second floor: 
+    Lab redes O201: 12.107520, -86.257586
+    Aula O202: 12.107741, -86.257507
+    Sala de tutoría: 12.107632, -86.257548
+    centro de inteligencia artificial y robotica (CIAR): 12.107599, -86.257561
+    Centro de Redes: 
+Robotica: 12.107585, -86.257567
+Bebedero de agua: 12.107585, -86.257567
+Escaleras O: 12.107554, -86.257487
+Escaleras del O al parqueo: 12.107591, -86.257458
+Rampa del O a la acera del parqueo: 12.107612, -86.257442
+De la acera al parqueo del O: 12.107675, -86.257388
+ 
+Plazoleta Chilamate: 12.108027, -86.256705. 
+3 kioskos 
+Máquina expendedora 
+
+Ranchito (kiosko): 12.108058, -86.257323
+• baños  12.108059, -86.257324
+
+
+Jaguars Jungle: 12.108073, -86.257787
+Kiosko jaguarcito: 12.108100, -86.257939
+ - Baños hombres: 12.108105, -86.257954
+• baños mujeres: 12.108083, -86.257861
+• Bodega de deportes: 12.108164, -86.258313
+Campo de futbol:
+• entrada izquierda: 12.108181, -86.258504
+Mapa ñam 2
+De la calle a biblioteca, escaleras: 12.109467, -86.257868
+
+Rampa, de la calle al I: 12.109096, -86.257858
+
+
+De la rampa 1 del I a la acera hacia biblioteca: 12.109163, -86.257867
+
+
+De la calle como que vas al Jaguar, inicio rampa hacia al I: 12.108893, -86.257875
+
+Fin rampa hacia el I:  12.109166, -86.257969
+
+Fin 2 hacia I: 12.109068, -86.257920.
+
+Mapa UAM en edificio I: 12.109270, -86.258021
+
+Bebedero de agua: 12.109180, -86.257947
+
+Presidencia UAM: 12.109255, -86.258170
+
+Rectoría: 12.109237, -86.258051
+
+Dirección académica: 12.109152, -86.257914
+
+Vicepresidencia y mapa UAM: 12.109119, -86.257918
+
+Los baños del edifico I están restringidos únicamente a colaboradores/ personal UAM. 
+
+
+Biblioteca acceso: 12.109547, -86.257996
+Escaleras frente a la puerta de biblioteca: 12.109603, -86.258056
+
+Rampa: 12.109574, -86.258239
+Rampa 2: 12.109574, -86.258239
+
+Baños biblioteca: 12.109526, -86.258323. Izquierda hombres, derecha mujeres.
+
+
+ 
+Jaguar gym: 12.109309, -86.258508
+El agua está al lado lol.
+
+Área de fisioterapia: 12.109303, -86.258511
+Oficina de deportes: 12.109252, -86.258709
+12.109312, -86.258888
+
+Salón de usos múltiples: 12.109279, -86.258881
+
+Psicología deportiva: 12.109280, -86.258880
+
+Salón de artes marciales: 12.109284, -86.258871
+
+Mapa UAM: 12.109332, -86.258882
+
+Salón de cultura y mapa UAM: 12.109123, -86.258504
+
+Área de música: 12.109120, -86.258513
+
+
+Jaguar center entrada por edifico L: 12.109111, -86.258514
+
+
+Duchas equipos: 12.108952, -86.258551
+Home izquierda , away derecha.
+
+L Baños: 12.108905, -86.258519
+
+Rampa por fcae: 12.109053, -86.257713
+
+FCAE Y. FMDCC: 12.109078, -86.257563
+
+Vida estudiantil: 12.109081, -86.257416
+
+Rampa hacia E: 12.109049, -86.257325
+
+Baños E: 12.109072, -86.257603
+
+Bebedero de agua: 12.109046, -86.257406
+
+Centro de cardiología: 12.109062, -86.257375
+
+Facultad de medicina: 12.109346, -86.257217
+Escaleras: 12.109346, -86.257217
+
+Laboratorio clínico: 12.109286, -86.257194
+Psicóloga: 12.109180, -86.257158
+Mapa UAM:  12.109103, -86.257189
+
+Pediatría y nanotologia, sala de control no1, sala de control no2, cuidados médicos : 12.108902, -86.257221
+
+Centro de simulación: 12.108874, -86.257213 (e201)
+
+Escaleras izquierda: 12.108718, -86.257299
+
+Consultorio de pediatría/ lab de medicina:  12.108763, -86.257082
+
+Mapa UAM: 12.108805, -86.257210
+
+Clínica médica: 12.108882, -86.257119
+
+Escaleras 
+Del chilamate a edificio A: 12.108293, -86.256649
+
+Edificio A a Chilamate: 12.108321, -86.256638
+
+De la cebra de paso peatonal al chilamate: 12.108248, -86.256610
+
+El parqueo al edificio J: 12.108145, -86.256782
+
+Del lab de odonto digital a las clínicas odontológicas: 12.108000, -86.256842
+
+Del piso (flores moradas) a la plaza chilamate: 12.108045, -86.256695
+
+	1.	Del N al parqueo del P: 12.107696, -86.256859
+	2.	N al P: 12.107742, -86.257105
+	3.	N al P: 12.107748, -86.257338
+
+
+

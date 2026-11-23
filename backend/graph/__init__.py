@@ -8,17 +8,27 @@ from .directedGraph import DirectedEdge, Node, DirectedGraph
 from .dijkstraRouter import DijkstraRouter
 from .geoUtils import CampusGeoUtils
 from .campusGraphBuilder import buildUamCampusGraph
+from .pedestrianWalkwayGraph import buildPedestrianWalkwayGraph, globalPedestrianWalkwayGraph
 from .navigationService import NavigationService, globalNavigationService
 from .campusCategories import CampusCategory, CATEGORY_METADATA
 from .placesCatalog import PLACES_CATALOG
 from .i18n import I18nManager, t
-from backend.subgraphs import (
-    BuildingSubgraph,
-    buildingPSubgraph,
-    getBuildingSubgraph,
-    getAllBuildingSubgraphs,
-    BUILDING_SUBGRAPHS,
-)
+
+_SUBGRAPH_EXPORTS = {
+    "BuildingSubgraph",
+    "buildingPSubgraph",
+    "getBuildingSubgraph",
+    "getAllBuildingSubgraphs",
+    "BUILDING_SUBGRAPHS",
+}
+
+
+def __getattr__(name: str):
+    if name in _SUBGRAPH_EXPORTS:
+        import backend.subgraphs as subgraphsPkg
+        return getattr(subgraphsPkg, name)
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+
 
 __all__ = [
     "DirectedEdge",
@@ -27,6 +37,8 @@ __all__ = [
     "DijkstraRouter",
     "CampusGeoUtils",
     "buildUamCampusGraph",
+    "buildPedestrianWalkwayGraph",
+    "globalPedestrianWalkwayGraph",
     "NavigationService",
     "globalNavigationService",
     "CampusCategory",
