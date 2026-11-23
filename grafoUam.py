@@ -18,6 +18,22 @@ from backend.graph import (
     PLACES_CATALOG,
     I18nManager,
     t,
+    BuildingSubgraph,
+    buildingPSubgraph,
+    getBuildingSubgraph,
+    getAllBuildingSubgraphs,
+    BUILDING_SUBGRAPHS,
+)
+from backend.subgraphs import (
+    BuildingSubgraph,
+    buildingPSubgraph,
+    buildingDSubgraph,
+    buildingJSubgraph,
+    buildingOSubgraph,
+    buildingCSubgraph,
+    getBuildingSubgraph,
+    getAllBuildingSubgraphs,
+    BUILDING_SUBGRAPHS,
 )
 
 __all__ = [
@@ -34,4 +50,13 @@ __all__ = [
     "PLACES_CATALOG",
     "I18nManager",
     "t",
+    "BuildingSubgraph",
+    "buildingPSubgraph",
+    "buildingDSubgraph",
+    "buildingJSubgraph",
+    "buildingOSubgraph",
+    "buildingCSubgraph",
+    "getBuildingSubgraph",
+    "getAllBuildingSubgraphs",
+    "BUILDING_SUBGRAPHS",
 ]

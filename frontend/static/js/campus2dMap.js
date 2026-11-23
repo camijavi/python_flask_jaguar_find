@@ -52,9 +52,9 @@ document.addEventListener("DOMContentLoaded", function () {
             id: "buildingA",
             letter: "A",
             name: "Edificio A • Atención al Estudiante",
-            badgeClass: "badge-purple",
-            badgeBg: "#6b21a8",
-            anchor: { x: 252, y: 459 },
+            badgeClass: "badge-maroon",
+            badgeBg: "#991b1b",
+            anchor: { x: 250, y: 455 },
             floors: [
                 { floor: "Piso 1", rooms: "Contabilidad, CAE (Centro de Atención al Estudiante), Admisiones, Registro Académico, Cartera y Cobro, Finanzas, Cajeros Automáticos." },
                 { floor: "Piso 2", rooms: "Dirección Administrativa, Logística Académica, TIC (Tecnología de la Información), Mercadeo y Publicidad, Gestión del Talento y RRHH." },
@@ -66,8 +66,8 @@ document.addEventListener("DOMContentLoaded", function () {
             letter: "B",
             name: "Edificio B • Aulas & Farmacia",
             badgeClass: "badge-purple",
-            badgeBg: "#6b21a8",
-            anchor: { x: 390, y: 490 },
+            badgeBg: "#581c87",
+            anchor: { x: 384, y: 500 },
             floors: [
                 { floor: "Piso 1", rooms: "Módulo Comercial 1, Aulas B101 - B109, SS Hombres / Mujeres, Jaguar Shop." },
                 { floor: "Piso 2", rooms: "Aulas B201 - B210." }
@@ -77,9 +77,9 @@ document.addEventListener("DOMContentLoaded", function () {
             id: "buildingC",
             letter: "C",
             name: "Edificio C • Cómputo & Caja UAM",
-            badgeClass: "badge-navy",
-            badgeBg: "#1e3a8a",
-            anchor: { x: 390, y: 427 },
+            badgeClass: "badge-purple",
+            badgeBg: "#4c1d95",
+            anchor: { x: 384, y: 410 },
             floors: [
                 { floor: "Piso 1", rooms: "Área de Lavado Uso Común, Auditorio C101, Aulas C102-C104, Caja UAM / Tesorería, Aula C106, Lab MAC C107, Lab Cómputo Acad-Erasmus, Auditorio C109." },
                 { floor: "Piso 2", rooms: "Laboratorios de Computación C201-C205, Laboratorio MAC C203, SS Hombres / Mujeres, Aulas C209-C211." },
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio D • Odontología Digital",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 351, y: 335 },
+            anchor: { x: 351, y: 290 },
             floors: [
                 { floor: "Piso 1", rooms: "Aula D102, Laboratorio de Odontología Digital CAM-CAM, Oficina de Servicio al Cliente, Sala de Reunión." }
             ]
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio E • Facultad de Medicina",
             badgeClass: "badge-navy",
             badgeBg: "#1e3a8a",
-            anchor: { x: 458, y: 620 },
+            anchor: { x: 458, y: 653 },
             floors: [
                 { floor: "Piso 1", rooms: "Clínica Médica & Atención al Adolescente, SS Hombres / Mujeres, Centro de Diagnóstico, Decanatura de Medicina, Oficinas de Médicos Especialistas." }
             ]
@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio F • FACEE (Ciencias Económicas)",
             badgeClass: "badge-magenta",
             badgeBg: "#be185d",
-            anchor: { x: 517, y: 628 },
+            anchor: { x: 545, y: 646 },
             floors: [
                 { floor: "Piso 1", rooms: "Salón de Profesores FACEE, Dirección de Postgrado y Formación Continua, Decanatura FACEE, Aulas F101-F104." }
             ]
@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio G • Derecho & Auditorio",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 517, y: 558 },
+            anchor: { x: 545, y: 590 },
             floors: [
                 { floor: "Piso 1", rooms: "Decanatura FCJ, Centro de Mediación, Language Center, UAM College, Dirección de Relaciones Internacionales." },
                 { floor: "Piso 2", rooms: "Auditorio Central Rubén Darío, Sala de Juicios Orales Simulados." }
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio H • Laboratorios de Medicina",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 572, y: 383 },
+            anchor: { x: 602, y: 383 },
             floors: [
                 { floor: "Piso 1", rooms: "SS Hombres / Mujeres, Laboratorios Multidisciplinarios H101-H103, Coordinación de Laboratorios, Oficina de Sustancias Químicas, Laboratorios H105-H107." },
                 { floor: "Piso 2", rooms: "Laboratorio de Anatomía H201-H207, Quirófano de Práctica, Depósito de Reactivos." }
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio I • Rectoría & Biblioteca Central",
             badgeClass: "badge-navy",
             badgeBg: "#1e3a8a",
-            anchor: { x: 635, y: 715 },
+            anchor: { x: 653, y: 724 },
             floors: [
                 { floor: "Piso 1", rooms: "SS Hombres / Mujeres, Vicepresidencia, Sala de Reunión de Consejo, Dirección Académica, Rectoría, Gerencia General, Secretaría General, Biblioteca Central UAM, Dirección de RR.PP." }
             ]
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio J • Laboratorios Odontología",
             badgeClass: "badge-cyan",
             badgeBg: "#0284c7",
-            anchor: { x: 297, y: 332 },
+            anchor: { x: 297, y: 287 },
             floors: [
                 { floor: "Piso 1", rooms: "Laboratorio de Simulación y Práctica Preclínica Odontológica J101-J102, Depósito de Instrumental, SS Hombres / Mujeres." }
             ]
@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio K • Cafetería Central & Terrazas",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 285, y: 582 },
+            anchor: { x: 293, y: 598 },
             floors: [
                 { floor: "Piso 1", rooms: "Comedor Estudiantil Central, Kioscos Gourmet, Terrazas Techadas, Cajeros Automáticos Banpro / BAC." }
             ]
@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio M • Aulas & Postgrados",
             badgeClass: "badge-teal",
             badgeBg: "#0f766e",
-            anchor: { x: 567, y: 460 },
+            anchor: { x: 597, y: 460 },
             floors: [
                 { floor: "Piso 1", rooms: "Aulas de Grado M101 - M108, Coordinación de Maestrías y Especialidades." },
                 { floor: "Piso 2", rooms: "Aulas Ejecutivas M201 - M208, Sala de Coworking para Investigadores." }
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Edificio N • Clínicas Odontológicas",
             badgeClass: "badge-magenta",
             badgeBg: "#be185d",
-            anchor: { x: 350, y: 262 },
+            anchor: { x: 350, y: 217 },
             floors: [
                 { floor: "Piso 1", rooms: "Recepción de Pacientes, Módulo de Triaje, Clínicas Odontológicas Integrales, Quirófano Ambulatorio, Central de Esterilización." }
             ]
@@ -239,7 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Entrada Principal & Parqueo Sur",
             badgeClass: "badge-navy",
             badgeBg: "#0f172a",
-            anchor: { x: 340, y: 800 },
+            anchor: { x: 274, y: 766 },
             floors: [
                 { floor: "Exterior", rooms: "Caseta de Seguridad Sur, Bahías de Parqueo Estudiantil y Docente, Rampa Peatonal Principal hacia Edificio K." }
             ]
@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
             name: "Plaza Chilamates (Kioskos & Fast Food)",
             badgeClass: "badge-green",
             badgeBg: "#15803d",
-            anchor: { x: 225, y: 332 },
+            anchor: { x: 225, y: 287 },
             floors: [
                 { floor: "Plaza", rooms: "Kioskos de Comida Rápida, Puntos de Café, Mesas al Aire Libre, Espacio de Recreación Estudiantil." }
             ]
@@ -269,46 +269,128 @@ document.addEventListener("DOMContentLoaded", function () {
         "jaguarCenter": {
             id: "jaguarCenter",
             letter: "JC",
-            name: "Jaguar Center (Gimnasio & Complejo Deportivo)",
+            name: "Jaguar Center (Complejo Deportivo)",
             badgeClass: "badge-amber",
             badgeBg: "#b45309",
-            anchor: { x: 735, y: 510 },
+            anchor: { x: 886, y: 623 },
             floors: [
-                { floor: "Piso 1", rooms: "Gimnasio Universitario Jaguar Gym, Canchas Techadas de Baloncesto / Voleibol, Graderías Principales, Área de Fisioterapia." }
+                { floor: "Piso 1", rooms: "Canchas Techadas de Baloncesto / Voleibol, Graderías Principales, Acceso al Complejo Deportivo." }
+            ]
+        },
+        "jaguarGym": {
+            id: "jaguarGym",
+            letter: "JG",
+            name: "Jaguar Gym • Gimnasio Universitario",
+            badgeClass: "badge-teal",
+            badgeBg: "#0f766e",
+            anchor: { x: 955, y: 726 },
+            floors: [
+                { floor: "Piso 1", rooms: "Área de Pesas, Máquinas Cardiovasculares, Entrenamiento Funcional y Vestidores." }
+            ]
+        },
+        "physiotherapy": {
+            id: "physiotherapy",
+            letter: "FT",
+            name: "Fisioterapia • Clínica de Rehabilitación",
+            badgeClass: "badge-cyan",
+            badgeBg: "#0284c7",
+            anchor: { x: 964, y: 677 },
+            floors: [
+                { floor: "Piso 1", rooms: "Clínica de Fisioterapia, Rehabilitación Física y Deportiva, Atención a Estudiantes y Atletas." }
+            ]
+        },
+        "jaguarJungle": {
+            id: "jaguarJungle",
+            letter: "JJ",
+            name: "Jaguar Jungle • Jardín & Conexión Central",
+            badgeClass: "badge-green",
+            badgeBg: "#15803d",
+            anchor: { x: 626, y: 306 },
+            floors: [
+                { floor: "Área Verde & Senderos", rooms: "Zona recreativa natural con senderos peatonales que conectan Edificio O, Mi Ranchito, Lab Digital FIA, Edificio H y la Avenida Principal Interna." }
+            ]
+        },
+        "miRanchito": {
+            id: "miRanchito",
+            letter: "MR",
+            name: "Mi Ranchito • Ranchón Universitario",
+            badgeClass: "badge-amber",
+            badgeBg: "#b45309",
+            anchor: { x: 555, y: 296 },
+            floors: [
+                { floor: "Pabellón Exterior", rooms: "Ranchón de descanso, cafetería y punto de encuentro estudiantil entre Edificio N, Edificio O y Jaguar Jungle." }
+            ]
+        },
+        "labDigitalFia": {
+            id: "labDigitalFia",
+            letter: "FIA",
+            name: "Lab Digital FIA • Laboratorio Digital",
+            badgeClass: "badge-teal",
+            badgeBg: "#0f766e",
+            anchor: { x: 530, y: 328 },
+            floors: [
+                { floor: "Piso 1", rooms: "Laboratorio Digital de la Facultad de Ingeniería y Arquitectura (FIA), junto al Edificio N, Mi Ranchito y Área de Mesas." }
+            ]
+        },
+        "areaDeMesas": {
+            id: "areaDeMesas",
+            letter: "AM",
+            name: "Área de Mesas • Terraza de Estudio",
+            badgeClass: "badge-navy",
+            badgeBg: "#1e3a8a",
+            anchor: { x: 532, y: 366 },
+            floors: [
+                { floor: "Terraza Exterior", rooms: "Mesas techadas y sombreadas para estudio, trabajo grupal y almuerzo entre Lab Digital FIA, Parqueo Central y Edificio C." }
             ]
         },
         "northGate": {
             id: "northGate",
-            letter: "ACC",
-            name: "Acceso Norte (Copérnico / FIA)",
+            letter: "3°",
+            name: "Tercer Acceso • Third Access (Copérnico)",
             badgeClass: "badge-navy",
-            badgeBg: "#64748b",
-            anchor: { x: 340, y: 60 },
+            badgeBg: "#475569",
+            anchor: { x: 184, y: 74 },
             floors: [
-                { floor: "Acceso", rooms: "Caseta de Vigilancia Norte, Acceso Vehicular Segundo Camino hacia Edificios P y O." }
+                { floor: "Acceso Vehicular y Peatonal", rooms: "Tercer Acceso (Caseta Oeste junto a Estación Meteorológica y Edificio P - Copérnico). Conecta directamente con la Avenida Principal Oeste y Parqueos Oeste." }
             ]
         },
         "northeastGate": {
             id: "northeastGate",
-            letter: "ACC",
-            name: "Acceso Noreste (Deportes)",
+            letter: "2°",
+            name: "Segundo Acceso • Camino Estadio Jaguar",
             badgeClass: "badge-navy",
-            badgeBg: "#64748b",
-            anchor: { x: 720, y: 60 },
+            badgeBg: "#0f766e",
+            anchor: { x: 906, y: 14 },
             floors: [
-                { floor: "Acceso", rooms: "Portón de Ingreso a Complejo Deportivo y Parqueo de Deportes." }
+                { floor: "Acceso Vehicular y Peatonal", rooms: "Camino Segundo Acceso (Vía Estadio de Béisbol Jaguar). Conecta directamente con el Complejo Deportivo, Parqueo Norte Deportes, Edificio O y vía perimetral norte." }
             ]
         }
     };
+
+    // Sync anchors from single source of truth in campusMapRenderer.js
+    if (window.CAMPUS_BUILDING_ANCHORS) {
+        for (const [key, anchor] of Object.entries(window.CAMPUS_BUILDING_ANCHORS)) {
+            if (CAMPUS_BUILDINGS[key]) CAMPUS_BUILDINGS[key].anchor = anchor;
+        }
+    }
 
     let activeSelectedBuilding = null;
 
     // ----------------------------------------------------------------------------
     // 3. Pan, Zoom & Real Responsive Compass Canvas Controller
     // ----------------------------------------------------------------------------
-    let scale = 1;
-    let translateX = 0;
-    let translateY = 0;
+    function getDefault2dScale() {
+        const w = wrapper.clientWidth || window.innerWidth;
+        const h = wrapper.clientHeight || window.innerHeight;
+        // On portrait mobile phones, zoom slightly in so the horizontal campus fills the screen readably
+        if (w < 640 && h > w) return 1.75;
+        if (w < 1024 && h > w) return 1.3;
+        return 1;
+    }
+
+    let scale = getDefault2dScale();
+    let translateX = (wrapper.clientWidth || window.innerWidth) < 640 ? 18 : 0;
+    let translateY = (wrapper.clientWidth || window.innerWidth) < 640 ? -12 : 0;
     let rotation = 0; // View rotation angle in degrees (0° = South Up)
     let isDragging = false;
     let isRotating = false;
@@ -356,7 +438,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         svg.style.transition = animate ? "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
-        svg.style.transformOrigin = "600px 425px";
+        svg.style.transformOrigin = "50% 50%";
         svg.style.transform = `translate(${translateX.toFixed(2)}px, ${translateY.toFixed(2)}px) scale(${scale.toFixed(3)}) rotate(${rotation.toFixed(2)}deg)`;
         
         // Compass rotates with the 2D view to remain locked onto map direction
@@ -369,7 +451,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.campus25dController.zoomIn();
                 return;
             }
-            scale = Math.min(scale + 0.25, 2.8);
+            scale = Math.min(scale + 0.3, 3.8);
             applyTransform(true);
         });
     }
@@ -380,7 +462,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.campus25dController.zoomOut();
                 return;
             }
-            scale = Math.max(scale - 0.25, 0.75);
+            scale = Math.max(scale - 0.3, 0.75);
             applyTransform(true);
         });
     }
@@ -388,16 +470,16 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnResetView) {
         btnResetView.addEventListener("click", () => {
             if (window.campus25dController && window.campus25dController.is25dActive) {
-                window.campus25dController.zoomScale = 2.2;
+                window.campus25dController.zoomScale = window.campus25dController.getResponsiveZoom(2.2);
                 window.campus25dController.heading = 0;
                 window.campus25dController.currentHeading = 0;
                 window.campus25dController.centerOnCampusLowerThird();
                 window.campus25dController.updateCompass(true);
                 return;
             }
-            scale = 1;
-            translateX = 0;
-            translateY = 0;
+            scale = getDefault2dScale();
+            translateX = (wrapper.clientWidth || window.innerWidth) < 640 ? 18 : 0;
+            translateY = (wrapper.clientWidth || window.innerWidth) < 640 ? -12 : 0;
             rotation = 0;
             applyTransform(true);
         });
@@ -566,7 +648,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const currentAngle = Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180 / Math.PI;
 
             if (initialPinchDist > 0) {
-                scale = Math.max(0.75, Math.min(initialPinchScale * (currentDist / initialPinchDist), 2.8));
+                scale = Math.max(0.75, Math.min(initialPinchScale * (currentDist / initialPinchDist), 3.8));
             }
             const angleDiff = currentAngle - initialPinchAngle;
             rotation = (initialPinchRotation + angleDiff) % 360;
@@ -609,6 +691,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     <span class="text-slate-600">${f.rooms}</span>
                 </div>
             `).join("");
+
+            if (bldgData.id === "buildingP") {
+                popoverFacilities.innerHTML += `
+                    <div class="mt-2.5 pt-2 border-t border-slate-100">
+                        <button type="button" onclick="if(typeof window.openBuildingPIsometricModal==='function') window.openBuildingPIsometricModal();" class="w-full py-1.5 px-2 bg-pink-800 hover:bg-pink-900 text-white rounded-lg font-bold text-[11px] shadow-sm flex items-center justify-center gap-1.5 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <span>Ver Vista Isométrica 3D</span>
+                        </button>
+                    </div>
+                `;
+            }
         }
 
         // Highlight shape in SVG
@@ -631,21 +724,41 @@ document.addEventListener("DOMContentLoaded", function () {
         // Position popover relative to wrapper container
         const wRect = wrapper.getBoundingClientRect();
         let clientX, clientY;
-        if (bldgEl) {
-            const bRect = bldgEl.getBoundingClientRect();
-            clientX = bRect.left - wRect.left + (bRect.width / 2);
-            clientY = bRect.top - wRect.top;
-        } else {
-            const rect = svg.getBoundingClientRect();
-            clientX = (anchorCoords.x / 1200) * rect.width;
-            clientY = (anchorCoords.y / 850) * rect.height;
+
+        if (window.campus25dController && window.campus25dController.is25dActive) {
+            const projected = window.campus25dController.projectToScreen(anchorCoords.x, anchorCoords.y);
+            if (projected) {
+                clientX = projected.x;
+                clientY = projected.y;
+            }
         }
 
-        const maxLeft = wRect.width - 290;
-        const maxTop = wRect.height - 220;
+        if (clientX === undefined) {
+            if (bldgEl) {
+                const bRect = bldgEl.getBoundingClientRect();
+                clientX = bRect.left - wRect.left + (bRect.width / 2);
+                clientY = bRect.top - wRect.top;
+            } else {
+                const rect = svg.getBoundingClientRect();
+                clientX = (anchorCoords.x / 1200) * rect.width;
+                clientY = (anchorCoords.y / 850) * rect.height;
+            }
+        }
 
-        bldgPopover.style.left = `${Math.max(12, Math.min(clientX - 100, maxLeft))}px`;
-        bldgPopover.style.top = `${Math.max(12, Math.min(clientY - 160, maxTop))}px`;
+        if (wRect.width < 640) {
+            // On mobile phones, anchor building popover cleanly centered above the Waze bottom dock
+            bldgPopover.style.left = "50%";
+            bldgPopover.style.top = "auto";
+            bldgPopover.style.bottom = "80px";
+            bldgPopover.style.transform = "translateX(-50%)";
+        } else {
+            const maxLeft = wRect.width - 310;
+            const maxTop = wRect.height - 250;
+            bldgPopover.style.bottom = "auto";
+            bldgPopover.style.transform = "none";
+            bldgPopover.style.left = `${Math.max(12, Math.min(clientX - 120, maxLeft))}px`;
+            bldgPopover.style.top = `${Math.max(84, Math.min(clientY - 170, maxTop))}px`;
+        }
         bldgPopover.classList.remove("hidden");
     }
 
@@ -656,6 +769,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnClosePopover) {
         btnClosePopover.addEventListener("click", () => {
             bldgPopover.classList.add("hidden");
+            if (window.campus25dController) {
+                window.campus25dController.focusedBuildingAnchor = null;
+                window.campus25dController.focusedBuildingId = null;
+                if (window.campus25dController.badgesContainer) {
+                    window.campus25dController.badgesContainer.querySelectorAll(".waze-bldg-badge").forEach(b => {
+                        b.classList.remove("waze-badge-focused");
+                    });
+                }
+            }
             document.querySelectorAll(".bldg-shape").forEach(el => el.classList.remove("active-bldg"));
             document.querySelectorAll(".directory-card").forEach(c => {
                 c.classList.remove("ring-2", "ring-brand-500", "bg-brand-50/40");
@@ -705,7 +827,23 @@ document.addEventListener("DOMContentLoaded", function () {
             const nodeId = el.getAttribute("data-node");
             const bldgData = CAMPUS_BUILDINGS[nodeId];
             if (bldgData) {
-                showBuildingPopover(bldgData, bldgData.anchor);
+                // When clicking on a building, switch view to 2.5D and zoom specifically into that building
+                if (window.campus25dController && typeof window.campus25dController.focusBuilding === "function") {
+                    window.campus25dController.focusBuilding(nodeId, { zoom: 2.85, animate: true });
+                } else {
+                    showBuildingPopover(bldgData, bldgData.anchor);
+                }
+
+                // If building is Building P, open the 3D model with super WOW animation after zooming in
+                if (nodeId === "buildingP") {
+                    setTimeout(() => {
+                        if (typeof window.openBuildingMap === "function") {
+                            window.openBuildingMap("buildingP");
+                        } else if (typeof window.openBuildingPModal === "function") {
+                            window.openBuildingPModal();
+                        }
+                    }, 400);
+                }
 
                 // On small devices, close directory sidebar menu so the focused building is immediately visible
                 if (window.innerWidth < 1024 && typeof window.toggleNavigateMapSidebar === "function") {
@@ -723,15 +861,18 @@ document.addEventListener("DOMContentLoaded", function () {
             const nodeId = card.getAttribute("data-bldg");
             const bldgData = CAMPUS_BUILDINGS[nodeId];
             if (bldgData) {
-                // Focus / Pan slightly toward building
-                const centerTargetX = (600 - bldgData.anchor.x) * 0.4;
-                const centerTargetY = (425 - bldgData.anchor.y) * 0.4;
-                translateX = centerTargetX;
-                translateY = centerTargetY;
-                scale = 1.35;
-                applyTransform();
-
-                showBuildingPopover(bldgData, bldgData.anchor);
+                // When clicking on a building card, switch view to 2.5D and zoom specifically into that building
+                if (window.campus25dController && typeof window.campus25dController.focusBuilding === "function") {
+                    window.campus25dController.focusBuilding(nodeId, { zoom: 2.85, animate: true });
+                } else {
+                    const centerTargetX = (600 - bldgData.anchor.x) * 0.4;
+                    const centerTargetY = (425 - bldgData.anchor.y) * 0.4;
+                    translateX = centerTargetX;
+                    translateY = centerTargetY;
+                    scale = 1.35;
+                    applyTransform();
+                    showBuildingPopover(bldgData, bldgData.anchor);
+                }
 
                 // On small devices, close directory sidebar menu so the focused building is immediately visible
                 if (window.innerWidth < 1024 && typeof window.toggleNavigateMapSidebar === "function") {

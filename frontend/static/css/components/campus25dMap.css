@@ -17,7 +17,7 @@
     height: 100%;
     overflow: hidden;
     background-color: #f3f5f8;
-    perspective: 1000px;
+    perspective: 1300px;
     perspective-origin: 50% 70%; /* Locked to user lower-third anchor (70% down) */
 }
 
@@ -52,51 +52,139 @@
     cursor: grabbing !important;
 }
 
-/* 3. Subtle Horizon Sky/Fog Atmosphere (Disperses top perspective into seamless sky) */
+/* 3. Subtle Horizon Sky/Fog Atmosphere (Compact top fade so north parking lots & buildings stay crisp) */
 .campus-horizon-atmosphere {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 48%;
+    height: 20%;
     background: linear-gradient(
         to bottom,
-        #d6dfea 0%,
-        rgba(214, 223, 234, 0.96) 18%,
-        rgba(226, 233, 242, 0.82) 34%,
-        rgba(243, 245, 248, 0.45) 60%,
+        rgba(220, 229, 240, 0.82) 0%,
+        rgba(232, 238, 246, 0.42) 45%,
         transparent 100%
     );
     pointer-events: none;
     z-index: 10;
     opacity: 0;
-    transition: opacity 0.5s ease-out;
+    transition: opacity 0.4s ease-out, height 0.3s ease-out;
 }
 
 .campus-25d-active .campus-horizon-atmosphere {
     opacity: 1;
 }
 
-/* 4. Fake 3D Extrusion on Buildings (Layered Zero-Blur Drop Shadows create physical depth walls) */
+.campus-25d-active.campus-25d-steep .campus-horizon-atmosphere {
+    height: 23%;
+}
+
+/* 4. Grounded 3D Building Extrusions (Roof lifts upward so 3D walls land on the true footprint, never hiding parking lots) */
 .campus-25d-active .bldg-shape {
-    filter: drop-shadow(0 3px 0 #183c48)
-            drop-shadow(0 6px 0 #122e38)
-            drop-shadow(0 10px 14px rgba(15, 23, 42, 0.45));
-    transition: filter 0.3s ease;
+    transform: translateY(-3px);
+    filter: drop-shadow(0 1.5px 0 #1b4b59)
+            drop-shadow(0 1.5px 0 #123440)
+            drop-shadow(0 2.5px 4px rgba(15, 23, 42, 0.24));
+    transition: filter 0.25s ease, transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* Tighter, cleaner extrusion at steep 52° pitch so tight alleys and parking rows stay 100% unobstructed */
+.campus-25d-active.campus-25d-steep .bldg-shape {
+    transform: translateY(-2.5px);
+    filter: drop-shadow(0 1.25px 0 #1b4b59)
+            drop-shadow(0 1.25px 0 #123440)
+            drop-shadow(0 2px 3.5px rgba(15, 23, 42, 0.22));
 }
 
 .campus-25d-active .bldg-shape:hover {
-    filter: drop-shadow(0 3px 0 #183c48)
-            drop-shadow(0 6px 0 #122e38)
-            drop-shadow(0 14px 22px rgba(15, 23, 42, 0.55)) brightness(1.08);
+    transform: translateY(-4px);
+    filter: drop-shadow(0 2px 0 #1b4b59)
+            drop-shadow(0 2px 0 #123440)
+            drop-shadow(0 4px 8px rgba(15, 23, 42, 0.34)) brightness(1.07);
+}
+
+/* Keep flat sports fields, plazas, botanical gardens, terraces, and south gate grounded flush with terrain */
+.campus-25d-active #baseballStadium,
+.campus-25d-active #soccerField,
+.campus-25d-active #jaguarJungle,
+.campus-25d-active #areaDeMesas,
+.campus-25d-active .bldg-shape[data-bldg="CANCHAS"],
+.campus-25d-active .bldg-shape[data-node="chilamatesPlaza"],
+.campus-25d-active .bldg-shape[data-node="mainParking"] {
+    transform: none;
+    filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.14));
+}
+
+.campus-25d-active #baseballStadium:hover,
+.campus-25d-active #soccerField:hover,
+.campus-25d-active #jaguarJungle:hover,
+.campus-25d-active #areaDeMesas:hover,
+.campus-25d-active .bldg-shape[data-bldg="CANCHAS"]:hover,
+.campus-25d-active .bldg-shape[data-node="chilamatesPlaza"]:hover,
+.campus-25d-active .bldg-shape[data-node="mainParking"]:hover {
+    transform: none;
+    filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.22)) brightness(1.05);
+}
+
+/* 4A. Crisp 2.5D Parking Lot & Road Contrast (High readability under 45° & 52° foreshortening) */
+.campus-25d-active #roadsLayer {
+    stroke: #bcc7da;
+}
+
+.campus-25d-active #parkingLayer .parking-asphalt {
+    fill: #c4d0df;
+    stroke: #8fa2ba;
+    stroke-width: 1.8px;
+    transition: fill 0.25s ease, stroke 0.25s ease, fill-opacity 0.25s ease, stroke-width 0.25s ease;
+}
+
+.campus-25d-active #parkingLayer .parking-lines line {
+    stroke: #ffffff;
+    stroke-width: 1.55px;
+}
+
+.campus-25d-active #parkingLayer .parking-island {
+    fill: #94a3b8;
+    stroke: #ffffff;
+    stroke-width: 1.5px;
+    filter: drop-shadow(0 1.2px 0 #64748b);
+}
+
+/* 4B. Parking Highlight Toggle Mode (Emphasizes all campus parking lots in 2.5D view) */
+.campus-25d-active.campus-25d-highlight-parking #parkingLayer .parking-asphalt {
+    fill: #93c5fd;
+    fill-opacity: 0.72;
+    stroke: #0284c7;
+    stroke-width: 2.3px;
+}
+
+.campus-25d-active.campus-25d-highlight-parking #parkingLayer .parking-lot {
+    filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.35));
+}
+
+.campus-25d-active.campus-25d-highlight-parking .bldg-shape {
+    opacity: 0.78;
+}
+
+/* Compact styling for road gate badges (ACC) so they stay unobtrusive */
+.waze-bldg-badge.waze-gate-badge .waze-bldg-letter {
+    min-width: 22px;
+    height: 20px;
+    padding: 0 5px;
+    font-size: 9.5px;
+    letter-spacing: 0.03em;
+    border-width: 1.5px;
+    opacity: 0.9;
 }
 
 /* Hide SVG badges in 2.5D mode to prevent trapezoidal stretching (Decoupled HTML overlay takes over) */
+.campus-25d-active .billboard-badge,
 .campus-25d-active [class*="badge-"],
 .campus-25d-active .badge-text,
 .campus-25d-active #origin2dPin,
 .campus-25d-active #destination2dPin {
     opacity: 0 !important;
+    display: none !important;
     pointer-events: none !important;
 }
 
@@ -114,51 +202,54 @@
     overflow: hidden;
 }
 
-/* 5A. Waze-style 3D Elevated Navigation Arrow Puck */
+/* 5A. Waze-style 3D Elevated Glossy Cyan Navigation Arrow Puck + Purple Road Pill */
 .waze-puck-container {
     position: absolute;
     left: 50%;
-    top: 70%;
+    top: 68%;
     transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
+    width: 82px;
+    height: 82px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     pointer-events: none;
     z-index: 25;
 }
 
-.waze-puck-shadow {
+.waze-puck-halo {
     position: absolute;
-    width: 44px;
-    height: 44px;
+    width: 72px;
+    height: 54px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(2, 132, 199, 0.45) 0%, rgba(15, 23, 42, 0.25) 55%, transparent 75%);
-    transform: scaleY(0.45) translateY(20px);
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.28) 0%, rgba(14, 165, 233, 0.12) 65%, transparent 100%);
+    border: 1.5px solid rgba(255, 255, 255, 0.92);
+    transform: translateY(4px);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.18);
 }
 
 .waze-puck-pulse {
     position: absolute;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    border: 2px solid #38bdf8;
-    animation: wazePulse 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+    border: 2.2px solid #38bdf8;
+    animation: wazePulse 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
 }
 
 @keyframes wazePulse {
-    0% { transform: scale(0.6); opacity: 0.95; }
-    75% { transform: scale(2.4); opacity: 0; }
-    100% { transform: scale(2.4); opacity: 0; }
+    0% { transform: scale(0.65); opacity: 0.9; }
+    75% { transform: scale(2.15); opacity: 0; }
+    100% { transform: scale(2.15); opacity: 0; }
 }
 
 .waze-puck-cone {
     position: absolute;
-    top: -32px;
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(to top, rgba(2, 132, 199, 0.35) 0%, transparent 100%);
+    top: -24px;
+    width: 52px;
+    height: 46px;
+    background: linear-gradient(to top, rgba(56, 189, 248, 0.36) 0%, rgba(125, 211, 252, 0.14) 65%, transparent 100%);
     clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
     pointer-events: none;
     transform-origin: 50% 100%;
@@ -166,10 +257,29 @@
 
 .waze-puck-arrow {
     position: relative;
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    filter: drop-shadow(0 6px 12px rgba(2, 132, 199, 0.45));
+    filter: drop-shadow(0 5px 12px rgba(2, 132, 199, 0.38));
+}
+
+.waze-road-pill {
+    position: absolute;
+    bottom: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 3.5px 12px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.96);
+    color: #0369a1;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.015em;
+    white-space: nowrap;
+    border: 2px solid #38bdf8;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.22);
+    z-index: 26;
 }
 
 /* 5B. Floating Upright Building Badges (Decoupled HTML Overlay - Letters Only) */
@@ -208,6 +318,25 @@
     box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(15, 23, 42, 0.28);
 }
 
+/* 5B-1. Focused Building Badge in 2.5D Mode */
+.waze-bldg-badge.waze-badge-focused {
+    z-index: 35 !important;
+}
+
+.waze-bldg-badge.waze-badge-focused .waze-bldg-letter {
+    box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #0284c7, 0 8px 22px rgba(2, 132, 199, 0.65) !important;
+    animation: wazeBadgePulse 1.8s infinite ease-in-out;
+}
+
+@keyframes wazeBadgePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
 /* 5C. Floating 3D Pins */
 .waze-pin-dest {
     position: absolute;
@@ -225,36 +354,127 @@
 }
 
 /* ================================================================================
- * 6. WAZE NAVIGATION HUD: TOP TURN-BY-TURN & BOTTOM TRIP SUMMARY BARS
+ * 6. WAZE NAVIGATION HUD: JET-BLACK TOP BANNER, FLOATING DIALS & WHITE BOTTOM DOCK
  * ================================================================================
  */
 .turn-by-turn-banner {
-    animation: slideDownBanner 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideDownBanner 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.waze-bottom-bar {
-    animation: slideUpBottomBar 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.waze-action-tray {
+    animation: slideUpTray 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideDownBanner {
     from {
-        transform: translate(-50%, -36px);
+        transform: translateY(-28px);
         opacity: 0;
     }
     to {
-        transform: translate(-50%, 0);
+        transform: translateY(0);
         opacity: 1;
     }
 }
 
-@keyframes slideUpBottomBar {
+@media (min-width: 1024px) {
+    @keyframes slideDownBanner {
+        from {
+            transform: translate(-50%, -28px);
+            opacity: 0;
+        }
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    }
+}
+
+@keyframes slideUpTray {
     from {
-        transform: translate(-50%, 48px);
         opacity: 0;
+        margin-bottom: -10px;
     }
     to {
-        transform: translate(-50%, 0);
         opacity: 1;
+        margin-bottom: 0;
+    }
+}
+
+/* JaguarFind Light-Theme White & Sky-Blue Circular Gauge / Mode Dial (Bottom-Left) */
+.waze-speed-dial {
+    background: radial-gradient(circle at 30% 25%, #ffffff 0%, #f0f9ff 62%, #e0f2fe 100%);
+    border: 3px solid #38bdf8;
+    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.20), inset 0 1px 2px rgba(255, 255, 255, 0.95);
+}
+
+/* JaguarFind Light-Theme Vibrant Sky-to-Cyan Circular Action FAB (Explore Mode) */
+.waze-orange-fab {
+    background: linear-gradient(145deg, #38bdf8 0%, #0ea5e9 54%, #0284c7 100%);
+    border: 3.5px solid #ffffff;
+    box-shadow: 0 8px 22px rgba(14, 165, 233, 0.36), 0 2px 6px rgba(2, 132, 199, 0.16);
+}
+
+/* Active Navigation State: Bright Light-Theme Coral-Rose Recenter Beacon */
+.campus-tbt-active .waze-orange-fab {
+    background: linear-gradient(145deg, #fb7185 0%, #f43f5e 56%, #e11d48 100%);
+    box-shadow: 0 8px 22px rgba(244, 63, 94, 0.36), 0 2px 6px rgba(15, 41, 82, 0.14);
+}
+
+/* Zero-Collision Offset Rules when Waze Black Turn-by-Turn Banner is Visible */
+.campus-tbt-active .waze-right-stack {
+    top: 108px !important;
+}
+
+@media (min-width: 640px) {
+    .campus-tbt-active .waze-right-stack {
+        top: 112px !important;
+    }
+}
+
+/* On mobile/tablet (< 1024px), hide top-left pill while full-width black Waze header is active to prevent overlap */
+@media (max-width: 1023px) {
+    .campus-tbt-active .waze-mode-pill {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-10px);
+    }
+    .waze-puck-container {
+        top: 66%;
+    }
+    .campus-25d-viewport {
+        perspective-origin: 50% 66%;
+    }
+    .campus-3d-stage {
+        transform-origin: 50% 66%;
+    }
+}
+
+/* On desktop (>= 1024px), keep right toolbar at top-4 and compact left mode pill during active TBT so it never collides with the centered banner when sidebar is open */
+@media (min-width: 1024px) {
+    .campus-tbt-active .waze-right-stack {
+        top: 16px !important;
+    }
+}
+@media (min-width: 1024px) and (max-width: 1535px) {
+    .campus-tbt-active #pitchControlGroup,
+    .campus-tbt-active #headingControlGroup,
+    .campus-tbt-active #parkingControlGroup {
+        display: none !important;
+    }
+}
+
+/* Lift bottom-left dial & bottom-right orange FAB cleanly above the open Action Tray on mobile/tablet */
+@media (max-width: 1023px) {
+    .waze-tray-open .waze-speed-dial,
+    .waze-tray-open .waze-orange-fab {
+        bottom: 138px !important;
+    }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+    .waze-tray-open .waze-speed-dial,
+    .waze-tray-open .waze-orange-fab {
+        bottom: 144px !important;
     }
 }
 
@@ -263,7 +483,7 @@
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .mode-pill-btn.active {
-    background-color: #0284c7;
+    background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
     color: #ffffff;
-    box-shadow: 0 2px 6px -1px rgba(2, 132, 199, 0.4);
+    box-shadow: 0 2px 8px -1px rgba(14, 165, 233, 0.42);
 }

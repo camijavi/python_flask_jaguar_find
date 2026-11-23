@@ -75,7 +75,7 @@ Once running, access the application in your browser:
 
 ## 3. Running Verification & Graph Tests
 
-Run the full campus graph test suite (Dijkstra algorithm, wheelchair accessibility ♿ pruning, POI discovery, and GPS Haversine detection):
+Run the full campus graph test suite (Dijkstra algorithm, wheelchair accessibility pruning, POI discovery, and GPS Haversine detection):
 
 ```bash
 # Windows (PowerShell with UTF-8 support)

@@ -7,6 +7,10 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/campus2dMap.css') }}">
 <!-- 2.5D Perspective View & 3D Transforms Stylesheet -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/components/campus25dMap.css') }}">
+<!-- 2.5D Isometric Multi-Floor Building P Stylesheet -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/buildingPIsometric.css') }}">
+<!-- Three.js WebGL Engine for 2.5D Building Models -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
     /* Prevent outer window scrolling on map screen to provide full-viewport app feel */
     body {
@@ -68,14 +72,21 @@
 
     </div>
 
+    <!-- Official Building P 2.5D Multi-Floor Building Map (buildingsMaps/buildingP.html) -->
+    {% include "components/buildingsMaps/buildingP.html" %}
+
 </div>
 {% endblock %}
 
 {% block scripts %}
+<!-- Declarative 2D Vector Map Renderer (Roads, Parking, Buildings, Landscaping, Emergency Layer) -->
+<script src="{{ url_for('static', filename='js/campusMapRenderer.js') }}"></script>
 <!-- Official 2D Vector Map and Directory Logic -->
 <script src="{{ url_for('static', filename='js/campus2dMap.js') }}"></script>
 <!-- 2.5D Perspective View and Turn-by-Turn Controller -->
 <script src="{{ url_for('static', filename='js/campus25dMap.js') }}"></script>
+<!-- 2.5D Isometric Building P Controller -->
+<script src="{{ url_for('static', filename='js/buildingPIsometric.js') }}"></script>
 
 <script>
 // Sidebar Tab Switching

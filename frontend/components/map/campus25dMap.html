@@ -1,123 +1,219 @@
 <!--
 ===============================================================================
-CAMPUS 2.5D PERSPECTIVE VIEW COMPONENT (CAMPUS25DMAP.HTML)
+CAMPUS 2.5D PERSPECTIVE VIEW & JAGUARFIND LIGHT COCKPIT HUD (CAMPUS25DMAP.HTML)
 ===============================================================================
-Waze-Style 3D Navigation HUD & Cockpit Controls:
-1. Top Turn-by-Turn Instruction Banner (Maneuver badge, distance, instruction)
-2. Bottom Trip Summary Bar (ETA, remaining distance, Re-center, Overview, Step controls)
-3. 2D / 2.5D Mode Pill with Pitch (45°/52°) & Heading-Up orientation toggles
+Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
+1. Frosted White Top Turn-by-Turn Bar with Sky-Blue Accent Strip & Maneuver Badge
+2. Top-Left Compact 2D / 2.5D & Perspective Mode Pill
+3. Bottom-Left Crisp Light-Theme Circular Gauge / Mode Dial
+4. Bottom-Right Vibrant Sky-Cyan / Coral Circular Action FAB
+5. Collapsible Light Cockpit Action Tray (Step controls, Recenter, Overview, Steps)
+6. Unified Crisp White Bottom Dock (Search | Arrival ETA + Meta | Sound + Chevron)
 ===============================================================================
 -->
 
-<!-- 1. Floating 2.5D Mode & Perspective Control Pill (Top-Left) -->
-<div id="campus25dModeControls" class="absolute top-4 left-4 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1 rounded-xl border border-slate-200/90 shadow-md">
-    
+<!-- 1. Floating 2D / 2.5D Mode & Perspective Pill (Top-Left) -->
+<div id="campus25dModeControls" class="waze-mode-pill absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-md p-1 rounded-full border border-slate-200/90 shadow-lg shadow-slate-900/10 transition-all duration-300">
     <!-- 2D / 2.5D Segmented Switcher -->
-    <div class="flex items-center bg-slate-100 p-0.5 rounded-lg text-xs font-bold text-slate-700">
-        <button id="btnMode2d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-md active transition-all" title="Vista estándar 2D (Plano Cenital)">
+    <div class="flex items-center bg-slate-100 p-0.5 rounded-full text-[11px] font-extrabold text-slate-700">
+        <button id="btnMode2d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-full active transition-all cursor-pointer" title="Vista estándar 2D (Plano Cenital)">
             2D
         </button>
-        <button id="btnMode25d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-md text-slate-600 hover:text-slate-900 transition-all" title="Vista 2.5D Perspectiva (Inclinación 3D Waze)">
+        <button id="btnMode25d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-full text-slate-600 hover:text-slate-900 transition-all cursor-pointer" title="Vista 2.5D Perspectiva JaguarFind">
             2.5D
         </button>
     </div>
 
     <!-- Pitch / Tilt Angle Selector (Visible in 2.5D Mode) -->
-    <div id="pitchControlGroup" class="hidden items-center border-l border-slate-200 pl-1.5 pr-0.5 gap-1">
-        <button id="btnPitch45" type="button" class="px-2 py-1 rounded-md text-[11px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors" title="Inclinación 45° (Vista aérea oblicua)">
+    <div id="pitchControlGroup" class="hidden items-center border-l border-slate-200 pl-1 pr-0.5 gap-0.5">
+        <button id="btnPitch45" type="button" class="px-2 py-1 rounded-full text-[11px] font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 transition-colors cursor-pointer" title="Inclinación 45°">
             45°
         </button>
-        <button id="btnPitch52" type="button" class="px-2 py-1 rounded-md text-[11px] font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors" title="Inclinación 52° (Perspectiva Waze inmersiva)">
+        <button id="btnPitch52" type="button" class="px-2 py-1 rounded-full text-[11px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer" title="Inclinación 52° (Inmersiva)">
             52°
         </button>
     </div>
 
-    <!-- Heading Mode Toggle (Heading-Up vs North-Up) -->
-    <div id="headingControlGroup" class="hidden items-center border-l border-slate-200 pl-1.5">
-        <button id="btnToggleHeadingUp" type="button" class="p-1 rounded-md text-slate-600 hover:bg-slate-100 hover:text-brand-600 transition-colors flex items-center gap-1 text-[11px] font-bold" title="Alternar modo de orientación: Rumbo al frente (Heading-Up) o Norte fijo (North-Up)">
-            <svg id="iconHeadingMode" class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Heading Mode Toggle (Heading-Up vs South-Up) -->
+    <div id="headingControlGroup" class="hidden items-center border-l border-slate-200 pl-1">
+        <button id="btnToggleHeadingUp" type="button" class="p-1.5 rounded-full text-slate-600 hover:bg-slate-100 hover:text-sky-600 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Alternar orientación: Rumbo al frente o Fijo">
+            <svg id="iconHeadingMode" class="w-3.5 h-3.5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <polygon points="12 2 19 21 12 17 5 21 12 2" stroke-width="2" stroke-linejoin="round"/>
             </svg>
-            <span id="labelHeadingMode" class="hidden sm:inline">Rumbo</span>
+            <span id="labelHeadingMode" class="hidden md:inline">Rumbo</span>
         </button>
     </div>
 
+    <!-- Parking Lots Visibility Highlight Toggle (Visible in 2.5D Mode) -->
+    <div id="parkingControlGroup" class="hidden items-center border-l border-slate-200 pl-1">
+        <button id="btnToggleParkingHighlight" type="button" class="px-1.5 py-1 rounded-full text-slate-600 hover:bg-slate-100 hover:text-sky-600 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Resaltar parqueos en vista 2.5D">
+            <span class="w-4 h-4 rounded-full bg-sky-500 text-white text-[9.5px] font-black flex items-center justify-center leading-none">P</span>
+            <span class="hidden md:inline">Parqueos</span>
+        </button>
+    </div>
 </div>
 
-<!-- 2. Waze Top Turn-by-Turn Instruction Banner (Anchors Top Center) -->
-<div id="turnByTurnBanner" class="turn-by-turn-banner waze-top-banner hidden absolute top-3 left-1/2 -translate-x-1/2 z-30 w-[94%] max-w-lg bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-xl p-3.5 pointer-events-auto">
-    <div class="flex items-start gap-3.5">
-        <!-- Turn Direction Maneuver Badge -->
-        <div id="tbtManeuverBadge" class="w-12 h-12 rounded-2xl bg-brand-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-brand-600/30">
-            <svg id="tbtManeuverIcon" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19V5m0 0l-5 5m5-5l5 5"/>
+<!-- 2. JaguarFind Light-Themed Top Turn-by-Turn Header Banner (Crisp White + Luminous Sky-Blue Accent) -->
+<div id="turnByTurnBanner" class="turn-by-turn-banner waze-top-banner hidden absolute top-0 inset-x-0 lg:top-3 lg:left-1/2 lg:right-auto lg:-translate-x-1/2 lg:w-[92%] lg:max-w-sm xl:max-w-md 2xl:max-w-lg z-30 bg-white/95 backdrop-blur-md text-slate-900 lg:rounded-2xl shadow-xl shadow-sky-900/12 border-b-2 lg:border-2 border-sky-300/90 overflow-hidden pointer-events-auto">
+    <!-- Colorful Light-Theme Top Ribbon -->
+    <div class="h-1 w-full bg-gradient-to-r from-sky-400 via-blue-500 to-teal-400"></div>
+    <div class="flex items-center gap-3 sm:gap-3.5 px-3.5 py-3 sm:px-4 sm:py-3.5">
+        <!-- Bright Sky-Blue Maneuver Badge with Bold White Arrow -->
+        <div id="tbtManeuverBadge" class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-sky-400 via-sky-500 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-sky-400/35 border border-sky-200/80">
+            <svg id="tbtManeuverIcon" class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 19V5m0 0l-5 5m5-5l5 5"/>
             </svg>
         </div>
 
-        <!-- Step Instructions & Counter -->
+        <!-- Distance (Crisp Ocean Blue) + Street/Destination (Vibrant Sky Blue) -->
         <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between gap-1 text-[11px] text-slate-500 font-semibold mb-0.5">
-                <span id="tbtStepCounter">Paso 1 de 1</span>
-                <span id="tbtStepDistance" class="font-extrabold text-brand-700 text-sm">65 m</span>
+            <div class="flex items-baseline gap-2">
+                <span id="tbtStepDistance" class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-none">65 m</span>
+                <span id="tbtStepCounter" class="text-[10.5px] font-extrabold text-sky-700 bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full truncate">Paso 1 de 1</span>
             </div>
-            <p id="tbtStepInstruction" class="text-xs sm:text-sm font-bold text-slate-900 leading-snug line-clamp-2">
+            <p id="tbtStepInstruction" class="text-[13px] sm:text-sm font-extrabold text-sky-700 leading-snug line-clamp-2 mt-1">
                 Inicia tu recorrido hacia el destino.
             </p>
             <div id="tbtNextPreview" class="text-[11px] text-slate-500 font-medium truncate mt-0.5 hidden">
                 Luego continúa recto
             </div>
+            <!-- Indoor Building P 3D Handoff Button -->
+            <div id="tbtIndoorActionRow" class="mt-2 hidden">
+                <button id="btnTbtEnterBuildingP" type="button" class="w-full py-1.5 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-extrabold text-[11px] flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <span id="labelTbtEnterBuildingP">Entrar a Edificio P • Vista 3D</span>
+                </button>
+            </div>
         </div>
 
-        <!-- Close / Exit 2.5D Turn-by-Turn Banner -->
-        <button id="btnCloseTbtBanner" type="button" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0" title="Cerrar banner de navegación">
+        <!-- Subtle Light-Theme Close Banner Button -->
+        <button id="btnCloseTbtBanner" type="button" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl hover:bg-slate-100 transition-colors shrink-0 cursor-pointer self-start" title="Ocultar barra de indicaciones">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
         </button>
     </div>
 </div>
 
-<!-- 3. Waze Bottom Trip Summary Bar (Anchors Bottom Center in 2.5D Mode) -->
-<div id="wazeBottomBar" class="waze-bottom-bar hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 w-[94%] max-w-lg bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-2xl p-3 sm:p-3.5 pointer-events-auto">
-    <div class="flex items-center justify-between gap-3">
-        <!-- Trip ETA & Progress Info -->
-        <div class="flex-1 min-w-0">
-            <div class="flex items-baseline gap-2">
-                <span id="wazeEtaTime" class="text-xl sm:text-2xl font-black text-emerald-600 tracking-tight leading-none">3 min</span>
-                <span id="wazeTripMeta" class="text-xs text-slate-500 font-bold truncate">145 m • Llegada aprox. 12:48 PM</span>
-            </div>
-            <!-- Progress Line -->
-            <div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
-                <div id="wazeProgressBar" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 25%"></div>
-            </div>
+<!-- 3. Bottom-Left JaguarFind Light-Theme Circular Gauge / Mode Dial -->
+<button id="wazeSpeedDial" type="button"
+        class="waze-speed-dial absolute bottom-[78px] left-3 sm:bottom-[84px] sm:left-4 lg:bottom-4 lg:left-5 z-20 w-[58px] h-[58px] sm:w-16 sm:h-16 rounded-full flex flex-col items-center justify-center text-sky-700 pointer-events-auto cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95"
+        title="Alternar vista 2D / 2.5D JaguarFind">
+    <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="27.5" stroke="#38bdf8" stroke-opacity="0.78" stroke-width="2.2" stroke-dasharray="2.2 4.2" />
+    </svg>
+    <span id="wazeDialValue" class="text-base sm:text-lg font-black leading-none tracking-tight text-sky-700">2D</span>
+    <span id="wazeDialUnit" class="text-[9px] font-extrabold text-teal-600 uppercase tracking-wider mt-0.5">mapa</span>
+</button>
+
+<!-- 4. Bottom-Right JaguarFind Vibrant Sky-Cyan / Coral Circular Action FAB -->
+<button id="wazeOrangeFab" type="button"
+        class="waze-orange-fab absolute bottom-[78px] right-3 sm:bottom-[84px] sm:right-4 lg:bottom-4 lg:right-5 z-20 w-[56px] h-[56px] sm:w-[60px] sm:h-[60px] rounded-full flex items-center justify-center text-white pointer-events-auto cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95"
+        title="Planificar ruta / Centrar navegación"
+        aria-label="Planificar ruta o centrar navegación">
+    <span class="w-9 h-9 rounded-full bg-white/25 flex items-center justify-center">
+        <svg id="wazeOrangeFabIcon" class="w-6 h-6 text-white drop-shadow-xs" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/>
+        </svg>
+    </span>
+</button>
+
+<!-- 5. Collapsible JaguarFind Light-Theme Action Tray (Crisp solid white single-row bar above Bottom Dock) -->
+<div id="wazeActionTray" class="waze-action-tray hidden absolute bottom-[70px] inset-x-2.5 sm:bottom-[76px] sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:w-[92%] sm:max-w-lg lg:bottom-[86px] z-30 bg-white border border-sky-200/90 rounded-2xl shadow-xl shadow-sky-900/12 px-2 py-2 sm:px-3 pointer-events-auto">
+    <div class="flex items-center justify-between gap-1">
+        <!-- Step Playback Group -->
+        <div class="flex items-center gap-1 shrink-0">
+            <button id="btnTbtPrevStep" type="button" class="w-8 h-9 sm:w-9 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-extrabold text-xs flex items-center justify-center transition-colors cursor-pointer" title="Paso anterior">
+                &#9664;
+            </button>
+            <button id="btnTbtPlaySimulation" type="button" class="h-9 px-2.5 sm:px-3 rounded-xl bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 text-white font-extrabold text-[11px] sm:text-xs flex items-center gap-1 shadow-sm shadow-sky-400/35 transition-colors cursor-pointer" title="Simular recorrido paso a paso">
+                <svg id="iconSimPlay" class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span id="labelSimPlay">Simular</span>
+            </button>
+            <button id="btnTbtNextStep" type="button" class="w-8 h-9 sm:w-9 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-extrabold text-xs flex items-center justify-center transition-colors cursor-pointer" title="Siguiente paso">
+                &#9654;
+            </button>
         </div>
 
-        <!-- Cockpit Quick Actions: Re-center, Overview & Simulation Controls -->
-        <div class="flex items-center gap-1.5 shrink-0">
-            <!-- Re-center Camera on User Puck -->
-            <button id="btnWazeRecenter" type="button" class="py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors" title="Re-centrar en el cursor de navegación">
-                <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="8" stroke-width="2"></circle>
-                    <line x1="12" y1="2" x2="12" y2="6" stroke-width="2"></line>
-                    <line x1="12" y1="18" x2="12" y2="22" stroke-width="2"></line>
-                    <line x1="2" y1="12" x2="6" y2="12" stroke-width="2"></line>
-                    <line x1="18" y1="12" x2="22" y2="12" stroke-width="2"></line>
+        <!-- Camera & Route Utility Group -->
+        <div class="flex items-center gap-1 shrink-0">
+            <button id="btnWazeRecenter" type="button" class="h-9 px-2 sm:px-2.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer" title="Centrar en cursor">
+                <svg class="w-4 h-4 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="7" stroke-width="2"></circle>
+                    <line x1="12" y1="2" x2="12" y2="5" stroke-width="2"></line>
+                    <line x1="12" y1="19" x2="12" y2="22" stroke-width="2"></line>
+                    <line x1="2" y1="12" x2="5" y2="12" stroke-width="2"></line>
+                    <line x1="19" y1="12" x2="22" y2="12" stroke-width="2"></line>
                 </svg>
                 <span class="hidden sm:inline">Centrar</span>
             </button>
-
-            <!-- Overview Toggle (Follow mode vs Full-route Overview) -->
-            <button id="btnWazeOverview" type="button" class="py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors" title="Vista General del Campus">
-                <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="btnWazeOverview" type="button" class="h-9 px-2 sm:px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer" title="Vista General">
+                <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                 </svg>
                 <span class="hidden sm:inline">General</span>
             </button>
+            <button id="btnWazeOpenSteps" type="button" class="lg:hidden h-9 px-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200/80 font-bold text-[11px] flex items-center gap-1 transition-colors cursor-pointer" title="Ver lista de pasos">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10"/></svg>
+                <span>Pasos</span>
+            </button>
+            <button id="btnWazeClearRoute" type="button" class="hidden h-9 px-2 sm:px-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 font-bold text-xs items-center gap-1 transition-colors cursor-pointer" title="Finalizar ruta">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <span class="hidden sm:inline">Salir</span>
+            </button>
+        </div>
+    </div>
+</div>
 
-            <!-- Simulation Step Control -->
-            <button id="btnTbtPlaySimulation" type="button" class="py-1.5 px-2.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 font-bold text-xs flex items-center gap-1 transition-colors" title="Reproducir simulación paso a paso">
-                <svg id="iconSimPlay" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                <span id="labelSimPlay" class="hidden sm:inline">Simular</span>
+<!-- 6. Unified JaguarFind Crisp White Bottom Dock -->
+<div id="wazeBottomBar" class="waze-bottom-bar absolute bottom-0 inset-x-0 lg:bottom-3.5 lg:left-1/2 lg:right-auto lg:-translate-x-1/2 lg:w-[92%] lg:max-w-lg z-30 bg-white lg:rounded-2xl shadow-[0_-4px_24px_rgba(2,132,199,0.12)] lg:shadow-xl border-t lg:border border-sky-200/80 overflow-hidden pointer-events-auto">
+    <!-- JaguarFind Light-Theme Sky-to-Teal Progress Track -->
+    <div class="w-full bg-sky-50 h-[3.5px] overflow-hidden">
+        <div id="wazeProgressBar" class="bg-gradient-to-r from-sky-400 via-blue-500 to-teal-400 h-full transition-all duration-300" style="width: 0%"></div>
+    </div>
+
+    <div class="flex items-center h-[60px] sm:h-[64px]">
+        <!-- Left Slot: JaguarFind Light-Theme Search Button -->
+        <button id="btnWazeSearch" type="button"
+                class="w-14 sm:w-16 h-full flex items-center justify-center bg-sky-50/70 text-sky-600 hover:text-sky-700 hover:bg-sky-100/80 border-r border-sky-100 transition-colors shrink-0 cursor-pointer"
+                title="Buscar destino o planificar ruta"
+                aria-label="Buscar destino">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M21 21l-5.2-5.2m1.7-4.8a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+            </svg>
+        </button>
+
+        <!-- Center Slot: Arrival Time / Title + Sub-Meta -->
+        <div id="wazeBottomCenter" class="flex-1 min-w-0 px-3 text-center cursor-pointer select-none">
+            <div id="wazeEtaTime" class="text-[20px] sm:text-[22px] font-black text-slate-900 tracking-tight leading-tight truncate">
+                Campus UAM
+            </div>
+            <div id="wazeTripMeta" class="text-[11.5px] sm:text-xs font-bold text-sky-600 truncate mt-0.5">
+                ¿A dónde vas? • Toca para buscar
+            </div>
+        </div>
+
+        <!-- Right Slot: Voice Audio Toggle + Bright Sky-Blue Expand Button -->
+        <div class="flex items-center gap-2 pr-3 sm:pr-3.5 shrink-0">
+            <button id="btnWazeAudio" type="button"
+                    class="w-9 h-9 rounded-full flex items-center justify-center text-sky-600 hover:text-sky-700 hover:bg-sky-50 transition-colors cursor-pointer"
+                    title="Escuchar indicaciones por voz"
+                    aria-label="Indicaciones por voz">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.1" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                </svg>
+            </button>
+
+            <button id="btnWazeExpandTray" type="button"
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 via-sky-500 to-blue-600 hover:from-sky-500 hover:to-blue-700 active:scale-95 text-white shadow-md shadow-sky-400/35 flex items-center justify-center transition-all cursor-pointer"
+                    title="Controles de navegación"
+                    aria-label="Controles de navegación"
+                    aria-expanded="false">
+                <svg id="wazeExpandChevron" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M5 15l7-7 7 7"/>
+                </svg>
             </button>
         </div>
     </div>

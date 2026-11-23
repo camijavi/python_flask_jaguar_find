@@ -1,0 +1,260 @@
+/* ==========================================================================
+   buildingPIsometric.css
+   Interactive 2.5D / Isometric Multi-Floor Cutaway Viewer for Building P
+   ========================================================================== */
+
+/* Modal Backdrop */
+#bldgPIsometricModal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#bldgPIsometricModal.bldg-modal-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Modal Dialog Container with 3D Entrance Animation */
+.bldg-modal-card {
+    position: relative;
+    width: 95vw;
+    max-width: 1240px;
+    height: 90vh;
+    max-height: 860px;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.8);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.85) translateY(40px) perspective(1000px) rotateX(8deg);
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#bldgPIsometricModal.bldg-modal-open .bldg-modal-card {
+    transform: scale(1) translateY(0) perspective(1000px) rotateX(0deg);
+}
+
+/* Header & Controls */
+.bldg-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    z-index: 20;
+}
+
+/* Floor Switcher Pills */
+.floor-pill-btn {
+    padding: 0.4rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.floor-pill-btn:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+}
+
+.floor-pill-btn.active {
+    background-color: #002855;
+    color: #ffffff;
+    border-color: #002855;
+    box-shadow: 0 4px 10px -2px rgba(0, 40, 85, 0.3);
+}
+
+/* Canvas Area */
+.bldg-svg-viewport {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: radial-gradient(circle at 50% 30%, #f8fafc 0%, #edf2f7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+}
+
+.bldg-svg-viewport:active {
+    cursor: grabbing;
+}
+
+.bldg-svg-canvas {
+    width: 100%;
+    height: 100%;
+    min-width: 900px;
+    min-height: 600px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Floor Stacking Groups */
+.floor-group {
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floor-group.floor-dimmed {
+    opacity: 0.15 !important;
+    pointer-events: none;
+}
+
+.floor-group.floor-isolated {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1.05);
+}
+
+/* Real UAM Architectural Specifications */
+/* 1. White walls with gray bottom line */
+.uam-wall-white {
+    fill: #ffffff;
+    stroke: #253452;
+    stroke-width: 1.5;
+}
+
+.uam-wall-stripe-gray {
+    fill: #64748b; /* Horizontal gray stripe at the bottom of walls */
+}
+
+/* 2. Gray Classroom Doors */
+.uam-door-gray {
+    fill: #64748b;
+    stroke: #334155;
+    stroke-width: 1;
+    cursor: pointer;
+    transition: fill 0.2s ease, transform 0.2s ease;
+}
+
+.uam-door-gray:hover {
+    fill: #0ea5e9;
+    filter: drop-shadow(0 0 4px rgba(14, 165, 233, 0.5));
+}
+
+.uam-door-highlight {
+    fill: #ea580c !important;
+    stroke: #ffffff !important;
+    stroke-width: 2 !important;
+    animation: doorPulse 1.5s infinite;
+}
+
+@keyframes doorPulse {
+    0%, 100% { filter: drop-shadow(0 0 4px #ea580c); }
+    50% { filter: drop-shadow(0 0 12px #ea580c); }
+}
+
+/* Windows between doors */
+.uam-window-glass {
+    fill: #e2e8f0;
+    stroke: #cbd5e1;
+    stroke-width: 1;
+}
+
+.uam-window-frame {
+    stroke: #ffffff;
+    stroke-width: 1;
+}
+
+/* Railing */
+.uam-railing {
+    stroke: #94a3b8;
+    stroke-width: 1.5;
+}
+
+/* Restrooms Divider */
+.wc-dividing-wall {
+    stroke: #0284c7;
+    stroke-width: 3;
+    stroke-dasharray: 4, 2;
+}
+
+/* Copernicus Dome */
+.dome-silver {
+    fill: url(#silverDomeGrad);
+    stroke: #475569;
+    stroke-width: 1.5;
+    filter: drop-shadow(0 4px 6px rgba(15, 23, 42, 0.25));
+}
+
+/* Interactive Room Targets */
+.room-interactive-hotspot {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.room-interactive-hotspot:hover .room-floor-surface {
+    fill: #e0f2fe;
+}
+
+/* Badges and Tooltips */
+.isometric-badge {
+    pointer-events: auto;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.2s ease;
+}
+
+.isometric-badge:hover {
+    transform: translateY(-2px);
+}
+
+/* Active Navigation Path */
+.isometric-nav-path {
+    stroke: #0284c7;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    stroke-dasharray: 8, 4;
+    animation: isoPathMarch 1.2s linear infinite;
+    filter: drop-shadow(0 0 6px #38bdf8);
+}
+
+@keyframes isoPathMarch {
+    to { stroke-dashoffset: -24; }
+}
+
+/* Bottom Room Detail Drawer */
+.bldg-room-drawer {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 0.75rem 1.25rem;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 30;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 90%;
+}
+
+.bldg-room-drawer.drawer-open {
+    transform: translateX(-50%) translateY(0);
+}
