@@ -142,7 +142,8 @@ def _normalizeText(text: str) -> str:
 def getPlaces():
     """
     GET /api/map/places
-    Searches and filters registered campus places.
+    Searches and filters all registered campus places across PLACES_CATALOG
+    and all 18 indoor building subgraphs (buildings.txt + coordenadas.txt).
     Query Params:
       - category: filter by CampusCategory (e.g., 'drinkingFountain', 'medicalLab')
       - q: free-text search across name, keywords, and location notes
@@ -152,8 +153,32 @@ def getPlaces():
     searchQuery = _normalizeText(request.args.get("q") or "")
     floorFilter = request.args.get("floor")
 
+    combinedPlaces = list(PLACES_CATALOG)
+    seenKeys = {
+        (_normalizeText(p.get("parentBuildingId", "")), _normalizeText(p.get("name", "")))
+        for p in combinedPlaces
+    }
+    for buildingId, sg in getAllBuildingSubgraphs().items():
+        for node in sg.getAllNodes():
+            key = (_normalizeText(sg.macroNodeId), _normalizeText(node.name))
+            if key in seenKeys:
+                continue
+            seenKeys.add(key)
+            combinedPlaces.append({
+                "placeId": node.nodeId,
+                "name": node.name,
+                "category": node.category,
+                "parentBuildingId": sg.macroNodeId,
+                "floorLevel": node.floorLevel,
+                "isAccessible": node.category != CampusCategory.STAIRS,
+                "latitude": node.latitude,
+                "longitude": node.longitude,
+                "locationNotes": f"{sg.name} — Piso {node.floorLevel}",
+                "keywords": [node.nodeId, sg.code, sg.name],
+            })
+
     results = []
-    for place in PLACES_CATALOG:
+    for place in combinedPlaces:
         if categoryFilter and place.get("category") != categoryFilter:
             continue
         if floorFilter is not None:
@@ -240,11 +265,13 @@ def getCampusPerimeter():
 def findNearestGpsNode():
     """
     GET /api/map/nearest-gps
-    Snaps a device GPS latitude/longitude coordinate to the nearest campus macro node.
-    Validates whether the user's location is within the official UAM campus perimeter.
+    Matches a device GPS latitude/longitude coordinate against all field-measured
+    campus nodes (18 building subgraphs + pedestrian walkways + macro buildings).
     Query Params:
-      - lat: float latitude (e.g. 12.1077)
-      - lng: float longitude (e.g. -86.2579)
+      - lat: float latitude (e.g. 12.1085)
+      - lng: float longitude (e.g. -86.2570)
+      - accuracy: optional GPS accuracy in meters
+      - floor: optional integer floor hint for multi-story buildings
       - lang: 'eng' | 'spa'
     """
     latRaw = request.args.get("lat")
@@ -262,8 +289,30 @@ def findNearestGpsNode():
     except (ValueError, TypeError):
         return jsonify({"success": False, "error": "Invalid floating point lat/lng coordinates."}), 400
 
+    accuracyMeters = None
+    accRaw = request.args.get("accuracy")
+    if accRaw is not None and accRaw != "":
+        try:
+            accuracyMeters = float(accRaw)
+        except ValueError:
+            pass
+
+    floorHint = None
+    floorRaw = request.args.get("floor")
+    if floorRaw is not None and floorRaw != "":
+        try:
+            floorHint = int(floorRaw)
+        except ValueError:
+            pass
+
     lang = _getPreferredLanguage()
-    result = globalNavigationService.findNearestGpsNode(userLat, userLng, lang=lang)
+    result = globalNavigationService.findNearestGpsNode(
+        userLat,
+        userLng,
+        lang=lang,
+        accuracyMeters=accuracyMeters,
+        floorHint=floorHint,
+    )
 
     isInside = result.get("isWithinCampus", True)
     if not isInside:
@@ -283,6 +332,44 @@ def findNearestGpsNode():
         "language": lang,
         "userCoordinates": {"lat": userLat, "lng": userLng},
         "nearest": result,
+    }), 200
+
+
+@mapController.route("/calibration", methods=["GET"])
+def getMapCalibration():
+    """
+    GET /api/map/calibration
+    Returns calibrated affine GPS <-> SVG projection parameters and true compass
+    bearing of the official UAM campus map (for live 2.5D compass rotation).
+    """
+    return jsonify({
+        "success": True,
+        "calibration": CampusGeoUtils.getCalibrationMetadata(),
+    }), 200
+
+
+@mapController.route("/walkways", methods=["GET"])
+def getPedestrianWalkwaysGraph():
+    """
+    GET /api/map/walkways
+    Returns formal graph metrics and nodes of the weighted, directed, non-complete
+    pedestrian walkway network synchronized with the frontend map.
+    """
+    lang = _getPreferredLanguage()
+    wg = globalNavigationService.walkwayGraph
+    nodesList = [n.toDict(lang) for n in wg.getAllNodes()]
+    directedEdgeCount = sum(len(n.outgoingEdges) for n in wg.getAllNodes())
+    maxComplete = len(nodesList) * max(0, len(nodesList) - 1)
+    density = round(directedEdgeCount / maxComplete, 5) if maxComplete > 0 else 0.0
+
+    return jsonify({
+        "success": True,
+        "graphType": "Weighted, Directed, Non-Complete Graph G = (V, E, W)",
+        "vertexCount": len(nodesList),
+        "directedEdgeCount": directedEdgeCount,
+        "density": density,
+        "calibration": CampusGeoUtils.getCalibrationMetadata(),
+        "nodes": nodesList,
     }), 200
 
 

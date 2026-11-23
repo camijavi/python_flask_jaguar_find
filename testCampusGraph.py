@@ -380,8 +380,106 @@ def runGraphTestSuite():
     print(f"     Path: {' -> '.join(resC5['pathNodeIds'])}")
     print(f"     Distance: {resC5['totalDistanceMeters']}m")
 
+    # -------------------------------------------------------------------------
+    # 11. Formal Graph Properties: All 18 Building Subgraphs + Pedestrian Walkways
+    # -------------------------------------------------------------------------
+    print("\n[TEST 11] Formal Graph Theory Verification (Weighted, Directed, Non-Complete G = (V, E, W)):")
+    from backend.subgraphs import getAllBuildingSubgraphs
+    from backend.graph.pedestrianWalkwayGraph import globalPedestrianWalkwayGraph
+    import re
+
+    allSubgraphs = getAllBuildingSubgraphs()
+    assert len(allSubgraphs) >= 18, f"Test 11 Failed: Expected >= 18 subgraphs, got {len(allSubgraphs)}"
+    for bid, sg in allSubgraphs.items():
+        nodes = sg.getAllNodes()
+        edgeCount = 0
+        for n in nodes:
+            for e in n.outgoingEdges:
+                assert e.distanceMeters > 0, f"Non-positive edge weight in {bid}: {n.nodeId}->{e.targetNodeId}"
+                edgeCount += 1
+        maxEdges = len(nodes) * max(1, len(nodes) - 1)
+        assert edgeCount <= maxEdges, f"Invalid edge count in {bid}"
+        # Connectivity check from primary entrance
+        visited = set()
+        stack = [sg.entranceNodeIds[0]]
+        while stack:
+            u = stack.pop()
+            if u in visited:
+                continue
+            visited.add(u)
+            for e in sg.graph.nodes[u].outgoingEdges:
+                stack.append(e.targetNodeId)
+        assert len(visited) == len(nodes), f"Disconnected nodes in {bid}: {set(sg.graph.nodes.keys()) - visited}"
+    print(f"  [OK] All {len(allSubgraphs)} building subgraphs verified: weighted (w>0), directed, non-complete, fully connected.")
+
+    wNodes = globalPedestrianWalkwayGraph.getAllNodes()
+    wEdges = sum(len(n.outgoingEdges) for n in wNodes)
+    wDensity = wEdges / (len(wNodes) * (len(wNodes) - 1))
+    assert len(wNodes) >= 200 and wEdges >= 400 and wDensity < 0.05, "Walkway graph must be sparse & non-complete"
+    for n in wNodes:
+        for e in n.outgoingEdges:
+            assert e.distanceMeters > 0, f"Non-positive walkway edge weight on {n.nodeId}->{e.targetNodeId}"
+    print(f"  [OK] Pedestrian Walkway Graph verified: |V|={len(wNodes)}, |E_dir|={wEdges}, density={wDensity:.4f} (non-complete).")
+
+    # -------------------------------------------------------------------------
+    # 12. Human Instructions Quality (Zero Meters, Zero Cardinals, Real Walkways)
+    # -------------------------------------------------------------------------
+    print("\n[TEST 12] Human Landmark Instructions & Real Pedestrian Walkway Sync:")
+    forbiddenMetric = re.compile(r"\b\d+\s*(m|mts|metros|meters)\b", re.IGNORECASE)
+    forbiddenCardinal = re.compile(r"\b(al norte|al sur|al este|al oeste|al noreste|al noroeste|al sureste|al suroeste|northeast|northwest|southeast|southwest)\b", re.IGNORECASE)
+
+    humanCheckCases = [
+        ("mainParking", "P205", False, "spa"),
+        ("mainParking", "B103", False, "spa"),
+        ("mainParking", "B103", False, "eng"),
+        ("A101", "CIAR", False, "spa"),
+        ("C102", "C205", False, "spa"),
+        ("buildingB", "buildingE", False, "spa"),
+        ("buildingN", "buildingP", True, "spa"),
+        ("mainParking", "biblioteca", True, "spa"),
+        ("mainParking", "quirofano", False, "spa"),
+    ]
+    for orig, dest, acc, lang in humanCheckCases:
+        route = globalNavigationService.calculateRoute(orig, dest, accessibleOnly=acc, lang=lang)
+        assert route["success"] is True, f"Test 12 Failed route {orig}->{dest} (acc={acc}): {route}"
+        assert len(route["steps"]) >= 1, f"Test 12 Failed: empty steps for {orig}->{dest}"
+        assert route.get("humanDuration"), f"Test 12 Failed: missing humanDuration for {orig}->{dest}"
+        for st in route["stepInstructions"]:
+            assert not forbiddenMetric.search(st), f"Metric distance leaked in step: {st}"
+            assert not forbiddenCardinal.search(st), f"Cardinal direction leaked in step: {st}"
+        if orig != dest and route.get("originNodeId") != route.get("destinationNodeId"):
+            assert len(route.get("walkwayPath", [])) >= 2, f"Missing walkwayPath for outdoor route {orig}->{dest}"
+        if orig == "buildingN" and dest == "buildingP" and acc:
+            wIds = route.get("walkwayNodeIds", [])
+            # Must not take the non-accessible stairs n_north_stairs -> pon_bot_mid
+            for i in range(len(wIds) - 1):
+                assert not (wIds[i] == "n_north_stairs" and wIds[i + 1] == "pon_bot_mid"), "Accessible route crossed stairs!"
+        if dest == "quirofano":
+            assert any("aviso de acceso" in s.lower() for s in route["stepInstructions"]), "Missing Gateway Pattern biosecurity notice!"
+        print(f"  [OK] {orig:12s} -> {dest:11s} (acc={str(acc):5s}, {lang}): {len(route['steps'])} human steps | {route['humanDuration']}")
+
+    # -------------------------------------------------------------------------
+    # 13. Global GPS Matching (Real Field Coordinates from coordenadas.txt)
+    # -------------------------------------------------------------------------
+    print("\n[TEST 13] Global GPS Matching (Field Coordinates + Multi-Floor Disambiguation):")
+    gpsCases = [
+        ("Aula C-103", 12.108527, -86.256908, "buildingC", True),
+        ("Salón P-205", 12.107492, -86.257090, "buildingP", True),
+        ("Biblioteca Central", 12.109547, -86.257996, "buildingI", False),
+        ("Auditorio M-101", 12.108452, -86.257566, "buildingM", True),
+        ("Jaguar Gym", 12.109309, -86.258508, "jaguarCenter", False),
+    ]
+    for label, lat, lng, expectedBuilding, expectFloorPrompt in gpsCases:
+        match = globalNavigationService.findNearestGpsNode(lat, lng, lang="spa")
+        assert match["isWithinCampus"] is True, f"Expected {label} inside campus"
+        assert match["nearestNodeId"] == expectedBuilding, f"GPS match mismatch for {label}: got {match['nearestNodeId']} expected {expectedBuilding}"
+        assert match["needsFloorSelection"] is expectFloorPrompt, f"Floor selection mismatch for {label}: got {match['needsFloorSelection']}"
+        svgPos = match["userSvgPosition"]
+        assert 0 <= svgPos["x"] <= 1200 and 0 <= svgPos["y"] <= 850, f"SVG projection out of bounds: {svgPos}"
+        print(f"  [OK] {label:18s} -> {match['nodeName']} ({match['distanceMeters']}m) | floorPrompt={match['needsFloorSelection']} | SVG={svgPos}")
+
     print("\n" + "=" * 80)
-    print("  ALL GRAPH, PERIMETER & SUBGRAPH TESTS COMPLETED SUCCESSFULLY!")
+    print("  ALL GRAPH, WALKWAY, HUMAN-INSTRUCTION, GPS & SUBGRAPH TESTS PASSED!")
     print("=" * 80)
 
 if __name__ == "__main__":

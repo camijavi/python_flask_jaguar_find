@@ -909,24 +909,37 @@ document.addEventListener("DOMContentLoaded", function () {
     // ----------------------------------------------------------------------------
     window.addEventListener("jaguarMapRouteCalculated", function (e) {
         const route = e.detail;
-        if (!route || !route.pathCoordinates || route.pathCoordinates.length < 2) return;
+        if (!route) return;
 
-        // Resolve real sidewalk/corridor micro-waypoints respecting walls, doors & 2nd-floor bridges
+        // 1. Prefer backend Dijkstra real pedestrian walkwayPath (single source of truth synced with instructions!)
         let resolvedPts = [];
-        if (typeof window.resolveMicroCampusRoute === "function") {
-            resolvedPts = window.resolveMicroCampusRoute(route.pathCoordinates, {
-                accessibleOnly: Boolean(route.isAccessibleRoute)
-            });
-        }
-        if (resolvedPts.length < 2) {
-            resolvedPts = route.pathCoordinates.map(coord => {
-                const known = CAMPUS_BUILDINGS[coord.nodeId];
-                if (known && known.anchor) return { x: known.anchor.x, y: known.anchor.y };
-                return {
-                    x: Math.round(((coord.xPercent || 50) / 100) * 1200),
-                    y: Math.round(((coord.yPercent || 50) / 100) * 850)
-                };
-            });
+        if (Array.isArray(route.walkwayPath) && route.walkwayPath.length >= 2) {
+            resolvedPts = route.walkwayPath.map(pt => ({ x: Math.round(pt.x), y: Math.round(pt.y) }));
+        } else if (route.pathCoordinates && route.pathCoordinates.length >= 2) {
+            // Fallback to client micro-router if walkwayPath absent
+            if (typeof window.resolveMicroCampusRoute === "function") {
+                resolvedPts = window.resolveMicroCampusRoute(route.pathCoordinates, {
+                    accessibleOnly: Boolean(route.isAccessibleRoute)
+                });
+            }
+            if (resolvedPts.length < 2) {
+                resolvedPts = route.pathCoordinates.map(coord => {
+                    const known = CAMPUS_BUILDINGS[coord.nodeId];
+                    if (known && known.anchor) return { x: known.anchor.x, y: known.anchor.y };
+                    return {
+                        x: Math.round(((coord.xPercent || 50) / 100) * 1200),
+                        y: Math.round(((coord.yPercent || 50) / 100) * 850)
+                    };
+                });
+            }
+        } else if (route.pathCoordinates && route.pathCoordinates.length === 1) {
+            // Indoor-only single-building route
+            const c0 = route.pathCoordinates[0];
+            const known = CAMPUS_BUILDINGS[c0.nodeId];
+            const pt = (known && known.anchor) ? known.anchor : { x: Math.round(c0.x || 600), y: Math.round(c0.y || 425) };
+            resolvedPts = [pt, pt];
+        } else {
+            return;
         }
 
         const points = resolvedPts.map(pt => `${pt.x},${pt.y}`).join(" ");

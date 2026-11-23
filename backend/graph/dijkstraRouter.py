@@ -17,20 +17,19 @@ class DijkstraRouter:
         self.graph = graph
         self.walkingSpeed = averageWalkingSpeedMpm  # 1.2 m/s = 72 meters per minute
 
-    def findShortestPath(
+    def findShortestPathWithEdges(
         self,
         sourceNodeId: str,
         targetNodeId: str,
         accessibleOnly: bool = False,
-        lang: str = "eng"
-    ) -> Tuple[List[str], float, int, List[str]]:
+    ) -> Tuple[List[str], float, int, Dict[Tuple[str, str], DirectedEdge]]:
         """
         Calculates optimal route using Dijkstra's Algorithm with a binary min-heap (heapq).
-        Complexity: O((V + E) log V).
-        Returns: (pathNodeIds, totalDistanceMeters, estimatedMinutes, stepDirections)
+        Complexity: O((V + E) log V) on a weighted, directed, non-complete graph G = (V, E, W).
+        Returns: (pathNodeIds, totalDistanceMeters, estimatedMinutes, edgeTraversedMap)
         """
         if sourceNodeId not in self.graph.nodes or targetNodeId not in self.graph.nodes:
-            return [], float("inf"), 0, []
+            return [], float("inf"), 0, {}
 
         shortestDistances: Dict[str, float] = {nodeId: float("inf") for nodeId in self.graph.nodes}
         previousNodes: Dict[str, Optional[str]] = {nodeId: None for nodeId in self.graph.nodes}
@@ -62,7 +61,6 @@ class DijkstraRouter:
                     edgeTraversed[(currentNodeId, targetId)] = edge
                     heapq.heappush(priorityQueue, (newDistance, targetId))
 
-        # Reconstruct path from target to source
         path: List[str] = []
         currId = targetNodeId
         while currId is not None:
@@ -70,13 +68,32 @@ class DijkstraRouter:
             currId = previousNodes[currId]
 
         if not path or path[0] != sourceNodeId:
-            return [], float("inf"), 0, []
+            return [], float("inf"), 0, {}
 
         totalDistance = shortestDistances[targetNodeId]
-        estimatedMinutes = math.ceil(totalDistance / self.walkingSpeed)
-        stepDirections = self._buildStepDirections(path, edgeTraversed, lang=lang)
+        estimatedMinutes = math.ceil(totalDistance / self.walkingSpeed) if totalDistance > 0 else 0
+        return path, round(totalDistance, 1), estimatedMinutes, edgeTraversed
 
-        return path, round(totalDistance, 1), estimatedMinutes, stepDirections
+    def findShortestPath(
+        self,
+        sourceNodeId: str,
+        targetNodeId: str,
+        accessibleOnly: bool = False,
+        lang: str = "eng"
+    ) -> Tuple[List[str], float, int, List[str]]:
+        """
+        Calculates optimal route using Dijkstra's Algorithm with a binary min-heap (heapq).
+        Complexity: O((V + E) log V).
+        Returns: (pathNodeIds, totalDistanceMeters, estimatedMinutes, stepDirections)
+        """
+        path, totalDistance, estimatedMinutes, edgeTraversed = self.findShortestPathWithEdges(
+            sourceNodeId, targetNodeId, accessibleOnly=accessibleOnly
+        )
+        if not path:
+            return [], float("inf"), 0, []
+
+        stepDirections = self._buildStepDirections(path, edgeTraversed, lang=lang)
+        return path, totalDistance, estimatedMinutes, stepDirections
 
     def _buildStepDirections(
         self,

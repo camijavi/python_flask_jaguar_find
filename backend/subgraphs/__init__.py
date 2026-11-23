@@ -1,46 +1,90 @@
 """
 subgraphs package
 ================================================================================
-CHILD GRAPHS / SUBGRAPHS FOR CAMPUS BUILDINGS
+CHILD GRAPHS / SUBGRAPHS FOR ALL UAM CAMPUS BUILDINGS & COMPLEXES
 ================================================================================
-Provides indoor navigation graphs per building with high-resolution coordinates,
-corridor edges, multi-floor routing, and vertical transitions (stairs/ramps).
+Provides indoor navigation graphs per building (A through P + Jaguar Center &
+Sports Fields) with real field GPS coordinates (coordenadas.txt), corridor
+edges, multi-floor routing, accessibility filtering, and Gateway Pattern rules.
 ================================================================================
 """
 
-from typing import Dict, Optional, List
+from typing import Dict, Optional
 from .buildingSubgraph import BuildingSubgraph
-from .buildingP import buildingPSubgraph, buildBuildingPSubgraph
-from .buildingD import buildingDSubgraph, buildBuildingDSubgraph
-from .buildingJ import buildingJSubgraph, buildBuildingJSubgraph
-from .buildingO import buildingOSubgraph, buildBuildingOSubgraph
+from .buildingA import buildingASubgraph, buildBuildingASubgraph
+from .buildingB import buildingBSubgraph, buildBuildingBSubgraph
 from .buildingC import buildingCSubgraph, buildBuildingCSubgraph
+from .buildingD import buildingDSubgraph, buildBuildingDSubgraph
+from .buildingE import buildingESubgraph, buildBuildingESubgraph
+from .buildingF import buildingFSubgraph, buildBuildingFSubgraph
+from .buildingG import buildingGSubgraph, buildBuildingGSubgraph
+from .buildingH import buildingHSubgraph, buildBuildingHSubgraph
+from .buildingI import buildingISubgraph, buildBuildingISubgraph
+from .buildingJ import buildingJSubgraph, buildBuildingJSubgraph
+from .buildingK import buildingKSubgraph, buildBuildingKSubgraph
+from .buildingL import buildingLSubgraph, buildBuildingLSubgraph
+from .buildingM import buildingMSubgraph, buildBuildingMSubgraph
+from .buildingN import buildingNSubgraph, buildBuildingNSubgraph
+from .buildingO import buildingOSubgraph, buildBuildingOSubgraph
+from .buildingP import buildingPSubgraph, buildBuildingPSubgraph
+from .sportsComplex import (
+    jaguarCenterSubgraph,
+    buildJaguarCenterSubgraph,
+    sportsZoneSubgraph,
+    buildSportsZoneSubgraph,
+)
 
-# Registry of active building subgraphs
+# Registry of all active building & complex child graphs
 BUILDING_SUBGRAPHS: Dict[str, BuildingSubgraph] = {
-    "buildingP": buildingPSubgraph,
-    "buildingD": buildingDSubgraph,
-    "buildingJ": buildingJSubgraph,
-    "buildingO": buildingOSubgraph,
+    "buildingA": buildingASubgraph,
+    "buildingB": buildingBSubgraph,
     "buildingC": buildingCSubgraph,
+    "buildingD": buildingDSubgraph,
+    "buildingE": buildingESubgraph,
+    "buildingF": buildingFSubgraph,
+    "buildingG": buildingGSubgraph,
+    "buildingH": buildingHSubgraph,
+    "buildingI": buildingISubgraph,
+    "buildingJ": buildingJSubgraph,
+    "buildingK": buildingKSubgraph,
+    "buildingL": buildingLSubgraph,
+    "buildingM": buildingMSubgraph,
+    "buildingN": buildingNSubgraph,
+    "buildingO": buildingOSubgraph,
+    "buildingP": buildingPSubgraph,
+    "jaguarCenter": jaguarCenterSubgraph,
+    "sportsZone": sportsZoneSubgraph,
 }
+
+_BUILDING_ALIASES: Dict[str, str] = {}
+for _letter in "abcdefghijklmnop":
+    _bid = f"building{_letter.upper()}"
+    _BUILDING_ALIASES[_letter] = _bid
+    _BUILDING_ALIASES[f"building{_letter}"] = _bid
+    _BUILDING_ALIASES[f"edificio{_letter}"] = _bid
+
+_BUILDING_ALIASES.update({
+    "jc": "jaguarCenter",
+    "jaguarcenter": "jaguarCenter",
+    "jaguargym": "jaguarCenter",
+    "physiotherapy": "jaguarCenter",
+    "fisioterapia": "jaguarCenter",
+    "sp": "sportsZone",
+    "sportszone": "sportsZone",
+    "camposdeportivos": "sportsZone",
+})
 
 
 def getBuildingSubgraph(buildingId: str) -> Optional[BuildingSubgraph]:
-    """Retrieves the indoor child graph for a given building ID (e.g. 'buildingP', 'buildingD', 'buildingJ', 'buildingO', 'buildingC')."""
+    """Retrieves the indoor child graph for a given building ID or letter alias."""
     cleanId = (buildingId or "").strip()
-    # Normalize if user passes "p", "buildingP", "d", "buildingD", "j", "buildingJ", "o", "buildingO", "c", "buildingC"
-    if cleanId.lower() in ("p", "buildingp", "edificiop"):
-        cleanId = "buildingP"
-    elif cleanId.lower() in ("d", "buildingd", "edificiod"):
-        cleanId = "buildingD"
-    elif cleanId.lower() in ("j", "buildingj", "edificioj"):
-        cleanId = "buildingJ"
-    elif cleanId.lower() in ("o", "buildingo", "edificioo"):
-        cleanId = "buildingO"
-    elif cleanId.lower() in ("c", "buildingc", "edificioc"):
-        cleanId = "buildingC"
-    return BUILDING_SUBGRAPHS.get(cleanId)
+    if cleanId in BUILDING_SUBGRAPHS:
+        return BUILDING_SUBGRAPHS[cleanId]
+    norm = cleanId.lower().replace(" ", "").replace("-", "").replace("_", "")
+    canonical = _BUILDING_ALIASES.get(norm)
+    if canonical:
+        return BUILDING_SUBGRAPHS.get(canonical)
+    return None
 
 
 def getAllBuildingSubgraphs() -> Dict[str, BuildingSubgraph]:
@@ -55,16 +99,24 @@ def registerBuildingSubgraph(buildingId: str, subgraph: BuildingSubgraph) -> Non
 
 __all__ = [
     "BuildingSubgraph",
-    "buildingPSubgraph",
-    "buildBuildingPSubgraph",
-    "buildingDSubgraph",
-    "buildBuildingDSubgraph",
-    "buildingJSubgraph",
-    "buildBuildingJSubgraph",
-    "buildingOSubgraph",
-    "buildBuildingOSubgraph",
-    "buildingCSubgraph",
-    "buildBuildingCSubgraph",
+    "buildingASubgraph", "buildBuildingASubgraph",
+    "buildingBSubgraph", "buildBuildingBSubgraph",
+    "buildingCSubgraph", "buildBuildingCSubgraph",
+    "buildingDSubgraph", "buildBuildingDSubgraph",
+    "buildingESubgraph", "buildBuildingESubgraph",
+    "buildingFSubgraph", "buildBuildingFSubgraph",
+    "buildingGSubgraph", "buildBuildingGSubgraph",
+    "buildingHSubgraph", "buildBuildingHSubgraph",
+    "buildingISubgraph", "buildBuildingISubgraph",
+    "buildingJSubgraph", "buildBuildingJSubgraph",
+    "buildingKSubgraph", "buildBuildingKSubgraph",
+    "buildingLSubgraph", "buildBuildingLSubgraph",
+    "buildingMSubgraph", "buildBuildingMSubgraph",
+    "buildingNSubgraph", "buildBuildingNSubgraph",
+    "buildingOSubgraph", "buildBuildingOSubgraph",
+    "buildingPSubgraph", "buildBuildingPSubgraph",
+    "jaguarCenterSubgraph", "buildJaguarCenterSubgraph",
+    "sportsZoneSubgraph", "buildSportsZoneSubgraph",
     "BUILDING_SUBGRAPHS",
     "getBuildingSubgraph",
     "getAllBuildingSubgraphs",
