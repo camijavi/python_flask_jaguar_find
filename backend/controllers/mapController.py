@@ -9,17 +9,35 @@ building nodes directory, points of interest (placesCatalog), categories metadat
 and GPS-to-campus-node snapping.
 """
 
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify, session, Response, current_app, send_file
 from typing import Dict, Any, List
 import unicodedata
+from io import BytesIO
 
 from backend.graph.navigationService import globalNavigationService
 from backend.graph.geoUtils import CampusGeoUtils
 from backend.data.campusCategories import CampusCategory, CATEGORY_METADATA
 from backend.data.placesCatalog import PLACES_CATALOG
 from backend.subgraphs import getBuildingSubgraph, getAllBuildingSubgraphs
+from backend.services.azureSpeechService import AzureSpeechService
 
 mapController = Blueprint("mapController", __name__, url_prefix="/api/map")
+
+_azureSpeechService = None
+
+
+def _getAzureSpeechService() -> AzureSpeechService:
+    global _azureSpeechService
+    if _azureSpeechService is None:
+        _azureSpeechService = AzureSpeechService(
+            endpoint=current_app.config["AZURE_SPEECH_ENDPOINT"],
+            region=current_app.config["AZURE_SPEECH_REGION"],
+            resource_id=current_app.config["AZURE_SPEECH_RESOURCE_ID"],
+            managed_identity_client_id=current_app.config.get(
+                "AZURE_MANAGED_IDENTITY_CLIENT_ID"
+            ),
+        )
+    return _azureSpeechService
 
 
 def _getPreferredLanguage() -> str:
@@ -245,6 +263,34 @@ def calculateRoute():
 
     statusCode = 200 if routeResult.get("success") else 404
     return jsonify(routeResult), statusCode
+
+
+@mapController.route("/speech/synthesize", methods=["POST"])
+def synthesizeSpeech():
+    """Synthesize one text instruction using Azure Neural Speech with Entra ID."""
+    payload = request.get_json(silent=True) or {}
+    text = str(payload.get("text") or "").strip()
+    language = str(payload.get("language") or "").strip()
+
+    if not text:
+        return jsonify({"success": False, "error": "Text is required."}), 400
+
+    try:
+        audioData = _getAzureSpeechService().synthesize(text, language)
+        return send_file(
+            BytesIO(audioData),
+            mimetype="audio/wav",
+            as_attachment=False,
+            download_name="jaguarfind-speech.wav",
+        )
+    except ValueError as error:
+        return jsonify({"success": False, "error": str(error)}), 400
+    except Exception:
+        current_app.logger.exception("Azure Speech synthesis failed")
+        return jsonify({
+            "success": False,
+            "error": "Azure Speech synthesis is unavailable.",
+        }), 503
 
 
 @mapController.route("/perimeter", methods=["GET"])

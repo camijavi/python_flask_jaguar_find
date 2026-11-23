@@ -22,3 +22,7 @@
 #
 Flask>=3.0.0
 Werkzeug>=3.0.0
+azure-identity>=1.19.0
+requests>=2.32.0
+azure-cognitiveservices-speech>=1.40.0
+python-dotenv>=1.0.0
