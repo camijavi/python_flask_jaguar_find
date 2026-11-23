@@ -592,6 +592,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const state = {
         originQuery: "",
         originNodeId: null,
+        usedGpsOrigin: false,
         destinationQuery: "",
         destinationNodeId: null,
         selectedCategory: "",
@@ -867,6 +868,7 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originQuery = val;
         state.originNodeId = null;
         state.originPlaceId = null;
+        state.usedGpsOrigin = false;
 
         if (val.trim().length > 0) {
             const matches = getMatches(val);
@@ -875,6 +877,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 state.originQuery = selected.title;
                 state.originNodeId = selected.targetNodeId;
                 state.originPlaceId = selected.id;
+                state.usedGpsOrigin = false;
                 btnClearOrigin.classList.remove("hidden");
             });
         } else {
@@ -887,6 +890,7 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originQuery = "";
         state.originNodeId = null;
         state.originPlaceId = null;
+        state.usedGpsOrigin = false;
         btnClearOrigin.classList.add("hidden");
         originSuggestions.classList.add("hidden");
         if (gpsDisambiguationBar) gpsDisambiguationBar.classList.add("hidden");
@@ -996,6 +1000,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         state.originNodeId = "mainParking";
                         state.originPlaceId = "mainParking";
                         state.originQuery = "Parqueo Principal (Caseta Sur)";
+                        state.usedGpsOrigin = false;
                         btnClearOrigin.classList.remove("hidden");
                         if (gpsDisambiguationBar) gpsDisambiguationBar.classList.add("hidden");
                     } else if (data.success && data.nearest && data.nearest.nodeName) {
@@ -1004,14 +1009,18 @@ document.addEventListener("DOMContentLoaded", function() {
                         state.originQuery = n.nodeName;
                         state.originNodeId = n.nearestNodeId;
                         state.originPlaceId = n.nearestSpecificNodeId || n.nearestNodeId;
+                        state.usedGpsOrigin = true;
                         btnClearOrigin.classList.remove("hidden");
                         renderGpsDisambiguation(n);
-                        window.dispatchEvent(new CustomEvent("jaguarGpsLocationUpdated", { detail: n }));
+                        window.dispatchEvent(new CustomEvent("jaguarGpsLocationUpdated", {
+                            detail: Object.assign({}, n, { lat: latitude, lng: longitude, accuracy: accuracy })
+                        }));
                     } else {
                         originInput.value = "Parqueo Principal";
                         state.originNodeId = "mainParking";
                         state.originPlaceId = "mainParking";
                         state.originQuery = "Parqueo Principal";
+                        state.usedGpsOrigin = false;
                         btnClearOrigin.classList.remove("hidden");
                     }
                 } catch (e) {
@@ -1138,6 +1147,7 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originQuery = destinationInput.value;
         state.originNodeId = state.destinationNodeId;
         state.originPlaceId = state.destinationPlaceId;
+        state.usedGpsOrigin = false;
 
         destinationInput.value = tempVal;
         state.destinationQuery = tempVal;
@@ -1244,6 +1254,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             const routeData = await res.json();
             if (routeData.success) {
+                routeData.usedGpsOrigin = Boolean(state.usedGpsOrigin);
                 state.currentRoute = routeData;
                 window.lastJaguarRouteData = routeData;
                 displayRouteResults(routeData);
@@ -1409,6 +1420,7 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originQuery = "";
         state.originNodeId = null;
         state.originPlaceId = null;
+        state.usedGpsOrigin = false;
         state.destinationQuery = "";
         state.destinationNodeId = null;
         state.destinationPlaceId = null;

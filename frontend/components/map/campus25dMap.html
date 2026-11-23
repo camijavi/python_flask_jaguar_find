@@ -75,9 +75,13 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
 
         <!-- Action Headline + Human Landmark Direction (Zero Meters / Zero Cardinals) -->
         <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-1.5 flex-wrap">
                 <span id="tbtStepDistance" class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">Sigue recto</span>
                 <span id="tbtStepCounter" class="text-[10.5px] font-extrabold text-sky-700 bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full truncate">Referencia 1 de 1</span>
+                <button id="btnTbtLiveGps" type="button" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200 transition-colors cursor-pointer" title="Activar seguimiento GPS y brújula en vivo">
+                    <span id="tbtLiveGpsDot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                    <span id="labelTbtLiveGps">GPS</span>
+                </button>
             </div>
             <p id="tbtStepInstruction" class="text-[12.5px] sm:text-[13px] font-semibold text-slate-700 leading-snug line-clamp-3 mt-1">
                 Inicia tu recorrido hacia el destino.

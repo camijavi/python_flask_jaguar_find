@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const routePolyline = document.getElementById("route2dPolyline");
     const routeGlowPolyline = document.getElementById("route2dGlowPolyline");
     const routeShadowPolyline = document.getElementById("route2dShadowPolyline");
+    const routeTraveledPolyline = document.getElementById("route2dTraveledPolyline");
     const originPinGroup = document.getElementById("origin2dPin");
     const destPinGroup = document.getElementById("destination2dPin");
 
@@ -425,8 +426,22 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Expose global helper so 2.5D perspective and route animations can also sync the compass
+    // Expose global helper so 2.5D perspective and route animations can also sync the compass & 2D centering
     window.updateCampusCompass = updateCompass;
+    window.campus2dCenterOnPoint = function (xSvg, ySvg, targetScale) {
+        if (window.campus25dController && window.campus25dController.is25dActive) return;
+        const w = wrapper.clientWidth || 1000;
+        const h = wrapper.clientHeight || 700;
+        const s = Math.min(w / 1200, h / 850);
+        if (typeof targetScale === "number") {
+            scale = Math.max(0.75, Math.min(targetScale, 3.8));
+        } else if (scale < 1.35) {
+            scale = Math.max(getDefault2dScale(), 1.45);
+        }
+        translateX = (600 - xSvg) * s * scale;
+        translateY = (425 - ySvg) * s * scale;
+        applyTransform(true);
+    };
 
     function applyTransform(animate = false) {
         if (window.campus25dController && window.campus25dController.is25dActive) {
@@ -470,11 +485,23 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnResetView) {
         btnResetView.addEventListener("click", () => {
             if (window.campus25dController && window.campus25dController.is25dActive) {
-                window.campus25dController.zoomScale = window.campus25dController.getResponsiveZoom(2.2);
-                window.campus25dController.heading = 0;
-                window.campus25dController.currentHeading = 0;
-                window.campus25dController.centerOnCampusLowerThird();
-                window.campus25dController.updateCompass(true);
+                if (typeof window.campus25dController.recenterOnUser === "function" &&
+                    (window.campus25dController.currentRoute || window.campus25dController.hasUserPosition)) {
+                    window.campus25dController.recenterOnUser();
+                } else {
+                    window.campus25dController.zoomScale = window.campus25dController.getResponsiveZoom(2.2);
+                    window.campus25dController.heading = 0;
+                    window.campus25dController.currentHeading = 0;
+                    window.campus25dController.centerOnCampusLowerThird();
+                    window.campus25dController.updateCompass(true);
+                }
+                return;
+            }
+            if (window.campus25dController && window.campus25dController.hasUserPosition) {
+                window.campus2dCenterOnPoint(
+                    window.campus25dController.userSvgX,
+                    window.campus25dController.userSvgY
+                );
                 return;
             }
             scale = getDefault2dScale();
@@ -514,9 +541,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 while (angleDeg >= 360) angleDeg -= 360;
 
                 if (window.campus25dController && window.campus25dController.is25dActive) {
+                    window.campus25dController.isFollowingUser = false;
                     window.campus25dController.heading = -angleDeg;
                     window.campus25dController.currentHeading = -angleDeg;
                     window.campus25dController.applyTransform();
+                    window.campus25dController.updateOverlays();
                     window.campus25dController.updateCompass(false);
                 } else {
                     rotation = angleDeg;
@@ -536,6 +565,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     window.campus25dController.heading = 0;
                     window.campus25dController.currentHeading = 0;
                     window.campus25dController.applyTransform();
+                    window.campus25dController.updateOverlays();
                     window.campus25dController.updateCompass(true);
                 } else {
                     if (Math.abs(rotation) > 0.5) {
@@ -934,9 +964,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const points = resolvedPts.map(pt => `${pt.x},${pt.y}`).join(" ");
 
-        if (routeShadowPolyline) routeShadowPolyline.setAttribute("points", points);
-        if (routePolyline) routePolyline.setAttribute("points", points);
-        if (routeGlowPolyline) routeGlowPolyline.setAttribute("points", points);
+        const managedBy25d = Boolean(
+            window.campus25dController &&
+            Array.isArray(window.campus25dController.activeRoutePolyline) &&
+            window.campus25dController.activeRoutePolyline.length >= 2
+        );
+        if (!managedBy25d) {
+            if (routeTraveledPolyline) routeTraveledPolyline.setAttribute("points", "");
+            if (routeShadowPolyline) routeShadowPolyline.setAttribute("points", points);
+            if (routePolyline) routePolyline.setAttribute("points", points);
+            if (routeGlowPolyline) routeGlowPolyline.setAttribute("points", points);
+        }
 
         // Draw Origin Pin (Ground Shadow + Upright 3D Billboard Pin)
         const startX = resolvedPts[0].x;
@@ -989,6 +1027,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     window.addEventListener("jaguarMapRouteCleared", function () {
+        if (routeTraveledPolyline) routeTraveledPolyline.setAttribute("points", "");
         if (routeShadowPolyline) routeShadowPolyline.setAttribute("points", "");
         if (routePolyline) routePolyline.setAttribute("points", "");
         if (routeGlowPolyline) routeGlowPolyline.setAttribute("points", "");

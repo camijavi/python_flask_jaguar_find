@@ -85,7 +85,7 @@
                         window.campus25dController.setMode(true);
                     }
                     if (focusNode && typeof window.campus25dController.focusBuilding === "function") {
-                        window.campus25dController.focusBuilding(focusNode, { zoom: 2.85, animate: true });
+                        window.campus25dController.focusBuilding(focusNode, { zoom: 2.85, animate: true, showPopover: false });
                         const matchPin = activePinsData.find(p => p.locationNodeId && p.locationNodeId.toLowerCase() === focusNode.toLowerCase());
                         if (matchPin) {
                             showPinPopover(matchPin);
@@ -244,7 +244,7 @@
                     marker.addEventListener("click", (e) => {
                         e.stopPropagation();
                         if (window.campus25dController && typeof window.campus25dController.focusBuilding === "function") {
-                            window.campus25dController.focusBuilding(pin.locationNodeId, { zoom: 2.85, animate: true });
+                            window.campus25dController.focusBuilding(pin.locationNodeId, { zoom: 2.85, animate: true, showPopover: false });
                         }
                         showPinPopover(pin);
                     });
@@ -334,6 +334,12 @@
         selectedPin = pin;
         if (!popover) return;
 
+        // Dismiss the standard building popover so only the Lost & Found card is visible
+        const bldgPopover = document.getElementById("bldgPopover");
+        if (bldgPopover) {
+            bldgPopover.classList.add("hidden");
+        }
+
         pinNodeName.textContent = pin.locationName || pin.locationNodeId;
         pinCountSub.textContent = `${pin.itemsCount} objeto${pin.itemsCount === 1 ? '' : 's'} extraviado${pin.itemsCount === 1 ? '' : 's'} o en custodia`;
 
@@ -369,7 +375,7 @@
         if (btnFocus25d) {
             btnFocus25d.onclick = function() {
                 if (window.campus25dController && typeof window.campus25dController.focusBuilding === "function") {
-                    window.campus25dController.focusBuilding(pin.locationNodeId, { zoom: 2.85, animate: true });
+                    window.campus25dController.focusBuilding(pin.locationNodeId, { zoom: 2.85, animate: true, showPopover: false });
                 }
             };
         }

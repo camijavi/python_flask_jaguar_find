@@ -200,6 +200,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
 
                 <!-- 8. JaguarFind Blue & Light-Blue Navigation Route Overlay -->
                 <g id="route2dLayer">
+                    <polyline id="route2dTraveledPolyline" points="" fill="none" stroke="#94a3b8" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.5" />
                     <polyline id="route2dShadowPolyline" points="" fill="none" stroke="#0284c7" stroke-width="14.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.92" />
                     <polyline id="route2dGlowPolyline" points="" fill="none" stroke="#38bdf8" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="1" />
                     <polyline id="route2dPolyline" points="" fill="none" stroke="#e0f2fe" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ruta-animada" />
@@ -212,6 +213,20 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
                 <g id="route2dPinsLayer">
                     <g id="origin2dPin" class="hidden"></g>
                     <g id="destination2dPin" class="hidden"></g>
+                </g>
+
+                <!-- 11. Live 2D User Navigation Arrow (Hidden in 2.5D where upright HTML puck takes over) -->
+                <g id="user2dArrowLayer" class="hidden" pointer-events="none">
+                    <g id="user2dArrowGroup" transform="translate(400, 500)">
+                        <circle class="user-2d-pulse" cx="0" cy="0" r="14" fill="none" stroke="#38bdf8" stroke-width="2.2" />
+                        <circle cx="0" cy="0" r="15" fill="#38bdf8" opacity="0.2" stroke="#ffffff" stroke-width="1.5" />
+                        <g id="user2dArrowRotator" transform="rotate(0)">
+                            <polygon points="0,0 -14,-28 14,-28" fill="#38bdf8" opacity="0.26" />
+                            <path d="M 0 -13 L 11 10 C 11.7 11.4 10.4 12.8 9 12.2 L 0 8.5 L -9 12.2 C -10.4 12.8 -11.7 11.4 -11 10 Z" fill="#0284c7" transform="translate(0, 1.8)" />
+                            <path d="M 0 -14 L 10.5 8.5 C 11.2 9.9 10 11.2 8.6 10.6 L 0 7 L -8.6 10.6 C -10 11.2 -11.2 9.9 -10.5 8.5 Z" fill="#38bdf8" stroke="#ffffff" stroke-width="2.1" stroke-linejoin="round" />
+                            <circle cx="0" cy="0.5" r="2.3" fill="#0369a1" stroke="#ffffff" stroke-width="1" />
+                        </g>
+                    </g>
                 </g>
             </g>
         </svg>

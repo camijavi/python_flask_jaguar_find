@@ -177,15 +177,28 @@
     opacity: 0.9;
 }
 
-/* Hide SVG badges in 2.5D mode to prevent trapezoidal stretching (Decoupled HTML overlay takes over) */
+/* Hide SVG badges and 2D user arrow in 2.5D mode (Decoupled HTML overlay takes over) */
 .campus-25d-active .billboard-badge,
 .campus-25d-active [class*="badge-"],
 .campus-25d-active .badge-text,
 .campus-25d-active #origin2dPin,
-.campus-25d-active #destination2dPin {
+.campus-25d-active #destination2dPin,
+.campus-25d-active #user2dArrowLayer {
     opacity: 0 !important;
     display: none !important;
     pointer-events: none !important;
+}
+
+/* 2D User Arrow Pulse Ring */
+.user-2d-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: user2dPulseAnim 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+@keyframes user2dPulseAnim {
+    0% { transform: scale(0.75); opacity: 0.9; }
+    75% { transform: scale(1.95); opacity: 0; }
+    100% { transform: scale(1.95); opacity: 0; }
 }
 
 /* ================================================================================
@@ -202,11 +215,11 @@
     overflow: hidden;
 }
 
-/* 5A. Waze-style 3D Elevated Glossy Cyan Navigation Arrow Puck + Purple Road Pill */
+/* 5A. Waze-style 3D Elevated Glossy Cyan Navigation Arrow Puck + Road Pill */
 .waze-puck-container {
     position: absolute;
     left: 50%;
-    top: 68%;
+    top: 70%;
     transform: translate(-50%, -50%);
     width: 82px;
     height: 82px;
@@ -216,6 +229,7 @@
     justify-content: center;
     pointer-events: none;
     z-index: 25;
+    will-change: left, top, transform;
 }
 
 .waze-puck-halo {
@@ -246,13 +260,14 @@
 
 .waze-puck-cone {
     position: absolute;
-    top: -24px;
+    top: -5px;
     width: 52px;
     height: 46px;
-    background: linear-gradient(to top, rgba(56, 189, 248, 0.36) 0%, rgba(125, 211, 252, 0.14) 65%, transparent 100%);
+    background: linear-gradient(to top, rgba(56, 189, 248, 0.38) 0%, rgba(125, 211, 252, 0.14) 65%, transparent 100%);
     clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
     pointer-events: none;
     transform-origin: 50% 100%;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .waze-puck-arrow {
