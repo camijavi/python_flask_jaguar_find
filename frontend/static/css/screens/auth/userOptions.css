@@ -1,57 +1,48 @@
-body{
-    font-family: Arial;
+.auth-hero {
+    background-image:
+        linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.5)),
+        url("/static/img/UAM.jpeg");
+    background-size: cover;
+    background-position: center;
 }
 
-.user_options {
-    display: flex;
-    gap: 30px;
-    width: 90%;
-    max-width: 1000px;
-    margin: 50px auto;
-    padding: 2px 4px;
-    box-sizing: border-box;
-}
-
-.student,
-.collaborator,
-.visitor {
-    text-align: center;
+.role-card {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    padding: 30px;
-    background-color: white;
-    border: 1px solid gray;
-    border-radius: 5px;
-    transition: transform 0.2s ease;
-}
-
-.btn {
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 28px 24px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
     text-decoration: none;
-    margin-top: auto;        
-    align-self: center;      
-    padding: 24px 36px;
-    font-size: 16px;
-    cursor: pointer;
-    color: white;
-    background-color: #0099A8;
-    border: none;
-    border-radius: 5px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.role-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.28);
+}
+.role-card h2 { font-size: 1.25rem; font-weight: 800; color: #0f172a; }
+.role-card p  { font-size: 0.875rem; color: #64748b; flex: 1; }
+
+.role-icon {
+    width: 64px; height: 64px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 1rem;
+    transition: background-color 0.2s, color 0.2s;
 }
 
-
-.user_options .btn:hover {
-    background-color: #007a86;
+.role-cta {
+    margin-top: 8px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 22px;
+    border-radius: 0.75rem;
+    font-size: 0.875rem; font-weight: 700;
+    color: #fff; background: #2f99a8;
+    box-shadow: 0 4px 10px rgba(47, 153, 168, 0.3);
+    transition: background-color 0.2s;
 }
-
-.student:hover {
-    transform: scale(1.05);
-}
-
-.collaborator:hover {
-    transform: scale(1.05);
-}
-
-.visitor:hover {
-    transform: scale(1.05);
-}
+.role-card:hover .role-cta { background: #28828f; }
