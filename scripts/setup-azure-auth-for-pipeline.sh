@@ -23,6 +23,9 @@ SUBSCRIPTION_NAME="$(az account show --query name -o tsv)"
 SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
 TENANT_ID="$(az account show --query tenantId -o tsv)"
 REPOSITORY="$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
+REPOSITORY_IDS="$(gh api "repos/${REPOSITORY}" --jq '[.owner.login, .owner.id, .name, .id] | @tsv')"
+IFS=$'\t' read -r REPOSITORY_OWNER REPOSITORY_OWNER_ID REPOSITORY_NAME REPOSITORY_ID <<<"$REPOSITORY_IDS"
+OIDC_SUBJECT="repo:${REPOSITORY_OWNER}@${REPOSITORY_OWNER_ID}/${REPOSITORY_NAME}@${REPOSITORY_ID}:environment:${GITHUB_ENVIRONMENT}"
 
 printf 'Azure subscription: %s\nGitHub repository: %s\n' \
     "$SUBSCRIPTION_NAME" "$REPOSITORY"
@@ -129,19 +132,26 @@ if [[ "$CI_APP_ROLE_COUNT" == "0" ]]; then
         --output none
 fi
 
-FEDERATED_CREDENTIAL_COUNT="$(az identity federated-credential list \
+FEDERATED_CREDENTIAL_SUBJECT="$(az identity federated-credential list \
     --resource-group "$CI_IDENTITY_RESOURCE_GROUP" \
     --identity-name "$CI_IDENTITY_NAME" \
-    --query "[?name=='github-${GITHUB_ENVIRONMENT}'] | length(@)" \
+    --query "[?name=='github-${GITHUB_ENVIRONMENT}'].subject | [0]" \
     -o tsv)"
-if [[ "$FEDERATED_CREDENTIAL_COUNT" == "0" ]]; then
+if [[ -z "$FEDERATED_CREDENTIAL_SUBJECT" ]]; then
     az identity federated-credential create \
         --resource-group "$CI_IDENTITY_RESOURCE_GROUP" \
         --identity-name "$CI_IDENTITY_NAME" \
         --name "github-${GITHUB_ENVIRONMENT}" \
         --issuer 'https://token.actions.githubusercontent.com' \
-        --subject "repo:${REPOSITORY}:environment:${GITHUB_ENVIRONMENT}" \
+        --subject "$OIDC_SUBJECT" \
         --audiences 'api://AzureADTokenExchange' \
+        --output none
+elif [[ "$FEDERATED_CREDENTIAL_SUBJECT" != "$OIDC_SUBJECT" ]]; then
+    az identity federated-credential update \
+        --resource-group "$CI_IDENTITY_RESOURCE_GROUP" \
+        --identity-name "$CI_IDENTITY_NAME" \
+        --name "github-${GITHUB_ENVIRONMENT}" \
+        --subject "$OIDC_SUBJECT" \
         --output none
 fi
 
