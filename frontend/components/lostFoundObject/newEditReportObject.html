@@ -59,6 +59,12 @@ Features:
                             </button>
                         </div>
 
+                        <!-- Multi-Floor Selector & All Building Locations Fallback -->
+                        <div id="reportGpsFloorAndRooms" class="mt-2 hidden space-y-1.5 pt-2 border-t border-brand-200/70">
+                            <div id="reportGpsFloorButtons" class="flex flex-wrap gap-1"></div>
+                            <div id="reportGpsRoomsList" class="max-h-32 overflow-y-auto space-y-1 pr-0.5"></div>
+                        </div>
+
                         <!-- Nearby Ambiguous Building Chips -->
                         <div id="gpsNearbyCandidates" class="mt-2 hidden flex flex-wrap items-center gap-1.5"></div>
 
@@ -232,6 +238,9 @@ Features:
     const gpsStatusText = document.getElementById("gpsStatusText");
     const gpsSubText = document.getElementById("gpsSubText");
     const gpsConfirmationButtons = document.getElementById("gpsConfirmationButtons");
+    const reportGpsFloorAndRooms = document.getElementById("reportGpsFloorAndRooms");
+    const reportGpsFloorButtons = document.getElementById("reportGpsFloorButtons");
+    const reportGpsRoomsList = document.getElementById("reportGpsRoomsList");
     const gpsNearbyCandidates = document.getElementById("gpsNearbyCandidates");
     const gpsRetryRow = document.getElementById("gpsRetryRow");
     const btnRetryReportGps = document.getElementById("btnRetryReportGps");
@@ -338,142 +347,198 @@ Features:
     if (btnClose) btnClose.addEventListener("click", window.closeReportObjectDialog);
     if (btnCancel) btnCancel.addEventListener("click", window.closeReportObjectDialog);
 
-    async function resolveGpsCoordinatesOnCampus(lat, lng, accuracy) {
-        try {
-            const lang = (window.APP_CONFIG && window.APP_CONFIG.currentLang) || "spa";
-            const accParam = (typeof accuracy === "number" && !Number.isNaN(accuracy))
-                ? `&accuracy=${accuracy.toFixed(1)}`
-                : "";
-            const res = await fetch(`/api/map/nearest-gps?lat=${lat}&lng=${lng}${accParam}&lang=${lang}`);
-            const data = await res.json();
+    function renderReportBuildingFloorFallback(nearest) {
+        if (!reportGpsFloorAndRooms || !reportGpsFloorButtons || !reportGpsRoomsList) return;
+        const byFloor = (nearest && nearest.buildingLocationsByFloor) || {};
+        const floors = (nearest && Array.isArray(nearest.availableFloors) && nearest.availableFloors.length > 0)
+            ? nearest.availableFloors
+            : [1];
+        const showFallback = Boolean(nearest && (nearest.needsManualFallback || nearest.needsFloorSelection));
+        if (!showFallback) {
+            reportGpsFloorAndRooms.classList.add("hidden");
+            return;
+        }
 
-            // Backend wraps match details under `data.nearest` and sets `data.outsideCampus`
-            const nearest = data && data.nearest ? data.nearest : data;
-            const isOutside = Boolean(
-                (data && data.outsideCampus === true) ||
-                (nearest && nearest.isWithinCampus === false)
-            );
+        let activeFloor = (nearest.floorDetection && nearest.floorDetection.detectedFloor != null)
+            ? nearest.floorDetection.detectedFloor
+            : floors[0];
 
-            if (isOutside) {
-                // Clear off-campus lat/lng so submitting a manually selected building is not rejected by perimeter validation
-                clearGpsCoords();
-                fallbackManualLocation("Estás fuera del campus UAM. Selecciona el edificio en el menú desplegable:", { showRetry: true });
-                return;
-            }
-
-            if (data && data.success && nearest && (nearest.nearestNodeId || nearest.buildingName || nearest.nodeName)) {
-                detectedNodeId = nearest.nearestNodeId || (nearest.bestMatch && nearest.bestMatch.buildingId) || "buildingA";
-                detectedLocationName = formatDetectedLocationLabel(nearest);
-                detectedCoords = { lat, lng };
-
-                // Persist validated on-campus coordinates
-                if (latInput) latInput.value = lat;
-                if (lngInput) lngInput.value = lng;
-
-                // Automatically pre-select the detected building unless the user opened Report from a specific building popover
-                if (!openedWithPreselectedLocation) {
+        const renderRooms = () => {
+            const list = byFloor[String(activeFloor)] || [];
+            reportGpsRoomsList.innerHTML = "";
+            list.forEach((loc) => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "w-full text-left px-2 py-1 rounded-lg bg-white hover:bg-brand-50 border border-brand-200/70 text-slate-800 text-[11px] font-semibold flex items-center justify-between gap-2 transition-colors cursor-pointer";
+                const distTxt = typeof loc.distanceMeters === "number" ? `<span class="text-[9.5px] text-slate-400">~${Math.round(loc.distanceMeters)}m</span>` : "";
+                btn.innerHTML = `<span class="truncate">${escapeHtml(loc.name)}</span>${distTxt}`;
+                btn.addEventListener("click", () => {
+                    detectedNodeId = loc.buildingId || detectedNodeId;
+                    detectedLocationName = `${(loc.buildingName || "").split("(")[0].trim()} — ${loc.name} (Piso ${loc.floorLevel || activeFloor})`;
                     setSelectLocationValue(detectedNodeId, detectedLocationName);
-                }
+                    setGpsIconState("success");
+                    gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${escapeHtml(detectedLocationName)}</strong></span>`;
+                    gpsSubText.textContent = "Ubicación del campus lista para publicar el reporte.";
+                    gpsConfirmationButtons.classList.add("hidden");
+                    reportGpsFloorAndRooms.classList.add("hidden");
+                    if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
+                });
+                reportGpsRoomsList.appendChild(btn);
+            });
+        };
 
-                const distM = Math.round(nearest.distanceMeters || 0);
-                setGpsIconState("success");
-                gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1 flex-wrap'><svg class='w-3.5 h-3.5 text-emerald-600 inline shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'/><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'/></svg><span>Ubicación detectada: <strong>${escapeHtml(detectedLocationName)}</strong></span></span>`;
-                gpsSubText.textContent = openedWithPreselectedLocation
-                    ? `Aproximadamente a ${distM}m de tu posición actual. Confirma si deseas usar esta ubicación GPS.`
-                    : `Seleccionado automáticamente (~${distM}m de tu posición). Confirma o elige otro edificio si fue en otro lugar.`;
-                gpsConfirmationButtons.classList.remove("hidden");
-                if (gpsRetryRow) gpsRetryRow.classList.add("hidden");
-
-                // Render nearby building quick-pick chips when GPS is near a building boundary
-                if (gpsNearbyCandidates) {
-                    const altCandidates = (Array.isArray(nearest.topCandidates) ? nearest.topCandidates : [])
-                        .filter(c => c && c.buildingId && c.buildingId !== detectedNodeId)
-                        .slice(0, 2);
-                    if (nearest.isAmbiguous && altCandidates.length > 0) {
-                        gpsNearbyCandidates.innerHTML = `<span class="text-[10px] font-semibold text-slate-500">¿O estabas en:</span>`;
-                        altCandidates.forEach(cand => {
-                            const chip = document.createElement("button");
-                            chip.type = "button";
-                            const shortName = (cand.buildingName || cand.name || cand.buildingId).split("(")[0].trim();
-                            chip.className = "px-2 py-0.5 rounded-full bg-white hover:bg-brand-600 hover:text-white text-brand-800 border border-brand-200 font-bold text-[10px] transition-colors cursor-pointer";
-                            chip.textContent = shortName;
-                            chip.addEventListener("click", () => {
-                                detectedNodeId = cand.buildingId;
-                                detectedLocationName = cand.buildingName || cand.name || cand.buildingId;
-                                setSelectLocationValue(detectedNodeId, detectedLocationName);
-                                gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${escapeHtml(detectedLocationName)}</strong></span>`;
-                                gpsConfirmationButtons.classList.add("hidden");
-                                gpsNearbyCandidates.classList.add("hidden");
-                            });
-                            gpsNearbyCandidates.appendChild(chip);
-                        });
-                        gpsNearbyCandidates.classList.remove("hidden");
-                    } else {
-                        gpsNearbyCandidates.innerHTML = "";
-                        gpsNearbyCandidates.classList.add("hidden");
-                    }
-                }
-            } else {
-                clearGpsCoords();
-                fallbackManualLocation("Ubicación aproximada no identificada. Por favor selecciona el edificio:", { showRetry: true });
+        const renderFloorBtns = () => {
+            reportGpsFloorButtons.innerHTML = "";
+            if (floors.length > 1) {
+                floors.forEach((fl) => {
+                    const b = document.createElement("button");
+                    b.type = "button";
+                    const count = (byFloor[String(fl)] || []).length;
+                    b.className = Number(fl) === Number(activeFloor)
+                        ? "px-2 py-0.5 rounded-md bg-brand-600 text-white font-bold text-[10.5px] cursor-pointer"
+                        : "px-2 py-0.5 rounded-md bg-white hover:bg-brand-100 text-brand-800 border border-brand-200 font-bold text-[10.5px] cursor-pointer";
+                    b.textContent = `Piso ${fl} (${count})`;
+                    b.addEventListener("click", () => {
+                        activeFloor = fl;
+                        renderFloorBtns();
+                        renderRooms();
+                    });
+                    reportGpsFloorButtons.appendChild(b);
+                });
             }
-        } catch (e) {
+        };
+
+        renderFloorBtns();
+        renderRooms();
+        reportGpsFloorAndRooms.classList.remove("hidden");
+    }
+
+    function applyReportGpsResult(result) {
+        if (!result) return;
+
+        if (!result.ok) {
             clearGpsCoords();
-            fallbackManualLocation("No se pudo consultar el servicio de mapa. Selecciona el edificio:", { showRetry: true });
+            if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
+            const err = result.error || {};
+            const msg = err.description || "No se pudo obtener tu ubicación. Selecciona el edificio manualmente:";
+            fallbackManualLocation(msg, {
+                title: err.title || "Selección Manual de Ubicación",
+                showRetry: err.retryable !== false,
+            });
+            return;
+        }
+
+        const nearest = result.nearest;
+        const coords = result.coords || {};
+        if (!nearest || !(nearest.nearestNodeId || nearest.buildingName || nearest.nodeName)) {
+            clearGpsCoords();
+            fallbackManualLocation("Ubicación aproximada no identificada. Por favor selecciona el edificio:", { showRetry: true });
+            return;
+        }
+
+        detectedNodeId = nearest.nearestNodeId || (nearest.bestMatch && nearest.bestMatch.buildingId) || "buildingA";
+        detectedLocationName = formatDetectedLocationLabel(nearest);
+        detectedCoords = { lat: coords.latitude, lng: coords.longitude };
+
+        if (latInput) latInput.value = coords.latitude;
+        if (lngInput) lngInput.value = coords.longitude;
+
+        if (!openedWithPreselectedLocation) {
+            setSelectLocationValue(detectedNodeId, detectedLocationName);
+        }
+
+        const isHighConf = nearest.confidence === "high" && !nearest.needsManualFallback;
+        const floorInfo = nearest.floorDetection || {};
+        const headerLabel = isHighConf
+            ? (window.JaguarGpsDetector ? window.JaguarGpsDetector.tr("map.gps.where_i_think_you_are", "Dónde creo que estás", "Where I think you are") : "Dónde creo que estás")
+            : (nearest.needsFloorSelection ? "Edificio detectado (selecciona piso/aula)" : "Ubicación aproximada detectada");
+
+        const distM = Math.round(nearest.distanceMeters || 0);
+        setGpsIconState("success");
+        gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1 flex-wrap'><svg class='w-3.5 h-3.5 text-emerald-600 inline shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'/><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'/></svg><span>${escapeHtml(headerLabel)}: <strong>${escapeHtml(detectedLocationName)}</strong></span></span>`;
+
+        if (nearest.needsFloorSelection) {
+            gpsSubText.textContent = "La altitud GPS es imprecisa en interiores. Elige el piso o aula exacta abajo, o confirma el edificio:";
+        } else if (openedWithPreselectedLocation) {
+            gpsSubText.textContent = `Aproximadamente a ${distM}m de tu posición actual. Confirma si deseas usar esta ubicación GPS.`;
+        } else {
+            const flTxt = floorInfo.detectedFloor ? ` • Piso ${floorInfo.detectedFloor}` : "";
+            gpsSubText.textContent = `Seleccionado automáticamente (~${distM}m${flTxt}). Confirma o elige otro edificio si fue en otro lugar.`;
+        }
+
+        gpsConfirmationButtons.classList.remove("hidden");
+        if (gpsRetryRow) gpsRetryRow.classList.add("hidden");
+
+        renderReportBuildingFloorFallback(nearest);
+
+        if (gpsNearbyCandidates) {
+            const altCandidates = (Array.isArray(nearest.topCandidates) ? nearest.topCandidates : [])
+                .filter(c => c && c.buildingId && c.buildingId !== detectedNodeId)
+                .slice(0, 2);
+            if ((nearest.isAmbiguous || nearest.needsManualFallback) && altCandidates.length > 0) {
+                gpsNearbyCandidates.innerHTML = `<span class="text-[10px] font-semibold text-slate-500">¿O estabas en:</span>`;
+                altCandidates.forEach(cand => {
+                    const chip = document.createElement("button");
+                    chip.type = "button";
+                    const shortName = (cand.buildingName || cand.name || cand.buildingId).split("(")[0].trim();
+                    chip.className = "px-2 py-0.5 rounded-full bg-white hover:bg-brand-600 hover:text-white text-brand-800 border border-brand-200 font-bold text-[10px] transition-colors cursor-pointer";
+                    chip.textContent = shortName;
+                    chip.addEventListener("click", () => {
+                        detectedNodeId = cand.buildingId;
+                        detectedLocationName = cand.buildingName || cand.name || cand.buildingId;
+                        setSelectLocationValue(detectedNodeId, detectedLocationName);
+                        gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${escapeHtml(detectedLocationName)}</strong></span>`;
+                        gpsConfirmationButtons.classList.add("hidden");
+                        gpsNearbyCandidates.classList.add("hidden");
+                        if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
+                    });
+                    gpsNearbyCandidates.appendChild(chip);
+                });
+                gpsNearbyCandidates.classList.remove("hidden");
+            } else {
+                gpsNearbyCandidates.innerHTML = "";
+                gpsNearbyCandidates.classList.add("hidden");
+            }
         }
     }
 
-    // Geolocation detection and campus nearest-gps resolution
+    // Geolocation detection and campus nearest-gps resolution via shared JaguarGpsDetector
     async function detectCampusLocation(forceFresh = false) {
         setGpsIconState("loading");
         gpsStatusText.textContent = "Detectando coordenadas del campus...";
         gpsSubText.textContent = "Obteniendo posición GPS para asociar el edificio más cercano...";
         gpsConfirmationButtons.classList.add("hidden");
+        if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
         if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
         if (gpsRetryRow) gpsRetryRow.classList.add("hidden");
 
-        // Reuse a very fresh on-campus GPS reading already captured by the live map controller (< 20s old)
-        const liveGps = !forceFresh && window.campus25dController && window.campus25dController.latestGpsCoords;
-        if (liveGps && typeof liveGps.lat === "number" && typeof liveGps.lng === "number" &&
-            (Date.now() - (liveGps.timestamp || 0)) < 20000) {
-            await resolveGpsCoordinatesOnCampus(liveGps.lat, liveGps.lng, liveGps.accuracy);
+        if (!window.JaguarGpsDetector) {
+            fallbackManualLocation("Servicio de geolocalización no disponible.", { showRetry: false });
             return;
         }
 
-        if (!navigator.geolocation) {
-            fallbackManualLocation("Tu navegador no soporta detección GPS.", { showRetry: false });
-            return;
-        }
-
-        const handleGeoError = (err, alreadyRetriedLowAcc) => {
-            // If high-accuracy GPS timed out or failed indoors, retry once with standard Wi-Fi/network positioning
-            if (!alreadyRetriedLowAcc && err && (err.code === 2 || err.code === 3)) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => resolveGpsCoordinatesOnCampus(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
-                    (err2) => handleGeoError(err2, true),
-                    { enableHighAccuracy: false, timeout: 8000, maximumAge: 30000 }
-                );
-                return;
-            }
-            clearGpsCoords();
-            const reason = err && err.code === 1
-                ? "Permiso de GPS no concedido. Selecciona el edificio manualmente:"
-                : "No se pudo obtener la señal GPS a tiempo. Selecciona el edificio o reintenta:";
-            fallbackManualLocation(reason, { showRetry: true });
-        };
-
-        navigator.geolocation.getCurrentPosition(
-            (pos) => resolveGpsCoordinatesOnCampus(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
-            (err) => handleGeoError(err, false),
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 }
-        );
+        const result = await window.JaguarGpsDetector.detectCampusLocation({
+            forceFresh,
+            reuseFreshLive: !forceFresh,
+            lang: (window.APP_CONFIG && window.APP_CONFIG.currentLang) || "spa",
+            onStatusChange: (statusKey) => {
+                if (statusKey === "requesting_permission") {
+                    gpsStatusText.textContent = "Solicitando permiso de ubicación...";
+                } else if (statusKey === "retrying_network") {
+                    gpsStatusText.textContent = "Señal GPS débil en interiores...";
+                    gpsSubText.textContent = "Reintentando con ubicación por Wi-Fi / red...";
+                }
+            },
+        });
+        applyReportGpsResult(result);
     }
 
     function fallbackManualLocation(msg, options = {}) {
         setGpsIconState("manual");
-        gpsStatusText.textContent = "Selección Manual de Ubicación";
+        gpsStatusText.textContent = options.title || "Selección Manual de Ubicación";
         gpsSubText.textContent = msg;
         gpsConfirmationButtons.classList.add("hidden");
+        if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
         if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
         if (gpsRetryRow) {
             gpsRetryRow.classList.toggle("hidden", !options.showRetry);
@@ -501,6 +566,7 @@ Features:
             gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${escapeHtml(detectedLocationName)}</strong></span>`;
             gpsSubText.textContent = "Ubicación del campus lista para publicar el reporte.";
             gpsConfirmationButtons.classList.add("hidden");
+            if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
             if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
         });
     }
@@ -511,6 +577,7 @@ Features:
             locationSelect.focus();
             gpsSubText.textContent = "Por favor selecciona el edificio correspondiente:";
             gpsConfirmationButtons.classList.add("hidden");
+            if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
             if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
         });
     }

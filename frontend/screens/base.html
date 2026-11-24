@@ -98,7 +98,9 @@
                 mapCategories: "/api/map/categories",
                 mapPlaces: "/api/map/places",
                 mapRoute: "/api/map/route",
-                nearestGps: "/api/map/nearest-gps"
+                nearestGps: "/api/map/nearest-gps",
+                mapBoundaries: "/api/map/boundaries",
+                buildingLocations: "/api/map/buildings"
             }
         };
 
@@ -119,6 +121,9 @@
             return (typeof curr === 'string') ? curr : (defaultText || keyPath);
         };
     </script>
+
+    <!-- Shared Browser Geolocation API, Permission & Campus Location Detector -->
+    <script src="{{ url_for('static', filename='js/gpsLocationDetector.js') }}"></script>
 
     {% block scripts %}{% endblock %}
 </body>

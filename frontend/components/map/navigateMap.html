@@ -417,7 +417,8 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                         
                         <!-- Mobile GPS quick button inside origin input (Bottom Sheet only) -->
                         <button id="btnMobileGps" type="button" class="navmap-bottom-sheet-only lg:hidden absolute inset-y-0 right-7 pr-1 flex items-center text-brand-600 hover:text-brand-800 cursor-pointer" title="{{ t('map.use_gps', default='Use my current location') }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <svg id="mobileGpsIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <svg id="mobileGpsSpinner" class="w-4 h-4 animate-spin text-brand-600 hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         </button>
 
                         <!-- Clear origin input button -->
@@ -429,16 +430,89 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <!-- Autocomplete Suggestions for Origin -->
                     <div id="originSuggestions" class="absolute z-50 left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-slate-200 max-h-56 overflow-y-auto hidden divide-y divide-slate-100"></div>
 
-                    <!-- Smart GPS Floor & Nearby Candidate Disambiguation Bar -->
-                    <div id="gpsDisambiguationBar" class="hidden mt-1.5 p-2 rounded-xl bg-sky-50/90 border border-sky-200/80 text-[11px] space-y-1.5">
-                        <div class="flex items-center justify-between gap-2">
-                            <span id="gpsDisambiguationTitle" class="font-bold text-sky-900 leading-tight"></span>
-                            <button id="btnCloseGpsDisambiguation" type="button" class="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer" title="Cerrar">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <!-- GPS Location Detection Panel: "Where I think you are", Multi-Floor Picker, Error States & Full Manual Fallback -->
+                    <div id="gpsDisambiguationBar" class="hidden mt-2 p-2.5 rounded-xl bg-sky-50/95 border border-sky-200/90 text-[11px] space-y-2 shadow-xs">
+                        <!-- Top Header Row -->
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-start gap-2 min-w-0 flex-1">
+                                <span id="gpsPanelBadgeIcon" class="mt-0.5 w-5 h-5 rounded-lg bg-sky-500 text-white flex items-center justify-center shrink-0">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                </span>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span id="gpsDisambiguationTitle" class="font-extrabold text-slate-900 leading-tight"></span>
+                                        <span id="gpsConfidencePill" class="hidden px-1.5 py-0.5 rounded-full text-[9.5px] font-bold"></span>
+                                    </div>
+                                    <p id="gpsPanelSubtitle" class="text-[11px] text-slate-600 leading-snug mt-0.5 hidden"></p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-0.5 shrink-0">
+                                <button id="btnRefreshGpsPanel" type="button" class="text-slate-400 hover:text-brand-600 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.gps.retry', default='Reintentar GPS') }}">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                </button>
+                                <button id="btnCloseGpsDisambiguation" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.close', default='Cerrar') }}">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- High-Confidence "Where I think you are" Summary Card -->
+                        <div id="gpsEstimatedCard" class="hidden p-2 rounded-lg bg-white/95 border border-emerald-200/90 space-y-1.5">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0">
+                                    <div id="gpsEstimatedSpotName" class="text-xs font-extrabold text-slate-900 leading-snug"></div>
+                                    <div id="gpsEstimatedBuildingMeta" class="text-[10.5px] font-semibold text-emerald-700 mt-0.5"></div>
+                                </div>
+                                <span class="shrink-0 w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                                <span id="gpsEstimatedAccuracyMeta" class="text-[10px] text-slate-500 font-medium"></span>
+                                <button id="btnToggleGpsManualList" type="button" class="text-[10.5px] font-bold text-brand-700 hover:text-brand-900 underline underline-offset-2 cursor-pointer">
+                                    {{ t('map.gps.change_spot', default='Cambiar ubicación') }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Error / Permission Denied / Outside Campus Action Row -->
+                        <div id="gpsErrorActions" class="hidden flex flex-wrap items-center gap-1.5">
+                            <button id="btnGpsErrorRetry" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                <span>{{ t('map.gps.retry', default='Reintentar GPS') }}</span>
+                            </button>
+                            <button id="btnGpsManualPick" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-[11px] transition-colors cursor-pointer">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10"/></svg>
+                                <span>{{ t('map.gps.select_manually', default='Elegir manualmente') }}</span>
                             </button>
                         </div>
-                        <div id="gpsFloorButtons" class="flex flex-wrap gap-1"></div>
-                        <div id="gpsCandidateButtons" class="flex flex-wrap gap-1 pt-1 border-t border-sky-200/60 hidden"></div>
+
+                        <!-- Multi-Floor Prompt & Floor Selector Tabs -->
+                        <div id="gpsFloorSection" class="hidden space-y-1.5">
+                            <div class="flex items-center justify-between gap-2 flex-wrap">
+                                <span id="gpsFloorSectionLabel" class="text-[10.5px] font-bold text-slate-700"></span>
+                                <button id="btnUseDefaultFloor" type="button" class="hidden px-2 py-0.5 rounded-md bg-brand-600 hover:bg-brand-700 text-white font-bold text-[10px] transition-colors cursor-pointer"></button>
+                            </div>
+                            <div id="gpsFloorButtons" class="flex flex-wrap gap-1"></div>
+                        </div>
+
+                        <!-- Full Manual Fallback Location Picker (ALL available options for building/floor) -->
+                        <div id="gpsFallbackLocationsSection" class="hidden space-y-1.5 pt-1 border-t border-slate-200/70">
+                            <div class="flex items-center justify-between gap-2">
+                                <span id="gpsFallbackListHeader" class="text-[10.5px] font-extrabold text-slate-700"></span>
+                                <span id="gpsFallbackListCount" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-white text-slate-600 border border-slate-200"></span>
+                            </div>
+                            <input type="text"
+                                   id="gpsLocationFilterInput"
+                                   autocomplete="off"
+                                   placeholder="{{ t('map.gps.filter_locations_placeholder', default='Filtrar aula, baño, oficina...') }}"
+                                   class="hidden w-full px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] text-slate-800 placeholder-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-hidden">
+                            <div id="gpsLocationsList" class="max-h-44 overflow-y-auto space-y-1 pr-0.5 scrollbar-thin"></div>
+                        </div>
+
+                        <!-- Nearby Candidate Buildings & All-Buildings Manual Switcher -->
+                        <div id="gpsCandidateButtons" class="flex flex-wrap items-center gap-1 pt-1.5 border-t border-slate-200/70 hidden"></div>
+                        <div id="gpsAllBuildingsGrid" class="hidden pt-1.5 border-t border-slate-200/70 flex flex-wrap gap-1 max-h-32 overflow-y-auto scrollbar-thin"></div>
                     </div>
                 </div>
 
@@ -690,13 +764,36 @@ document.addEventListener("DOMContentLoaded", function() {
     const originSuggestions = document.getElementById("originSuggestions");
     const btnClearOrigin = document.getElementById("btnClearOrigin");
     const gpsDisambiguationBar = document.getElementById("gpsDisambiguationBar");
+    const gpsPanelBadgeIcon = document.getElementById("gpsPanelBadgeIcon");
     const gpsDisambiguationTitle = document.getElementById("gpsDisambiguationTitle");
+    const gpsConfidencePill = document.getElementById("gpsConfidencePill");
+    const gpsPanelSubtitle = document.getElementById("gpsPanelSubtitle");
+    const gpsEstimatedCard = document.getElementById("gpsEstimatedCard");
+    const gpsEstimatedSpotName = document.getElementById("gpsEstimatedSpotName");
+    const gpsEstimatedBuildingMeta = document.getElementById("gpsEstimatedBuildingMeta");
+    const gpsEstimatedAccuracyMeta = document.getElementById("gpsEstimatedAccuracyMeta");
+    const btnToggleGpsManualList = document.getElementById("btnToggleGpsManualList");
+    const gpsErrorActions = document.getElementById("gpsErrorActions");
+    const btnGpsErrorRetry = document.getElementById("btnGpsErrorRetry");
+    const btnGpsManualPick = document.getElementById("btnGpsManualPick");
+    const gpsFloorSection = document.getElementById("gpsFloorSection");
+    const gpsFloorSectionLabel = document.getElementById("gpsFloorSectionLabel");
+    const btnUseDefaultFloor = document.getElementById("btnUseDefaultFloor");
     const gpsFloorButtons = document.getElementById("gpsFloorButtons");
+    const gpsFallbackLocationsSection = document.getElementById("gpsFallbackLocationsSection");
+    const gpsFallbackListHeader = document.getElementById("gpsFallbackListHeader");
+    const gpsFallbackListCount = document.getElementById("gpsFallbackListCount");
+    const gpsLocationFilterInput = document.getElementById("gpsLocationFilterInput");
+    const gpsLocationsList = document.getElementById("gpsLocationsList");
     const gpsCandidateButtons = document.getElementById("gpsCandidateButtons");
+    const gpsAllBuildingsGrid = document.getElementById("gpsAllBuildingsGrid");
+    const btnRefreshGpsPanel = document.getElementById("btnRefreshGpsPanel");
     const btnCloseGpsDisambiguation = document.getElementById("btnCloseGpsDisambiguation");
     const btnGetGps = document.getElementById("btnGetGps");
     const gpsSpinner = document.getElementById("gpsSpinner");
     const gpsIcon = document.getElementById("gpsIcon");
+    const mobileGpsIcon = document.getElementById("mobileGpsIcon");
+    const mobileGpsSpinner = document.getElementById("mobileGpsSpinner");
 
     const destinationInput = document.getElementById("destinationInput");
     const destinationSuggestions = document.getElementById("destinationSuggestions");
@@ -1013,6 +1110,652 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // ------------------------------------------------------------------------
+    // 4. GPS Location Detection Controller (Permissions, Boundaries, Multi-Floor,
+    //    "Where I think you are" High-Confidence Display & Full Manual Fallback)
+    // ------------------------------------------------------------------------
+    const gpsUiState = {
+        lastCoords: null,
+        lastMatch: null,
+        activeBuildingId: null,
+        activeBuildingName: "",
+        activeAvailableFloors: [1],
+        activeFloor: 1,
+        locationsByFloor: {},
+        showAllBuildings: false,
+        manualExpanded: false,
+        filterText: "",
+    };
+
+    function gpsTr(key, spaDef, engDef, params) {
+        if (window.JaguarGpsDetector) {
+            return window.JaguarGpsDetector.tr(key, spaDef, engDef, params);
+        }
+        const isSpa = (window.APP_CONFIG && window.APP_CONFIG.currentLang === "spa");
+        let text = isSpa ? spaDef : (engDef || spaDef);
+        if (params) {
+            for (const [k, v] of Object.entries(params)) {
+                text = text.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
+            }
+        }
+        return text;
+    }
+
+    function gpsEscape(text) {
+        return window.JaguarGpsDetector ? window.JaguarGpsDetector.escapeHtml(text) : String(text || "");
+    }
+
+    function setGpsButtonsLoading(isLoading) {
+        if (gpsIcon) gpsIcon.classList.toggle("hidden", isLoading);
+        if (gpsSpinner) gpsSpinner.classList.toggle("hidden", !isLoading);
+        if (mobileGpsIcon) mobileGpsIcon.classList.toggle("hidden", isLoading);
+        if (mobileGpsSpinner) mobileGpsSpinner.classList.toggle("hidden", !isLoading);
+        if (btnGetGps) btnGetGps.disabled = isLoading;
+        if (btnMobileGps) btnMobileGps.disabled = isLoading;
+    }
+
+    function setGpsPanelTone(tone) {
+        if (!gpsDisambiguationBar || !gpsPanelBadgeIcon) return;
+        const toneMap = {
+            emerald: {
+                bar: "mt-2 p-2.5 rounded-xl bg-emerald-50/90 border border-emerald-200/90 text-[11px] space-y-2 shadow-xs",
+                iconBg: "mt-0.5 w-5 h-5 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0",
+            },
+            sky: {
+                bar: "mt-2 p-2.5 rounded-xl bg-sky-50/95 border border-sky-200/90 text-[11px] space-y-2 shadow-xs",
+                iconBg: "mt-0.5 w-5 h-5 rounded-lg bg-sky-500 text-white flex items-center justify-center shrink-0",
+            },
+            amber: {
+                bar: "mt-2 p-2.5 rounded-xl bg-amber-50/95 border border-amber-200/90 text-[11px] space-y-2 shadow-xs",
+                iconBg: "mt-0.5 w-5 h-5 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0",
+            },
+            rose: {
+                bar: "mt-2 p-2.5 rounded-xl bg-rose-50/95 border border-rose-200/90 text-[11px] space-y-2 shadow-xs",
+                iconBg: "mt-0.5 w-5 h-5 rounded-lg bg-rose-600 text-white flex items-center justify-center shrink-0",
+            },
+            slate: {
+                bar: "mt-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] space-y-2 shadow-xs",
+                iconBg: "mt-0.5 w-5 h-5 rounded-lg bg-slate-500 text-white flex items-center justify-center shrink-0",
+            },
+        };
+        const cfg = toneMap[tone] || toneMap.sky;
+        gpsDisambiguationBar.className = cfg.bar;
+        gpsPanelBadgeIcon.className = cfg.iconBg;
+    }
+
+    function applySelectedGpsOrigin(selection, options = {}) {
+        const displayFloor = selection.floorLevel && (gpsUiState.activeAvailableFloors.length > 1 || options.showFloor)
+            ? ` (${gpsTr("map.floor", "Piso", "Floor")} ${selection.floorLevel})`
+            : "";
+        const displayName = selection.name || selection.buildingName || "Campus UAM";
+        originInput.value = displayName.includes("Piso") || displayName.includes("Floor")
+            ? displayName
+            : `${displayName}${displayFloor}`;
+        state.originQuery = displayName;
+        state.originNodeId = selection.buildingId;
+        state.originPlaceId = selection.nodeId || selection.placeId || selection.buildingId;
+        state.usedGpsOrigin = options.fromGps !== false;
+        btnClearOrigin.classList.remove("hidden");
+
+        if (options.renderConfirmedCard) {
+            gpsUiState.manualExpanded = false;
+            renderConfirmedLocationCard(selection, options.sourceLabel);
+        }
+
+        if (options.recalculateIfReady && (state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim())) {
+            calculateRoute();
+        }
+    }
+
+    function renderGpsLoadingState(statusKey) {
+        if (!gpsDisambiguationBar) return;
+        setGpsPanelTone("sky");
+        gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+        const statusLabels = {
+            requesting_permission: gpsTr("map.gps.requesting_permission", "Solicitando permiso de ubicación...", "Requesting location permission..."),
+            retrying_network: gpsTr("map.gps.retrying_network", "Señal GPS débil en interiores. Intentando ubicación por red...", "Weak GPS signal indoors. Trying network positioning..."),
+            locating: gpsTr("map.gps.locating", "Detectando tu edificio vía GPS...", "Detecting your building via GPS..."),
+        };
+        gpsDisambiguationTitle.textContent = statusLabels[statusKey] || statusLabels.locating;
+        if (gpsConfidencePill) gpsConfidencePill.classList.add("hidden");
+        if (gpsPanelSubtitle) gpsPanelSubtitle.classList.add("hidden");
+        if (gpsEstimatedCard) gpsEstimatedCard.classList.add("hidden");
+        if (gpsErrorActions) gpsErrorActions.classList.add("hidden");
+        if (gpsFloorSection) gpsFloorSection.classList.add("hidden");
+        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.add("hidden");
+        if (gpsCandidateButtons) gpsCandidateButtons.classList.add("hidden");
+        if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
+        gpsDisambiguationBar.classList.remove("hidden");
+    }
+
+    function renderGpsErrorState(errorObj, campusEntrances) {
+        if (!gpsDisambiguationBar || !errorObj) return;
+        setGpsPanelTone(errorObj.tone || "amber");
+        gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+        gpsDisambiguationTitle.textContent = errorObj.title;
+        if (gpsConfidencePill) gpsConfidencePill.classList.add("hidden");
+
+        if (gpsPanelSubtitle) {
+            gpsPanelSubtitle.textContent = errorObj.description;
+            gpsPanelSubtitle.classList.remove("hidden");
+        }
+        if (gpsEstimatedCard) gpsEstimatedCard.classList.add("hidden");
+        if (gpsFloorSection) gpsFloorSection.classList.add("hidden");
+        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.add("hidden");
+        if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
+
+        if (gpsErrorActions) {
+            gpsErrorActions.classList.remove("hidden");
+            if (btnGpsErrorRetry) {
+                btnGpsErrorRetry.classList.toggle("hidden", errorObj.retryable === false);
+            }
+        }
+
+        // Render campus entrance quick-picks (e.g. when outside campus or GPS failed)
+        if (gpsCandidateButtons) {
+            const quickPicks = (Array.isArray(campusEntrances) && campusEntrances.length > 0)
+                ? campusEntrances
+                : (state.allNodes || []).filter(n => ["mainParking", "northGate", "northeastGate", "buildingA", "buildingK", "buildingC", "buildingI"].includes(n.nodeId));
+            if (quickPicks.length > 0) {
+                renderManualQuickBuildings(quickPicks);
+                gpsCandidateButtons.classList.remove("hidden");
+            } else {
+                gpsCandidateButtons.classList.add("hidden");
+            }
+        }
+
+        gpsDisambiguationBar.classList.remove("hidden");
+    }
+
+    function renderConfirmedLocationCard(selection, sourceLabel) {
+        if (!gpsDisambiguationBar) return;
+        setGpsPanelTone("emerald");
+        gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`;
+        gpsDisambiguationTitle.textContent = gpsTr("map.gps.where_i_think_you_are", "Dónde creo que estás", "Where I think you are");
+
+        if (gpsConfidencePill) {
+            gpsConfidencePill.textContent = sourceLabel || gpsTr("map.gps.source_confirmed", "Confirmado", "Confirmed");
+            gpsConfidencePill.className = "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200";
+        }
+        if (gpsPanelSubtitle) gpsPanelSubtitle.classList.add("hidden");
+        if (gpsErrorActions) gpsErrorActions.classList.add("hidden");
+
+        if (gpsEstimatedCard) {
+            const floorTxt = `${gpsTr("map.floor", "Piso", "Floor")} ${selection.floorLevel || 1}`;
+            const bName = selection.buildingName || gpsUiState.activeBuildingName || "";
+            gpsEstimatedSpotName.textContent = selection.name || bName;
+            gpsEstimatedBuildingMeta.textContent = bName && bName !== selection.name
+                ? `${bName.split("(")[0].trim()} • ${floorTxt}`
+                : floorTxt;
+            const acc = gpsUiState.lastCoords && typeof gpsUiState.lastCoords.accuracy === "number"
+                ? `GPS ±${Math.round(gpsUiState.lastCoords.accuracy)}m`
+                : gpsTr("map.gps.source_confirmed", "Ubicación confirmada", "Location confirmed");
+            gpsEstimatedAccuracyMeta.textContent = acc;
+            if (btnToggleGpsManualList) {
+                btnToggleGpsManualList.textContent = gpsUiState.manualExpanded
+                    ? gpsTr("map.gps.hide_locations", "Ocultar lista", "Hide list")
+                    : gpsTr("map.gps.change_spot", "Cambiar ubicación", "Change spot");
+            }
+            gpsEstimatedCard.classList.remove("hidden");
+        }
+
+        if (gpsFloorSection) gpsFloorSection.classList.toggle("hidden", !gpsUiState.manualExpanded || gpsUiState.activeAvailableFloors.length <= 1);
+        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.toggle("hidden", !gpsUiState.manualExpanded);
+        if (gpsCandidateButtons) gpsCandidateButtons.classList.toggle("hidden", !gpsUiState.manualExpanded);
+        if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
+        gpsDisambiguationBar.classList.remove("hidden");
+    }
+
+    function renderLocationsForActiveFloor() {
+        if (!gpsLocationsList || !gpsFallbackLocationsSection) return;
+        const floorKey = String(gpsUiState.activeFloor || 1);
+        const rawList = Array.isArray(gpsUiState.locationsByFloor[floorKey])
+            ? gpsUiState.locationsByFloor[floorKey]
+            : [];
+
+        const shortB = (gpsUiState.activeBuildingName || gpsUiState.activeBuildingId || "").split("(")[0].trim();
+        const isMulti = gpsUiState.activeAvailableFloors.length > 1;
+        if (gpsFallbackListHeader) {
+            gpsFallbackListHeader.textContent = isMulti
+                ? gpsTr("map.gps.all_locations_in_floor", "Ubicaciones disponibles — Piso {floor}", "Available locations — Floor {floor}", { floor: gpsUiState.activeFloor })
+                : gpsTr("map.gps.all_locations_in_building", "Ubicaciones disponibles en {building}", "Available locations in {building}", { building: shortB });
+        }
+
+        if (gpsLocationFilterInput) {
+            const showFilter = rawList.length > 5;
+            gpsLocationFilterInput.classList.toggle("hidden", !showFilter);
+            if (!showFilter) {
+                gpsLocationFilterInput.value = "";
+                gpsUiState.filterText = "";
+            }
+        }
+
+        const q = (gpsUiState.filterText || "").trim().toLowerCase();
+        const filtered = q
+            ? rawList.filter(loc => (loc.name || "").toLowerCase().includes(q) || (loc.category || "").toLowerCase().includes(q))
+            : rawList;
+
+        if (gpsFallbackListCount) {
+            gpsFallbackListCount.textContent = `${filtered.length}`;
+        }
+
+        gpsLocationsList.innerHTML = "";
+        if (filtered.length === 0) {
+            gpsLocationsList.innerHTML = `<div class="p-2 text-center text-[11px] text-slate-400">${gpsEscape(gpsTr("map.gps.no_filtered_locations", "Ninguna ubicación coincide con el filtro.", "No locations match that filter."))}</div>`;
+            return;
+        }
+
+        const nearestBadgeTxt = gpsTr("map.gps.nearest_badge", "Más cercano", "Nearest");
+        filtered.forEach((loc) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            const isSelected = Boolean(state.originPlaceId && state.originPlaceId === loc.nodeId);
+            btn.className = isSelected
+                ? "w-full text-left px-2 py-1.5 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-950 flex items-center justify-between gap-2 transition-colors cursor-pointer"
+                : "w-full text-left px-2 py-1.5 rounded-lg bg-white hover:bg-sky-50 border border-slate-200/80 hover:border-sky-300 text-slate-800 flex items-center justify-between gap-2 transition-colors cursor-pointer";
+
+            const distLabel = typeof loc.distanceMeters === "number"
+                ? `<span class="text-[9.5px] text-slate-400 font-semibold shrink-0">~${Math.round(loc.distanceMeters)}m</span>`
+                : "";
+            const recBadge = loc.isRecommended
+                ? `<span class="px-1.5 py-0.2 rounded-full bg-sky-100 text-sky-800 font-bold text-[9px] shrink-0">${gpsEscape(nearestBadgeTxt)}</span>`
+                : "";
+
+            btn.innerHTML = `
+                <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                    <span class="shrink-0">${getCategorySvg(loc.category)}</span>
+                    <span class="font-semibold text-[11px] leading-snug truncate">${gpsEscape(loc.name)}</span>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                    ${recBadge}
+                    ${distLabel}
+                </div>
+            `;
+
+            btn.addEventListener("click", () => {
+                applySelectedGpsOrigin(
+                    {
+                        nodeId: loc.nodeId,
+                        placeId: loc.placeId || loc.nodeId,
+                        name: loc.name,
+                        buildingId: loc.buildingId || gpsUiState.activeBuildingId,
+                        buildingName: loc.buildingName || gpsUiState.activeBuildingName,
+                        floorLevel: loc.floorLevel || gpsUiState.activeFloor,
+                    },
+                    {
+                        fromGps: Boolean(gpsUiState.lastCoords),
+                        showFloor: gpsUiState.activeAvailableFloors.length > 1,
+                        renderConfirmedCard: true,
+                        sourceLabel: gpsTr("map.gps.source_confirmed", "Confirmado", "Confirmed"),
+                        recalculateIfReady: true,
+                    }
+                );
+            });
+            gpsLocationsList.appendChild(btn);
+        });
+    }
+
+    function renderFloorTabs(availableFloors, floorCandidates, showDefaultBtn) {
+        if (!gpsFloorSection || !gpsFloorButtons) return;
+        const floors = Array.isArray(availableFloors) && availableFloors.length > 0 ? availableFloors : [1];
+        if (floors.length <= 1) {
+            gpsFloorSection.classList.add("hidden");
+            return;
+        }
+
+        const defaultFloor = floors[0];
+        if (gpsFloorSectionLabel) {
+            gpsFloorSectionLabel.textContent = gpsTr("map.gps.select_floor", "Selecciona tu piso", "Select your floor");
+        }
+        if (btnUseDefaultFloor) {
+            if (showDefaultBtn) {
+                btnUseDefaultFloor.textContent = gpsTr("map.gps.use_default_floor", "Usar Piso {floor} (predeterminado)", "Use Floor {floor} (default)", { floor: defaultFloor });
+                btnUseDefaultFloor.classList.remove("hidden");
+            } else {
+                btnUseDefaultFloor.classList.add("hidden");
+            }
+        }
+
+        gpsFloorButtons.innerHTML = "";
+        floors.forEach((fl) => {
+            const isActive = Number(gpsUiState.activeFloor) === Number(fl);
+            const flList = gpsUiState.locationsByFloor[String(fl)] || [];
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = isActive
+                ? "px-2.5 py-1 rounded-lg bg-sky-600 text-white border border-sky-600 font-extrabold text-[11px] shadow-2xs transition-colors cursor-pointer inline-flex items-center gap-1"
+                : "px-2.5 py-1 rounded-lg bg-white hover:bg-sky-100 text-sky-900 border border-sky-200 font-bold text-[11px] transition-colors cursor-pointer inline-flex items-center gap-1";
+            btn.innerHTML = `<span>${gpsEscape(gpsTr("map.floor", "Piso", "Floor"))} ${fl}</span><span class="text-[9.5px] opacity-80">(${flList.length})</span>`;
+
+            btn.addEventListener("click", () => {
+                gpsUiState.activeFloor = fl;
+                gpsUiState.filterText = "";
+                if (gpsLocationFilterInput) gpsLocationFilterInput.value = "";
+                renderFloorTabs(floors, floorCandidates, showDefaultBtn);
+                renderLocationsForActiveFloor();
+                // Pre-select the nearest spot on this floor in originInput while keeping all rooms visible to refine
+                if (flList.length > 0) {
+                    const topLoc = flList[0];
+                    applySelectedGpsOrigin(
+                        {
+                            nodeId: topLoc.nodeId,
+                            placeId: topLoc.placeId || topLoc.nodeId,
+                            name: topLoc.name,
+                            buildingId: topLoc.buildingId || gpsUiState.activeBuildingId,
+                            buildingName: topLoc.buildingName || gpsUiState.activeBuildingName,
+                            floorLevel: fl,
+                        },
+                        { fromGps: true, showFloor: true, renderConfirmedCard: false, recalculateIfReady: false }
+                    );
+                    renderLocationsForActiveFloor();
+                }
+            });
+            gpsFloorButtons.appendChild(btn);
+        });
+
+        gpsFloorSection.classList.remove("hidden");
+    }
+
+    async function switchManualBuilding(buildingId, fallbackName) {
+        if (!buildingId || !window.JaguarGpsDetector) return;
+        if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
+        gpsUiState.showAllBuildings = false;
+
+        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.remove("hidden");
+        if (gpsLocationsList) {
+            gpsLocationsList.innerHTML = `<div class="p-2 text-center text-[11px] text-slate-500">${gpsEscape(gpsTr("map.gps.loading_building_locations", "Cargando ubicaciones del edificio...", "Loading building locations..."))}</div>`;
+        }
+
+        try {
+            const payload = await window.JaguarGpsDetector.fetchBuildingLocations(buildingId, {
+                coords: gpsUiState.lastCoords,
+                lang: window.APP_CONFIG.currentLang || "spa",
+            });
+            if (payload && payload.success) {
+                gpsUiState.activeBuildingId = payload.buildingId;
+                gpsUiState.activeBuildingName = payload.buildingName || fallbackName || buildingId;
+                gpsUiState.activeAvailableFloors = payload.availableFloors || [1];
+                gpsUiState.activeFloor = gpsUiState.activeAvailableFloors[0] || 1;
+                gpsUiState.locationsByFloor = payload.locationsByFloor || {};
+                gpsUiState.filterText = "";
+                if (gpsLocationFilterInput) gpsLocationFilterInput.value = "";
+
+                const shortB = gpsUiState.activeBuildingName.split("(")[0].trim();
+                gpsDisambiguationTitle.textContent = gpsTr(
+                    "map.gps.select_location_fallback",
+                    "No pudimos precisar el punto exacto. Selecciona tu ubicación en {building}:",
+                    "Exact spot could not be determined. Choose your location in {building}:",
+                    { building: shortB }
+                );
+                renderFloorTabs(gpsUiState.activeAvailableFloors, [], gpsUiState.activeAvailableFloors.length > 1);
+                renderLocationsForActiveFloor();
+            }
+        } catch (err) {
+            console.warn("Failed to load locations for building", buildingId, err);
+        }
+    }
+
+    function renderManualQuickBuildings(candidates) {
+        if (!gpsCandidateButtons) return;
+        gpsCandidateButtons.innerHTML = "";
+
+        const lbl = document.createElement("span");
+        lbl.className = "text-[10px] text-slate-500 font-bold mr-1";
+        lbl.textContent = gpsTr("map.gps.other_nearby_buildings", "¿Otro edificio cercano?", "Nearby building instead?");
+        gpsCandidateButtons.appendChild(lbl);
+
+        (candidates || []).forEach((cand) => {
+            const bId = cand.buildingId || cand.nodeId;
+            if (!bId) return;
+            const btn = document.createElement("button");
+            btn.type = "button";
+            const isActive = bId === gpsUiState.activeBuildingId;
+            btn.className = isActive
+                ? "px-2 py-0.5 rounded-full bg-slate-800 text-white border border-slate-800 font-bold text-[10px] transition-colors cursor-pointer"
+                : "px-2 py-0.5 rounded-full bg-white hover:bg-slate-800 hover:text-white text-slate-700 border border-slate-200 font-semibold text-[10px] transition-colors cursor-pointer";
+            btn.textContent = (cand.buildingName || cand.name || bId).split("(")[0].trim();
+            btn.addEventListener("click", () => {
+                switchManualBuilding(bId, cand.buildingName || cand.name);
+            });
+            gpsCandidateButtons.appendChild(btn);
+        });
+
+        // "Browse all buildings" toggle button
+        const btnAll = document.createElement("button");
+        btnAll.type = "button";
+        btnAll.className = "px-2 py-0.5 rounded-full bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 font-bold text-[10px] transition-colors cursor-pointer";
+        btnAll.textContent = gpsTr("map.gps.browse_all_buildings", "Ver todos los edificios", "Browse all buildings");
+        btnAll.addEventListener("click", () => {
+            gpsUiState.showAllBuildings = !gpsUiState.showAllBuildings;
+            renderAllBuildingsPicker();
+        });
+        gpsCandidateButtons.appendChild(btnAll);
+    }
+
+    function renderAllBuildingsPicker() {
+        if (!gpsAllBuildingsGrid) return;
+        if (!gpsUiState.showAllBuildings) {
+            gpsAllBuildingsGrid.classList.add("hidden");
+            return;
+        }
+        gpsAllBuildingsGrid.innerHTML = "";
+        (state.allNodes || []).forEach((node) => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "px-2 py-0.5 rounded-md bg-white hover:bg-brand-600 hover:text-white text-slate-700 border border-slate-200 font-semibold text-[10px] transition-colors cursor-pointer";
+            chip.textContent = (node.name || node.nodeId).split("(")[0].trim();
+            chip.addEventListener("click", () => {
+                switchManualBuilding(node.nodeId, node.name);
+            });
+            gpsAllBuildingsGrid.appendChild(chip);
+        });
+        gpsAllBuildingsGrid.classList.remove("hidden");
+    }
+
+    function renderGpsDetectionResult(nearest, coords) {
+        if (!gpsDisambiguationBar || !nearest) return;
+
+        gpsUiState.lastMatch = nearest;
+        gpsUiState.lastCoords = coords || null;
+        gpsUiState.activeBuildingId = nearest.nearestNodeId || (nearest.bestMatch && nearest.bestMatch.buildingId) || null;
+        gpsUiState.activeBuildingName = nearest.buildingName || nearest.nodeName || "";
+        gpsUiState.activeAvailableFloors = Array.isArray(nearest.availableFloors) && nearest.availableFloors.length > 0
+            ? nearest.availableFloors
+            : [1];
+        gpsUiState.locationsByFloor = nearest.buildingLocationsByFloor || {};
+        gpsUiState.showAllBuildings = false;
+        gpsUiState.filterText = "";
+        if (gpsLocationFilterInput) gpsLocationFilterInput.value = "";
+
+        const floorInfo = nearest.floorDetection || {};
+        const boundaryInfo = nearest.boundaryMatch || {};
+        const confidence = nearest.confidence || (nearest.needsFloorSelection || nearest.isAmbiguous ? "medium" : "high");
+        const detectedFloor = floorInfo.detectedFloor != null ? floorInfo.detectedFloor : (floorInfo.defaultFloor || gpsUiState.activeAvailableFloors[0] || 1);
+        gpsUiState.activeFloor = detectedFloor;
+
+        const shortB = gpsUiState.activeBuildingName.split("(")[0].trim();
+        const altCandidates = (Array.isArray(nearest.topCandidates) ? nearest.topCandidates : []);
+
+        if (gpsErrorActions) gpsErrorActions.classList.add("hidden");
+        if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
+
+        // CASE 1: HIGH CONFIDENCE -> Display "Where I think you are"
+        if (confidence === "high" && !nearest.needsManualFallback) {
+            gpsUiState.manualExpanded = false;
+            setGpsPanelTone("emerald");
+            gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`;
+            gpsDisambiguationTitle.textContent = gpsTr("map.gps.where_i_think_you_are", "Dónde creo que estás", "Where I think you are");
+
+            if (gpsConfidencePill) {
+                let pillText = gpsTr("map.gps.high_confidence", "Alta confianza", "High confidence");
+                if (floorInfo.source === "beacon") {
+                    pillText = `${gpsTr("map.gps.source_beacon", "Beacon", "Beacon")} • ${pillText}`;
+                } else if (floorInfo.source === "altitude") {
+                    pillText = `${gpsTr("map.gps.source_altitude", "Altitud", "Altitude")} • ${pillText}`;
+                } else if (boundaryInfo.isInsideBoundary) {
+                    pillText = gpsTr("map.gps.inside_boundary", "Dentro del edificio", "Inside building");
+                }
+                gpsConfidencePill.textContent = pillText;
+                gpsConfidencePill.className = "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200";
+            }
+
+            if (gpsPanelSubtitle) gpsPanelSubtitle.classList.add("hidden");
+
+            if (gpsEstimatedCard) {
+                const floorTxt = `${gpsTr("map.floor", "Piso", "Floor")} ${detectedFloor}`;
+                gpsEstimatedSpotName.textContent = nearest.nodeName || shortB;
+                gpsEstimatedBuildingMeta.textContent = shortB && nearest.nodeName !== nearest.buildingName
+                    ? `${shortB} • ${floorTxt}`
+                    : floorTxt;
+                const accParts = [];
+                if (coords && typeof coords.accuracy === "number") accParts.push(`GPS ±${Math.round(coords.accuracy)}m`);
+                if (typeof nearest.distanceMeters === "number") accParts.push(`~${Math.round(nearest.distanceMeters)}m`);
+                gpsEstimatedAccuracyMeta.textContent = accParts.join(" • ") || gpsTr("map.gps.high_confidence", "Alta confianza", "High confidence");
+                if (btnToggleGpsManualList) {
+                    btnToggleGpsManualList.textContent = gpsTr("map.gps.change_spot", "Cambiar ubicación", "Change spot");
+                }
+                gpsEstimatedCard.classList.remove("hidden");
+            }
+
+            // Prepare fallback sections in background (collapsed until user taps "Change spot")
+            renderFloorTabs(gpsUiState.activeAvailableFloors, nearest.floorCandidates, false);
+            renderLocationsForActiveFloor();
+            renderManualQuickBuildings(altCandidates);
+            if (gpsFloorSection) gpsFloorSection.classList.add("hidden");
+            if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.add("hidden");
+            if (gpsCandidateButtons) gpsCandidateButtons.classList.add("hidden");
+
+            gpsDisambiguationBar.classList.remove("hidden");
+            return;
+        }
+
+        // CASE 2: MULTI-FLOOR BUILDING DETECTED OR UNCERTAIN SPOT -> Prompt floor & render ALL available building/floor locations!
+        gpsUiState.manualExpanded = true;
+        const isMultiFloorPrompt = Boolean(nearest.needsFloorSelection && gpsUiState.activeAvailableFloors.length > 1);
+        setGpsPanelTone(isMultiFloorPrompt ? "sky" : "amber");
+        gpsPanelBadgeIcon.innerHTML = isMultiFloorPrompt
+            ? `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>`
+            : `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`;
+
+        if (isMultiFloorPrompt) {
+            gpsDisambiguationTitle.textContent = `${shortB} — ${gpsTr("map.gps.building_detected_choose_floor", "Edificio detectado. ¿En qué piso estás?", "Building detected. Which floor are you on?")}`;
+            if (gpsPanelSubtitle) {
+                gpsPanelSubtitle.textContent = gpsTr(
+                    "map.gps.indoor_altitude_hint",
+                    "La altitud GPS no es confiable en interiores. Elige tu piso o usa el Piso 1 por defecto.",
+                    "Browser GPS altitude is unreliable indoors. Pick your floor below or use Floor 1 (default)."
+                );
+                gpsPanelSubtitle.classList.remove("hidden");
+            }
+        } else {
+            gpsDisambiguationTitle.textContent = gpsTr(
+                "map.gps.select_location_fallback",
+                "No pudimos precisar el punto exacto. Selecciona tu ubicación en {building}:",
+                "Exact spot could not be determined. Choose your location in {building}:",
+                { building: shortB || "Campus UAM" }
+            );
+            if (gpsPanelSubtitle) {
+                const reasonParts = [];
+                if (coords && typeof coords.accuracy === "number") reasonParts.push(`GPS ±${Math.round(coords.accuracy)}m`);
+                if (boundaryInfo.isInsideBoundary) {
+                    reasonParts.push(gpsTr("map.gps.inside_boundary", "Dentro del edificio", "Inside building"));
+                } else {
+                    reasonParts.push(gpsTr("map.gps.near_boundary", "Cerca del edificio", "Near building"));
+                }
+                gpsPanelSubtitle.textContent = reasonParts.join(" • ");
+                gpsPanelSubtitle.classList.remove("hidden");
+            }
+        }
+
+        if (gpsConfidencePill) {
+            const confLabel = confidence === "low"
+                ? gpsTr("map.gps.low_confidence", "Confianza baja", "Low confidence")
+                : gpsTr("map.gps.medium_confidence", "Confianza media", "Medium confidence");
+            gpsConfidencePill.textContent = confLabel;
+            gpsConfidencePill.className = isMultiFloorPrompt
+                ? "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-sky-100 text-sky-800 border border-sky-200"
+                : "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-amber-100 text-amber-800 border border-amber-200";
+        }
+
+        if (gpsEstimatedCard) gpsEstimatedCard.classList.add("hidden");
+
+        renderFloorTabs(gpsUiState.activeAvailableFloors, nearest.floorCandidates, isMultiFloorPrompt);
+        renderLocationsForActiveFloor();
+        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.remove("hidden");
+
+        renderManualQuickBuildings(altCandidates);
+        if (gpsCandidateButtons) gpsCandidateButtons.classList.remove("hidden");
+
+        gpsDisambiguationBar.classList.remove("hidden");
+    }
+
+    async function runGpsLocationDetection(options = {}) {
+        if (!window.JaguarGpsDetector) return;
+
+        setGpsButtonsLoading(true);
+        renderGpsLoadingState("locating");
+
+        try {
+            const result = await window.JaguarGpsDetector.detectCampusLocation({
+                forceFresh: Boolean(options.forceFresh),
+                reuseFreshLive: !options.forceFresh,
+                floorHint: options.floorHint,
+                beaconId: options.beaconId,
+                beaconFloor: options.beaconFloor,
+                lang: (window.APP_CONFIG && window.APP_CONFIG.currentLang) || "spa",
+                onStatusChange: (statusKey) => renderGpsLoadingState(statusKey),
+            });
+
+            if (result.ok && result.nearest) {
+                const n = result.nearest;
+                const coords = result.coords || {};
+                const floorInfo = n.floorDetection || {};
+                const displayFloor = floorInfo.detectedFloor != null ? floorInfo.detectedFloor : (floorInfo.defaultFloor || 1);
+
+                applySelectedGpsOrigin(
+                    {
+                        nodeId: n.nearestSpecificNodeId || n.nearestNodeId,
+                        placeId: n.nearestSpecificNodeId || n.nearestNodeId,
+                        name: n.nodeName || n.buildingName,
+                        buildingId: n.nearestNodeId,
+                        buildingName: n.buildingName,
+                        floorLevel: displayFloor,
+                    },
+                    {
+                        fromGps: true,
+                        showFloor: Boolean(floorInfo.isMultiFloor && floorInfo.detectedFloor != null),
+                        renderConfirmedCard: false,
+                        recalculateIfReady: false,
+                    }
+                );
+
+                renderGpsDetectionResult(n, coords);
+
+                window.dispatchEvent(new CustomEvent("jaguarGpsLocationUpdated", {
+                    detail: Object.assign({}, n, {
+                        lat: coords.latitude,
+                        lng: coords.longitude,
+                        accuracy: coords.accuracy,
+                        altitude: coords.altitude,
+                        altitudeAccuracy: coords.altitudeAccuracy,
+                    })
+                }));
+            } else {
+                gpsUiState.lastCoords = result.coords || null;
+                gpsUiState.lastMatch = result.nearest || null;
+                renderGpsErrorState(
+                    result.error || window.JaguarGpsDetector.getErrorCopy(window.JaguarGpsDetector.ERROR_CODES.NETWORK_ERROR),
+                    result.campusEntrances || []
+                );
+            }
+        } finally {
+            setGpsButtonsLoading(false);
+        }
+    }
+
+    window.triggerJaguarGpsDetection = runGpsLocationDetection;
+
     btnClearOrigin.addEventListener("click", () => {
         originInput.value = "";
         state.originQuery = "";
@@ -1030,150 +1773,101 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    function renderGpsDisambiguation(nearest) {
-        if (!gpsDisambiguationBar || !nearest) return;
-        const hasFloors = Boolean(nearest.needsFloorSelection && Array.isArray(nearest.floorCandidates) && nearest.floorCandidates.length > 1);
-        const altCandidates = (Array.isArray(nearest.topCandidates) ? nearest.topCandidates : []).slice(1);
-        const showAlts = Boolean(nearest.isAmbiguous && altCandidates.length > 0);
-
-        if (!hasFloors && !showAlts) {
-            gpsDisambiguationBar.classList.add("hidden");
-            return;
-        }
-
-        const bShort = (nearest.buildingName || "este edificio").split("(")[0].trim();
-        gpsDisambiguationTitle.textContent = hasFloors
-            ? `Detectado en ${bShort}. ¿En qué piso estás?`
-            : `Ubicado cerca de ${bShort}. ¿O estás en otro edificio?`;
-
-        gpsFloorButtons.innerHTML = "";
-        if (hasFloors) {
-            gpsFloorButtons.classList.remove("hidden");
-            nearest.floorCandidates.forEach(fc => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                const shortRoom = (fc.name || "").split("(")[0].trim().slice(0, 24);
-                btn.className = "px-2 py-1 rounded-lg bg-white hover:bg-sky-500 hover:text-white text-sky-900 border border-sky-200 font-bold text-[11px] transition-colors cursor-pointer";
-                btn.textContent = `Piso ${fc.floorLevel}: ${shortRoom}`;
-                btn.addEventListener("click", () => {
-                    originInput.value = `${fc.name} (Piso ${fc.floorLevel})`;
-                    state.originQuery = fc.name;
-                    state.originNodeId = fc.buildingId;
-                    state.originPlaceId = fc.nodeId;
-                    btnClearOrigin.classList.remove("hidden");
-                    gpsDisambiguationBar.classList.add("hidden");
-                    if (state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim()) {
-                        calculateRoute();
-                    }
-                });
-                gpsFloorButtons.appendChild(btn);
-            });
-        } else {
-            gpsFloorButtons.classList.add("hidden");
-        }
-
-        gpsCandidateButtons.innerHTML = "";
-        if (showAlts) {
-            gpsCandidateButtons.classList.remove("hidden");
-            const lbl = document.createElement("span");
-            lbl.className = "text-[10px] text-slate-500 font-semibold self-center mr-1";
-            lbl.textContent = "¿O cerca de:";
-            gpsCandidateButtons.appendChild(lbl);
-            altCandidates.forEach(cand => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.className = "px-2 py-0.5 rounded-full bg-white hover:bg-slate-800 hover:text-white text-slate-700 border border-slate-200 font-semibold text-[10px] transition-colors cursor-pointer";
-                btn.textContent = (cand.buildingName || cand.name || "").split("(")[0].trim();
-                btn.addEventListener("click", () => {
-                    originInput.value = cand.name || cand.buildingName;
-                    state.originQuery = cand.name || cand.buildingName;
-                    state.originNodeId = cand.buildingId;
-                    state.originPlaceId = cand.nodeId;
-                    btnClearOrigin.classList.remove("hidden");
-                    gpsDisambiguationBar.classList.add("hidden");
-                    if (state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim()) {
-                        calculateRoute();
-                    }
-                });
-                gpsCandidateButtons.appendChild(btn);
-            });
-        } else {
-            gpsCandidateButtons.classList.add("hidden");
-        }
-
-        gpsDisambiguationBar.classList.remove("hidden");
+    if (btnRefreshGpsPanel) {
+        btnRefreshGpsPanel.addEventListener("click", () => runGpsLocationDetection({ forceFresh: true }));
     }
 
-    // 4. GPS "Get via GPS" Integration (Full Subgraph + Walkway + Floor Matching)
-    btnGetGps.addEventListener("click", function() {
-        if (!navigator.geolocation) {
-            alert(window.t('map.gps_unsupported', 'Tu navegador no soporta geolocalización GPS.'));
-            return;
-        }
+    if (btnGpsErrorRetry) {
+        btnGpsErrorRetry.addEventListener("click", () => runGpsLocationDetection({ forceFresh: true }));
+    }
 
-        gpsIcon.classList.add("hidden");
-        gpsSpinner.classList.remove("hidden");
+    if (btnGpsManualPick) {
+        btnGpsManualPick.addEventListener("click", () => {
+            gpsUiState.showAllBuildings = true;
+            renderAllBuildingsPicker();
+            if (originInput) originInput.focus();
+        });
+    }
 
-        navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                const { latitude, longitude, accuracy } = pos.coords;
-                const lang = window.APP_CONFIG.currentLang || "spa";
-                try {
-                    const accParam = (typeof accuracy === "number" && !Number.isNaN(accuracy)) ? `&accuracy=${accuracy.toFixed(1)}` : "";
-                    const res = await fetch(`/api/map/nearest-gps?lat=${latitude}&lng=${longitude}${accParam}&lang=${lang}`);
-                    const data = await res.json();
-                    if (data.outsideCampus) {
-                        alert(window.t('map.outside_campus', 'Te encuentras fuera del campus de la UAM. Se ha establecido la entrada principal como punto de partida.'));
-                        originInput.value = "Parqueo Principal (Caseta Sur)";
-                        state.originNodeId = "mainParking";
-                        state.originPlaceId = "mainParking";
-                        state.originQuery = "Parqueo Principal (Caseta Sur)";
-                        state.usedGpsOrigin = false;
-                        btnClearOrigin.classList.remove("hidden");
-                        if (gpsDisambiguationBar) gpsDisambiguationBar.classList.add("hidden");
-                    } else if (data.success && data.nearest && data.nearest.nodeName) {
-                        const n = data.nearest;
-                        originInput.value = n.nodeName;
-                        state.originQuery = n.nodeName;
-                        state.originNodeId = n.nearestNodeId;
-                        state.originPlaceId = n.nearestSpecificNodeId || n.nearestNodeId;
-                        state.usedGpsOrigin = true;
-                        btnClearOrigin.classList.remove("hidden");
-                        renderGpsDisambiguation(n);
-                        window.dispatchEvent(new CustomEvent("jaguarGpsLocationUpdated", {
-                            detail: Object.assign({}, n, { lat: latitude, lng: longitude, accuracy: accuracy })
-                        }));
-                    } else {
-                        originInput.value = "Parqueo Principal";
-                        state.originNodeId = "mainParking";
-                        state.originPlaceId = "mainParking";
-                        state.originQuery = "Parqueo Principal";
-                        state.usedGpsOrigin = false;
-                        btnClearOrigin.classList.remove("hidden");
-                    }
-                } catch (e) {
-                    originInput.value = "Parqueo Principal";
-                    state.originNodeId = "mainParking";
-                    state.originPlaceId = "mainParking";
-                    state.originQuery = "Parqueo Principal";
-                } finally {
-                    gpsIcon.classList.remove("hidden");
-                    gpsSpinner.classList.add("hidden");
+    if (btnToggleGpsManualList) {
+        btnToggleGpsManualList.addEventListener("click", () => {
+            gpsUiState.manualExpanded = !gpsUiState.manualExpanded;
+            btnToggleGpsManualList.textContent = gpsUiState.manualExpanded
+                ? gpsTr("map.gps.hide_locations", "Ocultar lista", "Hide list")
+                : gpsTr("map.gps.change_spot", "Cambiar ubicación", "Change spot");
+            if (gpsFloorSection) {
+                gpsFloorSection.classList.toggle("hidden", !gpsUiState.manualExpanded || gpsUiState.activeAvailableFloors.length <= 1);
+            }
+            if (gpsFallbackLocationsSection) {
+                gpsFallbackLocationsSection.classList.toggle("hidden", !gpsUiState.manualExpanded);
+            }
+            if (gpsCandidateButtons) {
+                gpsCandidateButtons.classList.toggle("hidden", !gpsUiState.manualExpanded);
+            }
+            if (gpsUiState.manualExpanded) {
+                renderLocationsForActiveFloor();
+            }
+        });
+    }
+
+    if (btnUseDefaultFloor) {
+        btnUseDefaultFloor.addEventListener("click", () => {
+            const defFloor = gpsUiState.activeAvailableFloors[0] || 1;
+            const flList = gpsUiState.locationsByFloor[String(defFloor)] || [];
+            const topLoc = flList[0] || {
+                nodeId: gpsUiState.activeBuildingId,
+                name: gpsUiState.activeBuildingName,
+                buildingId: gpsUiState.activeBuildingId,
+                buildingName: gpsUiState.activeBuildingName,
+                floorLevel: defFloor,
+            };
+            gpsUiState.activeFloor = defFloor;
+            applySelectedGpsOrigin(
+                {
+                    nodeId: topLoc.nodeId,
+                    placeId: topLoc.placeId || topLoc.nodeId,
+                    name: topLoc.name,
+                    buildingId: topLoc.buildingId || gpsUiState.activeBuildingId,
+                    buildingName: topLoc.buildingName || gpsUiState.activeBuildingName,
+                    floorLevel: defFloor,
+                },
+                {
+                    fromGps: true,
+                    showFloor: true,
+                    renderConfirmedCard: true,
+                    sourceLabel: `${gpsTr("map.floor", "Piso", "Floor")} ${defFloor}`,
+                    recalculateIfReady: true,
                 }
-            },
-            (err) => {
-                console.warn("GPS error, defaulting to main entrance:", err.message);
-                originInput.value = "Parqueo Principal (Caseta Sur)";
-                state.originNodeId = "mainParking";
-                state.originPlaceId = "mainParking";
-                state.originQuery = "Parqueo Principal (Caseta Sur)";
-                gpsIcon.classList.remove("hidden");
-                gpsSpinner.classList.add("hidden");
-                btnClearOrigin.classList.remove("hidden");
-            },
-            { enableHighAccuracy: true, timeout: 8000 }
-        );
+            );
+        });
+    }
+
+    if (gpsLocationFilterInput) {
+        gpsLocationFilterInput.addEventListener("input", function () {
+            gpsUiState.filterText = this.value || "";
+            renderLocationsForActiveFloor();
+        });
+    }
+
+    btnGetGps.addEventListener("click", function () {
+        runGpsLocationDetection({ forceFresh: true });
     });
+
+    // Reactively reflect browser geolocation permission state on the GPS button
+    if (window.JaguarGpsDetector && typeof window.JaguarGpsDetector.onPermissionChange === "function") {
+        window.JaguarGpsDetector.onPermissionChange((permState) => {
+            if (!btnGetGps) return;
+            if (permState === "denied") {
+                btnGetGps.classList.remove("text-brand-600", "bg-brand-50", "hover:bg-brand-100/80");
+                btnGetGps.classList.add("text-rose-700", "bg-rose-50", "hover:bg-rose-100");
+                btnGetGps.title = gpsTr("map.gps.err_permission_denied_title", "Permiso de ubicación denegado", "Location permission denied");
+            } else {
+                btnGetGps.classList.remove("text-rose-700", "bg-rose-50", "hover:bg-rose-100");
+                btnGetGps.classList.add("text-brand-600", "bg-brand-50", "hover:bg-brand-100/80");
+                btnGetGps.title = gpsTr("map.use_gps", "Usar mi ubicación actual", "Use my current location");
+            }
+        });
+    }
 
     // 5. Category Pills Direct Selection
     categoryChips.forEach(chip => {

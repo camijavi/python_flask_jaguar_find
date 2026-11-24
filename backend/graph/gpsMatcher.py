@@ -113,33 +113,34 @@ class GlobalGpsMatcher:
                     "isRecommended": False,
                 })
 
-        # 2. Supplementary places from PLACES_CATALOG for this building (important for zones without subgraphs)
-        for place in PLACES_CATALOG:
-            if (place.get("parentBuildingId") or "").lower() != buildingId.lower():
-                continue
-            pLat = place.get("latitude") or (macroNode.latitude if macroNode else None)
-            pLng = place.get("longitude") or (macroNode.longitude if macroNode else None)
-            dist = None
-            if userLat is not None and userLng is not None and pLat and pLng:
-                dist = round(
-                    CampusGeoUtils.calculateHaversineDistance(userLat, userLng, pLat, pLng),
-                    1,
-                )
-            _appendLocation({
-                "nodeId": place.get("placeId"),
-                "placeId": place.get("placeId"),
-                "name": place.get("name"),
-                "buildingId": buildingId,
-                "buildingName": buildingName,
-                "floorLevel": int(place.get("floorLevel", 1) or 1),
-                "category": place.get("category", "other"),
-                "distanceMeters": dist,
-                "isAccessible": bool(place.get("isAccessible", True)),
-                "lat": pLat,
-                "lng": pLng,
-                "source": "catalog",
-                "isRecommended": False,
-            })
+        # 2. Supplementary places from PLACES_CATALOG for zones without an indoor subgraph
+        if not sg:
+            for place in PLACES_CATALOG:
+                if (place.get("parentBuildingId") or "").lower() != buildingId.lower():
+                    continue
+                pLat = place.get("latitude") or (macroNode.latitude if macroNode else None)
+                pLng = place.get("longitude") or (macroNode.longitude if macroNode else None)
+                dist = None
+                if userLat is not None and userLng is not None and pLat and pLng:
+                    dist = round(
+                        CampusGeoUtils.calculateHaversineDistance(userLat, userLng, pLat, pLng),
+                        1,
+                    )
+                _appendLocation({
+                    "nodeId": place.get("placeId"),
+                    "placeId": place.get("placeId"),
+                    "name": place.get("name"),
+                    "buildingId": buildingId,
+                    "buildingName": buildingName,
+                    "floorLevel": int(place.get("floorLevel", 1) or 1),
+                    "category": place.get("category", "other"),
+                    "distanceMeters": dist,
+                    "isAccessible": bool(place.get("isAccessible", True)),
+                    "lat": pLat,
+                    "lng": pLng,
+                    "source": "catalog",
+                    "isRecommended": False,
+                })
 
         # 3. Outdoor walkway landmarks associated with this building/zone (when no indoor subgraph exists)
         if not sg:

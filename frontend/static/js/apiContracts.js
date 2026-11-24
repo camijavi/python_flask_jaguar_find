@@ -61,6 +61,8 @@ export const API_ENDPOINTS = Object.freeze({
     MAP_PLACES: "/api/map/places",
     MAP_ROUTE: "/api/map/route",
     MAP_NEAREST_GPS: "/api/map/nearest-gps",
+    MAP_BOUNDARIES: "/api/map/boundaries",
+    MAP_BUILDING_LOCATIONS: (buildingId) => `/api/map/buildings/${buildingId}/locations`,
 
     // JaguarFind (Lost & Found Object)
     LOST_FOUND_ITEMS: "/api/lost-found-object/items",

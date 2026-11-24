@@ -410,6 +410,8 @@
                         lat: info.lat,
                         lng: info.lng,
                         accuracy: info.accuracy || 15,
+                        altitude: typeof info.altitude === "number" ? info.altitude : null,
+                        altitudeAccuracy: typeof info.altitudeAccuracy === "number" ? info.altitudeAccuracy : null,
                         timestamp: Date.now(),
                     };
                 }
@@ -2520,7 +2522,7 @@
                 if (Math.min(p1.lat, p2.lat) < lat && lat <= Math.max(p1.lat, p2.lat)) {
                     if (p1.lat !== p2.lat) {
                         const xinters = ((lat - p1.lat) * (p2.lng - p1.lng)) / (p2.lat - p1.lat) + p1.lng;
-                        if (p1.lng === p2.lng || lng <= xinters) {
+                        if (lng <= xinters) {
                             inside = !inside;
                         }
                     }
@@ -2761,7 +2763,7 @@
             if (!this.isLiveGpsActive && !this.isLiveCompassActive) return;
             if (!pos || !pos.coords) return;
 
-            const { latitude, longitude, accuracy, heading, speed } = pos.coords;
+            const { latitude, longitude, accuracy, altitude, altitudeAccuracy, heading, speed } = pos.coords;
             if (typeof latitude !== "number" || typeof longitude !== "number" || Number.isNaN(latitude) || Number.isNaN(longitude)) {
                 return;
             }
@@ -2770,6 +2772,8 @@
                 lat: latitude,
                 lng: longitude,
                 accuracy: typeof accuracy === "number" ? accuracy : 20,
+                altitude: typeof altitude === "number" && !Number.isNaN(altitude) ? altitude : null,
+                altitudeAccuracy: typeof altitudeAccuracy === "number" && !Number.isNaN(altitudeAccuracy) ? altitudeAccuracy : null,
                 timestamp: Date.now(),
             };
 
