@@ -3,19 +3,52 @@ buildingSubgraph.py
 ================================================================================
 CHILD GRAPH / SUBGRAPH ARCHITECTURE FOR INDOOR CAMPUS NAVIGATION
 ================================================================================
-Encapsulates an indoor, multi-floor directed graph for an individual building
-(e.g. Building P - Copérnico). Provides room-to-room Dijkstra shortest-path
-routing, accessibility filtering, floor-specific node queries, and
-vertical floor transitions (stairs, elevators, ramps).
+Encapsulates an indoor, multi-floor directed, non-complete, weighted graph for
+an individual building (e.g. Building P - Copérnico), powered by `DirectedGraph`
+(which inherits directly from `graph_combined.Graph`).
+
+Provides:
+  - Room-to-room Dijkstra shortest-path routing and wheelchair accessibility filtering
+  - Automatic parent `buildingId` propagation onto every indoor room/annex/area node
+  - Shared `calcIndoorDistance()` Haversine helper (eliminating per-file duplication)
+  - Direct delegation to the `graph_combined.Graph` interface (`search`, `addVertex`,
+    `insertVertex`, `addEdge`, `link`, `deleteEdge`, `display`, `printMatrix`)
 ================================================================================
 """
 
-import math
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Tuple, Union
 
-from backend.graph.directedGraph import DirectedGraph, Node, DirectedEdge
+from backend.graph.directedGraph import DirectedEdge, DirectedGraph, Node, Vertex
 from backend.graph.dijkstraRouter import DijkstraRouter
 from backend.graph.geoUtils import CampusGeoUtils
+
+
+def calcIndoorDistance(
+    lat1: float,
+    lng1: float,
+    lat2: float,
+    lng2: float,
+    minDist: float = 2.0,
+) -> float:
+    """
+    Shared Haversine helper for indoor corridor weights (meters), enforcing a
+    positive minimum step length to guarantee W(e) > 0 for co-located rooms.
+    """
+    d = CampusGeoUtils.calculateHaversineDistance(lat1, lng1, lat2, lng2)
+    return max(minDist, round(d, 1))
+
+
+def makeIndoorDistanceCalculator(defaultMinDist: float = 2.0):
+    """Returns a reusable distance helper with a custom default minimum distance."""
+    def _calc(
+        lat1: float,
+        lng1: float,
+        lat2: float,
+        lng2: float,
+        minDist: float = defaultMinDist,
+    ) -> float:
+        return calcIndoorDistance(lat1, lng1, lat2, lng2, minDist)
+    return _calc
 
 
 class BuildingSubgraph:
@@ -32,7 +65,7 @@ class BuildingSubgraph:
         floors: List[int],
         macroNodeId: str,
         entranceNodeIds: Optional[List[str]] = None,
-        description: str = ""
+        description: str = "",
     ):
         self.buildingId = buildingId
         self.name = name
@@ -49,9 +82,86 @@ class BuildingSubgraph:
         """Maps an alternative room query, code, or alias to a target node ID."""
         self.roomAliases[alias] = targetNodeId
 
-    def addNode(self, node: Node) -> None:
-        """Adds an internal room, stairwell, restroom, or POI node."""
-        self.graph.addNode(node)
+    def addNode(self, node: Node) -> Node:
+        """
+        Adds an internal room, stairwell, restroom, annex, or POI node.
+        Automatically links `node.buildingId` to `self.macroNodeId` when omitted.
+        """
+        if not node.buildingId:
+            node.buildingId = self.macroNodeId
+        return self.graph.addNode(node)
+
+    # ------------------------------------------------------------------
+    # Direct `graph_combined.Graph` guide interface delegation
+    # ------------------------------------------------------------------
+    def search(self, target: Union[str, Vertex]) -> Optional[Vertex]:
+        return self.graph.search(target)
+
+    def addVertex(self, vertexOrId: Union[str, Vertex]) -> Node:
+        node = self.graph.addVertex(vertexOrId)
+        if not node.buildingId:
+            node.buildingId = self.macroNodeId
+        return node
+
+    def insertVertex(self, vertexOrId: Union[str, Vertex]) -> bool:
+        if self.graph.search(vertexOrId) is not None:
+            return False
+        self.addVertex(vertexOrId)
+        return True
+
+    def addEdge(
+        self,
+        origin: Union[str, Vertex],
+        destination: Union[str, Vertex],
+        weight: float,
+        isAccessible: bool = True,
+        stepInstruction: str = "",
+        walkwayType: str = "indoor",
+    ) -> bool:
+        return self.graph.addEdge(
+            origin=origin,
+            destination=destination,
+            weight=weight,
+            isAccessible=isAccessible,
+            stepInstruction=stepInstruction,
+            walkwayType=walkwayType,
+        )
+
+    def link(
+        self,
+        origin: Union[str, Vertex],
+        destination: Union[str, Vertex],
+        weight: float,
+    ) -> bool:
+        return self.addEdge(origin, destination, weight)
+
+    def deleteEdge(
+        self,
+        origin: Union[str, Vertex],
+        destination: Union[str, Vertex],
+    ) -> bool:
+        return self.graph.deleteEdge(origin, destination)
+
+    def display(self) -> None:
+        print(f"=== Subgrafo {self.buildingId}: {self.name} ===")
+        self.graph.display()
+
+    def printMatrix(self) -> None:
+        print(f"=== Matriz de Adyacencia: {self.buildingId} ===")
+        self.graph.printMatrix()
+
+    def getGraphSummary(self) -> dict:
+        summary = self.graph.getGraphSummary()
+        summary.update({
+            "buildingId": self.buildingId,
+            "name": self.name,
+            "code": self.code,
+            "macroNodeId": self.macroNodeId,
+            "floors": self.floors,
+            "floorCount": len(self.floors),
+            "entranceCount": len(self.entranceNodeIds),
+        })
+        return summary
 
     def addBidirectionalCorridor(
         self,
@@ -62,7 +172,7 @@ class BuildingSubgraph:
         forwardInstruction: str = "",
         backwardInstruction: str = "",
         forwardEdgeKey: Optional[str] = None,
-        backwardEdgeKey: Optional[str] = None
+        backwardEdgeKey: Optional[str] = None,
     ) -> None:
         """Adds a bidirectional horizontal walkway along a building hallway/corridor."""
         self.graph.addBidirectionalWalkway(
@@ -73,7 +183,8 @@ class BuildingSubgraph:
             forwardInstruction=forwardInstruction,
             backwardInstruction=backwardInstruction,
             forwardEdgeKey=forwardEdgeKey,
-            backwardEdgeKey=backwardEdgeKey
+            backwardEdgeKey=backwardEdgeKey,
+            walkwayType="indoor",
         )
 
     # Alias for compatibility with subgraphs calling addBidirectionalWalkway
@@ -86,13 +197,20 @@ class BuildingSubgraph:
         distanceMeters: float = 12.0,
         isAccessible: bool = False,
         upInstruction: str = "Sube al siguiente piso por las escaleras.",
-        downInstruction: str = "Baja al piso inferior por las escaleras."
+        downInstruction: str = "Baja al piso inferior por las escaleras.",
     ) -> None:
         """
         Adds vertical transition between floors (stairs, ramps, or elevators).
         """
-        self.graph.addDirectedEdge(lowerNodeId, upperNodeId, distanceMeters, isAccessible=isAccessible, stepInstruction=upInstruction)
-        self.graph.addDirectedEdge(upperNodeId, lowerNodeId, distanceMeters, isAccessible=isAccessible, stepInstruction=downInstruction)
+        vType = "ramp" if isAccessible else "stairs"
+        self.graph.addDirectedEdge(
+            lowerNodeId, upperNodeId, distanceMeters,
+            isAccessible=isAccessible, stepInstruction=upInstruction, walkwayType=vType,
+        )
+        self.graph.addDirectedEdge(
+            upperNodeId, lowerNodeId, distanceMeters,
+            isAccessible=isAccessible, stepInstruction=downInstruction, walkwayType=vType,
+        )
 
     def getNode(self, nodeId: str) -> Optional[Node]:
         return self.graph.getNode(nodeId)
@@ -108,7 +226,7 @@ class BuildingSubgraph:
         self,
         userLat: float,
         userLng: float,
-        floorLevel: Optional[int] = None
+        floorLevel: Optional[int] = None,
     ) -> Tuple[Optional[str], float]:
         """Snaps GPS coordinate to nearest indoor node, optionally constrained to a floor."""
         nearestId = None
@@ -159,7 +277,7 @@ class BuildingSubgraph:
         originQuery: str,
         destinationQuery: str,
         accessibleOnly: bool = False,
-        lang: str = "spa"
+        lang: str = "spa",
     ) -> dict:
         """
         Calculates turn-by-turn indoor route between two locations inside this building.
@@ -171,14 +289,14 @@ class BuildingSubgraph:
             return {
                 "success": False,
                 "error": f"Ubicación de origen '{originQuery}' no encontrada en {self.name}." if lang == "spa"
-                         else f"Origin location '{originQuery}' not found in {self.name}."
+                         else f"Origin location '{originQuery}' not found in {self.name}.",
             }
 
         if destId not in self.graph.nodes:
             return {
                 "success": False,
                 "error": f"Destino '{destinationQuery}' no encontrado en {self.name}." if lang == "spa"
-                         else f"Destination '{destinationQuery}' not found in {self.name}."
+                         else f"Destination '{destinationQuery}' not found in {self.name}.",
             }
 
         path, dist, mins, _ = self.router.findShortestPathWithEdges(
@@ -189,7 +307,7 @@ class BuildingSubgraph:
             return {
                 "success": False,
                 "error": "No se encontró una ruta transitable dentro del edificio con las restricciones dadas." if lang == "spa"
-                         else "No walkable indoor route found with requested accessibility restrictions."
+                         else "No walkable indoor route found with requested accessibility restrictions.",
             }
 
         from backend.graph.humanInstructions import buildHumanIndoorSteps, formatHumanWalkingTime
@@ -220,12 +338,12 @@ class BuildingSubgraph:
             "origin": {
                 "nodeId": originId,
                 "name": originNode.getName(lang),
-                "floorLevel": originNode.floorLevel
+                "floorLevel": originNode.floorLevel,
             },
             "destination": {
                 "nodeId": destId,
                 "name": destNode.getName(lang),
-                "floorLevel": destNode.floorLevel
+                "floorLevel": destNode.floorLevel,
             },
             "pathNodeIds": path,
             "pathDetails": pathDetails,
@@ -235,7 +353,7 @@ class BuildingSubgraph:
             "humanDuration": formatHumanWalkingTime(dist, lang=lang),
             "steps": humanSteps,
             "stepInstructions": instructions,
-            "isAccessibleRoute": accessibleOnly
+            "isAccessibleRoute": accessibleOnly,
         }
 
     def toDict(self, lang: str = "spa") -> dict:
@@ -255,6 +373,7 @@ class BuildingSubgraph:
             nd["adjacentEdges"] = edges
             nodesList.append(nd)
 
+        metrics = self.graph.getGraphSummary()
         return {
             "buildingId": self.buildingId,
             "name": self.name,
@@ -264,5 +383,8 @@ class BuildingSubgraph:
             "entranceNodeIds": self.entranceNodeIds,
             "description": self.description,
             "nodesCount": len(nodesList),
+            "edgesCount": metrics["directedEdgeCount"],
+            "density": metrics["density"],
+            "isComplete": metrics["isComplete"],
             "nodes": nodesList,
         }

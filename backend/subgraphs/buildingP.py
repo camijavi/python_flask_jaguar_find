@@ -10,17 +10,9 @@ and inter-building connection to Building O.
 ================================================================================
 """
 
-import math
 from backend.graph.directedGraph import Node
 from backend.data.campusCategories import CampusCategory
-from backend.graph.geoUtils import CampusGeoUtils
-from .buildingSubgraph import BuildingSubgraph
-
-
-def _calcDist(lat1: float, lng1: float, lat2: float, lng2: float, minDist: float = 2.0) -> float:
-    """Helper to calculate distance in meters, enforcing a sensible minimum for indoor steps."""
-    d = CampusGeoUtils.calculateHaversineDistance(lat1, lng1, lat2, lng2)
-    return max(minDist, round(d, 1))
+from .buildingSubgraph import BuildingSubgraph, calcIndoorDistance as _calcDist
 
 
 def buildBuildingPSubgraph() -> BuildingSubgraph:
@@ -771,6 +763,30 @@ def buildBuildingPSubgraph() -> BuildingSubgraph:
         upInstruction="Sube por las escaleras oeste hacia el Piso 3 del Edificio P.",
         downInstruction="Baja por las escaleras oeste hacia el Piso 2 del Edificio P."
     )
+
+    # Room & landmark aliases (prevents 'observatorio' from matching stairs first)
+    aliases = {
+        "observatorio": "p_observatory_501",
+        "observatorio copernico": "p_observatory_501",
+        "copernico": "p_observatory_501",
+        "observatory": "p_observatory_501",
+        "p501": "p_observatory_501",
+        "p-501": "p_observatory_501",
+        "p401": "p_room_401",
+        "p-401": "p_room_401",
+        "aula 401": "p_room_401",
+        "p307": "p_room_306",
+        "p-307": "p_room_306",
+        "p308": "p_room_306_b",
+        "p-308": "p_room_306_b",
+        "estacion de meteorologia": "p_stairs_f1_east",
+        "meteorologia": "p_stairs_f1_east",
+        "rampa p": "p_ramp_parking",
+        "banos p": "p_restrooms_f1",
+        "baños p": "p_restrooms_f1",
+    }
+    for alias, nid in aliases.items():
+        subgraph.registerRoomAlias(alias, nid)
 
     return subgraph
 

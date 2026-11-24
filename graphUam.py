@@ -1,28 +1,29 @@
 """
-grafoUam.py
-Backward-compatibility facade for the modular 'backend.graph' package.
-All graph logic and data structures are maintained in 'backend/graph/'.
+graphUam.py
+Backward-compatibility facade for the modular 'backend.graph' package,
+which is unified on top of `graph_combined.py` (`Vertex` and `Graph`).
 """
 
 from backend.graph import (
+    Vertex,
+    Graph,
     DirectedEdge,
     Node,
     DirectedGraph,
     DijkstraRouter,
     CampusGeoUtils,
     buildUamCampusGraph,
+    buildPedestrianWalkwayGraph,
+    globalPedestrianWalkwayGraph,
     NavigationService,
     globalNavigationService,
+    getAllApplicationGraphs,
+    getGraphsInventory,
     CampusCategory,
     CATEGORY_METADATA,
     PLACES_CATALOG,
     I18nManager,
     t,
-    BuildingSubgraph,
-    buildingPSubgraph,
-    getBuildingSubgraph,
-    getAllBuildingSubgraphs,
-    BUILDING_SUBGRAPHS,
 )
 from backend.subgraphs import (
     BuildingSubgraph,
@@ -50,14 +51,20 @@ from backend.subgraphs import (
 )
 
 __all__ = [
+    "Vertex",
+    "Graph",
     "DirectedEdge",
     "Node",
     "DirectedGraph",
     "DijkstraRouter",
     "CampusGeoUtils",
     "buildUamCampusGraph",
+    "buildPedestrianWalkwayGraph",
+    "globalPedestrianWalkwayGraph",
     "NavigationService",
     "globalNavigationService",
+    "getAllApplicationGraphs",
+    "getGraphsInventory",
     "CampusCategory",
     "CATEGORY_METADATA",
     "PLACES_CATALOG",

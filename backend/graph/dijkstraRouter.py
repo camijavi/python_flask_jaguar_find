@@ -2,20 +2,46 @@
 dijkstraRouter.py
 Dijkstra shortest path algorithm with min-heap priority queue (heapq),
 accessibility filtering, turn-by-turn step generation, and full internationalization (i18n).
+Operates seamlessly on any `graph_combined.Graph` or its domain subclass `DirectedGraph`.
 All internal code and default strings are in English.
 """
 
 import heapq
 import math
-from typing import Dict, List, Tuple, Optional
-from .directedGraph import DirectedGraph, DirectedEdge
+from typing import Dict, Iterator, List, Optional, Tuple
+from .directedGraph import DirectedEdge, DirectedGraph, Graph, Node, Vertex
 from .i18n import t
 
 
 class DijkstraRouter:
-    def __init__(self, graph: DirectedGraph, averageWalkingSpeedMpm: float = 72.0):
+    def __init__(self, graph: Graph, averageWalkingSpeedMpm: float = 72.0):
         self.graph = graph
         self.walkingSpeed = averageWalkingSpeedMpm  # 1.2 m/s = 72 meters per minute
+
+    def _getVertex(self, nodeId: str) -> Optional[Vertex]:
+        if isinstance(self.graph, DirectedGraph):
+            return self.graph.nodes.get(nodeId)
+        return self.graph.search(nodeId)
+
+    def _iterOutgoing(
+        self,
+        vertex: Vertex,
+        accessibleOnly: bool,
+    ) -> Iterator[Tuple[str, float, Optional[DirectedEdge]]]:
+        """
+        Yields (targetId, weight, DirectedEdge | None) for each outgoing edge.
+        Uses rich `Node.outgoingEdges` when present, or `Vertex.neigh` directly
+        on plain `graph_combined.Graph` instances.
+        """
+        if isinstance(vertex, Node) and vertex.outgoingEdges:
+            for edge in vertex.outgoingEdges:
+                if accessibleOnly and not edge.isAccessible:
+                    continue
+                yield edge.targetNodeId, edge.distanceMeters, edge
+            return
+
+        for neighbor, weight in vertex.neigh:
+            yield neighbor.nodeId, float(weight), None
 
     def findShortestPathWithEdges(
         self,
@@ -28,15 +54,20 @@ class DijkstraRouter:
         Complexity: O((V + E) log V) on a weighted, directed, non-complete graph G = (V, E, W).
         Returns: (pathNodeIds, totalDistanceMeters, estimatedMinutes, edgeTraversedMap)
         """
-        if sourceNodeId not in self.graph.nodes or targetNodeId not in self.graph.nodes:
+        sourceVertex = self._getVertex(sourceNodeId)
+        targetVertex = self._getVertex(targetNodeId)
+        if sourceVertex is None or targetVertex is None:
             return [], float("inf"), 0, {}
 
-        shortestDistances: Dict[str, float] = {nodeId: float("inf") for nodeId in self.graph.nodes}
-        previousNodes: Dict[str, Optional[str]] = {nodeId: None for nodeId in self.graph.nodes}
+        srcId = sourceVertex.nodeId
+        dstId = targetVertex.nodeId
+
+        shortestDistances: Dict[str, float] = {v.nodeId: float("inf") for v in self.graph.vertices}
+        previousNodes: Dict[str, Optional[str]] = {v.nodeId: None for v in self.graph.vertices}
         edgeTraversed: Dict[Tuple[str, str], DirectedEdge] = {}
 
-        shortestDistances[sourceNodeId] = 0.0
-        priorityQueue = [(0.0, sourceNodeId)]
+        shortestDistances[srcId] = 0.0
+        priorityQueue: List[Tuple[float, str]] = [(0.0, srcId)]
 
         while priorityQueue:
             currentDistance, currentNodeId = heapq.heappop(priorityQueue)
@@ -44,33 +75,33 @@ class DijkstraRouter:
             if currentDistance > shortestDistances[currentNodeId]:
                 continue
 
-            if currentNodeId == targetNodeId:
+            if currentNodeId == dstId:
                 break
 
-            currentNode = self.graph.nodes[currentNodeId]
-            for edge in currentNode.outgoingEdges:
-                if accessibleOnly and not edge.isAccessible:
-                    continue
+            currentVertex = self._getVertex(currentNodeId)
+            if currentVertex is None:
+                continue
 
-                newDistance = currentDistance + edge.distanceMeters
-                targetId = edge.targetNodeId
-
+            for targetId, weight, edge in self._iterOutgoing(currentVertex, accessibleOnly):
+                newDistance = currentDistance + weight
                 if newDistance < shortestDistances[targetId]:
                     shortestDistances[targetId] = newDistance
                     previousNodes[targetId] = currentNodeId
-                    edgeTraversed[(currentNodeId, targetId)] = edge
+                    if edge is not None:
+                        edgeTraversed[(currentNodeId, targetId)] = edge
                     heapq.heappush(priorityQueue, (newDistance, targetId))
 
         path: List[str] = []
-        currId = targetNodeId
+        currId: Optional[str] = dstId
         while currId is not None:
-            path.insert(0, currId)
+            path.append(currId)
             currId = previousNodes[currId]
+        path.reverse()
 
-        if not path or path[0] != sourceNodeId:
+        if not path or path[0] != srcId:
             return [], float("inf"), 0, {}
 
-        totalDistance = shortestDistances[targetNodeId]
+        totalDistance = shortestDistances[dstId]
         estimatedMinutes = math.ceil(totalDistance / self.walkingSpeed) if totalDistance > 0 else 0
         return path, round(totalDistance, 1), estimatedMinutes, edgeTraversed
 
@@ -79,7 +110,7 @@ class DijkstraRouter:
         sourceNodeId: str,
         targetNodeId: str,
         accessibleOnly: bool = False,
-        lang: str = "eng"
+        lang: str = "eng",
     ) -> Tuple[List[str], float, int, List[str]]:
         """
         Calculates optimal route using Dijkstra's Algorithm with a binary min-heap (heapq).
@@ -95,18 +126,23 @@ class DijkstraRouter:
         stepDirections = self._buildStepDirections(path, edgeTraversed, lang=lang)
         return path, totalDistance, estimatedMinutes, stepDirections
 
+    def _vertexDisplayName(self, vertexId: str, lang: str) -> str:
+        vertex = self._getVertex(vertexId)
+        if isinstance(vertex, Node):
+            return vertex.getName(lang)
+        return vertex.nodeId if vertex is not None else vertexId
+
     def _buildStepDirections(
         self,
         path: List[str],
         edgeTraversed: Dict[Tuple[str, str], DirectedEdge],
-        lang: str = "eng"
+        lang: str = "eng",
     ) -> List[str]:
         if len(path) < 2:
             return [t("navigation.already_at_destination", lang=lang, default="You are already at your destination.")]
 
         directions: List[str] = []
-        startNode = self.graph.nodes[path[0]]
-        startNodeName = startNode.getName(lang)
+        startNodeName = self._vertexDisplayName(path[0], lang)
         directions.append(
             t("navigation.start_route", lang=lang, default=f"Start your route at {startNodeName}.", startNode=startNodeName)
         )
@@ -118,17 +154,17 @@ class DijkstraRouter:
             if instruction:
                 directions.append(instruction)
             else:
-                targetName = self.graph.nodes[v].getName(lang)
+                targetName = self._vertexDisplayName(v, lang)
                 directions.append(
                     t("navigation.walk_towards", lang=lang, default=f"Walk towards {targetName}.", targetNode=targetName)
                 )
 
-        destNode = self.graph.nodes[path[-1]]
-        destName = destNode.getName(lang)
+        destName = self._vertexDisplayName(path[-1], lang)
         directions.append(
             t("navigation.arrived_at_destination", lang=lang, default=f"You have arrived at your destination: {destName}.", destNode=destName)
         )
-        accessNotice = destNode.getAccessNotice(lang)
+        destVertex = self._getVertex(path[-1])
+        accessNotice = destVertex.getAccessNotice(lang) if isinstance(destVertex, Node) else None
         if accessNotice:
             directions.append(
                 t("navigation.access_notice", lang=lang, default=f"Access notice: {accessNotice}", notice=accessNotice)

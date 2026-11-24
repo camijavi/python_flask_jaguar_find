@@ -11,13 +11,9 @@ Weighted, Directed, Non-Complete Graph G = (V, E, W).
 
 from backend.graph.directedGraph import Node
 from backend.data.campusCategories import CampusCategory
-from backend.graph.geoUtils import CampusGeoUtils
-from .buildingSubgraph import BuildingSubgraph
+from .buildingSubgraph import BuildingSubgraph, makeIndoorDistanceCalculator
 
-
-def _calcDist(lat1: float, lng1: float, lat2: float, lng2: float, minDist: float = 2.5) -> float:
-    d = CampusGeoUtils.calculateHaversineDistance(lat1, lng1, lat2, lng2)
-    return max(minDist, round(d, 1))
+_calcDist = makeIndoorDistanceCalculator(2.5)
 
 
 def buildBuildingESubgraph() -> BuildingSubgraph:

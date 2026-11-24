@@ -16,6 +16,7 @@ from io import BytesIO
 
 from backend.graph.navigationService import globalNavigationService
 from backend.graph.geoUtils import CampusGeoUtils
+from backend.graph.graphRegistry import getGraphsInventory
 from backend.data.campusCategories import CampusCategory, CATEGORY_METADATA
 from backend.data.placesCatalog import PLACES_CATALOG
 from backend.subgraphs import getBuildingSubgraph, getAllBuildingSubgraphs
@@ -419,6 +420,19 @@ def getPedestrianWalkwaysGraph():
     }), 200
 
 
+@mapController.route("/graphs-summary", methods=["GET"])
+def getGraphsSummary():
+    """
+    GET /api/map/graphs-summary
+    Returns the live inventory and formal graph-theory metrics of every
+    weighted, directed, non-complete graph powered by `graph_combined.py`.
+    """
+    return jsonify({
+        "success": True,
+        **getGraphsInventory(),
+    }), 200
+
+
 # =============================================================================
 # INDOOR BUILDING SUBGRAPHS (CHILD GRAPHS) ENDPOINTS
 # =============================================================================
@@ -433,6 +447,7 @@ def getSubgraphsCatalog():
     subgraphs = getAllBuildingSubgraphs()
     catalog = []
     for bId, sg in subgraphs.items():
+        metrics = sg.graph.getGraphSummary()
         catalog.append({
             "buildingId": sg.buildingId,
             "name": sg.name,
@@ -442,6 +457,9 @@ def getSubgraphsCatalog():
             "entranceNodeIds": sg.entranceNodeIds,
             "description": sg.description,
             "totalNodes": len(sg.getAllNodes()),
+            "totalDirectedEdges": metrics["directedEdgeCount"],
+            "density": metrics["density"],
+            "isComplete": metrics["isComplete"],
         })
     return jsonify({
         "success": True,
