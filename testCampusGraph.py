@@ -11,7 +11,7 @@ import sys
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-from graphUam import globalNavigationService, CampusCategory, CATEGORY_METADATA, CampusGeoUtils, t
+from backend.graphUam import globalNavigationService, CampusCategory, CATEGORY_METADATA, CampusGeoUtils, t
 
 def runGraphTestSuite():
     print("=" * 80)
@@ -488,14 +488,14 @@ def runGraphTestSuite():
         print(f"  [OK] {label:18s} -> {match['nodeName']} ({match['distanceMeters']}m) | floorPrompt={match['needsFloorSelection']} | SVG={svgPos}")
 
     # -------------------------------------------------------------------------
-    # 14. Central `graph_combined.py` Unification & Live Inventory Verification
+    # 14. Central `graphCombined.py` Unification & Live Inventory Verification
     # -------------------------------------------------------------------------
-    print("\n[TEST 14] Central graph_combined.py Unification, Invariants & Live Graph Count:")
-    from graph_combined import Graph, Vertex
+    print("\n[TEST 14] Central graphCombined.py Unification, Invariants & Live Graph Count:")
+    from backend.graph.graphCombined import Graph, Vertex
     from backend.graph import DijkstraRouter, getAllApplicationGraphs, getGraphsInventory
     import backend.children_graphs as childrenGraphsPkg
 
-    # 14a. Standalone graph_combined.Graph invariants
+    # 14a. Standalone graphCombined.Graph invariants
     rawG = Graph()
     assert rawG.insertVertex("Managua") is True
     assert rawG.insertVertex("managua") is False, "Case-insensitive duplicate vertex must be rejected"
@@ -511,15 +511,15 @@ def runGraphTestSuite():
     assert rawG.getEdgeWeight("Masaya", "Granada") == 22.0
     assert rawG.isComplete() is False
 
-    # DijkstraRouter works directly on a plain graph_combined.Graph
+    # DijkstraRouter works directly on a plain graphCombined.Graph
     rawRouter = DijkstraRouter(rawG)
     rawPath, rawDist, _, _ = rawRouter.findShortestPathWithEdges("Managua", "Granada")
     assert rawPath == ["Managua", "Masaya", "Granada"] and rawDist == 46.0, f"Raw Graph Dijkstra failed: {rawPath}, {rawDist}"
     assert rawG.deleteEdge("Masaya", "Granada") is True
     assert rawG.hasEdge("Masaya", "Granada") is False
-    print("  [OK] Standalone graph_combined.py invariants & raw Graph Dijkstra verified.")
+    print("  [OK] Standalone graphCombined.py invariants & raw Graph Dijkstra verified.")
 
-    # 14b. All 20 backend graphs inherit from graph_combined.Graph & sync neigh <-> outgoingEdges
+    # 14b. All 20 backend graphs inherit from graphCombined.Graph & sync neigh <-> outgoingEdges
     inv = getGraphsInventory()
     assert inv["totalBackendGraphs"] == 20, f"Expected 20 backend graphs, got {inv['totalBackendGraphs']}"
     assert inv["breakdown"]["macroCampusGraphs"] == 1
@@ -532,11 +532,11 @@ def runGraphTestSuite():
     assert len(appGraphs) == 20
     for entry in appGraphs:
         g = entry["graph"]
-        assert isinstance(g, Graph), f"{entry['graphId']} does not inherit from graph_combined.Graph"
+        assert isinstance(g, Graph), f"{entry['graphId']} does not inherit from graphCombined.Graph"
         assert g.vertexCount() == len(g.nodes), f"vertices/nodes mismatch in {entry['graphId']}"
         assert not g.isComplete(), f"{entry['graphId']} must be non-complete"
         for vertex in g.vertices:
-            assert isinstance(vertex, Vertex), f"Vertex {vertex} does not inherit from graph_combined.Vertex"
+            assert isinstance(vertex, Vertex), f"Vertex {vertex} does not inherit from graphCombined.Vertex"
             assert len(vertex.neigh) == len(vertex.outgoingEdges), (
                 f"neigh/outgoingEdges desync in {entry['graphId']} on {vertex.nodeId}"
             )
@@ -550,7 +550,7 @@ def runGraphTestSuite():
     assert getBuildingSubgraph("buildingP").resolveRoomQuery("observatorio") == "p_observatory_501"
     assert len(childrenGraphsPkg.BUILDING_SUBGRAPHS) == 18
     print(
-        f"  [OK] All {inv['totalBackendGraphs']} backend graphs verified on graph_combined.py "
+        f"  [OK] All {inv['totalBackendGraphs']} backend graphs verified on graphCombined.py "
         f"(|V|={inv['totals']['vertices']}, |E_dir|={inv['totals']['directedEdges']}, 100% neigh<->outgoingEdges synced)."
     )
 

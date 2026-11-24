@@ -3,7 +3,7 @@ generateGraphDiagram.py
 ================================================================================
 LIVE VECTOR GRAPHIC GENERATOR FOR ALL JAGUARFIND & JAGUARMAPS GRAPHS
 ================================================================================
-Reads all 20 live `graph_combined.Graph`-derived structures directly from the
+Reads all 20 live `graphCombined.Graph`-derived structures directly from the
 application (1 Macro Campus Graph + 1 Micro Pedestrian Walkway Graph + 18 Indoor
 Building Subgraphs) and renders a high-resolution, dependency-free SVG graphic
 saved to `docs/campus_graphs_diagram.svg`.
@@ -157,11 +157,11 @@ def renderHeaderAndArchitecture(inventory: dict, width: int) -> List[str]:
     )
     lines.append(
         '<text x="36" y="68" fill="#cbd5e1" font-size="13" font-weight="600">'
-        'Central Guide: graph_combined.py (Vertex &amp; Graph) • Directed, Non-Complete, Weighted G = (V, E, W)</text>'
+        'Central Guide: graphCombined.py (Vertex &amp; Graph) • Directed, Non-Complete, Weighted G = (V, E, W)</text>'
     )
     lines.append(
         '<text x="36" y="89" fill="#94a3b8" font-size="11.5">'
-        'Data sources: buildings.txt &amp; coordenadas.txt • Every backend graph inherits directly from graph_combined.Graph</text>'
+        'Data sources: buildings.txt &amp; coordenadas.txt • Every backend graph inherits directly from graphCombined.Graph</text>'
     )
 
     # KPI pills on top-right
@@ -200,7 +200,7 @@ def renderHeaderAndArchitecture(inventory: dict, width: int) -> List[str]:
         'UNIFIED CLASS HIERARCHY &amp; 3-TIER CAMPUS NAVIGATION ARCHITECTURE</text>'
     )
 
-    # Box 1: graph_combined.py
+    # Box 1: graphCombined.py
     bx1, by, bw1, bh = 52, stripY + 36, 355, 72
     lines.append(
         f'<rect x="{bx1}" y="{by}" width="{bw1}" height="{bh}" rx="10" '
@@ -208,7 +208,7 @@ def renderHeaderAndArchitecture(inventory: dict, width: int) -> List[str]:
     )
     lines.append(
         f'<text x="{bx1 + 14}" y="{by + 21}" fill="#1d4ed8" font-size="13" font-weight="800">'
-        'graph_combined.py (Central Guide)</text>'
+        'graphCombined.py (Central Guide)</text>'
     )
     lines.append(
         f'<text x="{bx1 + 14}" y="{by + 40}" fill="#1e293b" font-size="10.8" font-family="monospace">'
@@ -855,7 +855,7 @@ def generateDiagram(outputPath: Path) -> Path:
     svg.append(
         f'<text x="48" y="{footY + 18}" fill="#334155" font-size="10.8" font-weight="600">'
         'Total Backend Core Graphs: 20 (1 Macro + 1 Pedestrian Walkway + 18 Indoor Building Subgraphs) — '
-        '100% Unified on graph_combined.py • Plus 2 Client-Side JS Visual Mirrors '
+        '100% Unified on graphCombined.py • Plus 2 Client-Side JS Visual Mirrors '
         '(campusWalkwaysLayer.js &amp; buildingP.html)</text>'
     )
     svg.append(

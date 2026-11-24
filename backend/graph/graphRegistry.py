@@ -8,7 +8,7 @@ Provides a single, modular introspection point over every graph in JaguarFind:
   - Tier 2 (Micro Outdoor):  1 Pedestrian Walkway Graph (sidewalks, portals, bridges)
   - Tier 3 (Micro Indoor):  18 Building Subgraphs (classrooms, labs, annexes, floors)
 
-Dynamically verifies that every registered graph inherits from `graph_combined.Graph`
+Dynamically verifies that every registered graph inherits from `graphCombined.Graph`
 and upholds the formal properties of a Weighted, Directed, Non-Complete Graph.
 ================================================================================
 """
@@ -62,7 +62,7 @@ def getAllApplicationGraphs() -> List[Dict[str, Any]]:
 def getGraphsInventory() -> Dict[str, Any]:
     """
     Builds a live, verified summary of all backend graphs powered by
-    `graph_combined.py`, including counts, vertex/edge totals, and formal checks.
+    `graphCombined.py`, including counts, vertex/edge totals, and formal checks.
     """
     entries = getAllApplicationGraphs()
     graphRecords: List[Dict[str, Any]] = []
@@ -107,7 +107,7 @@ def getGraphsInventory() -> Dict[str, Any]:
         })
 
     return {
-        "centralBaseStructure": "graph_combined.py (Vertex, Graph)",
+        "centralBaseStructure": "graphCombined.py (Vertex, Graph)",
         "graphClassification": "Directed, Non-Complete, Weighted Graph G = (V, E, W)",
         "totalBackendGraphs": len(graphRecords),
         "breakdown": {

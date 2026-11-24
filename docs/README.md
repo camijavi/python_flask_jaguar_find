@@ -34,8 +34,8 @@ Each file has its title in **English** and contains the full information in both
  * **EN:** Official topological modeling rules: perimeter abstraction in restricted zones (Gateway Pattern for Building N Dental Clinics & labs), single-door vs. multi-door policy, hybrid navigation model (outdoor GPS vs. indoor Cartesian canvas/floors), and defense talking points.
 
 6. **[GRAPH_STRUCTURES.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/GRAPH_STRUCTURES.md)**
- * **ES:** Documentación completa de las 20 estructuras de grafos dirigidos, ponderados y no completos unificadas sobre `graph_combined.py` (1 Macro + 1 Red Peatonal + 18 Subgrafos de Edificios), inventario exacto de nodos/aristas, resumen de mejoras y gráfico visual completo (`campus_graphs_diagram.svg`).
- * **EN:** Complete documentation of all 20 weighted, directed, non-complete graph structures unified on `graph_combined.py` (1 Macro + 1 Pedestrian Walkway + 18 Building Subgraphs), exact vertex/edge inventory, summary of improvements, and full vector visual graphic (`campus_graphs_diagram.svg`).
+ * **ES:** Documentación completa de las 20 estructuras de grafos dirigidos, ponderados y no completos unificadas sobre `graphCombined.py` (1 Macro + 1 Red Peatonal + 18 Subgrafos de Edificios), inventario exacto de nodos/aristas, resumen de mejoras y gráfico visual completo (`campus_graphs_diagram.svg`).
+ * **EN:** Complete documentation of all 20 weighted, directed, non-complete graph structures unified on `graphCombined.py` (1 Macro + 1 Pedestrian Walkway + 18 Building Subgraphs), exact vertex/edge inventory, summary of improvements, and full vector visual graphic (`campus_graphs_diagram.svg`).
 
 ---
 
@@ -44,7 +44,7 @@ Each file has its title in **English** and contains the full information in both
 La aplicación Flask se encuentra subdividida en paquetes independientes y modulares:
 
 * **Entrypoint & Config:** [`app.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/app.py) • [`config.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/config.py) • [`database.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/database.py)
-* **Pure Python Graph ADT:** [`graphUam.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/graphUam.py) (Dijkstra $O((V+E)\log V)$ con `heapq` y Haversine)
+* **Pure Python Graph ADT:** [`backend/graphUam.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/backend/graphUam.py) (Dijkstra $O((V+E)\log V)$ con `heapq` y Haversine)
 * **Auth Subsystem:** [`auth/routes.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/auth/routes.py) • [`auth/services.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/auth/services.py) • [`auth/models.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/auth/models.py)
 * **Campus Wayfinding:** [`map/routes.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/map/routes.py) • [`map/services.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/map/services.py)
 * **Lost & Found:** [`lost_found/routes.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/lost_found/routes.py) • [`lost_found/services.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/lost_found/services.py) • [`lost_found/models.py`](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/lost_found/models.py)

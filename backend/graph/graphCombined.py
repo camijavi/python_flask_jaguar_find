@@ -1,5 +1,5 @@
 """
-graph_combined.py
+graphCombined.py
 ================================================================================
 CENTRAL DATA STRUCTURE: WEIGHTED, DIRECTED, NON-COMPLETE GRAPH G = (V, E, W)
 ================================================================================

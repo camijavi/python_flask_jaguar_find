@@ -108,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     toggleBtn.addEventListener("click", function(e) {
         e.preventDefault();
+        toggleBtn.blur();
         if (typeof window.toggleNavigateMapSidebar === "function") {
             window.toggleNavigateMapSidebar();
         } else {

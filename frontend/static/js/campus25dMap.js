@@ -485,9 +485,11 @@
             }
 
             // Unified Waze Bottom Dock & Floating Circular Widgets
-            const openPlanner = () => {
+            const openPlanner = ({ toggleOnMobile = false } = {}) => {
                 if (window.innerWidth < 1024) {
-                    if (typeof window.openMobileBottomSheet === "function") {
+                    if (toggleOnMobile && typeof window.toggleMobileNavigation === "function") {
+                        window.toggleMobileNavigation();
+                    } else if (typeof window.openMobileBottomSheet === "function") {
                         window.openMobileBottomSheet();
                     }
                 } else {
@@ -502,11 +504,16 @@
             };
 
             if (this.btnWazeSearch) {
-                this.btnWazeSearch.addEventListener("click", openPlanner);
+                this.btnWazeSearch.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    this.btnWazeSearch.blur();
+                    openPlanner();
+                });
             }
 
             if (this.wazeBottomCenter) {
-                this.wazeBottomCenter.addEventListener("click", () => {
+                this.wazeBottomCenter.addEventListener("click", (e) => {
+                    e.stopPropagation();
                     if (this.currentRoute) {
                         this.toggleActionTray();
                     } else {
@@ -518,19 +525,24 @@
             if (this.btnWazeExpandTray) {
                 this.btnWazeExpandTray.addEventListener("click", (e) => {
                     e.stopPropagation();
+                    this.btnWazeExpandTray.blur();
                     this.toggleActionTray();
                 });
             }
 
             if (this.btnWazeAudio) {
-                this.btnWazeAudio.addEventListener("click", () => {
+                this.btnWazeAudio.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    this.btnWazeAudio.blur();
                     const voiceBtn = document.getElementById("btnVoiceDirections");
                     if (voiceBtn) voiceBtn.click();
                 });
             }
 
             if (this.btnWazeOpenSteps) {
-                this.btnWazeOpenSteps.addEventListener("click", () => {
+                this.btnWazeOpenSteps.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    this.btnWazeOpenSteps.blur();
                     this.toggleActionTray(false);
                     if (typeof window.toggleMobileStepsCard === "function") {
                         window.toggleMobileStepsCard();
@@ -539,7 +551,9 @@
             }
 
             if (this.btnWazeClearRoute) {
-                this.btnWazeClearRoute.addEventListener("click", () => {
+                this.btnWazeClearRoute.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    this.btnWazeClearRoute.blur();
                     this.toggleActionTray(false);
                     const clearBtn = document.getElementById("btnCloseMobileRoute") || document.getElementById("btnResetNavigation");
                     if (clearBtn) {
@@ -551,13 +565,17 @@
             }
 
             if (this.wazeSpeedDial) {
-                this.wazeSpeedDial.addEventListener("click", () => {
+                this.wazeSpeedDial.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    this.wazeSpeedDial.blur();
                     this.setMode(!this.is25dActive);
                 });
             }
 
             if (this.wazeOrangeFab) {
-                this.wazeOrangeFab.addEventListener("click", () => {
+                this.wazeOrangeFab.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    this.wazeOrangeFab.blur();
                     if (this.currentRoute) {
                         this.isOverview = false;
                         if (!this.is25dActive) {
@@ -566,7 +584,7 @@
                         this.showNavigationBanner();
                         this.recenterOnUser();
                     } else {
-                        openPlanner();
+                        openPlanner({ toggleOnMobile: true });
                     }
                 });
             }
@@ -630,9 +648,29 @@
             let initialZoom = 2.2;
             let initialHeading = 0;
 
+            const isInteractiveUiTarget = (target) => {
+                if (!target || typeof target.closest !== "function") return false;
+                return Boolean(
+                    target.closest("button") ||
+                    target.closest("a") ||
+                    target.closest("input") ||
+                    target.closest("#bldgPopover") ||
+                    target.closest("#lostFoundPinPopover") ||
+                    target.closest(".waze-bldg-badge") ||
+                    target.closest("#campusCompass") ||
+                    target.closest("#campus25dModeControls") ||
+                    target.closest("#mapRightToolbar") ||
+                    target.closest("#wazeBottomBar") ||
+                    target.closest("#wazeActionTray") ||
+                    target.closest("#turnByTurnBanner") ||
+                    target.closest("#navigateMapComponent") ||
+                    target.closest("#routeResultsCard")
+                );
+            };
+
             const onPointerDown = (clientX, clientY, isRotateAction, target) => {
                 if (!this.is25dActive) return false;
-                if (target && (target.closest("button") || target.closest("#bldgPopover") || target.closest(".waze-bldg-badge") || target.closest("#campusCompass") || target.closest("#wazeBottomBar") || target.closest("#wazeActionTray") || target.closest("#turnByTurnBanner"))) {
+                if (isInteractiveUiTarget(target)) {
                     return false;
                 }
 
@@ -756,7 +794,7 @@
             // 3. Touch Gesture Handlers (Mobile / Tablet: 1 finger pan, 2 fingers pinch & rotate)
             this.viewport.addEventListener("touchstart", (e) => {
                 if (!this.is25dActive) return;
-                if (e.target.closest("button") || e.target.closest("#bldgPopover") || e.target.closest(".waze-bldg-badge") || e.target.closest("#campusCompass")) {
+                if (isInteractiveUiTarget(e.target)) {
                     return;
                 }
 
@@ -814,19 +852,28 @@
                 }
             }, { passive: false });
 
-            this.viewport.addEventListener("touchend", (e) => {
+            const resetTouchState = (e) => {
                 if (!this.is25dActive) return;
-                if (e.touches.length === 0) {
+                if (!e.touches || e.touches.length === 0) {
                     isPointerDown = false;
                     isPinching = false;
                     if (this.stage) this.stage.classList.remove("no-transition");
+                    this.viewport.classList.remove("cursor-grabbing");
                 } else if (e.touches.length === 1) {
                     isPinching = false;
                     isPointerDown = true;
                     lastX = e.touches[0].clientX;
                     lastY = e.touches[0].clientY;
                 }
-            }, { passive: false });
+            };
+
+            this.viewport.addEventListener("touchend", resetTouchState, { passive: true });
+            this.viewport.addEventListener("touchcancel", () => {
+                isPointerDown = false;
+                isPinching = false;
+                if (this.stage) this.stage.classList.remove("no-transition");
+                this.viewport.classList.remove("cursor-grabbing");
+            }, { passive: true });
         }
 
         /**
@@ -861,6 +908,9 @@
         }
 
         syncWazeChrome() {
+            if (this.viewport) {
+                this.viewport.classList.toggle("campus-route-active", Boolean(this.currentRoute));
+            }
             if (this.btnWazeClearRoute) {
                 this.btnWazeClearRoute.classList.toggle("hidden", !this.currentRoute);
                 this.btnWazeClearRoute.classList.toggle("flex", Boolean(this.currentRoute));
@@ -1211,7 +1261,9 @@
             document.querySelectorAll(".directory-card").forEach(c => {
                 if (c.getAttribute("data-bldg") === nodeId) {
                     c.classList.add("ring-2", "ring-brand-500", "bg-brand-50/40");
-                    c.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                    if (c.offsetParent !== null) {
+                        c.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                    }
                 } else {
                     c.classList.remove("ring-2", "ring-brand-500", "bg-brand-50/40");
                 }

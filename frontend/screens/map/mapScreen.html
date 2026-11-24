@@ -25,18 +25,18 @@
     <!-- MAIN TWO-COLUMN RESPONSIVE LAYOUT (FLUID FLEX TRANSITION) -->
     <div id="mapLayoutWrapper" class="flex flex-row w-full h-full overflow-hidden relative">
         
-        <!-- LEFT COLUMN: Navigation & Directory Sidebar (Switchable Tabs on Desktop; Directory Sidebar Menu on Mobile) -->
-        <div id="mapSidebarColumn" class="fixed inset-y-0 left-0 z-50 w-full max-w-sm sm:max-w-md bg-white p-3 shadow-2xl overflow-y-auto sidebar-mobile-closed lg:static lg:z-20 lg:p-3 lg:bg-white lg:shadow-md lg:overflow-y-auto lg:shrink-0 lg:border-r lg:border-slate-200/80 sidebar-desktop-open space-y-2">
+        <!-- LEFT COLUMN: Navigation & Directory Sidebar (Switchable Tabs on Both Desktop & Mobile) -->
+        <div id="mapSidebarColumn" class="fixed inset-y-0 left-0 z-50 w-[90vw] max-w-sm sm:max-w-md lg:w-auto bg-white p-3 shadow-2xl overflow-y-auto sidebar-mobile-closed lg:static lg:z-20 lg:p-3 lg:bg-white lg:shadow-md lg:overflow-y-auto lg:shrink-0 lg:border-r lg:border-slate-200/80 sidebar-desktop-open space-y-2">
             
-            <div class="w-full min-w-[300px] max-w-full space-y-2 pb-4">
-                <!-- Sleek Segmented Switcher (Visible on desktop; on mobile the sidebar is dedicated to Directorio UAM) -->
-                <div id="sidebarSwitcher" class="hidden lg:flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200 text-xs font-semibold">
-                    <button id="sidebarTabNav" type="button" class="flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all">
+            <div class="w-full min-w-0 lg:min-w-[300px] max-w-full space-y-2 pb-4">
+                <!-- Sleek Segmented Switcher (Visible on both desktop & mobile sidebar menu) -->
+                <div id="sidebarSwitcher" class="flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200 text-xs font-semibold">
+                    <button id="sidebarTabNav" type="button" class="flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer">
                         <!-- Directions Waypoint SVG -->
                         <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                         <span>{{ t('map.tabs.navigation', default='Navegación') }}</span>
                     </button>
-                    <button id="sidebarTabDir" type="button" class="flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all">
+                    <button id="sidebarTabDir" type="button" class="flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all cursor-pointer">
                         <!-- Directory Office SVG -->
                         <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                         <span>{{ t('map.tabs.directory', default='Directorio UAM') }}</span>
@@ -87,16 +87,109 @@
 <script src="{{ url_for('static', filename='js/lostFoundMapLayer.js') }}"></script>
 
 <script>
-// Sidebar Tab Switching
+// Sidebar Tab Switching & Responsive Navigation Slot Docking (Desktop Sidebar + Mobile Sidebar & Bottom Sheet)
 document.addEventListener("DOMContentLoaded", function() {
     const tabNav = document.getElementById("sidebarTabNav");
     const tabDir = document.getElementById("sidebarTabDir");
-    const panelNav = document.getElementById("sidebarPanelNav");
     const panelDir = document.getElementById("sidebarPanelDir");
     const btnCloseDir = document.getElementById("btnCloseDirectorySidebar");
     const desktopSlot = document.getElementById("desktopNavSlot");
     const mobileSlot = document.getElementById("mobileNavSlot");
     const sidebarSwitcher = document.getElementById("sidebarSwitcher");
+    const sidebarCol = document.getElementById("mapSidebarColumn");
+
+    const ACTIVE_TAB_CLS = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer";
+    const INACTIVE_TAB_CLS = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all cursor-pointer";
+
+    let navUndockTimer = null;
+
+    function cancelPendingNavUndock() {
+        if (navUndockTimer !== null) {
+            clearTimeout(navUndockTimer);
+            navUndockTimer = null;
+        }
+    }
+
+    function dockNavPanel(mode, options = {}) {
+        cancelPendingNavUndock();
+        const currentPanelNav = document.getElementById("sidebarPanelNav");
+        const navComponent = document.getElementById("navigateMapComponent");
+        const routeResultsCard = document.getElementById("routeResultsCard");
+        if (!currentPanelNav || !desktopSlot || !mobileSlot) return;
+
+        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+
+        if (mode === "sidebar") {
+            if (!desktopSlot.contains(currentPanelNav)) {
+                desktopSlot.appendChild(currentPanelNav);
+            }
+            if (!isDesktop) {
+                currentPanelNav.classList.add("navmap-in-sidebar");
+            } else {
+                currentPanelNav.classList.remove("navmap-in-sidebar");
+            }
+            if (navComponent) {
+                navComponent.classList.remove("hidden", "navmap-animated-exit", "bottom-sheet-expanded");
+                navComponent.classList.add("bottom-sheet-collapsed");
+            }
+            if (routeResultsCard && window.lastJaguarRouteData) {
+                routeResultsCard.classList.remove("hidden");
+            }
+        } else {
+            currentPanelNav.classList.remove("navmap-in-sidebar");
+            if (!mobileSlot.contains(currentPanelNav)) {
+                mobileSlot.appendChild(currentPanelNav);
+            }
+            currentPanelNav.classList.remove("hidden");
+            if (navComponent) {
+                navComponent.classList.remove("hidden", "navmap-animated-exit", "navmap-animated-enter");
+                if (!options.keepExpanded) {
+                    navComponent.classList.remove("bottom-sheet-expanded");
+                    navComponent.classList.add("bottom-sheet-collapsed");
+                }
+            }
+            if (routeResultsCard && !options.keepRouteCard) {
+                routeResultsCard.classList.add("hidden");
+            }
+        }
+    }
+
+    function scheduleUndockToBottomSheet(delayMs = 320) {
+        cancelPendingNavUndock();
+        navUndockTimer = setTimeout(() => {
+            navUndockTimer = null;
+            const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+            const isMobileOpen = Boolean(sidebarCol && sidebarCol.classList.contains("sidebar-mobile-open"));
+            if (!isDesktop && !isMobileOpen) {
+                dockNavPanel("bottomSheet");
+            }
+        }, delayMs);
+    }
+
+    function setSidebarActiveTab(tabName) {
+        const activeTab = (tabName === "dir") ? "dir" : "nav";
+        const isNavActive = (activeTab === "nav");
+        const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+        const currentPanelNav = document.getElementById("sidebarPanelNav");
+
+        sessionStorage.setItem("jaguar_map_active_tab", activeTab);
+
+        if (tabNav && tabDir) {
+            tabNav.className = isNavActive ? ACTIVE_TAB_CLS : INACTIVE_TAB_CLS;
+            tabDir.className = isNavActive ? INACTIVE_TAB_CLS : ACTIVE_TAB_CLS;
+        }
+
+        if (isDesktop || (sidebarCol && sidebarCol.classList.contains("sidebar-mobile-open"))) {
+            dockNavPanel("sidebar");
+            if (currentPanelNav) currentPanelNav.classList.toggle("hidden", !isNavActive);
+            if (panelDir) panelDir.classList.toggle("hidden", isNavActive);
+        }
+    }
+
+    window.dockNavPanel = dockNavPanel;
+    window.scheduleUndockToBottomSheet = scheduleUndockToBottomSheet;
+    window.cancelPendingNavUndock = cancelPendingNavUndock;
+    window.setSidebarActiveTab = setSidebarActiveTab;
 
     if (btnCloseDir) {
         btnCloseDir.addEventListener("click", () => {
@@ -106,44 +199,32 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Responsive navigation slot manager (Google Maps layout on mobile, sidebar panel on desktop)
+    // Responsive navigation slot manager:
+    // - Desktop (>= 1024px): Sidebar holds both Navegación and Directorio UAM tabs.
+    // - Mobile (< 1024px): Sidebar ALSO includes Navegación + Directorio UAM tabs when opened;
+    //   when sidebar is closed, navigateMap docks cleanly in #mobileNavSlot for the bottom sheet.
     function adaptNavPlacement() {
         const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
         const currentPanelNav = document.getElementById("sidebarPanelNav");
         if (!currentPanelNav || !desktopSlot || !mobileSlot) return;
 
+        if (sidebarSwitcher) sidebarSwitcher.classList.remove("hidden");
+
         if (!isDesktop) {
-            // Move navigation to mobile overlay slot on top of 2D map
-            if (!mobileSlot.contains(currentPanelNav)) {
-                mobileSlot.appendChild(currentPanelNav);
-            }
-            currentPanelNav.classList.remove("hidden");
-            // Mobile sidebar drawer is dedicated to Directorio UAM
-            if (panelDir) panelDir.classList.remove("hidden");
-            if (sidebarSwitcher) sidebarSwitcher.classList.add("hidden");
-        } else {
-            // Restore navigation to desktop left sidebar slot
-            if (!desktopSlot.contains(currentPanelNav)) {
-                desktopSlot.appendChild(currentPanelNav);
-            }
-            if (sidebarSwitcher) sidebarSwitcher.classList.remove("hidden");
-            
-            // Respect active desktop tab (persisted via sessionStorage or default to nav)
-            const savedTab = sessionStorage.getItem("jaguar_map_active_tab") || "nav";
-            const isNavActive = (savedTab === "nav");
-            
-            if (tabNav && tabDir) {
-                if (isNavActive) {
-                    tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
-                    tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
-                } else {
-                    tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
-                    tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
+            const isMobileSidebarOpen = Boolean(sidebarCol && sidebarCol.classList.contains("sidebar-mobile-open"));
+            if (isMobileSidebarOpen) {
+                const savedTab = sessionStorage.getItem("jaguar_map_active_tab") || "nav";
+                setSidebarActiveTab(savedTab);
+            } else {
+                // Only move into mobile bottom-sheet slot when not already there,
+                // so virtual-keyboard resize events never collapse an open bottom sheet.
+                if (!mobileSlot.contains(currentPanelNav)) {
+                    dockNavPanel("bottomSheet");
                 }
             }
-            
-            if (panelDir) panelDir.classList.toggle("hidden", isNavActive);
-            currentPanelNav.classList.toggle("hidden", !isNavActive);
+        } else {
+            const savedTab = sessionStorage.getItem("jaguar_map_active_tab") || "nav";
+            setSidebarActiveTab(savedTab);
         }
     }
 
@@ -152,21 +233,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (tabNav && tabDir && panelDir) {
         tabNav.addEventListener("click", () => {
-            const currentPanelNav = document.getElementById("sidebarPanelNav");
-            sessionStorage.setItem("jaguar_map_active_tab", "nav");
-            tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
-            tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
-            if (currentPanelNav) currentPanelNav.classList.remove("hidden");
-            panelDir.classList.add("hidden");
+            tabNav.blur();
+            setSidebarActiveTab("nav");
         });
 
         tabDir.addEventListener("click", () => {
-            const currentPanelNav = document.getElementById("sidebarPanelNav");
-            sessionStorage.setItem("jaguar_map_active_tab", "dir");
-            tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all";
-            tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all";
-            panelDir.classList.remove("hidden");
-            if (currentPanelNav) currentPanelNav.classList.add("hidden");
+            tabDir.blur();
+            setSidebarActiveTab("dir");
         });
     }
 });

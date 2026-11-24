@@ -697,7 +697,12 @@ document.addEventListener("DOMContentLoaded", function () {
             touchStartX = e.touches[0].clientX - translateX;
             touchStartY = e.touches[0].clientY - translateY;
         }
-    });
+    }, { passive: true });
+
+    wrapper.addEventListener("touchcancel", () => {
+        isDragging = false;
+        isPinching = false;
+    }, { passive: true });
 
     // ----------------------------------------------------------------------------
     // 4. Interactive Popover & Building Highlight Logic
@@ -734,7 +739,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".directory-card").forEach(c => {
             if (c.getAttribute("data-bldg") === bldgData.id) {
                 c.classList.add("ring-2", "ring-brand-500", "bg-brand-50/40");
-                c.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                if (c.offsetParent !== null) {
+                    c.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                }
             } else {
                 c.classList.remove("ring-2", "ring-brand-500", "bg-brand-50/40");
             }

@@ -1,7 +1,7 @@
 """
 graph package
 Modular graph package for the UAM Campus pedestrian navigation system.
-Built directly on top of the central `graph_combined.py` data structure
+Built directly on top of the central `graph.graphCombined` data structure
 (Vertex, Graph) and supports full bilingual internationalization (i18n).
 """
 
