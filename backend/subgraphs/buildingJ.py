@@ -15,14 +15,7 @@ Laboratorios de Odontología Preclínica), including:
 
 from backend.graph.directedGraph import Node
 from backend.data.campusCategories import CampusCategory
-from backend.graph.geoUtils import CampusGeoUtils
-from .buildingSubgraph import BuildingSubgraph
-
-
-def _calcDist(lat1: float, lng1: float, lat2: float, lng2: float, minDist: float = 2.0) -> float:
-    """Helper to calculate distance in meters, enforcing a sensible minimum for indoor steps."""
-    d = CampusGeoUtils.calculateHaversineDistance(lat1, lng1, lat2, lng2)
-    return max(minDist, round(d, 1))
+from .buildingSubgraph import BuildingSubgraph, calcIndoorDistance as _calcDist
 
 
 def buildBuildingJSubgraph() -> BuildingSubgraph:

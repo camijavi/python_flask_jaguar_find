@@ -41,7 +41,7 @@ La Universidad Americana (UAM) mantiene una vida universitaria muy activa con ev
 ### 4. Estructura Matemática del Grafo y Relación de Objetos por Lugar y Fecha
 
 #### A. Mecanismo del Grafo en el Sistema:
-* **Grafo Topológico Peatonal $G_{\text{campus}} = (V, E, W)$ en `grafoUam.py`:**
+* **Grafo Topológico Peatonal $G_{\text{campus}} = (V, E, W)$ en `graphUam.py`:**
  * $V$: Nodos geolocalizados que representan Casetas de Entrada con Códigos QR (`GATE_1`, `GATE_2`, `GATE_3`), aulas piso a piso (`B_101` a `B_106`), baños, clínicas FODO, admisiones y bifurcaciones de pasillos.
  * $E$: Aristas transitables con pesos $w(u,v) = \text{distancia en metros}$. Cada arista almacena la bandera booleana `esRutaAccesible`.
 * **Uso 1 — Navegación Peatonal (Dijkstra con Min-Heap $O((V+E)\log V)$):**
@@ -143,7 +143,7 @@ Universidad Americana (UAM) sustains high daily activity with academic symposium
 ### 4. Mathematical Graph Structure and Lost & Found Correlation by Location and Date
 
 #### A. Graph Mechanism in the System:
-* **Topological Campus Graph $G_{\text{campus}} = (V, E, W)$ in `grafoUam.py`:**
+* **Topological Campus Graph $G_{\text{campus}} = (V, E, W)$ in `graphUam.py`:**
  * $V$: Nodes representing entrance gate QR codes (`GATE_1`, `GATE_2`, `GATE_3`), classroom entrances (`B_101` to `B_106`), restrooms, clinics, and corridor intersections.
  * $E$: Walkable corridors weighted by physical distance $w(u,v)$ in meters and an `esRutaAccesible` flag.
 * **Role 1 — Pedestrian Navigation (Dijkstra with Min-Heap $O((V+E)\log V)$):**

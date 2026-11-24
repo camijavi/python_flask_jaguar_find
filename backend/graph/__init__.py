@@ -1,15 +1,17 @@
 """
 graph package
 Modular graph package for the UAM Campus pedestrian navigation system.
-Supports full bilingual internationalization (i18n) via eng.json and spa.json.
+Built directly on top of the central `graph_combined.py` data structure
+(Vertex, Graph) and supports full bilingual internationalization (i18n).
 """
 
-from .directedGraph import DirectedEdge, Node, DirectedGraph
+from .directedGraph import Vertex, Graph, DirectedEdge, Node, DirectedGraph
 from .dijkstraRouter import DijkstraRouter
 from .geoUtils import CampusGeoUtils
 from .campusGraphBuilder import buildUamCampusGraph
 from .pedestrianWalkwayGraph import buildPedestrianWalkwayGraph, globalPedestrianWalkwayGraph
 from .navigationService import NavigationService, globalNavigationService
+from .graphRegistry import getAllApplicationGraphs, getGraphsInventory
 from .campusCategories import CampusCategory, CATEGORY_METADATA
 from .placesCatalog import PLACES_CATALOG
 from .i18n import I18nManager, t
@@ -31,6 +33,8 @@ def __getattr__(name: str):
 
 
 __all__ = [
+    "Vertex",
+    "Graph",
     "DirectedEdge",
     "Node",
     "DirectedGraph",
@@ -41,6 +45,8 @@ __all__ = [
     "globalPedestrianWalkwayGraph",
     "NavigationService",
     "globalNavigationService",
+    "getAllApplicationGraphs",
+    "getGraphsInventory",
     "CampusCategory",
     "CATEGORY_METADATA",
     "PLACES_CATALOG",

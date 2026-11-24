@@ -1,18 +1,40 @@
 """
 directedGraph.py
-Core data structures for directed graph representation:
-DirectedEdge, Node, and DirectedGraph (Adjacency List).
-Supports internationalization (i18n) for entity labels and directions.
+================================================================================
+CAMPUS DOMAIN EXTENSION OF THE CENTRAL `graph_combined.py` DATA STRUCTURE
+================================================================================
+Builds directly on `Vertex` and `Graph` from `graph_combined.py` (the central
+weighted, directed, non-complete graph G = (V, E, W) recommended for the project):
+  - `Node(Vertex)`: extends `Vertex` with GPS/SVG coordinates, floor level,
+    category, access notices, i18n labels, and rich `DirectedEdge` metadata.
+  - `DirectedGraph(Graph)`: extends `Graph` while keeping `self.vertices`,
+    `self.nodes`, `vertex.neigh`, and `node.outgoingEdges` in strict 1:1 sync.
+================================================================================
 """
 
-from typing import Dict, List, Optional
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+from typing import Dict, List, Optional, Union
+
+try:
+    from graph_combined import Graph, Vertex
+except ImportError:
+    _rootDir = str(Path(__file__).resolve().parent.parent.parent)
+    if _rootDir not in sys.path:
+        sys.path.insert(0, _rootDir)
+    from graph_combined import Graph, Vertex
+
 from .i18n import t, I18nManager
 
 
 class DirectedEdge:
     """
-    Represents a directed pedestrian path segment (u -> v) with a positive metric weight (meters).
+    Represents a directed pedestrian path segment (u -> v) with a positive metric
+    weight (meters) and navigation metadata (accessibility, walkway type, i18n key).
     """
+
     def __init__(
         self,
         targetNodeId: str,
@@ -21,9 +43,11 @@ class DirectedEdge:
         stepInstruction: str = "",
         edgeKey: Optional[str] = None,
         walkwayType: str = "ground",
-        landmarkRef: str = ""
+        landmarkRef: str = "",
+        targetVertex: Optional[Vertex] = None,
     ):
         self.targetNodeId = targetNodeId
+        self.targetVertex = targetVertex
         self.distanceMeters = max(0.5, float(distanceMeters))
         self.isAccessible = isAccessible
         self.stepInstruction = stepInstruction
@@ -49,10 +73,13 @@ class DirectedEdge:
         }
 
 
-class Node:
+class Node(Vertex):
     """
-    Represents a physical building entrance, pedestrian gate, walkway waypoint, or room on the UAM campus.
+    Domain vertex inheriting from `graph_combined.Vertex`.
+    Represents a physical building, entrance portal, pedestrian walkway waypoint,
+    classroom, annex, restroom, ramp, stairwell, or campus area.
     """
+
     def __init__(
         self,
         nodeId: str,
@@ -71,9 +98,9 @@ class Node:
         portalKind: Optional[str] = None,   # "door" | "corridor" | "stairs" | "ramp" | "crosswalk" | "skybridge" | "gate" | "plaza"
         buildingId: Optional[str] = None,
         landmarkNameSpa: Optional[str] = None,
-        landmarkNameEng: Optional[str] = None
+        landmarkNameEng: Optional[str] = None,
     ):
-        self.nodeId = nodeId
+        super().__init__(nodeId)
         self.name = name                    # Default internal name in English
         self.category = category
         self.xPercent = xPercent
@@ -106,6 +133,10 @@ class Node:
 
     def addOutgoingEdge(self, edge: DirectedEdge) -> None:
         self.outgoingEdges.append(edge)
+        if edge.targetVertex is not None and not any(
+            neighbor is edge.targetVertex for neighbor, _ in self.neigh
+        ):
+            self.neigh.append((edge.targetVertex, edge.distanceMeters))
 
     def toDict(self, lang: str = "eng") -> dict:
         return {
@@ -127,16 +158,87 @@ class Node:
         }
 
 
-class DirectedGraph:
+class DirectedGraph(Graph):
     """
-    Weighted, Directed, Non-Complete Graph G = (V, E, W) representing the UAM Campus.
+    Weighted, Directed, Non-Complete Graph G = (V, E, W) inheriting from
+    `graph_combined.Graph`. Used by every macro, walkway, and indoor building
+    graph across the entire JaguarFind & JaguarMaps application.
     """
+
     def __init__(self):
+        super().__init__()
         self.nodes: Dict[str, Node] = {}
 
-    def addNode(self, node: Node) -> None:
-        if node.nodeId not in self.nodes:
-            self.nodes[node.nodeId] = node
+    def addVertex(self, vertexOrId: Union[str, Vertex]) -> Node:
+        """
+        Registers a Node (or wraps a string ID into a lightweight Node) using
+        the base `Graph.addVertex()` logic and indexes it in `self.nodes`.
+        """
+        existing = self.search(vertexOrId)
+        if existing is not None:
+            return existing  # type: ignore[return-value]
+
+        if isinstance(vertexOrId, Node):
+            node = vertexOrId
+        else:
+            rawId = vertexOrId.nodeId if isinstance(vertexOrId, Vertex) else str(vertexOrId)
+            node = Node(
+                nodeId=rawId,
+                name=rawId,
+                category="waypoint",
+                xPercent=50.0,
+                yPercent=50.0,
+                latitude=0.0,
+                longitude=0.0,
+            )
+
+        super().addVertex(node)
+        self.nodes[node.nodeId] = node
+        return node
+
+    def addNode(self, node: Node) -> Node:
+        """Adds a campus Node vertex to the graph (delegates to addVertex)."""
+        return self.addVertex(node)
+
+    def addEdge(
+        self,
+        origin: Union[str, Vertex],
+        destination: Union[str, Vertex],
+        weight: float,
+        isAccessible: bool = True,
+        stepInstruction: str = "",
+        edgeKey: Optional[str] = None,
+        walkwayType: str = "ground",
+        landmarkRef: str = "",
+    ) -> bool:
+        """
+        Adds a single directed weighted edge (origin -> destination) enforcing
+        `graph_combined.Graph` invariants (positive weight, no self-loops,
+        no duplicate edges) while synchronizing `neigh` and `outgoingEdges`.
+        """
+        v_origin = self.search(origin)
+        v_destination = self.search(destination)
+        if v_origin is None or v_destination is None:
+            return False
+
+        distance = max(0.5, float(weight))
+        if not super().addEdge(v_origin, v_destination, distance):
+            return False
+
+        key = edgeKey or f"{v_origin.nodeId}_{v_destination.nodeId}"
+        edge = DirectedEdge(
+            targetNodeId=v_destination.nodeId,
+            distanceMeters=distance,
+            isAccessible=isAccessible,
+            stepInstruction=stepInstruction,
+            edgeKey=key,
+            walkwayType=walkwayType,
+            landmarkRef=landmarkRef,
+            targetVertex=v_destination,
+        )
+        if isinstance(v_origin, Node):
+            v_origin.outgoingEdges.append(edge)
+        return True
 
     def addDirectedEdge(
         self,
@@ -147,21 +249,19 @@ class DirectedGraph:
         stepInstruction: str = "",
         edgeKey: Optional[str] = None,
         walkwayType: str = "ground",
-        landmarkRef: str = ""
-    ) -> None:
+        landmarkRef: str = "",
+    ) -> bool:
         """Adds a single directed edge from source to target (u -> v)."""
-        if sourceNodeId in self.nodes and targetNodeId in self.nodes:
-            key = edgeKey or f"{sourceNodeId}_{targetNodeId}"
-            edge = DirectedEdge(
-                targetNodeId,
-                distanceMeters,
-                isAccessible,
-                stepInstruction,
-                edgeKey=key,
-                walkwayType=walkwayType,
-                landmarkRef=landmarkRef,
-            )
-            self.nodes[sourceNodeId].addOutgoingEdge(edge)
+        return self.addEdge(
+            origin=sourceNodeId,
+            destination=targetNodeId,
+            weight=distanceMeters,
+            isAccessible=isAccessible,
+            stepInstruction=stepInstruction,
+            edgeKey=edgeKey,
+            walkwayType=walkwayType,
+            landmarkRef=landmarkRef,
+        )
 
     def addBidirectionalWalkway(
         self,
@@ -174,7 +274,7 @@ class DirectedGraph:
         forwardEdgeKey: Optional[str] = None,
         backwardEdgeKey: Optional[str] = None,
         walkwayType: str = "ground",
-        landmarkRef: str = ""
+        landmarkRef: str = "",
     ) -> None:
         """
         Creates two opposite directed edges (u -> v) and (v -> u)
@@ -184,15 +284,33 @@ class DirectedGraph:
         bwdKey = backwardEdgeKey or f"{nodeBId}_{nodeAId}"
         self.addDirectedEdge(
             nodeAId, nodeBId, distanceMeters, isAccessible, forwardInstruction,
-            edgeKey=fwdKey, walkwayType=walkwayType, landmarkRef=landmarkRef
+            edgeKey=fwdKey, walkwayType=walkwayType, landmarkRef=landmarkRef,
         )
         self.addDirectedEdge(
             nodeBId, nodeAId, distanceMeters, isAccessible, backwardInstruction,
-            edgeKey=bwdKey, walkwayType=walkwayType, landmarkRef=landmarkRef
+            edgeKey=bwdKey, walkwayType=walkwayType, landmarkRef=landmarkRef,
         )
+
+    def deleteEdge(
+        self,
+        origin: Union[str, Vertex],
+        destination: Union[str, Vertex],
+    ) -> bool:
+        """Removes directed edge (origin -> destination) from both `neigh` and `outgoingEdges`."""
+        v_origin = self.search(origin)
+        v_destination = self.search(destination)
+        if not super().deleteEdge(origin, destination):
+            return False
+
+        if isinstance(v_origin, Node) and v_destination is not None:
+            v_origin.outgoingEdges = [
+                edge for edge in v_origin.outgoingEdges
+                if edge.targetNodeId != v_destination.nodeId
+            ]
+        return True
 
     def getNode(self, nodeId: str) -> Optional[Node]:
         return self.nodes.get(nodeId)
 
     def getAllNodes(self) -> List[Node]:
-        return list(self.nodes.values())
+        return list(self.vertices)  # type: ignore[return-value]

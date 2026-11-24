@@ -11,7 +11,7 @@ import sys
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-from grafoUam import globalNavigationService, CampusCategory, CATEGORY_METADATA, CampusGeoUtils, t
+from graphUam import globalNavigationService, CampusCategory, CATEGORY_METADATA, CampusGeoUtils, t
 
 def runGraphTestSuite():
     print("=" * 80)
@@ -486,6 +486,73 @@ def runGraphTestSuite():
         svgPos = match["userSvgPosition"]
         assert 0 <= svgPos["x"] <= 1200 and 0 <= svgPos["y"] <= 850, f"SVG projection out of bounds: {svgPos}"
         print(f"  [OK] {label:18s} -> {match['nodeName']} ({match['distanceMeters']}m) | floorPrompt={match['needsFloorSelection']} | SVG={svgPos}")
+
+    # -------------------------------------------------------------------------
+    # 14. Central `graph_combined.py` Unification & Live Inventory Verification
+    # -------------------------------------------------------------------------
+    print("\n[TEST 14] Central graph_combined.py Unification, Invariants & Live Graph Count:")
+    from graph_combined import Graph, Vertex
+    from backend.graph import DijkstraRouter, getAllApplicationGraphs, getGraphsInventory
+    import backend.children_graphs as childrenGraphsPkg
+
+    # 14a. Standalone graph_combined.Graph invariants
+    rawG = Graph()
+    assert rawG.insertVertex("Managua") is True
+    assert rawG.insertVertex("managua") is False, "Case-insensitive duplicate vertex must be rejected"
+    assert rawG.insertVertex("Masaya") is True
+    assert rawG.insertVertex("Granada") is True
+    assert rawG.search("MANAGUA").city == "Managua"
+    assert rawG.link("Managua", "Masaya", 24.0) is True
+    assert rawG.addEdge("Managua", "Masaya", 24.0) is False, "Duplicate directed edge must be rejected"
+    assert rawG.addEdge("Managua", "Managua", 5.0) is False, "Self-loop must be rejected"
+    assert rawG.addEdge("Masaya", "Granada", 0.0) is False, "Non-positive weight must be rejected"
+    assert rawG.addEdge("Masaya", "Granada", 22.0) is True
+    assert rawG.hasEdge("Managua", "Masaya") is True
+    assert rawG.getEdgeWeight("Masaya", "Granada") == 22.0
+    assert rawG.isComplete() is False
+
+    # DijkstraRouter works directly on a plain graph_combined.Graph
+    rawRouter = DijkstraRouter(rawG)
+    rawPath, rawDist, _, _ = rawRouter.findShortestPathWithEdges("Managua", "Granada")
+    assert rawPath == ["Managua", "Masaya", "Granada"] and rawDist == 46.0, f"Raw Graph Dijkstra failed: {rawPath}, {rawDist}"
+    assert rawG.deleteEdge("Masaya", "Granada") is True
+    assert rawG.hasEdge("Masaya", "Granada") is False
+    print("  [OK] Standalone graph_combined.py invariants & raw Graph Dijkstra verified.")
+
+    # 14b. All 20 backend graphs inherit from graph_combined.Graph & sync neigh <-> outgoingEdges
+    inv = getGraphsInventory()
+    assert inv["totalBackendGraphs"] == 20, f"Expected 20 backend graphs, got {inv['totalBackendGraphs']}"
+    assert inv["breakdown"]["macroCampusGraphs"] == 1
+    assert inv["breakdown"]["microOutdoorWalkwayGraphs"] == 1
+    assert inv["breakdown"]["microIndoorBuildingSubgraphs"] == 18
+    assert inv["verification"]["allInheritGraphCombined"] is True
+    assert inv["verification"]["allNonComplete"] is True
+
+    appGraphs = getAllApplicationGraphs()
+    assert len(appGraphs) == 20
+    for entry in appGraphs:
+        g = entry["graph"]
+        assert isinstance(g, Graph), f"{entry['graphId']} does not inherit from graph_combined.Graph"
+        assert g.vertexCount() == len(g.nodes), f"vertices/nodes mismatch in {entry['graphId']}"
+        assert not g.isComplete(), f"{entry['graphId']} must be non-complete"
+        for vertex in g.vertices:
+            assert isinstance(vertex, Vertex), f"Vertex {vertex} does not inherit from graph_combined.Vertex"
+            assert len(vertex.neigh) == len(vertex.outgoingEdges), (
+                f"neigh/outgoingEdges desync in {entry['graphId']} on {vertex.nodeId}"
+            )
+            for (nbr, weight), edge in zip(vertex.neigh, vertex.outgoingEdges):
+                assert nbr.nodeId == edge.targetNodeId and weight == edge.distanceMeters
+
+    # 14c. Every indoor node across all 18 subgraphs owns a valid buildingId + Building P alias fix
+    for bid, sg in allSubgraphs.items():
+        for node in sg.getAllNodes():
+            assert node.buildingId, f"Missing buildingId on {bid}.{node.nodeId}"
+    assert getBuildingSubgraph("buildingP").resolveRoomQuery("observatorio") == "p_observatory_501"
+    assert len(childrenGraphsPkg.BUILDING_SUBGRAPHS) == 18
+    print(
+        f"  [OK] All {inv['totalBackendGraphs']} backend graphs verified on graph_combined.py "
+        f"(|V|={inv['totals']['vertices']}, |E_dir|={inv['totals']['directedEdges']}, 100% neigh<->outgoingEdges synced)."
+    )
 
     print("\n" + "=" * 80)
     print("  ALL GRAPH, WALKWAY, HUMAN-INSTRUCTION, GPS & SUBGRAPH TESTS PASSED!")
