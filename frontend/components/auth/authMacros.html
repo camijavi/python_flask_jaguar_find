@@ -12,7 +12,7 @@
 } %}
 
 {% macro field(id, label, icon, type='text', placeholder='', extra='', full=false) %}
-<div class="{{ 'sm:col-span-2' if full }}">
+<div class="{{ 'sm:col-span-2' if full }} field-container" data-field="{{ id }}">
     <label for="{{ id }}" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ label }}</label>
     <div class="relative">
         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
@@ -21,11 +21,15 @@
         <input type="{{ type }}" id="{{ id }}" name="{{ id }}" placeholder="{{ placeholder }}" required {{ extra|safe }}
                class="auth-input w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 transition">
     </div>
+    <p id="{{ id }}-error" class="field-error-message hidden mt-1.5 text-xs text-rose-600 font-medium flex items-center gap-1">
+        <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+        <span class="error-text"></span>
+    </p>
 </div>
 {% endmacro %}
 
 {% macro select(id, label, icon, options, full=false) %}
-<div class="{{ 'sm:col-span-2' if full }}">
+<div class="{{ 'sm:col-span-2' if full }} field-container" data-field="{{ id }}">
     <label for="{{ id }}" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ label }}</label>
     <div class="relative">
         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
@@ -36,6 +40,10 @@
             {% for value, text in options %}<option value="{{ value }}">{{ text }}</option>{% endfor %}
         </select>
     </div>
+    <p id="{{ id }}-error" class="field-error-message hidden mt-1.5 text-xs text-rose-600 font-medium flex items-center gap-1">
+        <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+        <span class="error-text"></span>
+    </p>
 </div>
 {% endmacro %}
 

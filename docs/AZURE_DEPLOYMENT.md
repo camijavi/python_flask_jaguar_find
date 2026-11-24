@@ -21,7 +21,10 @@ Useful URLs:
 
 ## How Deployment Works
 
-The deployment package contains the entire repository. Azure installs the Python dependencies from `requirements.txt` and runs `startup.sh`, which starts Gunicorn with the root `app.py` WSGI entry point.
+The deployment package contains the application files but excludes the local
+SQLite database, environment files, and development artifacts. Azure installs
+the Python dependencies from `requirements.txt` and runs `startup.sh`, which
+starts Gunicorn with the root `app.py` WSGI entry point.
 
 The Flask process serves all application parts:
 
@@ -34,15 +37,19 @@ No separate frontend hosting service is needed for the current architecture.
 
 ## Database Seeding and Persistence
 
-The app uses SQLite. On its first start, `startup.sh` copies the deployed `jaguarFind.db` to `/home/jaguarFind.db`. The `/home` directory is persistent App Service storage, so later code deployments do not replace the live database.
+The app uses SQLite. The repository's `jaguarFind.db` is a local-only file and
+is excluded from source control and deployment packages. The live database is
+at `/home/jaguarFind.db`, which is persistent App Service storage and is not
+replaced by code deployments.
 
-To initialize a new deployment with the existing data:
+The startup script can copy a seed database if one is deliberately included in
+a deployment package, but normal deployments do not include one. To initialize
+a new App Service or restore a database, use a deliberate backup/restore or
+database initialization procedure; do not rely on the local database file.
 
-1. Make sure `jaguarFind.db` is present in the deployment package. It is intentionally allowed by `.gitignore`; if deploying from a Git checkout, verify that the database is included in the package.
-2. Deploy the application using the instructions below.
-3. Check `/api/health` and the map page after deployment.
-
-The database is copied only when `/home/jaguarFind.db` does not already exist. Re-deploying code therefore preserves changes made to the live database. To refresh or replace the live database, back it up first and use a deliberate database migration/replacement procedure; do not expect an ordinary code deployment to refresh its contents.
+The database copy is performed only when `/home/jaguarFind.db` does not
+already exist. Re-deploying code therefore preserves changes made to the live
+database. Back it up before schema changes or manual data maintenance.
 
 **SQLite is for a single App Service instance.** Do not scale this app out to multiple instances while using SQLite: each instance may have a different local database file. For multi-instance scaling, move persistence to a managed database such as Azure Database for PostgreSQL.
 
@@ -52,7 +59,7 @@ The database is copied only when `/home/jaguarFind.db` does not already exist. R
 
 - Azure CLI installed and signed in with access to `jaguar-find-rg`
 - Python dependencies, including Gunicorn, listed in `requirements.txt`
-- The intended, sanitized `jaguarFind.db` file in the repository root
+- The existing App Service database is persisted under `/home/jaguarFind.db`
 
 From the repository root on macOS or Linux:
 
@@ -62,7 +69,8 @@ az account set --subscription "Azure for Students"
 
 chmod +x startup.sh
 zip -r /tmp/jaguarfind-deploy.zip . \
-  -x '.git/*' '.venv/*' '__pycache__/*' '*.pyc' '.pytest_cache/*' '.DS_Store'
+  -x '.git/*' '.venv/*' '__pycache__/*' '*.pyc' '.pytest_cache/*' \
+     '.DS_Store' '.env*' 'jaguarFind.db'
 
 az webapp deploy \
   --resource-group jaguar-find-rg \
@@ -136,16 +144,17 @@ the application identity is responsible for that at runtime.
 
 This workflow deploys application code, not the Speech resource or other Azure
 infrastructure. Provision infrastructure separately through reviewed IaC.
-The workflow package includes `jaguarFind.db` if it is tracked in the
-repository; keep that seed file sanitized. `startup.sh` copies it only when
-`/home/jaguarFind.db` does not already exist.
+The workflow excludes the local `jaguarFind.db`; the live database remains in
+persistent App Service storage. `startup.sh` can copy a seed database only if
+one is deliberately added to a deployment package and the persistent file
+does not already exist.
 
 ## Operational Notes
 
 - Keep the App Service at one instance while the application uses SQLite.
 - Keep `DATABASE_PATH` set to `/home/jaguarFind.db`; a database under the deployment directory may be replaced during deployment.
 - Back up the live database before schema changes or manual data maintenance.
-- Treat any database packaged for deployment as data that will be published to the running app. Remove test accounts, personal data, and default credentials before deployment.
+- Keep the local `jaguarFind.db` out of source control and deployment packages; back up the live database before maintenance.
 - Keep `SECRET_KEY` in App Service configuration and use a strong random value.
 - Confirm the health endpoint and important application workflows after each deployment.
 

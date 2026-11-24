@@ -30,6 +30,9 @@ INSTITUTIONAL_DOMAIN = "@uamv.edu.ni"
 MIN_PASSWORD_LENGTH = 6
 USER_TYPE_LABELS = {1: "student", 2: "collaborator", 3: "visitor", 4: "admin"}
 
+CEDULA_REGEX = re.compile(r"^\d{3}-?\d{6}-?\d{4}[A-Za-z]$")
+EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+
 
 def _sanitizeUser(user: Dict[str, Any]) -> Dict[str, Any]:
     """Removes sensitive security fields (e.g., PasswordHash) before client return."""
@@ -178,27 +181,64 @@ def signup():
     email = str(email).strip().lower() if email else None
     password = payload.get("password") or None
 
-    if not fullName:
-        return jsonify({"success": False, "error": L("El nombre completo es obligatorio.", "FullName is required.")}), 400
+    if not fullName or len(fullName) < 2:
+        return jsonify({"success": False, "field": "nombre", "error": L("El nombre completo es obligatorio.", "FullName is required.")}), 400
 
     # Role specific validations
     if userTypeId == 1:
         if not cif or not re.fullmatch(r"\d{8}", cif):
-            return jsonify({"success": False, "error": L("El CIF debe tener exactamente 8 dígitos.",
+            return jsonify({"success": False, "field": "cif", "error": L("El CIF debe tener exactamente 8 dígitos.",
                                                          "CIF must be exactly 8 digits.")}), 400
-    if userTypeId == 2 and not govermentId:
-        return jsonify({"success": False, "error": L("La cédula es obligatoria para colaboradores.",
-                                                     "Government ID is required for collaborators.")}), 400
-    if userTypeId == 3 and (not govermentId or not phoneNumber):
-        return jsonify({"success": False, "error": L("Los visitantes deben indicar cédula y teléfono.",
-                                                     "Both Government ID and PhoneNumber are required for visitors.")}), 400
+    if userTypeId == 2:
+        if not govermentId:
+            return jsonify({"success": False, "field": "cedula", "error": L("La cédula es obligatoria para colaboradores.",
+                                                         "Government ID is required for collaborators.")}), 400
+        if not CEDULA_REGEX.fullmatch(govermentId):
+            return jsonify({"success": False, "field": "cedula", "error": L("Formato de cédula inválido. Debe ser: 001-000000-0000A.",
+                                                         "Invalid National ID format. Expected format: 001-000000-0000A.")}), 400
+        cleanGov = govermentId.replace("-", "").upper()
+        govermentId = f"{cleanGov[:3]}-{cleanGov[3:9]}-{cleanGov[9:13]}{cleanGov[13]}"
+
+    if userTypeId == 3:
+        # Enforce required-field validation on every input in the visitor form so no empty fields can be submitted:
+        # 1. Full name (already checked above)
+        # 2. ID (Cédula): Validate against the expected format
+        if not govermentId:
+            return jsonify({"success": False, "field": "cedula", "error": L("La cédula de identidad es obligatoria para visitantes.",
+                                                         "National ID is required for visitors.")}), 400
+        if not CEDULA_REGEX.fullmatch(govermentId):
+            return jsonify({"success": False, "field": "cedula", "error": L("Formato de cédula inválido. Debe ser: 001-000000-0000A.",
+                                                         "Invalid National ID format. Expected format: 001-000000-0000A.")}), 400
+        cleanGov = govermentId.replace("-", "").upper()
+        govermentId = f"{cleanGov[:3]}-{cleanGov[3:9]}-{cleanGov[9:13]}{cleanGov[13]}"
+
+        # 3. Phone Number: Strip or reject non-numeric characters; allow digits only
+        if not phoneNumber:
+            return jsonify({"success": False, "field": "telefono", "error": L("El número de teléfono es obligatorio para visitantes.",
+                                                         "Phone number is required for visitors.")}), 400
+        if re.search(r"[a-zA-Z]", phoneNumber):
+            return jsonify({"success": False, "field": "telefono", "error": L("El número de teléfono no debe contener letras; solo dígitos.",
+                                                         "Phone number must not contain letters; digits only.")}), 400
+        cleanPhone = re.sub(r"\D", "", phoneNumber)
+        if not cleanPhone or len(cleanPhone) < 7:
+            return jsonify({"success": False, "field": "telefono", "error": L("El número de teléfono debe contener solo dígitos (mínimo 8 dígitos).",
+                                                         "Phone number must contain digits only (minimum 8 digits).")}), 400
+        phoneNumber = cleanPhone
+
+        # 4. Email: Validate standard email format, requiring @ and a valid domain
+        if not email:
+            return jsonify({"success": False, "field": "correoPersonal", "error": L("El correo electrónico es obligatorio para visitantes.",
+                                                         "Email is required for visitors.")}), 400
+        if not EMAIL_REGEX.fullmatch(email):
+            return jsonify({"success": False, "field": "correoPersonal", "error": L("Ingresa un correo electrónico válido con '@' y un dominio válido.",
+                                                         "Enter a valid email address with '@' and a valid domain.")}), 400
 
     if userTypeId in (1, 2):
         if not email or not email.endswith(INSTITUTIONAL_DOMAIN):
-            return jsonify({"success": False, "error": L(f"Usa tu correo institucional ({INSTITUTIONAL_DOMAIN}).",
+            return jsonify({"success": False, "field": "correo", "error": L(f"Usa tu correo institucional ({INSTITUTIONAL_DOMAIN}).",
                                                          f"Use your institutional email ({INSTITUTIONAL_DOMAIN}).")}), 400
         if not password or len(password) < MIN_PASSWORD_LENGTH:
-            return jsonify({"success": False, "error": L(f"La contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.",
+            return jsonify({"success": False, "field": "password", "error": L(f"La contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.",
                                                          f"Password must be at least {MIN_PASSWORD_LENGTH} characters.")}), 400
     else:
         password = None  # visitors are passwordless
@@ -223,13 +263,14 @@ def signup():
         errStr = str(err).lower()
         if "cif" in errStr:
             msg = L("Ya existe un usuario con ese CIF.", "A user with this CIF already exists.")
-            return jsonify({"success": False, "error": msg}), 409
+            return jsonify({"success": False, "field": "cif", "error": msg}), 409
         if "govermentid" in errStr:
             msg = L("Ya existe un usuario con esa cédula.", "A user with this Government ID already exists.")
-            return jsonify({"success": False, "error": msg}), 409
+            return jsonify({"success": False, "field": "cedula", "error": msg}), 409
         if "email" in errStr:
             msg = L("Ya existe un usuario con ese correo.", "A user with this Email already exists.")
-            return jsonify({"success": False, "error": msg}), 409
+            fieldKey = "correoPersonal" if userTypeId == 3 else "correo"
+            return jsonify({"success": False, "field": fieldKey, "error": msg}), 409
         if "username" in errStr:
             msg = L("Ese nombre de usuario ya está tomado.", "This UserName is already taken.")
             return jsonify({"success": False, "error": msg}), 409
