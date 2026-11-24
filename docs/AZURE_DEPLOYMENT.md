@@ -114,6 +114,32 @@ az webapp log tail \
   --name jaguar-find-app-service
 ```
 
+## Automatic Deployment from `main`
+
+The GitHub Actions workflow at `.github/workflows/deploy.yml` runs the campus
+graph test and deploys the application to the existing App Service whenever
+changes are pushed to `main`. It uses GitHub OIDC rather than a publish profile
+or client secret.
+
+Run [`scripts/setup-azure-auth-for-pipeline.sh`](../scripts/setup-azure-auth-for-pipeline.sh)
+from the repository root after signing in with `az login` and `gh auth login`.
+The helper configures the App Service managed identity for Speech, creates a
+separate GitHub deployment identity with a federated credential, limits that
+identity to this App Service, and sets the required GitHub `production`
+environment variables. It also creates the `production` environment with
+deployments restricted to `main`.
+
+The App Service identity needs the **Cognitive Services Speech User** role on
+the Speech resource. The separate GitHub identity needs **Website Contributor**
+on the App Service. Do not grant the GitHub identity Speech data-plane access;
+the application identity is responsible for that at runtime.
+
+This workflow deploys application code, not the Speech resource or other Azure
+infrastructure. Provision infrastructure separately through reviewed IaC.
+The workflow package includes `jaguarFind.db` if it is tracked in the
+repository; keep that seed file sanitized. `startup.sh` copies it only when
+`/home/jaguarFind.db` does not already exist.
+
 ## Operational Notes
 
 - Keep the App Service at one instance while the application uses SQLite.
