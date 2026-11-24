@@ -21,7 +21,7 @@
   "map": {
     "title": "UAM Campus Navigator",
     "where_am_i": "Where are you?",
-    "where_am_i_placeholder": "Use GPS, scan a QR code, or pick a location...",
+    "where_am_i_placeholder": "Use GPS or pick a location...",
     "use_gps": "Use my current location",
     "outside_campus": "You are outside the UAM campus. The main entrance has been set as your starting point.",
     "where_to_go": "Where do you want to go?",

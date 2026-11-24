@@ -16,8 +16,8 @@
  * 1. Inicialización y Event Listeners:
  *    - Captura elementos del DOM: selects de origen/destino, toggle de accesibilidad,
  *      contenedor SVG del mapa, lista de instrucciones y panel de métricas.
- *    - Lee parámetros de URL (ej. ?origen=GATE_1 o ?origen=GATE_2) para activar
- *      automáticamente rutas cuando el usuario escanea un Código QR físico en una entrada.
+ *    - Pendiente para una futura integración QR: leer un parámetro de ubicación validado
+ *      (ej. ?origen=GATE_1) para establecer el origen al abrir un enlace de señalización.
  * 
  * 2. Consumo de la API de Rutas (Dijkstra):
  *    - trazarRuta():

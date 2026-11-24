@@ -18,8 +18,8 @@ Each file has its title in **English** and contains the full information in both
  * **EN:** System overview, UAM institutional dynamics (semesters, visitor profiles, clinics, and faculties), the two core problems, and mathematical graph modeling.
 
 2. **[CAMPUS_MAP.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/CAMPUS_MAP.md)**
- * **ES:** Módulo de navegación peatonal (Google Maps UAM), acceso público sin registro, Códigos QR en las 3 entradas al campus, aulas piso por piso (B-101 a B-106 de izquierda a derecha), baños en pasillo, rampas accesibles y síntesis de voz con Web Speech API nativa.
- * **EN:** Campus wayfinding subsystem, public access, QR codes at all 3 campus gates, floor-by-floor classrooms (B-101 to B-106), corridor restrooms, accessible ramps , and native browser Web Speech API.
+ * **ES:** Módulo de navegación peatonal, acceso público sin registro, GPS y selección manual de ubicación. Los códigos QR en las entradas son un requisito futuro para una adopción oficial; aún no están implementados. Incluye aulas, rampas accesibles y síntesis de voz.
+ * **EN:** Public campus wayfinding with GPS and manual location selection. QR codes at campus entrances are a future requirement for official adoption and are not implemented yet. Includes classrooms, accessible routes, and voice instructions.
 
 3. **[LOST_AND_FOUND.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/LOST_AND_FOUND.md)**
  * **ES:** Módulo de objetos perdidos, autenticación institucional con correo `@uamv.edu.ni`, roles (**Estudiante** con soporte para doble titulación, **Colaborador** con cédula, **Administrador** con panel de delegación y creación de usuarios), ciclo de 3 estados, regla antifraude y SQLite3.

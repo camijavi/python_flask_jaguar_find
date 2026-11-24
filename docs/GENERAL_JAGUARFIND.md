@@ -32,7 +32,7 @@ La Universidad Americana (UAM) mantiene una vida universitaria muy activa con ev
 
 ### 3. Planteamiento de los Dos Problemas Centrales
 * **Problema 1: Orientación en el Campus (Módulo Mapa / JaguarMaps):** 
- Los mapas físicos de la UAM están concentrados casi exclusivamente cerca de los **Edificios A y B**. Quienes ingresan por los otros dos accesos (**Segundo Acceso Noreste** o **Tercer Acceso Norte Copérnico**) quedan muy lejos de la señalética. JaguarMaps ofrece navegación interactiva abierta (sin login), accesible mediante Códigos QR en las 3 entradas.
+ Los mapas físicos de la UAM están concentrados casi exclusivamente cerca de los **Edificios A y B**. Quienes ingresan por los otros dos accesos (**Segundo Acceso Noreste** o **Tercer Acceso Norte Copérnico**) quedan muy lejos de la señalética. JaguarMaps ofrece navegación interactiva abierta (sin login). **Los códigos QR no están implementados actualmente**; si la UAM adopta la aplicación como sitio oficial, el acceso mediante códigos QR en las entradas debe implementarse antes del lanzamiento.
 * **Problema 2: Cuaderno Físico de Objetos Perdidos (Módulo Objetos Perdidos):** 
  Sustituye el registro en papel del Edificio A por una plataforma institucional autenticada con 4 roles de usuario (Estudiante, Colaborador, Administrador y Visitante externo passwordless con purga a los 6 meses), ciclo de 3 estados y regla antifraude.
 
@@ -42,7 +42,7 @@ La Universidad Americana (UAM) mantiene una vida universitaria muy activa con ev
 
 #### A. Mecanismo del Grafo en el Sistema:
 * **Grafo Topológico Peatonal $G_{\text{campus}} = (V, E, W)$ en `backend/graphUam.py`:**
- * $V$: Nodos geolocalizados que representan Casetas de Entrada con Códigos QR (`GATE_1`, `GATE_2`, `GATE_3`), aulas piso a piso (`B_101` a `B_106`), baños, clínicas FODO, admisiones y bifurcaciones de pasillos.
+ * $V$: Nodos geolocalizados que representan accesos del campus (`GATE_1`, `GATE_2`, `GATE_3`), aulas piso a piso (`B_101` a `B_106`), baños, clínicas FODO, admisiones y bifurcaciones de pasillos. La asociación de estos accesos con códigos QR es un requisito futuro, no una función actual.
  * $E$: Aristas transitables con pesos $w(u,v) = \text{distancia en metros}$. Cada arista almacena la bandera booleana `esRutaAccesible`.
 * **Uso 1 — Navegación Peatonal (Dijkstra con Min-Heap $O((V+E)\log V)$):**
  * Si se activa el modo de silla de ruedas , se realiza una **poda algorítmica** de aristas con escalones o gradas.
@@ -69,7 +69,7 @@ La Universidad Americana (UAM) mantiene una vida universitaria muy activa con ev
 ```mermaid
 flowchart TD
  subgraph S1["Módulo 1: JaguarMaps (Público - Sin Registro)"]
- A1["Visitante / Estudiante"] -->|Escaneo QR o GPS| B1["Selección de Origen en Caseta"]
+ A1["Visitante / Estudiante"] -->|GPS (QR futuro) o selección manual| B1["Selección de Origen"]
  B1 --> C1["Selección de Destino: Aulas B-101..106, Clínicas FODO"]
  C1 -->|Toggle Silla de Ruedas| D1["Filtro de Accesibilidad "]
  D1 --> E1["Motor Dijkstra con Min-Heap heapq"]
@@ -134,7 +134,7 @@ Universidad Americana (UAM) sustains high daily activity with academic symposium
 
 ### 3. The Two Core Problems Addressed
 * **Problem 1: Wayfinding & Entrance Gate Distance (Campus Map Module):** 
- Physical map boards at UAM are clustered almost exclusively around **Buildings A and B**. Visitors entering via the other two gates (**Northeast Second Entrance** or **North Copernicus Third Entrance**) are stranded far away from signs. The map module provides open pedestrian guidance (no login required) via QR codes at all 3 gates.
+ Physical map boards at UAM are clustered almost exclusively around **Buildings A and B**. Visitors entering via the other two gates (**Northeast Second Entrance** or **North Copernicus Third Entrance**) are stranded far away from signs.  The map module provides open pedestrian guidance (no login required). **QR codes are not implemented today**; if UAM adopts the application as its official site, QR entry points at the campus gates must be implemented before launch.
 * **Problem 2: Paper Notebook at Building A (Lost & Found Module):** 
  Replaces the handwritten paper logbook at Building A with an authenticated platform supporting 4 distinct user roles (Student, Collaborator, Administrator, and passwordless Visitor with 6-month inactivity retention), an auditable 3-state custody lifecycle, and anti-fraud validation.
 
@@ -144,7 +144,7 @@ Universidad Americana (UAM) sustains high daily activity with academic symposium
 
 #### A. Graph Mechanism in the System:
 * **Topological Campus Graph $G_{\text{campus}} = (V, E, W)$ in `backend/graphUam.py`:**
- * $V$: Nodes representing entrance gate QR codes (`GATE_1`, `GATE_2`, `GATE_3`), classroom entrances (`B_101` to `B_106`), restrooms, clinics, and corridor intersections.
+ * $V$: Nodes representing campus entrances (`GATE_1`, `GATE_2`, `GATE_3`), classroom entrances (`B_101` to `B_106`), restrooms, clinics, and corridor intersections. Linking these entrances to QR codes is a future requirement, not a current feature.
  * $E$: Walkable corridors weighted by physical distance $w(u,v)$ in meters and an `esRutaAccesible` flag.
 * **Role 1 — Pedestrian Navigation (Dijkstra with Min-Heap $O((V+E)\log V)$):**
  * When wheelchair accessibility is toggled, edges with steps/stairs are pruned out.
@@ -171,7 +171,7 @@ Universidad Americana (UAM) sustains high daily activity with academic symposium
 ```mermaid
 flowchart TD
  subgraph S1["Module 1: JaguarMaps (Public - No Login)"]
- A1["Visitor / Student on Campus"] -->|Scan Gate QR or GPS| B1["Gate Origin Selected"]
+ A1["Visitor / Student on Campus"] -->|GPS (QR planned) or manual selection| B1["Origin Selected"]
  B1 --> C1["Select Destination: Classrooms B-101..106, Clinics"]
  C1 -->|Wheelchair Toggle| D1["Accessibility Filter "]
  D1 --> E1["Dijkstra Engine with Min-Heap heapq"]

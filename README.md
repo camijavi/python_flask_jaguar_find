@@ -12,7 +12,7 @@ At the same time, lost objects at the university are traditionally recorded in a
 
 The system combines both needs into a shared campus graph:
 
-- **JaguarMaps** lets users calculate pedestrian routes, use GPS or a campus QR-code location, and optionally exclude inaccessible walkways.
+- **JaguarMaps** lets users calculate pedestrian routes, use GPS or choose a campus location manually, and optionally exclude inaccessible walkways.
 - **JaguarFind** lets authorized users report and manage lost objects while administrators control custody and claims.
 
 ## Main Features
@@ -22,12 +22,21 @@ The system combines both needs into a shared campus graph:
 - Public access without account registration
 - Manual origin and destination selection
 - Browser GPS-based nearest-node detection
-- Campus entrance and location QR-code support
+- GPS-based current-location detection
 - Shortest pedestrian route calculation with Dijkstra's algorithm
 - Optional accessible-route filtering
 - Turn-by-turn instructions
 - English and Spanish interfaces
 - Browser text-to-speech support
+
+### QR codes for official university adoption
+
+**Status: planned, not implemented.** The current application does not read QR-code
+location links or provide QR-code deployment support. If UAM adopts JaguarFind as
+an official campus site, QR-code entry points should be implemented before that
+launch. Scanning a campus QR code with a phone should open the public map and set
+the correct, validated campus location as the origin. The university should also
+approve the locations, destination URLs, and physical signage.
 
 ### Lost-and-found management
 

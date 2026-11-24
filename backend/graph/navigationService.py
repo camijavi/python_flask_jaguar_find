@@ -642,10 +642,14 @@ class NavigationService:
         lang: str = "eng",
         accuracyMeters: Optional[float] = None,
         floorHint: Optional[int] = None,
+        altitudeMeters: Optional[float] = None,
+        altitudeAccuracyMeters: Optional[float] = None,
+        beaconId: Optional[str] = None,
+        beaconFloor: Optional[int] = None,
     ) -> dict:
         """
-        Matches user GPS coordinates against the full campus graph hierarchy
-        (18 building subgraphs + pedestrian walkways + macro nodes).
+        Matches user GPS coordinates against defined campus building boundaries
+        (polygons & radius checks), multi-floor inference, and the full graph hierarchy.
         """
         return self.gpsMatcher.matchLocation(
             userLat,
@@ -653,7 +657,32 @@ class NavigationService:
             accuracyMeters=accuracyMeters,
             floorHint=floorHint,
             lang=lang,
+            altitudeMeters=altitudeMeters,
+            altitudeAccuracyMeters=altitudeAccuracyMeters,
+            beaconId=beaconId,
+            beaconFloor=beaconFloor,
         )
+
+    def getBuildingLocations(
+        self,
+        buildingId: str,
+        userLat: Optional[float] = None,
+        userLng: Optional[float] = None,
+        floor: Optional[int] = None,
+        lang: str = "spa",
+    ) -> dict:
+        """Returns all manual location options for a campus building grouped by floor."""
+        return self.gpsMatcher.getBuildingLocations(
+            buildingId=buildingId,
+            userLat=userLat,
+            userLng=userLng,
+            floor=floor,
+            lang=lang,
+        )
+
+    def getCampusEntranceOptions(self, lang: str = "spa") -> List[dict]:
+        """Returns quick-pick campus entrances and central hubs for fallback selection."""
+        return self.gpsMatcher.getCampusEntranceOptions(lang=lang)
 
 
 # Singleton instance for convenient import

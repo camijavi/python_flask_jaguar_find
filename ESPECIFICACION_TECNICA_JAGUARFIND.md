@@ -14,7 +14,9 @@
 | **Integrantes del Equipo** | 1. **Br. Camila Javiera Navarro Centeno**<br>2. **Br. Francis Alejandra Solórzano Morales**<br>3. **Br. James Santiago Fernandez Obregon**<br>4. **Br. Elias Abraham Solis Guevara** |
 | **Estructura de Datos Principal** | **Grafo Ponderado, Dirigido y No Completo** con implementación ad-hoc de **Algoritmo de Dijkstra** y cola de prioridad |
 | **Stack Tecnológico** | **Backend:** Python 3 + Flask (Jinja2)<br>**Base de Datos:** SQLite3 (motor relacional embebido)<br>**Frontend:** HTML5 semántico + Tailwind CSS (Play CDN) + Geolocation API del navegador |
-| **Módulos Principales** | 1. **JaguarMaps (Público, Abierto y Sin Registro):** Navegador peatonal "¿Dónde estoy? $\to$ ¿A dónde vas?" con Dijkstra, Códigos QR y Wi-Fi.<br>2. **JaguarFind (Interno y Autenticado con CIF):** Gestión integral y trazable de objetos perdidos en Edificio A. |
+| **Módulos Principales** | 1. **JaguarMaps (Público, Abierto y Sin Registro):** Navegador peatonal "¿Dónde estoy? $\to$ ¿A dónde vas?" con Dijkstra y GPS. Los códigos QR son un requisito futuro para una adopción oficial, no una función implementada.<br>2. **JaguarFind (Interno y Autenticado con CIF):** Gestión integral y trazable de objetos perdidos en Edificio A. |
+
+> **Estado de los códigos QR:** La aplicación actual no procesa ubicaciones recibidas por QR ni genera códigos para señalización. Si la UAM decide adoptar JaguarFind como sitio oficial, se deberá implementar antes del lanzamiento el acceso por códigos QR: cada código abrirá el mapa público con un origen válido aprobado por la universidad. Los flujos y ejemplos QR de esta especificación describen ese requisito futuro, no el comportamiento actual.
 
 ---
 
@@ -27,7 +29,7 @@ graph TD
     A["Infraestructura del Campus UAM"] --> B["Problema 1: Orientación y Movilidad Peatonal"]
     A --> C["Problema 2: Gestión Física de Objetos Perdidos"]
 
-    B --> D["JaguarMaps (Google Maps UAM)<br>• Acceso 100% público y sin registro<br>• Códigos QR en caseta y postes<br>• Integración Portal Cautivo Wi-Fi<br>• ¿Dónde estoy? -> ¿A dónde vas?"]
+    B --> D["JaguarMaps (Google Maps UAM)<br>• Acceso 100% público y sin registro<br>• QR como requisito futuro para adopción oficial<br>• Integración Portal Cautivo Wi-Fi<br>• ¿Dónde estoy? -> ¿A dónde vas?"]
     C --> E["JaguarFind (Gestión Interna)<br>• Autenticación CIF 8 dígitos<br>• Sustitución de cuaderno Edificio A<br>• Trazabilidad de 3 estados<br>• Reconstrucción Ruta de Búsqueda"]
 
     D --> F["Motor Común: Grafo Ponderado, Dirigido y No Completo + Algoritmo de Dijkstra"]
@@ -42,7 +44,7 @@ graph TD
   3. No permiten buscar por servicios o dependencias internas (ej. "¿Dónde queda la Caja/Tesorería?", "¿Dónde está el Laboratorio MAC?", "¿Dónde está el Observatorio Copérnico?").
 * **Estrategia de Solución de JaguarMaps:**
   - **Acceso Inmediato Sin Registro:** No se exige cuenta ni inicio de sesión a los visitantes. El mapa digital se abre al instante en el navegador de cualquier teléfono o computadora.
-  - **Puntos de Contacto Físicos mediante Códigos QR:** Se diseñan códigos QR contextuales para ser colocados en la Caseta de Entrada Principal, paradas de autobús, postes y accesos a edificios. Al escanear el QR, la URL contiene el parámetro de ubicación (ej. `https://jaguarfind.uam.edu.ni/mapa?origen=PARQUEO_PPAL`), abriendo el mapa con el pin "Usted está aquí" ya fijado.
+  - **Requisito futuro — Puntos de Contacto mediante Códigos QR:** Para una adopción oficial, implementar códigos contextuales para la Caseta de Entrada Principal y otros puntos que apruebe la universidad. Al escanear uno, su URL deberá abrir el mapa público con un origen validado (ej. `https://.../mapa?origen=PARQUEO_PPAL`). Actualmente no se procesan estos parámetros ni se generan códigos.
   - **Página de Éxito / Portal Cautivo Wi-Fi UAM:** Al conectarse a las redes Wi-Fi institucionales (`UAM_Visitantes` o `UAM_Estudiantes`), se presenta la bienvenida con un acceso directo al mapa interactivo.
 
 ### 1.2. Problema 2: Gestión Manual e Ineficiente de Objetos Perdidos
@@ -63,13 +65,13 @@ sequenceDiagram
     autonumber
     actor Usuario as Visitante / Estudiante
     participant UI as Interfaz JaguarMaps (Web)
-    participant GPS as Geolocation API / QR
+    participant GPS as Geolocation API / QR futuro
     participant Engine as Motor Dijkstra (backend/graphUam.py)
     participant Map as Croquis Interactivo UAM
 
     Usuario->>UI: Abre /mapa (libre, sin registro)
-    alt Escanea QR Físico en Caseta o Edificio
-        GPS-->>UI: Carga parámetro URL (?origen=PARQUEO_PPAL)
+    alt QR de señalización (requisito futuro, aún no implementado)
+        GPS-->>UI: Cargar parámetro de origen validado
     else Hace clic en "Usar mi Ubicación"
         UI->>GPS: navigator.geolocation.getCurrentPosition()
         GPS-->>UI: Coordenadas (lat, lon)
@@ -88,15 +90,15 @@ sequenceDiagram
 ```
 
 ### 2.1. Selector "¿Dónde estoy?" (Origen)
-Ofrece 3 métodos flexibles para garantizar que nadie quede sin ubicación:
+Actualmente ofrece dos métodos para seleccionar la ubicación. Para una adopción oficial se deberá agregar el acceso QR como tercer método:
 1. **Detección Automática vía GPS:** Con un botón "Mi ubicación actual", el navegador captura las coordenadas y Python calcula el nodo más cercano mediante la fórmula de Haversine.
-2. **Escaneo de Código QR Físico:** Cada tótem o caseta tiene un QR con URL parametrizada:
+2. **Selector Manual / Clic en el Mapa:** Permite buscar o hacer clic directo sobre cualquier edificio del croquis.
+3. **Requisito futuro — Código QR Físico:** Los códigos deberán abrir una URL parametrizada con un origen validado, una vez implementada esta función y aprobadas las ubicaciones por UAM. Ejemplos propuestos:
    - Caseta Entrada Sur: `/mapa?origen=PARQUEO_PPAL`
    - Edificio A (Recepción): `/mapa?origen=EDIF_A`
    - Edificio K (Cafetería): `/mapa?origen=EDIF_K`
    - Edificio P (Copérnico): `/mapa?origen=EDIF_P`
    - Edificio O (FIA / Ingeniería): `/mapa?origen=EDIF_O`
-3. **Selector Manual / Clic en el Mapa:** Permite buscar o hacer clic directo sobre cualquier edificio del croquis.
 
 ### 2.2. Selector "¿A dónde quieres ir?" (Destino con Catálogo de Dependencias)
 Los visitantes no siempre conocen el nombre de la letra del edificio; buscan por servicio, aula o facultad. El sistema incorpora un diccionario inteligente de resolución de dependencias:
@@ -249,7 +251,7 @@ graph TD
     subgraph Acceso Abierto sin Registro
         A1["Visitante / Estudiante / Padre de Familia"] --> A2["Ruta Pública: / o /mapa"]
         A2 --> A3["Navegación tipo Google Maps (Dijkstra)"]
-        A2 --> A4["Acceso por Códigos QR en Casetas"]
+        A2 --> A4["Acceso por QR (requisito futuro, no implementado)"]
         A2 --> A5["Ver objetos reportados en mapa (vista general)"]
     end
 
@@ -478,9 +480,9 @@ class GrafoUam:
 | Integrante / Rol | Especialidad | Responsabilidades y Entregables Clave |
 | :--- | :--- | :--- |
 | **Rol 1: Especialista en Estructuras de Datos**<br>*(Br. Camila Javiera Navarro)* | **Motor de Grafos y Algoritmos (`backend/graphUam.py`)** | • Implementar `Nodo`, `Arista` y `GrafoUam` en POO estructurada.<br>• Mapear los 20 nodos y conexiones reales del campus.<br>• Programar `calcularDijkstra()`, `generarIndicacionesPasoAPaso()`, `detectarNodoGps()` y `resolverDestino()`.<br>• Pruebas unitarias de caminos mínimos y rutas complejas. |
-| **Rol 2: Desarrollador Backend y Datos**<br>*(Br. Francis Alejandra Solórzano)* | **Persistencia y Controladores (`database.py` y `app.py`)** | • Configurar base de datos SQLite3 con esquema en camelCase.<br>• Programar endpoints `/api/ruta`, `/reportar` y `/login`.<br>• Validaciones regex: CIF (8 dígitos), clave (6 alfanuméricos), correo institucional `@uamv.edu.ni`.<br>• Manejo de parámetros de URL para códigos QR (`?origen=...`) y sesiones Flask. |
-| **Rol 3: Desarrollador Frontend y Mapa**<br>*(Br. James Santiago Fernandez)* | **Vistas de Estudiante y Mapa (`index.html`, `reportar.html`)** | • Maquetar la experiencia tipo Google Maps con Tailwind CSS.<br>• Selector "¿Dónde estoy?" (GPS / QR / manual) y "¿A dónde quieres ir?".<br>• Trazado dinámico de la ruta sobre el mapa `mapaUam.png` con SVG/canvas.<br>• Despliegue de ficha de resultados (distancia, minutos a pie y pasos). |
-| **Rol 4: Desarrollador Panel Admin e Integración**<br>*(Br. Elias Abraham Solis)* | **Módulo Edificio A y Despliegue (`admin.html`, `login.html`)** | • Construir tablero Kanban/Cards para Objetos Perdidos en Edificio A.<br>• Buscador rápido de tickets por CIF o nombre de estudiante.<br>• Modales de transición de estado con validación de `detalleOcultoValidador`.<br>• Generador de Códigos QR para imprimir en caseta y edificios. |
+| **Rol 2: Desarrollador Backend y Datos**<br>*(Br. Francis Alejandra Solórzano)* | **Persistencia y Controladores (`database.py` y `app.py`)** | • Configurar base de datos SQLite3 con esquema en camelCase.<br>• Programar endpoints `/api/ruta`, `/reportar` y `/login`.<br>• Validaciones regex: CIF (8 dígitos), clave (6 alfanuméricos), correo institucional `@uamv.edu.ni`.<br>• Tarea futura para adopción oficial: validar el parámetro de origen de los enlaces QR. |
+| **Rol 3: Desarrollador Frontend y Mapa**<br>*(Br. James Santiago Fernandez)* | **Vistas de Estudiante y Mapa (`index.html`, `reportar.html`)** | • Maquetar la experiencia tipo Google Maps con Tailwind CSS.<br>• Selector actual "¿Dónde estoy?" (GPS / manual) y "¿A dónde quieres ir?".<br>• Tarea futura para adopción oficial: seleccionar el origen desde un enlace QR validado.<br>• Trazado dinámico de la ruta sobre el mapa `mapaUam.png` con SVG/canvas. |
+| **Rol 4: Desarrollador Panel Admin e Integración**<br>*(Br. Elias Abraham Solis)* | **Módulo Edificio A y Despliegue (`admin.html`, `login.html`)** | • Construir tablero Kanban/Cards para Objetos Perdidos en Edificio A.<br>• Buscador rápido de tickets por CIF o nombre de estudiante.<br>• Modales de transición de estado con validación de `detalleOcultoValidador`.<br>• Tarea futura para adopción oficial: generar y probar códigos QR para ubicaciones aprobadas por UAM. |
 
 ---
 
@@ -491,7 +493,7 @@ class GrafoUam:
 ```mermaid
 flowchart LR
     F1["<b>Fase 1: Arquitectura Base</b><br>• Días 1-3 (13-15 Nov)<br>• TDA Grafo, Nodos y DB"] --> F2["<b>Fase 2: JaguarMaps</b><br>• Días 4-6 (16-18 Nov)<br>• Buscador y Dijkstra"]
-    F2 --> F3["<b>Fase 3: JaguarFind y QRs</b><br>• Días 7-9 (19-21 Nov)<br>• GPS, Tickets Edif A y QRs"]
+    F2 --> F3["<b>Fase 3: JaguarFind</b><br>• Días 7-9 (19-21 Nov)<br>• GPS y Tickets Edif A"]
     F3 --> F4["<b>Fase 4: Cierre y Defensa</b><br>• Días 10-12 (22-24 Nov)<br>• Pruebas y Presentación"]
 ```
 
@@ -501,7 +503,7 @@ flowchart LR
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Fase 1: Cimientos y Arquitectura** | **Días 1 a 3**<br>*(13 - 15 Nov)* | **GrafoUam y Persistencia** | • Implementar clases `Nodo`, `Arista` y `GrafoUam` en `backend/graphUam.py`.<br>• Mapear los 20 nodos y conexiones del campus UAM con distancias en metros.<br>• Crear esquema SQLite3 en `database.py` (tablas `usuarios` y `objetosPerdidos`).<br>• Validaciones regex para CIF (8 dígitos), clave (6 alfanuméricos) y correo `@uamv.edu.ni`. | **Camila Navarro** (Estructuras)<br>**Francis Solórzano** (Backend) | • `backend/graphUam.py` funcional con Dijkstra inicial.<br>• `database.py` con tablas creadas y semillas de prueba. |
 | **Fase 2: Motor Google Maps UAM** | **Días 4 a 6**<br>*(16 - 18 Nov)* | **JaguarMaps (Rutas Públicas)** | • Programar diccionario de dependencias (40+ lugares mapeados a nodos).<br>• Implementar generador de indicaciones textuales paso a paso y tiempo a pie.<br>• Maquetar vista dividida con Tailwind CSS en `index.html`.<br>• Implementar selector "¿Dónde estoy?" y "¿A dónde quieres ir?" con trazado sobre `mapaUam.png`. | **James Fernandez** (Frontend)<br>**Camila Navarro** (Estructuras) | • Endpoint `/api/ruta` respondiendo en JSON.<br>• Interfaz web pública navegable y responsive. |
-| **Fase 3: Objetos Perdidos y QRs** | **Días 7 a 9**<br>*(19 - 21 Nov)* | **JaguarFind y Caseta de Entrada** | • Integrar geolocalización HTML5 en `reportar.html` con sugerencia de nodo por Haversine.<br>• Construir tablero Kanban/Cards en `admin.html` para la oficina del Edificio A.<br>• Programar transiciones de los 3 estados y validación antifraude (`detalleOcultoValidador`).<br>• Diseñar plantillas de Códigos QR para imprimir en la Caseta Principal y postes (`?origen=...`). | **Elias Solis** (Admin e Integración)<br>**Francis Solórzano** (Backend) | • Flujo completo de reporte y entrega.<br>• Códigos QR funcionales para acceso directo. |
+| **Fase 3: Objetos Perdidos** | **Días 7 a 9**<br>*(19 - 21 Nov)* | **JaguarFind** | • Integrar geolocalización HTML5 en `reportar.html` con sugerencia de nodo por Haversine.<br>• Construir tablero Kanban/Cards en `admin.html` para la oficina del Edificio A.<br>• Programar transiciones de los 3 estados y validación antifraude (`detalleOcultoValidador`). | **Elias Solis** (Admin e Integración)<br>**Francis Solórzano** (Backend) | • Flujo completo de reporte y entrega. |
 | **Fase 4: Pruebas, Refinamiento y Cierre** | **Días 10 a 12**<br>*(22 - 24 Nov)* | **QA, Documentación y Presentación** | • Batería de pruebas unitarias (`pytest`) para caminos mínimos y límites de grafos.<br>• Pruebas de usabilidad en móviles (simulación en campus UAM).<br>• Preparación de diapositivas de defensa con demostración en vivo.<br>• Revisión final del repositorio y `README.md`. | **Todo el Equipo** (Camila, Francis, James, Elias) | • Sistema 100% operativo y probado.<br>• Presentación de defensa lista para el jurado. |
 
 ---
@@ -509,6 +511,6 @@ flowchart LR
 ## 9. Criterios de Evaluación y Argumentos de Defensa ante el Jurado
 
 1. **Doble Propósito con una Única Estructura de Datos:** Destacar que no se inventaron estructuras innecesarias; el mismo grafo modela el campus tanto para guiar a un visitante que no conoce la UAM como para rastrear pertenencias extraviadas.
-2. **Impacto Práctico Inmediato:** El uso de Códigos QR en la caseta de entrada principal y en los edificios resuelve el problema de los mapas físicos estáticos que nadie ve o entiende.
+2. **Requisito para adopción oficial:** Implementar enlaces de ubicación mediante QR, con origen validado y señalización aprobada por la universidad, para que visitantes accedan al mapa desde las entradas del campus.
 3. **Justificación Algorítmica Impecable:** Demostrar por qué Dijkstra con Min-Heap ($O((V+E)\log V)$) es matemáticamente superior a BFS y Floyd-Warshall en el contexto físico de un campus universitario.
 4. **Seguridad y Privacidad:** Explicar cómo la separación entre el mapa público (sin registro) y la gestión de objetos perdidos (con CIF y validación antifraude) protege la información de la comunidad universitaria.

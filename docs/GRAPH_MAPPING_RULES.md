@@ -45,7 +45,7 @@ Este documento establece las **reglas normativas y criterios de ingeniería** qu
 
 ### Regla 3: Modelo Híbrido Macro vs. Micro-Navegación (*GPS vs. Plano Cartesiano*)
 * **Criterio A (Macro-Navegación Exterior - GPS Real):**
- * Se asigna latitud y longitud geodésica real (WGS84) a **todos los accesos de edificios, casetas QR, canchas, plazas y bifurcaciones de andenes peatonales exteriores**.
+ * Se asigna latitud y longitud geodésica real (WGS84) a **todos los accesos de edificios, canchas, plazas y bifurcaciones de andenes peatonales exteriores**. Los accesos candidatos a señalización QR son ubicaciones del campus; la función QR sigue pendiente.
  * Permite autolocalización con `watchPosition()`, cálculo de distancia euclidiana/Haversine y detección de desvío de ruta (*rerouting* dinámico).
 * **Criterio B (Micro-Navegación Interior - Plano Cartesiano + Pisos):**
  * Dentro de los edificios, **no se confía en la señal satelital GPS** debido a la atenuación de techos de concreto (*multipath jitter*) y a la incapacidad del GPS móvil para discriminar el eje vertical $Z$ (pisos).

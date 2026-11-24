@@ -16,6 +16,7 @@ from io import BytesIO
 
 from backend.graph.navigationService import globalNavigationService
 from backend.graph.geoUtils import CampusGeoUtils
+from backend.graph.buildingBoundaries import getAllBuildingBoundaries, BEACON_REGISTRY
 from backend.graph.graphRegistry import getGraphsInventory
 from backend.data.campusCategories import CampusCategory, CATEGORY_METADATA
 from backend.data.placesCatalog import PLACES_CATALOG
@@ -312,13 +313,18 @@ def getCampusPerimeter():
 def findNearestGpsNode():
     """
     GET /api/map/nearest-gps
-    Matches a device GPS latitude/longitude coordinate against all field-measured
-    campus nodes (18 building subgraphs + pedestrian walkways + macro buildings).
+    Matches a device GPS latitude/longitude coordinate against defined campus
+    building boundaries (polygons & radius checks), multi-floor inference
+    (altitude / beacon / prompt), and all campus graph nodes.
     Query Params:
       - lat: float latitude (e.g. 12.1085)
       - lng: float longitude (e.g. -86.2570)
-      - accuracy: optional GPS accuracy in meters
+      - accuracy: optional GPS horizontal accuracy in meters
+      - altitude: optional GPS/barometric altitude in meters above sea level
+      - altitudeAccuracy: optional vertical accuracy in meters
       - floor: optional integer floor hint for multi-story buildings
+      - beacon / beaconId: optional indoor beacon identifier (e.g. UAM-P-F2)
+      - beaconFloor: optional integer floor from indoor beacon
       - lang: 'eng' | 'spa'
     """
     latRaw = request.args.get("lat")
@@ -336,21 +342,33 @@ def findNearestGpsNode():
     except (ValueError, TypeError):
         return jsonify({"success": False, "error": "Invalid floating point lat/lng coordinates."}), 400
 
-    accuracyMeters = None
-    accRaw = request.args.get("accuracy")
-    if accRaw is not None and accRaw != "":
+    def _parseOptionalFloat(paramName: str):
+        raw = request.args.get(paramName)
+        if raw is None or raw == "":
+            return None
         try:
-            accuracyMeters = float(accRaw)
-        except ValueError:
-            pass
+            val = float(raw)
+            if val != val:  # NaN guard
+                return None
+            return val
+        except (ValueError, TypeError):
+            return None
 
-    floorHint = None
-    floorRaw = request.args.get("floor")
-    if floorRaw is not None and floorRaw != "":
+    def _parseOptionalInt(paramName: str):
+        raw = request.args.get(paramName)
+        if raw is None or raw == "":
+            return None
         try:
-            floorHint = int(floorRaw)
-        except ValueError:
-            pass
+            return int(raw)
+        except (ValueError, TypeError):
+            return None
+
+    accuracyMeters = _parseOptionalFloat("accuracy")
+    altitudeMeters = _parseOptionalFloat("altitude")
+    altitudeAccuracyMeters = _parseOptionalFloat("altitudeAccuracy")
+    floorHint = _parseOptionalInt("floor")
+    beaconId = (request.args.get("beacon") or request.args.get("beaconId") or "").strip() or None
+    beaconFloor = _parseOptionalInt("beaconFloor")
 
     lang = _getPreferredLanguage()
     result = globalNavigationService.findNearestGpsNode(
@@ -359,6 +377,10 @@ def findNearestGpsNode():
         lang=lang,
         accuracyMeters=accuracyMeters,
         floorHint=floorHint,
+        altitudeMeters=altitudeMeters,
+        altitudeAccuracyMeters=altitudeAccuracyMeters,
+        beaconId=beaconId,
+        beaconFloor=beaconFloor,
     )
 
     isInside = result.get("isWithinCampus", True)
@@ -368,8 +390,15 @@ def findNearestGpsNode():
             "outsideCampus": True,
             "message": "Te encuentras fuera del campus de la UAM." if lang == "spa" else "You are outside the UAM campus.",
             "language": lang,
-            "userCoordinates": {"lat": userLat, "lng": userLng},
+            "userCoordinates": {
+                "lat": userLat,
+                "lng": userLng,
+                "accuracy": accuracyMeters,
+                "altitude": altitudeMeters,
+                "altitudeAccuracy": altitudeAccuracyMeters,
+            },
             "suggestedFallbackNode": "mainParking",
+            "campusEntrances": globalNavigationService.getCampusEntranceOptions(lang=lang),
             "nearest": result,
         }), 200
 
@@ -377,8 +406,86 @@ def findNearestGpsNode():
         "success": True,
         "outsideCampus": False,
         "language": lang,
-        "userCoordinates": {"lat": userLat, "lng": userLng},
+        "userCoordinates": {
+            "lat": userLat,
+            "lng": userLng,
+            "accuracy": accuracyMeters,
+            "altitude": altitudeMeters,
+            "altitudeAccuracy": altitudeAccuracyMeters,
+        },
         "nearest": result,
+    }), 200
+
+
+@mapController.route("/boundaries", methods=["GET"])
+def getBuildingBoundariesEndpoint():
+    """
+    GET /api/map/boundaries
+    Returns all defined campus building coordinate boundaries (polygons and radius checks)
+    along with floor counts and altitude calibration metadata.
+    """
+    lang = _getPreferredLanguage()
+    boundaries = []
+    for bId, boundary in getAllBuildingBoundaries().items():
+        macroNode = globalNavigationService.graph.getNode(bId)
+        item = boundary.toDict()
+        item["buildingName"] = macroNode.getName(lang) if macroNode else bId
+        boundaries.append(item)
+
+    return jsonify({
+        "success": True,
+        "count": len(boundaries),
+        "beaconCount": len(BEACON_REGISTRY),
+        "boundaries": boundaries,
+    }), 200
+
+
+@mapController.route("/buildings/<buildingId>/locations", methods=["GET"])
+def getBuildingLocationsEndpoint(buildingId: str):
+    """
+    GET /api/map/buildings/<buildingId>/locations
+    Returns ALL available location options for the specified building/zone,
+    grouped by floor for manual fallback selection.
+    Query Params:
+      - floor: optional integer floor filter
+      - lat / lng: optional user coordinates to sort locations by proximity
+      - lang: 'eng' | 'spa'
+    """
+    lang = _getPreferredLanguage()
+    if buildingId not in globalNavigationService.graph.nodes and not getBuildingSubgraph(buildingId):
+        return jsonify({
+            "success": False,
+            "error": f"Campus building '{buildingId}' not found.",
+        }), 404
+
+    floorParam = request.args.get("floor")
+    floorFilter = None
+    if floorParam is not None and floorParam != "":
+        try:
+            floorFilter = int(floorParam)
+        except ValueError:
+            pass
+
+    userLat = None
+    userLng = None
+    try:
+        if request.args.get("lat") and request.args.get("lng"):
+            userLat = float(request.args.get("lat"))
+            userLng = float(request.args.get("lng"))
+    except (ValueError, TypeError):
+        pass
+
+    payload = globalNavigationService.getBuildingLocations(
+        buildingId=buildingId,
+        userLat=userLat,
+        userLng=userLng,
+        floor=floorFilter,
+        lang=lang,
+    )
+
+    return jsonify({
+        "success": True,
+        **payload,
     }), 200
 
 
