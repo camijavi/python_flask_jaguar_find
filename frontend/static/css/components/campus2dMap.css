@@ -53,8 +53,10 @@
     ry: 0 !important;
     border-radius: 0 !important;
 }
-.bldg-shape:hover {
-    filter: brightness(1.08) drop-shadow(0 6px 14px rgba(37, 52, 82, 0.35));
+@media (hover: hover) {
+    .bldg-shape:hover {
+        filter: brightness(1.08) drop-shadow(0 6px 14px rgba(37, 52, 82, 0.35));
+    }
 }
 .bldg-shape.active-bldg {
     filter: drop-shadow(0 0 14px #48b2a9) brightness(1.15);
@@ -131,11 +133,15 @@
 /* Directory Sidebar Cards */
 .directory-card {
     transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
-.directory-card:hover {
-    background-color: #f8fafc;
-    border-color: #0284c7;
-    transform: translateY(-1px);
+@media (hover: hover) {
+    .directory-card:hover {
+        background-color: #f8fafc;
+        border-color: #0284c7;
+        transform: translateY(-1px);
+    }
 }
 .directory-card.highlighted {
     border-color: #0284c7;

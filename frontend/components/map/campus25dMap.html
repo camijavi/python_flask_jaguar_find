@@ -113,7 +113,7 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
 
 <!-- 3. Bottom-Left JaguarFind Light-Theme Circular Gauge / Mode Dial -->
 <button id="wazeSpeedDial" type="button"
-        class="waze-speed-dial absolute bottom-[78px] left-3 sm:bottom-[84px] sm:left-4 lg:bottom-4 lg:left-5 z-20 w-[58px] h-[58px] sm:w-16 sm:h-16 rounded-full flex flex-col items-center justify-center text-sky-700 pointer-events-auto cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95"
+        class="waze-speed-dial absolute bottom-[78px] left-3 sm:bottom-[84px] sm:left-4 lg:bottom-4 lg:left-5 z-20 w-[58px] h-[58px] sm:w-16 sm:h-16 rounded-full flex flex-col items-center justify-center text-sky-700 pointer-events-auto cursor-pointer transition-[transform,box-shadow,bottom] duration-200"
         title="Alternar vista 2D / 2.5D JaguarFind">
     <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 64 64" fill="none">
         <circle cx="32" cy="32" r="27.5" stroke="#38bdf8" stroke-opacity="0.78" stroke-width="2.2" stroke-dasharray="2.2 4.2" />
@@ -124,7 +124,7 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
 
 <!-- 4. Bottom-Right JaguarFind Vibrant Sky-Cyan / Coral Circular Action FAB -->
 <button id="wazeOrangeFab" type="button"
-        class="waze-orange-fab absolute bottom-[78px] right-3 sm:bottom-[84px] sm:right-4 lg:bottom-4 lg:right-5 z-20 w-[56px] h-[56px] sm:w-[60px] sm:h-[60px] rounded-full flex items-center justify-center text-white pointer-events-auto cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95"
+        class="waze-orange-fab absolute bottom-[78px] right-3 sm:bottom-[84px] sm:right-4 lg:bottom-4 lg:right-5 z-20 w-[56px] h-[56px] sm:w-[60px] sm:h-[60px] rounded-full flex items-center justify-center text-white pointer-events-auto cursor-pointer transition-[transform,box-shadow,bottom] duration-200"
         title="Planificar ruta / Centrar navegación"
         aria-label="Planificar ruta o centrar navegación">
     <span class="w-9 h-9 rounded-full bg-white/25 flex items-center justify-center">
@@ -221,7 +221,7 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
             </button>
 
             <button id="btnWazeExpandTray" type="button"
-                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 via-sky-500 to-blue-600 hover:from-sky-500 hover:to-blue-700 active:scale-95 text-white shadow-md shadow-sky-400/35 flex items-center justify-center transition-all cursor-pointer"
+                    class="waze-expand-tray-btn w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 via-sky-500 to-blue-600 text-white shadow-md shadow-sky-400/35 flex items-center justify-center transition-[transform,filter,box-shadow] duration-200 cursor-pointer"
                     title="Controles de navegación"
                     aria-label="Controles de navegación"
                     aria-expanded="false">

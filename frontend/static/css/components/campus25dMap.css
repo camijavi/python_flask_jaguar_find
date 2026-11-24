@@ -16,6 +16,7 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    overflow: clip;
     background-color: #f3f5f8;
     perspective: 1300px;
     perspective-origin: 50% 70%; /* Locked to user lower-third anchor (70% down) */
@@ -96,11 +97,13 @@
             drop-shadow(0 2px 3.5px rgba(15, 23, 42, 0.22));
 }
 
-.campus-25d-active .bldg-shape:hover {
-    transform: translateY(-4px);
-    filter: drop-shadow(0 2px 0 #1b4b59)
-            drop-shadow(0 2px 0 #123440)
-            drop-shadow(0 4px 8px rgba(15, 23, 42, 0.34)) brightness(1.07);
+@media (hover: hover) {
+    .campus-25d-active .bldg-shape:hover {
+        transform: translateY(-4px);
+        filter: drop-shadow(0 2px 0 #1b4b59)
+                drop-shadow(0 2px 0 #123440)
+                drop-shadow(0 4px 8px rgba(15, 23, 42, 0.34)) brightness(1.07);
+    }
 }
 
 /* Keep flat sports fields, plazas, botanical gardens, terraces, and south gate grounded flush with terrain */
@@ -115,15 +118,17 @@
     filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.14));
 }
 
-.campus-25d-active #baseballStadium:hover,
-.campus-25d-active #soccerField:hover,
-.campus-25d-active #jaguarJungle:hover,
-.campus-25d-active #areaDeMesas:hover,
-.campus-25d-active .bldg-shape[data-bldg="CANCHAS"]:hover,
-.campus-25d-active .bldg-shape[data-node="chilamatesPlaza"]:hover,
-.campus-25d-active .bldg-shape[data-node="mainParking"]:hover {
-    transform: none;
-    filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.22)) brightness(1.05);
+@media (hover: hover) {
+    .campus-25d-active #baseballStadium:hover,
+    .campus-25d-active #soccerField:hover,
+    .campus-25d-active #jaguarJungle:hover,
+    .campus-25d-active #areaDeMesas:hover,
+    .campus-25d-active .bldg-shape[data-bldg="CANCHAS"]:hover,
+    .campus-25d-active .bldg-shape[data-node="chilamatesPlaza"]:hover,
+    .campus-25d-active .bldg-shape[data-node="mainParking"]:hover {
+        transform: none;
+        filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.22)) brightness(1.05);
+    }
 }
 
 /* 4A. Crisp 2.5D Parking Lot & Road Contrast (High readability under 45° & 52° foreshortening) */
@@ -211,7 +216,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 20;
+    z-index: 15;
     overflow: hidden;
 }
 
@@ -311,10 +316,12 @@
     z-index: 10;
 }
 
-.waze-bldg-badge:hover {
-    transform: translate(-50%, -55%) scale(1.18);
-    z-index: 30;
-    filter: brightness(1.12);
+@media (hover: hover) {
+    .waze-bldg-badge:hover {
+        transform: translate(-50%, -55%) scale(1.18);
+        z-index: 30;
+        filter: brightness(1.12);
+    }
 }
 
 .waze-bldg-letter {
@@ -420,19 +427,61 @@
     background: radial-gradient(circle at 30% 25%, #ffffff 0%, #f0f9ff 62%, #e0f2fe 100%);
     border: 3px solid #38bdf8;
     box-shadow: 0 6px 20px rgba(2, 132, 199, 0.20), inset 0 1px 2px rgba(255, 255, 255, 0.95);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-/* JaguarFind Light-Theme Vibrant Sky-to-Cyan Circular Action FAB (Explore Mode) */
+/* JaguarFind Light-Theme Vibrant Sky-to-Cyan Circular Action FAB (Explore & Building Inspect Mode) */
 .waze-orange-fab {
     background: linear-gradient(145deg, #38bdf8 0%, #0ea5e9 54%, #0284c7 100%);
     border: 3.5px solid #ffffff;
     box-shadow: 0 8px 22px rgba(14, 165, 233, 0.36), 0 2px 6px rgba(2, 132, 199, 0.16);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-/* Active Navigation State: Bright Light-Theme Coral-Rose Recenter Beacon */
-.campus-tbt-active .waze-orange-fab {
+/* Active Route Navigation State: Bright Light-Theme Coral-Rose Recenter Beacon */
+.campus-route-active .waze-orange-fab {
     background: linear-gradient(145deg, #fb7185 0%, #f43f5e 56%, #e11d48 100%);
     box-shadow: 0 8px 22px rgba(244, 63, 94, 0.36), 0 2px 6px rgba(15, 41, 82, 0.14);
+}
+
+/* Touch-safe interactive feedback for floating HUD buttons (no sticky hover on touchscreens) */
+.waze-expand-tray-btn {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.waze-orange-fab:focus:not(:focus-visible),
+.waze-speed-dial:focus:not(:focus-visible),
+.waze-expand-tray-btn:focus:not(:focus-visible),
+.campus-compass:focus:not(:focus-visible) {
+    outline: none;
+}
+
+@media (hover: hover) {
+    .waze-orange-fab:hover,
+    .waze-speed-dial:hover,
+    .campus-compass:hover {
+        transform: scale(1.05);
+    }
+
+    .waze-expand-tray-btn:hover {
+        filter: brightness(1.06);
+    }
+}
+
+.waze-orange-fab:active,
+.waze-speed-dial:active,
+.waze-expand-tray-btn:active,
+.campus-compass:active {
+    transform: scale(0.95);
 }
 
 /* Zero-Collision Offset Rules when Waze Black Turn-by-Turn Banner is Visible */
