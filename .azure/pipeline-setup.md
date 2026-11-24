@@ -39,8 +39,9 @@ separately and accessed at runtime using the App Service identity and the
 **Cognitive Services Speech User** role. Changes to Azure resource definitions
 should be deployed through a separate reviewed IaC workflow.
 
-The ZIP includes `jaguarFind.db` if it is tracked in the repository. Keep that
-seed database sanitized; `startup.sh` copies it to `/home/jaguarFind.db` only
-when the persistent database does not already exist. Review
+The ZIP excludes the local `jaguarFind.db`, so automatic code deployments
+preserve the live `/home/jaguarFind.db`. For a new App Service or database
+restore, initialize or restore the database deliberately rather than relying
+on the local file. Review
 [`docs/AZURE_DEPLOYMENT.md`](../docs/AZURE_DEPLOYMENT.md) before changing
 database contents or deployment behavior.

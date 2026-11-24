@@ -2,7 +2,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.db
-!jaguarFind.db
 .pytest_cache/
 .env
 .DS_Store

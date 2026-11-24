@@ -12,6 +12,7 @@ resets, user creation, role assignment, and account status toggling.
 from flask import Blueprint, request, jsonify, session
 from typing import Dict, Any, Optional
 import sqlite3
+import re
 
 from backend.database import (
     getSystemStats,
@@ -154,10 +155,32 @@ def createNewUser():
 
     if userTypeId == 1 and not cif:
         return jsonify({"success": False, "error": "El CIF de 8 dígitos es obligatorio para estudiantes."}), 400
-    if userTypeId in (2, 3) and not govermentId:
-        return jsonify({"success": False, "error": "La cédula de identidad es obligatoria."}), 400
-    if userTypeId == 3 and not phoneNumber:
-        return jsonify({"success": False, "error": "El número de teléfono es obligatorio para visitantes."}), 400
+    if userTypeId == 2:
+        if not govermentId:
+            return jsonify({"success": False, "error": "La cédula de identidad es obligatoria para colaboradores."}), 400
+        if not re.fullmatch(r"^\d{3}-?\d{6}-?\d{4}[A-Za-z]$", govermentId):
+            return jsonify({"success": False, "error": "Formato de cédula inválido. Debe ser: 001-000000-0000A."}), 400
+        cleanGov = govermentId.replace("-", "").upper()
+        govermentId = f"{cleanGov[:3]}-{cleanGov[3:9]}-{cleanGov[9:13]}{cleanGov[13]}"
+    if userTypeId == 3:
+        if not govermentId:
+            return jsonify({"success": False, "error": "La cédula de identidad es obligatoria para visitantes."}), 400
+        if not re.fullmatch(r"^\d{3}-?\d{6}-?\d{4}[A-Za-z]$", govermentId):
+            return jsonify({"success": False, "error": "Formato de cédula inválido. Debe ser: 001-000000-0000A."}), 400
+        cleanGov = govermentId.replace("-", "").upper()
+        govermentId = f"{cleanGov[:3]}-{cleanGov[3:9]}-{cleanGov[9:13]}{cleanGov[13]}"
+
+        if not phoneNumber:
+            return jsonify({"success": False, "error": "El número de teléfono es obligatorio para visitantes."}), 400
+        cleanPhone = re.sub(r"\D", "", phoneNumber)
+        if not cleanPhone or len(cleanPhone) < 7:
+            return jsonify({"success": False, "error": "El número de teléfono debe contener solo dígitos (mínimo 8 dígitos)."}), 400
+        phoneNumber = cleanPhone
+
+        if not email:
+            return jsonify({"success": False, "error": "El correo electrónico es obligatorio para visitantes."}), 400
+        if not re.fullmatch(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+            return jsonify({"success": False, "error": "Ingresa un correo electrónico válido con '@' y un dominio válido."}), 400
     if userTypeId == 4 and (not email or not password):
         return jsonify({"success": False, "error": "Correo institucional y contraseña requeridos para administradores."}), 400
 

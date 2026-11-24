@@ -14,7 +14,7 @@
 {% block content %}
 <section class="auth-hero flex-1 flex items-start sm:items-center justify-center px-4 py-6 sm:py-10">
     <form id="signUpForm" class="options w-full max-w-lg md:max-w-2xl bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xl p-6 sm:p-8 flex flex-col gap-6"
-          method="post" action="/api/auth/signup">
+          method="post" action="/api/auth/signup" novalidate>
         <input type="hidden" name="rol" id="rol" value="{{ rol }}">
         <input type="hidden" name="userTypeId" id="userTypeId" value="{{ userTypeId }}">
 
@@ -33,11 +33,11 @@
         <div id="signUpAlert" class="hidden rounded-xl p-3.5 text-xs font-semibold flex items-center gap-2"></div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
-            {{ field('nombre', 'Nombre completo' if es else 'Full name', 'user', full=true) }}
+            {{ field('nombre', 'Nombre completo' if es else 'Full name', 'user', 'text', 'Juan Pérez' if es else 'John Doe', full=true) }}
 
             {% if rol == 'visitante' %}
-                {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id') }}
-                {{ field('telefono', 'Número de Teléfono' if es else 'Phone Number', 'phone', 'tel', '+505 8888 1234') }}
+                {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', 'text', '001-000000-0000A', 'maxlength="16"') }}
+                {{ field('telefono', 'Número de Teléfono' if es else 'Phone Number', 'phone', 'tel', '88881234', 'inputmode="numeric"') }}
                 {{ field('correoPersonal', 'Correo electrónico' if es else 'Email', 'mail', 'email', 'correo@ejemplo.com', full=true) }}
             {% else %}
                 {{ field('correo', 'Correo institucional' if es else 'Institutional email', 'mail', 'email', 'usuario@uamv.edu.ni') }}
@@ -76,6 +76,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("signUpForm");
     const alertBox = document.getElementById("signUpAlert");
     const submitBtn = document.getElementById("btnSubmitSignUp");
+    const isEs = {{ 'true' if es else 'false' }};
+    const currentRol = "{{ rol }}";
 
     function showAlert(msg, isSuccess = false) {
         if (!alertBox) return;
@@ -85,9 +87,259 @@ document.addEventListener("DOMContentLoaded", function() {
         alertBox.classList.remove("hidden");
     }
 
+    function setFieldError(fieldId, errorMsg) {
+        const input = document.getElementById(fieldId);
+        const errContainer = document.getElementById(fieldId + "-error");
+        if (input) {
+            input.classList.remove("border-slate-200", "focus:border-brand-500", "focus:ring-brand-500/15", "bg-slate-50");
+            input.classList.add("border-rose-500", "focus:border-rose-500", "focus:ring-rose-500/20", "bg-rose-50/20");
+            input.setAttribute("aria-invalid", "true");
+            input.setAttribute("aria-describedby", fieldId + "-error");
+        }
+        if (errContainer) {
+            const textSpan = errContainer.querySelector(".error-text");
+            if (textSpan) {
+                textSpan.textContent = errorMsg;
+            } else {
+                errContainer.textContent = errorMsg;
+            }
+            errContainer.classList.remove("hidden");
+        }
+    }
+
+    function clearFieldError(fieldId) {
+        const input = document.getElementById(fieldId);
+        const errContainer = document.getElementById(fieldId + "-error");
+        if (input) {
+            input.classList.remove("border-rose-500", "focus:border-rose-500", "focus:ring-rose-500/20", "bg-rose-50/20");
+            input.classList.add("border-slate-200", "focus:border-brand-500", "focus:ring-brand-500/15", "bg-slate-50");
+            input.removeAttribute("aria-invalid");
+            input.removeAttribute("aria-describedby");
+        }
+        if (errContainer) {
+            errContainer.classList.add("hidden");
+            const textSpan = errContainer.querySelector(".error-text");
+            if (textSpan) textSpan.textContent = "";
+        }
+    }
+
+    function validateField(fieldId) {
+        if (fieldId === "nombre") {
+            const input = document.getElementById("nombre");
+            if (!input) return true;
+            const val = (input.value || "").trim();
+            if (!val) {
+                setFieldError("nombre", isEs ? "El nombre completo es obligatorio." : "Full name is required.");
+                return false;
+            }
+            if (val.length < 2) {
+                setFieldError("nombre", isEs ? "El nombre debe tener al menos 2 caracteres." : "Full name must be at least 2 characters.");
+                return false;
+            }
+            clearFieldError("nombre");
+            return true;
+        }
+
+        if (fieldId === "cedula") {
+            const input = document.getElementById("cedula");
+            if (!input) return true;
+            let val = (input.value || "").trim().toUpperCase();
+            if (!val) {
+                setFieldError("cedula", isEs ? "La cédula de identidad es obligatoria." : "National ID is required.");
+                return false;
+            }
+            // If entered without hyphens (14 chars), normalize format: 0012003920045B -> 001-200392-0045B
+            if (/^\d{13}[A-Z]$/.test(val)) {
+                val = `${val.slice(0, 3)}-${val.slice(3, 9)}-${val.slice(9, 13)}${val.slice(13)}`;
+                input.value = val;
+            }
+            const cedulaRegex = /^\d{3}-\d{6}-\d{4}[A-Z]$/;
+            if (!cedulaRegex.test(val)) {
+                setFieldError("cedula", isEs ? "Formato de cédula inválido. Debe ser: 001-000000-0000A." : "Invalid National ID format. Expected format: 001-000000-0000A.");
+                return false;
+            }
+            clearFieldError("cedula");
+            return true;
+        }
+
+        if (fieldId === "telefono") {
+            const input = document.getElementById("telefono");
+            if (!input) return true;
+            // Strip non-numeric characters; allow digits only
+            const stripped = (input.value || "").replace(/\D/g, "");
+            if (input.value !== stripped) {
+                input.value = stripped;
+            }
+            const val = stripped.trim();
+            if (!val) {
+                setFieldError("telefono", isEs ? "El número de teléfono es obligatorio." : "Phone number is required.");
+                return false;
+            }
+            if (val.length < 8) {
+                setFieldError("telefono", isEs ? "El teléfono debe contener solo dígitos (mínimo 8 dígitos)." : "Phone number must contain digits only (minimum 8 digits).");
+                return false;
+            }
+            clearFieldError("telefono");
+            return true;
+        }
+
+        if (fieldId === "correoPersonal") {
+            const input = document.getElementById("correoPersonal");
+            if (!input) return true;
+            const val = (input.value || "").trim();
+            if (!val) {
+                setFieldError("correoPersonal", isEs ? "El correo electrónico es obligatorio." : "Email is required.");
+                return false;
+            }
+            // Standard email format requiring @ and a valid domain
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(val)) {
+                setFieldError("correoPersonal", isEs ? "Ingresa un correo electrónico válido (ej. usuario@dominio.com)." : "Enter a valid email address (e.g. user@domain.com).");
+                return false;
+            }
+            clearFieldError("correoPersonal");
+            return true;
+        }
+
+        if (fieldId === "correo") {
+            const input = document.getElementById("correo");
+            if (!input) return true;
+            const val = (input.value || "").trim();
+            if (!val) {
+                setFieldError("correo", isEs ? "El correo institucional es obligatorio." : "Institutional email is required.");
+                return false;
+            }
+            if (!val.toLowerCase().endsWith("@uamv.edu.ni")) {
+                setFieldError("correo", isEs ? "Usa tu correo institucional (@uamv.edu.ni)." : "Use your institutional email (@uamv.edu.ni).");
+                return false;
+            }
+            clearFieldError("correo");
+            return true;
+        }
+
+        if (fieldId === "password") {
+            const input = document.getElementById("password");
+            if (!input) return true;
+            const val = input.value || "";
+            if (!val) {
+                setFieldError("password", isEs ? "La contraseña es obligatoria." : "Password is required.");
+                return false;
+            }
+            if (val.length < 6) {
+                setFieldError("password", isEs ? "La contraseña debe tener al menos 6 caracteres." : "Password must be at least 6 characters.");
+                return false;
+            }
+            clearFieldError("password");
+            return true;
+        }
+
+        if (fieldId === "cif") {
+            const input = document.getElementById("cif");
+            if (!input) return true;
+            const val = (input.value || "").trim();
+            if (!val) {
+                setFieldError("cif", isEs ? "El CIF es obligatorio." : "CIF is required.");
+                return false;
+            }
+            if (!/^\d{8}$/.test(val)) {
+                setFieldError("cif", isEs ? "El CIF debe tener exactamente 8 dígitos." : "CIF must be exactly 8 digits.");
+                return false;
+            }
+            clearFieldError("cif");
+            return true;
+        }
+
+        return true;
+    }
+
+    // Attach real-time validation and input filters
+    const nombreInput = document.getElementById("nombre");
+    if (nombreInput) {
+        nombreInput.addEventListener("input", () => validateField("nombre"));
+        nombreInput.addEventListener("blur", () => validateField("nombre"));
+    }
+
+    const cedulaInput = document.getElementById("cedula");
+    if (cedulaInput) {
+        cedulaInput.addEventListener("input", function() {
+            this.value = this.value.toUpperCase();
+            validateField("cedula");
+        });
+        cedulaInput.addEventListener("blur", () => validateField("cedula"));
+    }
+
+    const telefonoInput = document.getElementById("telefono");
+    if (telefonoInput) {
+        telefonoInput.addEventListener("input", function() {
+            // Strip non-numeric characters immediately as user types
+            this.value = this.value.replace(/\D/g, "");
+            validateField("telefono");
+        });
+        telefonoInput.addEventListener("blur", () => validateField("telefono"));
+    }
+
+    const correoPersonalInput = document.getElementById("correoPersonal");
+    if (correoPersonalInput) {
+        correoPersonalInput.addEventListener("input", () => validateField("correoPersonal"));
+        correoPersonalInput.addEventListener("blur", () => validateField("correoPersonal"));
+    }
+
+    const correoInput = document.getElementById("correo");
+    if (correoInput) {
+        correoInput.addEventListener("input", () => validateField("correo"));
+        correoInput.addEventListener("blur", () => validateField("correo"));
+    }
+
+    const passwordInput = document.getElementById("password");
+    if (passwordInput) {
+        passwordInput.addEventListener("input", () => validateField("password"));
+        passwordInput.addEventListener("blur", () => validateField("password"));
+    }
+
+    const cifInput = document.getElementById("cif");
+    if (cifInput) {
+        cifInput.addEventListener("input", function() {
+            this.value = this.value.replace(/\D/g, "");
+            validateField("cif");
+        });
+        cifInput.addEventListener("blur", () => validateField("cif"));
+    }
+
+    function validateAllFields() {
+        let isValid = true;
+        let firstInvalid = null;
+
+        const fieldsToValidate = currentRol === "visitante"
+            ? ["nombre", "cedula", "telefono", "correoPersonal"]
+            : (currentRol === "estudiante"
+                ? ["nombre", "correo", "password", "cif"]
+                : ["nombre", "correo", "password", "cedula"]);
+
+        for (const fId of fieldsToValidate) {
+            const pass = validateField(fId);
+            if (!pass) {
+                isValid = false;
+                if (!firstInvalid) firstInvalid = document.getElementById(fId);
+            }
+        }
+
+        if (!isValid && firstInvalid) {
+            firstInvalid.focus();
+            showAlert(isEs ? "Por favor completa y corrige todos los campos requeridos." : "Please complete and correct all required fields.", false);
+        }
+
+        return isValid;
+    }
+
     form.addEventListener("submit", async function(e) {
         e.preventDefault();
         alertBox.classList.add("hidden");
+
+        // Enforce required-field and field-specific validation before submission
+        if (!validateAllFields()) {
+            return;
+        }
+
         submitBtn.disabled = true;
         const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<span class="inline-block animate-spin mr-1">↻</span> {{ "Procesando..." if es else "Processing..." }}';
@@ -95,12 +347,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const formData = new FormData(form);
         const payload = {
             userTypeId: parseInt(formData.get("userTypeId") || "1"),
-            fullName: formData.get("nombre"),
-            email: formData.get("correo") || formData.get("correoPersonal") || "",
+            fullName: (formData.get("nombre") || "").trim(),
+            email: (formData.get("correo") || formData.get("correoPersonal") || "").trim(),
             password: formData.get("password") || "",
-            cif: formData.get("cif") || "",
-            govermentId: formData.get("cedula") || "",
-            phoneNumber: formData.get("telefono") || "",
+            cif: (formData.get("cif") || "").trim(),
+            govermentId: (formData.get("cedula") || "").trim(),
+            phoneNumber: (formData.get("telefono") || "").replace(/\D/g, "").trim(),
             faculty: formData.get("facultad") || "",
             career: formData.get("carrera") || ""
         };
@@ -118,7 +370,27 @@ document.addEventListener("DOMContentLoaded", function() {
                     window.location.href = data.redirect || "/lost-found-object/catalogo";
                 }, 800);
             } else {
-                showAlert(data.error || '{{ "Error al procesar registro." if es else "Error registering user." }}', false);
+                const errMsg = data.error || '{{ "Error al procesar registro." if es else "Error registering user." }}';
+                showAlert(errMsg, false);
+                
+                // Map backend errors to field-level highlights
+                if (data.field) {
+                    setFieldError(data.field, errMsg);
+                    const errEl = document.getElementById(data.field);
+                    if (errEl) errEl.focus();
+                } else {
+                    const lowerErr = errMsg.toLowerCase();
+                    if (lowerErr.includes("cédula") || lowerErr.includes("cedula") || lowerErr.includes("government id")) {
+                        setFieldError("cedula", errMsg);
+                    } else if (lowerErr.includes("teléfono") || lowerErr.includes("telefono") || lowerErr.includes("phone")) {
+                        setFieldError("telefono", errMsg);
+                    } else if (lowerErr.includes("correo") || lowerErr.includes("email")) {
+                        setFieldError(currentRol === "visitante" ? "correoPersonal" : "correo", errMsg);
+                    } else if (lowerErr.includes("nombre") || lowerErr.includes("fullname")) {
+                        setFieldError("nombre", errMsg);
+                    }
+                }
+                
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             }

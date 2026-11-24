@@ -9,6 +9,7 @@ and Admin Email + PasswordHash) with seed prepopulation.
 """
 
 import sqlite3
+import re
 from typing import Optional, List, Dict, Any
 from pathlib import Path
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -289,9 +290,18 @@ def getUserByIdentifier(
         if userTypeId == 1:
             query = "SELECT u.*, ut.Name AS UserTypeName FROM UserTbl u JOIN UserTypeTbl ut ON u.UserTypeId = ut.Id WHERE u.CIF = ?;"
             cursor.execute(query, (cleanId,))
-        elif userTypeId in (2, 3):
+        elif userTypeId == 2:
             query = "SELECT u.*, ut.Name AS UserTypeName FROM UserTbl u JOIN UserTypeTbl ut ON u.UserTypeId = ut.Id WHERE u.GovermentId = ?;"
             cursor.execute(query, (cleanId,))
+        elif userTypeId == 3:
+            cleanPhone = re.sub(r"\D", "", cleanId) if cleanId else ""
+            query = """
+                SELECT u.*, ut.Name AS UserTypeName
+                FROM UserTbl u
+                JOIN UserTypeTbl ut ON u.UserTypeId = ut.Id
+                WHERE u.GovermentId = ? OR u.PhoneNumber = ? OR (u.PhoneNumber = ? AND ? != '');
+            """
+            cursor.execute(query, (cleanId, cleanId, cleanPhone, cleanPhone))
         elif userTypeId == 4:
             query = "SELECT u.*, ut.Name AS UserTypeName FROM UserTbl u JOIN UserTypeTbl ut ON u.UserTypeId = ut.Id WHERE u.Email = ?;"
             cursor.execute(query, (cleanId.lower(),))

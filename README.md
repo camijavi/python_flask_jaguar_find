@@ -101,7 +101,7 @@ frontend/
   static/                      CSS, JavaScript, and images
 languages/                     English and Spanish translations
 docs/                          Technical and functional documentation
-jaguarFind.db                  Seeded SQLite database
+jaguarFind.db                  Local-only SQLite database (ignored by Git)
 startup.sh                     Azure App Service startup script
 requirements.txt               Python dependencies
 ```
@@ -151,7 +151,10 @@ DATABASE_PATH=/home/jaguarFind.db
 SECRET_KEY=<a strong random secret>
 ```
 
-The startup script copies the deployed seeded database to `/home/jaguarFind.db` if that persistent database does not already exist.
+The deployment workflow excludes the local `jaguarFind.db`. The live database
+is stored at `/home/jaguarFind.db` in persistent App Service storage and is
+preserved across code deployments. Initialize or restore a new deployment's
+database separately.
 
 ## Database Notes
 
@@ -159,7 +162,8 @@ SQLite is appropriate for this class project and a single-instance Azure App Ser
 
 - Keep App Service scale-out disabled or use one instance.
 - Keep the database under `/home`, which is persistent.
-- Back up `jaguarFind.db` before deployment or database changes.
+- Keep the local `jaguarFind.db` out of Git and deployment packages.
+- Back up the live database before schema changes or manual data maintenance.
 - For multiple instances or production multi-user scaling, migrate to Azure Database for PostgreSQL or MySQL.
 
 ## Authors
