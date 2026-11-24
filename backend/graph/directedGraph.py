@@ -1,9 +1,9 @@
 """
 directedGraph.py
 ================================================================================
-CAMPUS DOMAIN EXTENSION OF THE CENTRAL `graph_combined.py` DATA STRUCTURE
+CAMPUS DOMAIN EXTENSION OF THE CENTRAL `graphCombined.py` DATA STRUCTURE
 ================================================================================
-Builds directly on `Vertex` and `Graph` from `graph_combined.py` (the central
+Builds directly on `Vertex` and `Graph` from `graphCombined.py` (the central
 weighted, directed, non-complete graph G = (V, E, W) recommended for the project):
   - `Node(Vertex)`: extends `Vertex` with GPS/SVG coordinates, floor level,
     category, access notices, i18n labels, and rich `DirectedEdge` metadata.
@@ -14,17 +14,9 @@ weighted, directed, non-complete graph G = (V, E, W) recommended for the project
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
 from typing import Dict, List, Optional, Union
 
-try:
-    from graph_combined import Graph, Vertex
-except ImportError:
-    _rootDir = str(Path(__file__).resolve().parent.parent.parent)
-    if _rootDir not in sys.path:
-        sys.path.insert(0, _rootDir)
-    from graph_combined import Graph, Vertex
+from .graphCombined import Graph, Vertex
 
 from .i18n import t, I18nManager
 
@@ -75,7 +67,7 @@ class DirectedEdge:
 
 class Node(Vertex):
     """
-    Domain vertex inheriting from `graph_combined.Vertex`.
+    Domain vertex inheriting from `graphCombined.Vertex`.
     Represents a physical building, entrance portal, pedestrian walkway waypoint,
     classroom, annex, restroom, ramp, stairwell, or campus area.
     """
@@ -161,7 +153,7 @@ class Node(Vertex):
 class DirectedGraph(Graph):
     """
     Weighted, Directed, Non-Complete Graph G = (V, E, W) inheriting from
-    `graph_combined.Graph`. Used by every macro, walkway, and indoor building
+    `graphCombined.Graph`. Used by every macro, walkway, and indoor building
     graph across the entire JaguarFind & JaguarMaps application.
     """
 
@@ -213,7 +205,7 @@ class DirectedGraph(Graph):
     ) -> bool:
         """
         Adds a single directed weighted edge (origin -> destination) enforcing
-        `graph_combined.Graph` invariants (positive weight, no self-loops,
+        `graphCombined.Graph` invariants (positive weight, no self-loops,
         no duplicate edges) while synchronizing `neigh` and `outgoingEdges`.
         """
         v_origin = self.search(origin)

@@ -2,7 +2,7 @@
 children_graphs package
 ================================================================================
 Complete alias module for `backend.subgraphs` (all 18 indoor building & sports
-complex child graphs, unified on `graph_combined.py`).
+complex child graphs, unified on `graphCombined.py`).
 ================================================================================
 """
 

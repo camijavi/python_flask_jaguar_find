@@ -5,13 +5,13 @@ CHILD GRAPH / SUBGRAPH ARCHITECTURE FOR INDOOR CAMPUS NAVIGATION
 ================================================================================
 Encapsulates an indoor, multi-floor directed, non-complete, weighted graph for
 an individual building (e.g. Building P - Copérnico), powered by `DirectedGraph`
-(which inherits directly from `graph_combined.Graph`).
+(which inherits directly from `graphCombined.Graph`).
 
 Provides:
   - Room-to-room Dijkstra shortest-path routing and wheelchair accessibility filtering
   - Automatic parent `buildingId` propagation onto every indoor room/annex/area node
   - Shared `calcIndoorDistance()` Haversine helper (eliminating per-file duplication)
-  - Direct delegation to the `graph_combined.Graph` interface (`search`, `addVertex`,
+  - Direct delegation to the `graphCombined.Graph` interface (`search`, `addVertex`,
     `insertVertex`, `addEdge`, `link`, `deleteEdge`, `display`, `printMatrix`)
 ================================================================================
 """
@@ -92,7 +92,7 @@ class BuildingSubgraph:
         return self.graph.addNode(node)
 
     # ------------------------------------------------------------------
-    # Direct `graph_combined.Graph` guide interface delegation
+    # Direct `graphCombined.Graph` guide interface delegation
     # ------------------------------------------------------------------
     def search(self, target: Union[str, Vertex]) -> Optional[Vertex]:
         return self.graph.search(target)

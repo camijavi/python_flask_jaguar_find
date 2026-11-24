@@ -18,8 +18,8 @@
 <rect x="0" y="0" width="1600" height="1790" fill="#f1f5f9"/>
 <rect x="0" y="0" width="1600" height="106" fill="url(#heroGrad)"/>
 <text x="36" y="42" fill="#ffffff" font-size="24" font-weight="800">JaguarFind &amp; JaguarMaps UAM — All Application Graphs</text>
-<text x="36" y="68" fill="#cbd5e1" font-size="13" font-weight="600">Central Guide: graph_combined.py (Vertex &amp; Graph) • Directed, Non-Complete, Weighted G = (V, E, W)</text>
-<text x="36" y="89" fill="#94a3b8" font-size="11.5">Data sources: buildings.txt &amp; coordenadas.txt • Every backend graph inherits directly from graph_combined.Graph</text>
+<text x="36" y="68" fill="#cbd5e1" font-size="13" font-weight="600">Central Guide: graphCombined.py (Vertex &amp; Graph) • Directed, Non-Complete, Weighted G = (V, E, W)</text>
+<text x="36" y="89" fill="#94a3b8" font-size="11.5">Data sources: buildings.txt &amp; coordenadas.txt • Every backend graph inherits directly from graphCombined.Graph</text>
 <rect x="936" y="22" width="148" height="62" rx="10" fill="#0f172a" fill-opacity="0.45" stroke="#38bdf8" stroke-opacity="0.7" stroke-width="1.3"/>
 <text x="1010.0" y="53" text-anchor="middle" fill="#38bdf8" font-size="22" font-weight="800">20</text>
 <text x="1010.0" y="72" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="600">Backend Graphs</text>
@@ -35,7 +35,7 @@
 <rect x="32" y="122" width="1536" height="122" rx="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2" filter="url(#cardShadow)"/>
 <text x="52" y="146" fill="#0f172a" font-size="13" font-weight="800">UNIFIED CLASS HIERARCHY &amp; 3-TIER CAMPUS NAVIGATION ARCHITECTURE</text>
 <rect x="52" y="158" width="355" height="72" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
-<text x="66" y="179" fill="#1d4ed8" font-size="13" font-weight="800">graph_combined.py (Central Guide)</text>
+<text x="66" y="179" fill="#1d4ed8" font-size="13" font-weight="800">graphCombined.py (Central Guide)</text>
 <text x="66" y="198" fill="#1e293b" font-size="10.8" font-family="monospace">Vertex(nodeId, neigh) • Graph(vertices)</text>
 <text x="66" y="216" fill="#475569" font-size="9.2">search • addVertex • addEdge • link • deleteEdge • printMatrix</text>
 <line x1="407" y1="194.0" x2="445" y2="194.0" stroke="#2563eb" stroke-width="2.2" marker-end="url(#arrowBlue)"/>
@@ -1643,6 +1643,6 @@
 <text x="1558.0" y="1699.0" text-anchor="end" fill="#64748b" font-size="9.8" font-weight="600">1F • ρ=0.286</text>
 <text x="1333.7" y="1711.0" fill="#94a3b8" font-size="8.6">Parent: sportsZone • Non-Complete</text>
 <rect x="32" y="1748" width="1536" height="28" rx="8" fill="#e2e8f0"/>
-<text x="48" y="1766" fill="#334155" font-size="10.8" font-weight="600">Total Backend Core Graphs: 20 (1 Macro + 1 Pedestrian Walkway + 18 Indoor Building Subgraphs) — 100% Unified on graph_combined.py • Plus 2 Client-Side JS Visual Mirrors (campusWalkwaysLayer.js &amp; buildingP.html)</text>
+<text x="48" y="1766" fill="#334155" font-size="10.8" font-weight="600">Total Backend Core Graphs: 20 (1 Macro + 1 Pedestrian Walkway + 18 Indoor Building Subgraphs) — 100% Unified on graphCombined.py • Plus 2 Client-Side JS Visual Mirrors (campusWalkwaysLayer.js &amp; buildingP.html)</text>
 <text x="1552" y="1766" text-anchor="end" fill="#0f766e" font-size="10.8" font-weight="800">All 20 Graphs Verified: Directed • Weighted (w&gt;0) • Non-Complete</text>
 </svg>

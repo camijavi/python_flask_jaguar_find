@@ -425,7 +425,7 @@ def getGraphsSummary():
     """
     GET /api/map/graphs-summary
     Returns the live inventory and formal graph-theory metrics of every
-    weighted, directed, non-complete graph powered by `graph_combined.py`.
+    weighted, directed, non-complete graph powered by `graphCombined.py`.
     """
     return jsonify({
         "success": True,

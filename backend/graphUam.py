@@ -1,7 +1,7 @@
 """
 graphUam.py
 Backward-compatibility facade for the modular 'backend.graph' package,
-which is unified on top of `graph_combined.py` (`Vertex` and `Graph`).
+which is unified on top of `backend.graph.graphCombined` (`Vertex` and `Graph`).
 """
 
 from backend.graph import (

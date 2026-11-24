@@ -2,7 +2,7 @@
 dijkstraRouter.py
 Dijkstra shortest path algorithm with min-heap priority queue (heapq),
 accessibility filtering, turn-by-turn step generation, and full internationalization (i18n).
-Operates seamlessly on any `graph_combined.Graph` or its domain subclass `DirectedGraph`.
+Operates seamlessly on any `graphCombined.Graph` or its domain subclass `DirectedGraph`.
 All internal code and default strings are in English.
 """
 
@@ -31,7 +31,7 @@ class DijkstraRouter:
         """
         Yields (targetId, weight, DirectedEdge | None) for each outgoing edge.
         Uses rich `Node.outgoingEdges` when present, or `Vertex.neigh` directly
-        on plain `graph_combined.Graph` instances.
+        on plain `graphCombined.Graph` instances.
         """
         if isinstance(vertex, Node) and vertex.outgoingEdges:
             for edge in vertex.outgoingEdges:

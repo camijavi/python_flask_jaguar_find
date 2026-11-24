@@ -64,7 +64,7 @@ sequenceDiagram
     actor Usuario as Visitante / Estudiante
     participant UI as Interfaz JaguarMaps (Web)
     participant GPS as Geolocation API / QR
-    participant Engine as Motor Dijkstra (graphUam.py)
+    participant Engine as Motor Dijkstra (backend/graphUam.py)
     participant Map as Croquis Interactivo UAM
 
     Usuario->>UI: Abre /mapa (libre, sin registro)
@@ -315,7 +315,7 @@ CREATE TABLE IF NOT EXISTS objetosPerdidos (
 
 ---
 
-## 6. Especificación del Código del Motor de Grafos (`graphUam.py`)
+## 6. Especificación del Código del Motor de Grafos (`backend/graphUam.py`)
 
 ```python
 import heapq
@@ -477,7 +477,7 @@ class GrafoUam:
 
 | Integrante / Rol | Especialidad | Responsabilidades y Entregables Clave |
 | :--- | :--- | :--- |
-| **Rol 1: Especialista en Estructuras de Datos**<br>*(Br. Camila Javiera Navarro)* | **Motor de Grafos y Algoritmos (`graphUam.py`)** | • Implementar `Nodo`, `Arista` y `GrafoUam` en POO estructurada.<br>• Mapear los 20 nodos y conexiones reales del campus.<br>• Programar `calcularDijkstra()`, `generarIndicacionesPasoAPaso()`, `detectarNodoGps()` y `resolverDestino()`.<br>• Pruebas unitarias de caminos mínimos y rutas complejas. |
+| **Rol 1: Especialista en Estructuras de Datos**<br>*(Br. Camila Javiera Navarro)* | **Motor de Grafos y Algoritmos (`backend/graphUam.py`)** | • Implementar `Nodo`, `Arista` y `GrafoUam` en POO estructurada.<br>• Mapear los 20 nodos y conexiones reales del campus.<br>• Programar `calcularDijkstra()`, `generarIndicacionesPasoAPaso()`, `detectarNodoGps()` y `resolverDestino()`.<br>• Pruebas unitarias de caminos mínimos y rutas complejas. |
 | **Rol 2: Desarrollador Backend y Datos**<br>*(Br. Francis Alejandra Solórzano)* | **Persistencia y Controladores (`database.py` y `app.py`)** | • Configurar base de datos SQLite3 con esquema en camelCase.<br>• Programar endpoints `/api/ruta`, `/reportar` y `/login`.<br>• Validaciones regex: CIF (8 dígitos), clave (6 alfanuméricos), correo institucional `@uamv.edu.ni`.<br>• Manejo de parámetros de URL para códigos QR (`?origen=...`) y sesiones Flask. |
 | **Rol 3: Desarrollador Frontend y Mapa**<br>*(Br. James Santiago Fernandez)* | **Vistas de Estudiante y Mapa (`index.html`, `reportar.html`)** | • Maquetar la experiencia tipo Google Maps con Tailwind CSS.<br>• Selector "¿Dónde estoy?" (GPS / QR / manual) y "¿A dónde quieres ir?".<br>• Trazado dinámico de la ruta sobre el mapa `mapaUam.png` con SVG/canvas.<br>• Despliegue de ficha de resultados (distancia, minutos a pie y pasos). |
 | **Rol 4: Desarrollador Panel Admin e Integración**<br>*(Br. Elias Abraham Solis)* | **Módulo Edificio A y Despliegue (`admin.html`, `login.html`)** | • Construir tablero Kanban/Cards para Objetos Perdidos en Edificio A.<br>• Buscador rápido de tickets por CIF o nombre de estudiante.<br>• Modales de transición de estado con validación de `detalleOcultoValidador`.<br>• Generador de Códigos QR para imprimir en caseta y edificios. |
@@ -499,7 +499,7 @@ flowchart LR
 
 | Fase | Días y Fechas | Módulo Principal | Tareas Específicas | Responsable | Entregable Clave |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Fase 1: Cimientos y Arquitectura** | **Días 1 a 3**<br>*(13 - 15 Nov)* | **GrafoUam y Persistencia** | • Implementar clases `Nodo`, `Arista` y `GrafoUam` en `graphUam.py`.<br>• Mapear los 20 nodos y conexiones del campus UAM con distancias en metros.<br>• Crear esquema SQLite3 en `database.py` (tablas `usuarios` y `objetosPerdidos`).<br>• Validaciones regex para CIF (8 dígitos), clave (6 alfanuméricos) y correo `@uamv.edu.ni`. | **Camila Navarro** (Estructuras)<br>**Francis Solórzano** (Backend) | • `graphUam.py` funcional con Dijkstra inicial.<br>• `database.py` con tablas creadas y semillas de prueba. |
+| **Fase 1: Cimientos y Arquitectura** | **Días 1 a 3**<br>*(13 - 15 Nov)* | **GrafoUam y Persistencia** | • Implementar clases `Nodo`, `Arista` y `GrafoUam` en `backend/graphUam.py`.<br>• Mapear los 20 nodos y conexiones del campus UAM con distancias en metros.<br>• Crear esquema SQLite3 en `database.py` (tablas `usuarios` y `objetosPerdidos`).<br>• Validaciones regex para CIF (8 dígitos), clave (6 alfanuméricos) y correo `@uamv.edu.ni`. | **Camila Navarro** (Estructuras)<br>**Francis Solórzano** (Backend) | • `backend/graphUam.py` funcional con Dijkstra inicial.<br>• `database.py` con tablas creadas y semillas de prueba. |
 | **Fase 2: Motor Google Maps UAM** | **Días 4 a 6**<br>*(16 - 18 Nov)* | **JaguarMaps (Rutas Públicas)** | • Programar diccionario de dependencias (40+ lugares mapeados a nodos).<br>• Implementar generador de indicaciones textuales paso a paso y tiempo a pie.<br>• Maquetar vista dividida con Tailwind CSS en `index.html`.<br>• Implementar selector "¿Dónde estoy?" y "¿A dónde quieres ir?" con trazado sobre `mapaUam.png`. | **James Fernandez** (Frontend)<br>**Camila Navarro** (Estructuras) | • Endpoint `/api/ruta` respondiendo en JSON.<br>• Interfaz web pública navegable y responsive. |
 | **Fase 3: Objetos Perdidos y QRs** | **Días 7 a 9**<br>*(19 - 21 Nov)* | **JaguarFind y Caseta de Entrada** | • Integrar geolocalización HTML5 en `reportar.html` con sugerencia de nodo por Haversine.<br>• Construir tablero Kanban/Cards en `admin.html` para la oficina del Edificio A.<br>• Programar transiciones de los 3 estados y validación antifraude (`detalleOcultoValidador`).<br>• Diseñar plantillas de Códigos QR para imprimir en la Caseta Principal y postes (`?origen=...`). | **Elias Solis** (Admin e Integración)<br>**Francis Solórzano** (Backend) | • Flujo completo de reporte y entrega.<br>• Códigos QR funcionales para acceso directo. |
 | **Fase 4: Pruebas, Refinamiento y Cierre** | **Días 10 a 12**<br>*(22 - 24 Nov)* | **QA, Documentación y Presentación** | • Batería de pruebas unitarias (`pytest`) para caminos mínimos y límites de grafos.<br>• Pruebas de usabilidad en móviles (simulación en campus UAM).<br>• Preparación de diapositivas de defensa con demostración en vivo.<br>• Revisión final del repositorio y `README.md`. | **Todo el Equipo** (Camila, Francis, James, Elias) | • Sistema 100% operativo y probado.<br>• Presentación de defensa lista para el jurado. |
