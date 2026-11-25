@@ -32,8 +32,10 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
             <button id="btnMapResetView" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center text-xs transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.center_map') }}" data-i18n-aria-label="map.toolbar.center_map">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle><circle cx="12" cy="12" r="2.8" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3m10-10h-3M5 12H2"></path></svg>
             </button>
-            <button id="btnToggle25dQuick" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-sky-50 hover:text-sky-600 text-slate-700 flex items-center justify-center font-black text-[11px] transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_25d') }}" data-i18n-aria-label="map.toolbar.toggle_25d">
-                3D
+            <button id="btnToggle25dQuick" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-sky-50 hover:text-sky-600 text-slate-700 flex items-center justify-center transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_25d') }}" data-i18n-aria-label="map.toolbar.toggle_25d">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19h16M6 17l3-9h6l3 9M12 8v9M9 8l3 9m3-9-3 9"></path>
+                </svg>
             </button>
             <button id="btnToggleEmergencyLayer" type="button" aria-pressed="false" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_emergency') }}" data-i18n-aria-label="map.toolbar.toggle_emergency">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>

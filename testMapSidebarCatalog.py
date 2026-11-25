@@ -25,6 +25,7 @@ and Item Detail Dialog:
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -141,6 +142,26 @@ class TestMapSidebarCatalogBackend(unittest.TestCase):
         self.assertIn('data-is-admin="true"', admin_html)
         self.assertIn('id="adminStateModal"', admin_html)
         self.assertIn('id="btnDetailAdminEditState"', admin_html)
+
+    def test_map_mode_controls_use_perspective_icon_and_labels(self):
+        with self.client.session_transaction() as sess:
+            sess["idioma"] = "eng"
+            sess["lang"] = "eng"
+
+        response = self.client.get("/map")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+
+        toolbar_button = re.search(
+            r'<button id="btnToggle25dQuick"[^>]*>(.*?)</button>',
+            html,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(toolbar_button)
+        self.assertIn("<svg", toolbar_button.group(1))
+        self.assertNotIn("3D", toolbar_button.group(1))
+        self.assertRegex(html, r'id="wazeDialValue"[^>]*>\s*Top-down\s*</span>')
+        self.assertRegex(html, r'id="btnMode25d"[^>]*>\s*Perspective\s*</button>')
 
 
 class TestMapSidebarCatalogClientJS(unittest.TestCase):

@@ -149,7 +149,7 @@
       "zoom_in": "Acercar",
       "zoom_out": "Alejar",
       "center_map": "Centrar Mapa",
-      "toggle_25d": "Alternar Vista 2.5D Perspectiva",
+      "toggle_25d": "Alternar vista en perspectiva",
       "toggle_walkways": "Red Peatonal Micro (Pasillos, Puentes y Muros)",
       "toggle_lost_pins": "Mostrar / Ocultar Capa de Objetos Perdidos",
       "open_directory": "Abrir Directorio de Edificios",
@@ -173,7 +173,7 @@
       "report_item_title": "Reportar objeto extraviado en este edificio"
     },
     "hud25d": {
-      "mode_2d": "Plano",
+      "mode_2d": "Desde arriba",
       "mode_2d_title": "Mapa del campus desde arriba",
       "mode_heading": "Rumbo",
       "mode_heading_title": "Alternar orientación: Rumbo al frente o Fijo",
@@ -224,7 +224,7 @@
       "pitch_52_title": "Inclinación 52° (Inmersiva)",
       "mode_parking_title": "Resaltar parqueos en vista 2.5D",
       "live_gps_title": "Activar seguimiento GPS y brújula en vivo",
-      "toggle_2d_25d_title": "Alternar vista 2D / 2.5D JaguarFind",
+      "toggle_2d_25d_title": "Alternar vista desde arriba / perspectiva JaguarFind",
       "fab_plan_or_center": "Planificar ruta / Centrar navegación",
       "unit_min": "min",
       "gps_label": "GPS",

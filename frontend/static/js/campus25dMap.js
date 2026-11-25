@@ -948,7 +948,7 @@
                 this.btnWazeClearRoute.classList.toggle("flex", Boolean(this.currentRoute));
             }
             if (!this.currentRoute) {
-                if (this.wazeDialValue) this.wazeDialValue.textContent = this.is25dActive ? "3D" : "2D";
+                if (this.wazeDialValue) this.wazeDialValue.textContent = t25d(this.is25dActive ? "map.hud25d.mode_25d" : "map.hud25d.mode_2d");
                 if (this.wazeDialUnit) this.wazeDialUnit.textContent = this.is25dActive ? t25d("map.hud25d.speed_label_view") : t25d("map.hud25d.speed_label_map");
                 if (this.wazeActiveRoadPill) this.wazeActiveRoadPill.classList.add("hidden");
                 if (this.wazeOrangeFabIcon) {
