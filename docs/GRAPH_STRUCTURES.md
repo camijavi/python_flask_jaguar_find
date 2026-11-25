@@ -44,7 +44,7 @@ All 20 backend graphs satisfy the exact three formal properties defined by the c
    - Every edge is an ordered pair $(u \to v)$ stored inside the origin vertex's outgoing adjacency list `u.neigh: list[tuple[Vertex, float]]`.
    - Bidirectional walkways, hallways, and staircases are modeled as two antiparallel directed edges $(u \to v)$ and $(v \to u)$, preserving directional semantics (e.g., *up stairs* vs. *down stairs*, *enter building* vs. *exit building*, or future one-way gates).
 2. **Weighted ($W: E \to \mathbb{R}^+$):**
-   - Every directed edge carries a strictly positive weight $w(u, v) > 0$ representing real physical walking distance in meters, calibrated from field GPS measurements in [`coordenadas.txt`](../coordenadas.txt) via the Haversine formula and calibrated affine SVG projection.
+   - Every directed edge carries a strictly positive weight $w(u, v) > 0$ representing real physical walking distance in meters, calibrated from field GPS measurements in [`coordenadas.txt`](coordenadas.txt) via the Haversine formula and calibrated affine SVG projection.
    - `Graph.addEdge()` rejects any non-positive weight ($w \le 0$).
 3. **Non-Complete ($|E| < |V|(|V|-1)$, sparse topology):**
    - No self-loops ($u \neq v$) and no duplicate parallel edges between the same $(u, v)$ pair are allowed.
@@ -155,7 +155,7 @@ As a result, every graph in JaguarFind supports **both** the teacher's exact `Gr
 
 ## 5. Three-Tier Hierarchical Navigation Architecture
 
-Data from [`buildings.txt`](../buildings.txt) (rooms, annexes, labs, restrooms, fountains, floors) and [`coordenadas.txt`](../coordenadas.txt) (field-measured WGS84 GPS coordinates) is organized into three cooperating graph tiers orchestrated by [`backend/graph/navigationService.py`](../backend/graph/navigationService.py):
+Data from [`buildings.txt`](buildings.txt) (rooms, annexes, labs, restrooms, fountains, floors) and [`coordenadas.txt`](coordenadas.txt) (field-measured WGS84 GPS coordinates) is organized into three cooperating graph tiers orchestrated by [`backend/graph/navigationService.py`](../backend/graph/navigationService.py):
 
 ```mermaid
 flowchart TD

@@ -2,7 +2,7 @@
 testRoomSearch.py
 ================================================================================
 Comprehensive automated verification suite for Campus Room & Facility Search:
-1. Data source completeness cross-checked directly against `buildings.txt`
+1. Data source completeness cross-checked directly against `docs/buildings.txt`
    (all 95 room codes + key offices/labs/auditoriums/facilities)
 2. Canonical catalog unification across backend/data, data/, and backend/graph
 3. Exact matches (e.g. "B210") and partial matches (e.g. "B2", "B20", "210",
@@ -39,7 +39,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _extractAllRoomCodesFromBuildingsTxt():
-    txt = (PROJECT_ROOT / "buildings.txt").read_text(encoding="utf-8")
+    txt = (PROJECT_ROOT / "docs" / "buildings.txt").read_text(encoding="utf-8")
     rawCodes = re.findall(r"\b([A-Za-z]\s*-?\s*\d{3})\b", txt)
     unique = []
     seen = set()
@@ -93,7 +93,7 @@ class TestRoomSearchBackend(unittest.TestCase):
                 ):
                     polluted.append((code, p["name"]))
 
-        self.assertEqual(missing, [], f"Room codes from buildings.txt returned 0 results: {missing}")
+        self.assertEqual(missing, [], f"Room codes from docs/buildings.txt returned 0 results: {missing}")
         self.assertEqual(wrongRank, [], f"Room codes not ranked #1: {wrongRank}")
         self.assertEqual(polluted, [], f"Unrelated rooms polluted exact room search: {polluted}")
 
