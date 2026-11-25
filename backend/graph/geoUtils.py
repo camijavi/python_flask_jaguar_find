@@ -152,10 +152,48 @@ class CampusGeoUtils:
             if min(p1_lat, p2_lat) < lat <= max(p1_lat, p2_lat):
                 if p1_lat != p2_lat:
                     xinters = (lat - p1_lat) * (p2_lng - p1_lng) / (p2_lat - p1_lat) + p1_lng
-                    if p1_lng == p2_lng or lng <= xinters:
+                    if lng <= xinters:
                         inside = not inside
             p1_lat, p1_lng = p2_lat, p2_lng
         return inside
+
+    @staticmethod
+    def distanceToPolygonMeters(
+        lat: float,
+        lng: float,
+        polygon: List[Tuple[float, float]],
+    ) -> float:
+        """
+        Returns 0.0 if (lat, lng) is strictly inside `polygon` (via Ray-Casting),
+        otherwise returns the shortest Euclidean/surface distance in meters to the
+        nearest polygon boundary segment.
+        """
+        if not polygon:
+            return float("inf")
+        if CampusGeoUtils.isPointInPolygon(lat, lng, polygon):
+            return 0.0
+
+        n = len(polygon)
+        minDist = float("inf")
+        for i in range(n):
+            p1 = polygon[i]
+            p2 = polygon[(i + 1) % n]
+            dist = CampusGeoUtils.pointToSegmentDistanceMeters(lat, lng, p1[0], p1[1], p2[0], p2[1])
+            if dist < minDist:
+                minDist = dist
+        return round(minDist, 2)
+
+    @staticmethod
+    def isPointInRadius(
+        lat: float,
+        lng: float,
+        centerLat: float,
+        centerLng: float,
+        radiusMeters: float,
+    ) -> Tuple[bool, float]:
+        """Checks whether (lat, lng) lies within `radiusMeters` of (centerLat, centerLng)."""
+        dist = CampusGeoUtils.calculateHaversineDistance(lat, lng, centerLat, centerLng)
+        return dist <= radiusMeters, round(dist, 2)
 
     @staticmethod
     def isWithinCampusPerimeter(

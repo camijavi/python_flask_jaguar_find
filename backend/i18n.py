@@ -18,6 +18,18 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
+def normalize_language(lang: Optional[str], default: str = "eng") -> str:
+    """Normalizes language identifiers (e.g. 'es', 'es-NI', 'spa' -> 'spa'; 'en', 'eng' -> 'eng')."""
+    if not lang:
+        return default
+    clean = str(lang).strip().lower()
+    if clean.startswith("sp") or clean.startswith("es"):
+        return "spa"
+    if clean.startswith("en"):
+        return "eng"
+    return default
+
+
 class I18nManager:
     """
     Singleton service managing translation dictionaries, language detection,
@@ -42,18 +54,20 @@ class I18nManager:
         if customPath and os.path.isdir(customPath):
             return Path(customPath)
 
-        projectRoot = Path(__file__).resolve().parent
+        backendRoot = Path(__file__).resolve().parent
+        projectRoot = backendRoot.parent
         candidates = [
+            backendRoot / "languages",
+            projectRoot / "backend" / "languages",
             projectRoot / "languages",
-            projectRoot / "src" / "languages",
+            Path.cwd() / "backend" / "languages",
             Path.cwd() / "languages",
-            Path.cwd() / "src" / "languages",
         ]
         for candidate in candidates:
             if candidate.is_dir() and (candidate / "eng.json").exists():
                 return candidate
 
-        return projectRoot / "languages"
+        return backendRoot / "languages"
 
     def loadDictionaries(self) -> None:
         """Loads all supported language JSON files into memory."""
@@ -78,12 +92,21 @@ class I18nManager:
             from flask import session, has_request_context
             if has_request_context():
                 lang = session.get("idioma") or session.get("lang")
-                if lang and lang in self.supportedLanguages:
-                    return lang
+                if lang:
+                    return normalize_language(lang, default=self.defaultLang)
         except ImportError:
             pass
 
         return self.defaultLang
+
+    def getRaw(self, keyPath: str, lang: Optional[str] = None, default: Any = None) -> Any:
+        """Returns the raw nested translation entry (string, dict, or list) for a key path."""
+        activeLang = normalize_language(lang, default=self.getCurrentLanguage()) if lang else self.getCurrentLanguage()
+        dictForLang = self.translations.get(activeLang, {})
+        val = self._nestedLookup(dictForLang, keyPath)
+        if val is None and activeLang != self.defaultLang:
+            val = self._nestedLookup(self.translations.get(self.defaultLang, {}), keyPath)
+        return val if val is not None else default
 
     def get(
         self,
@@ -100,7 +123,7 @@ class I18nManager:
         - Fallback to English if key is missing in target language.
         - Safe keyword argument formatting with {param}.
         """
-        activeLang = lang if (lang and lang in self.supportedLanguages) else self.getCurrentLanguage()
+        activeLang = normalize_language(lang, default=self.getCurrentLanguage()) if lang else self.getCurrentLanguage()
         dictForLang = self.translations.get(activeLang, {})
 
         val = self._nestedLookup(dictForLang, keyPath)
@@ -158,15 +181,21 @@ def get_current_language() -> str:
     return I18nManager.getInstance().getCurrentLanguage()
 
 
+def t_raw(keyPath: str, lang: Optional[str] = None, default: Any = None) -> Any:
+    """Returns the raw nested translation object (dict/list/str) for a dotted key path."""
+    return I18nManager.getInstance().getRaw(keyPath, lang=lang, default=default)
+
+
 def init_i18n(app) -> None:
     """
     Flask extension registration helper:
-    Injects 't(key)' and 'current_language' into all Jinja2 template contexts.
+    Injects 't(key)', 't_raw(key)', and 'current_language' into all Jinja2 template contexts.
     """
     @app.context_processor
     def inject_i18n():
         return {
             "t": t,
+            "t_raw": t_raw,
             "current_language": get_current_language(),
             "available_languages": I18nManager.getInstance().supportedLanguages
         }

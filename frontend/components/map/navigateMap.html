@@ -297,13 +297,15 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/>
                 </svg>
             </div>
-            <span class="text-xs font-bold text-slate-800">{{ t('map.plan_route', default='Planificar Ruta') }}</span>
+            <span class="text-xs font-bold text-slate-800" data-i18n="map.plan_route">{{ t('map.plan_route') }}</span>
         </div>
         <!-- Collapse / Hide arrow button -->
         <button id="btnCollapseBottomSheet" type="button" 
                 class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" 
-                title="{{ t('map.close', default='Ocultar panel') }}"
-                aria-label="{{ t('map.close', default='Ocultar panel') }}">
+                title="{{ t('map.close') }}"
+                data-i18n-title="map.close"
+                aria-label="{{ t('map.close') }}"
+                data-i18n-aria-label="map.close">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
             </svg>
@@ -323,11 +325,11 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2a10 10 0 100 20 10 10 0 000-20zm3.5 6.5l-2 5-5 2 2-5 5-2z"></path></svg>
                 </div>
                 <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">
-                        {{ t('map.title', default='Navegador del Campus UAM') }}
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight" data-i18n="map.title">
+                        {{ t('map.title') }}
                     </h2>
-                    <p class="text-[11px] text-slate-500">
-                        {{ t('map.subtitle', default='Find optimal pedestrian walking routes') }}
+                    <p class="text-[11px] text-slate-500" data-i18n="map.subtitle">
+                        {{ t('map.subtitle') }}
                     </p>
                 </div>
             </div>
@@ -335,16 +337,18 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Action Buttons (Reset & Close Sidebar) -->
             <div class="flex items-center gap-1.5">
                 <!-- Reset Button -->
-                <button id="btnResetNavigation" type="button" class="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-rose-600 font-medium px-2 py-1 rounded transition-colors hidden" title="{{ t('map.clear_route', default='Clear Route') }}">
+                <button id="btnResetNavigation" type="button" class="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-rose-600 font-medium px-2 py-1 rounded transition-colors hidden" title="{{ t('map.clear_route') }}" data-i18n-title="map.clear_route">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    <span>{{ t('map.clear_route', default='Clear') }}</span>
+                    <span data-i18n="map.clear_route">{{ t('map.clear_route') }}</span>
                 </button>
 
                 <!-- Close Sidebar Menu Button -->
                 <button id="btnCloseNavigateSidebar" type="button" 
                         class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" 
-                        title="{{ t('nav.close_menu', default='Cerrar menú lateral') }}" 
-                        aria-label="{{ t('nav.close_menu', default='Cerrar menú lateral') }}">
+                        title="{{ t('nav.close_menu') }}" 
+                        data-i18n-title="nav.close_menu"
+                        aria-label="{{ t('nav.close_menu') }}"
+                        data-i18n-aria-label="nav.close_menu">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -360,7 +364,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Mobile Back Arrow Button (<) as seen on Google Maps (Bottom Sheet only) -->
             <button id="btnMobileBack" type="button" 
                     class="navmap-bottom-sheet-only lg:hidden p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors shrink-0 cursor-pointer" 
-                    title="Cerrar barra de navegación">
+                    title="{{ t('map.close_nav_bar') }}"
+                    data-i18n-title="map.close_nav_bar"
+                    aria-label="{{ t('map.close_nav_bar') }}"
+                    data-i18n-aria-label="map.close_nav_bar">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
             </button>
 
@@ -387,16 +394,17 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <div class="navmap-sidebar-only hidden lg:flex items-center justify-between mb-1.5">
                         <label for="originInput" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100 inline-block"></span>
-                            {{ t('map.where_am_i', default='Where are you?') }}
+                            <span data-i18n="map.where_am_i">{{ t('map.where_am_i') }}</span>
                         </label>
                         
                         <button id="btnGetGps" type="button" 
                                 class="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100/80 px-2.5 py-1 rounded-md transition-all active:scale-95 cursor-pointer"
-                                title="{{ t('map.use_gps', default='Use my current location') }}">
+                                title="{{ t('map.use_gps') }}"
+                                data-i18n-title="map.use_gps">
                             <span id="gpsIcon" class="flex items-center">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </span>
-                            <span id="gpsBtnText">{{ t('map.get_gps', default='Get via GPS') }}</span>
+                            <span id="gpsBtnText" data-i18n="map.get_gps">{{ t('map.get_gps') }}</span>
                             <span id="gpsSpinner" class="hidden">
                                 <svg class="w-3.5 h-3.5 animate-spin text-brand-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </span>
@@ -412,16 +420,18 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                         <input type="text" 
                                id="originInput" 
                                autocomplete="off"
-                               placeholder="{{ t('map.where_am_i_placeholder', default='Tu ubicación o buscar...') }}" 
+                               placeholder="{{ t('map.where_am_i_placeholder') }}" 
+                               data-i18n-placeholder="map.where_am_i_placeholder"
                                class="w-full pl-3 lg:pl-9 pr-14 lg:pr-8 py-2 bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all outline-hidden">
                         
                         <!-- Mobile GPS quick button inside origin input (Bottom Sheet only) -->
-                        <button id="btnMobileGps" type="button" class="navmap-bottom-sheet-only lg:hidden absolute inset-y-0 right-7 pr-1 flex items-center text-brand-600 hover:text-brand-800 cursor-pointer" title="{{ t('map.use_gps', default='Use my current location') }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <button id="btnMobileGps" type="button" class="navmap-bottom-sheet-only lg:hidden absolute inset-y-0 right-7 pr-1 flex items-center text-brand-600 hover:text-brand-800 cursor-pointer" title="{{ t('map.use_gps') }}" data-i18n-title="map.use_gps" aria-label="{{ t('map.use_gps') }}" data-i18n-aria-label="map.use_gps">
+                            <svg id="mobileGpsIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <svg id="mobileGpsSpinner" class="w-4 h-4 animate-spin text-brand-600 hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         </button>
 
                         <!-- Clear origin input button -->
-                        <button id="btnClearOrigin" type="button" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer">
+                        <button id="btnClearOrigin" type="button" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer" title="{{ t('map.clear_route') }}" data-i18n-title="map.clear_route" aria-label="{{ t('map.clear_route') }}" data-i18n-aria-label="map.clear_route">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
@@ -429,25 +439,99 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <!-- Autocomplete Suggestions for Origin -->
                     <div id="originSuggestions" class="absolute z-50 left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-slate-200 max-h-56 overflow-y-auto hidden divide-y divide-slate-100"></div>
 
-                    <!-- Smart GPS Floor & Nearby Candidate Disambiguation Bar -->
-                    <div id="gpsDisambiguationBar" class="hidden mt-1.5 p-2 rounded-xl bg-sky-50/90 border border-sky-200/80 text-[11px] space-y-1.5">
-                        <div class="flex items-center justify-between gap-2">
-                            <span id="gpsDisambiguationTitle" class="font-bold text-sky-900 leading-tight"></span>
-                            <button id="btnCloseGpsDisambiguation" type="button" class="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer" title="Cerrar">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <!-- GPS Location Detection Panel: "Where I think you are", Multi-Floor Picker, Error States & Full Manual Fallback -->
+                    <div id="gpsDisambiguationBar" class="hidden mt-2 p-2.5 rounded-xl bg-sky-50/95 border border-sky-200/90 text-[11px] space-y-2 shadow-xs">
+                        <!-- Top Header Row -->
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-start gap-2 min-w-0 flex-1">
+                                <span id="gpsPanelBadgeIcon" class="mt-0.5 w-5 h-5 rounded-lg bg-sky-500 text-white flex items-center justify-center shrink-0">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                </span>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span id="gpsDisambiguationTitle" class="font-extrabold text-slate-900 leading-tight"></span>
+                                        <span id="gpsConfidencePill" class="hidden px-1.5 py-0.5 rounded-full text-[9.5px] font-bold"></span>
+                                    </div>
+                                    <p id="gpsPanelSubtitle" class="text-[11px] text-slate-600 leading-snug mt-0.5 hidden"></p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-0.5 shrink-0">
+                                <button id="btnRefreshGpsPanel" type="button" class="text-slate-400 hover:text-brand-600 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.gps.retry') }}" data-i18n-title="map.gps.retry" aria-label="{{ t('map.gps.retry') }}" data-i18n-aria-label="map.gps.retry">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                </button>
+                                <button id="btnCloseGpsDisambiguation" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.close') }}" data-i18n-title="map.close" aria-label="{{ t('map.close') }}" data-i18n-aria-label="map.close">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- High-Confidence "Where I think you are" Summary Card -->
+                        <div id="gpsEstimatedCard" class="hidden p-2 rounded-lg bg-white/95 border border-emerald-200/90 space-y-1.5">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0">
+                                    <div id="gpsEstimatedSpotName" class="text-xs font-extrabold text-slate-900 leading-snug"></div>
+                                    <div id="gpsEstimatedBuildingMeta" class="text-[10.5px] font-semibold text-emerald-700 mt-0.5"></div>
+                                </div>
+                                <span class="shrink-0 w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
+                                <span id="gpsEstimatedAccuracyMeta" class="text-[10px] text-slate-500 font-medium"></span>
+                                <button id="btnToggleGpsManualList" type="button" data-i18n="map.gps.change_spot" class="text-[10.5px] font-bold text-brand-700 hover:text-brand-900 underline underline-offset-2 cursor-pointer">
+                                    {{ t('map.gps.change_spot') }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Error / Permission Denied / Outside Campus Action Row -->
+                        <div id="gpsErrorActions" class="hidden flex flex-wrap items-center gap-1.5">
+                            <button id="btnGpsErrorRetry" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                <span data-i18n="map.gps.retry">{{ t('map.gps.retry') }}</span>
+                            </button>
+                            <button id="btnGpsManualPick" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-[11px] transition-colors cursor-pointer">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10"/></svg>
+                                <span data-i18n="map.gps.select_manually">{{ t('map.gps.select_manually') }}</span>
                             </button>
                         </div>
-                        <div id="gpsFloorButtons" class="flex flex-wrap gap-1"></div>
-                        <div id="gpsCandidateButtons" class="flex flex-wrap gap-1 pt-1 border-t border-sky-200/60 hidden"></div>
+
+                        <!-- Multi-Floor Prompt & Floor Selector Tabs -->
+                        <div id="gpsFloorSection" class="hidden space-y-1.5">
+                            <div class="flex items-center justify-between gap-2 flex-wrap">
+                                <span id="gpsFloorSectionLabel" class="text-[10.5px] font-bold text-slate-700"></span>
+                                <button id="btnUseDefaultFloor" type="button" class="hidden px-2 py-0.5 rounded-md bg-brand-600 hover:bg-brand-700 text-white font-bold text-[10px] transition-colors cursor-pointer"></button>
+                            </div>
+                            <div id="gpsFloorButtons" class="flex flex-wrap gap-1"></div>
+                        </div>
+
+                        <!-- Full Manual Fallback Location Picker (ALL available options for building/floor) -->
+                        <div id="gpsFallbackLocationsSection" class="hidden space-y-1.5 pt-1 border-t border-slate-200/70">
+                            <div class="flex items-center justify-between gap-2">
+                                <span id="gpsFallbackListHeader" class="text-[10.5px] font-extrabold text-slate-700"></span>
+                                <span id="gpsFallbackListCount" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-white text-slate-600 border border-slate-200"></span>
+                            </div>
+                            <input type="text"
+                                   id="gpsLocationFilterInput"
+                                   autocomplete="off"
+                                   placeholder="{{ t('map.gps.filter_locations_placeholder') }}"
+                                   data-i18n-placeholder="map.gps.filter_locations_placeholder"
+                                   class="hidden w-full px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] text-slate-800 placeholder-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-hidden">
+                            <div id="gpsLocationsList" class="max-h-44 overflow-y-auto space-y-1 pr-0.5 scrollbar-thin"></div>
+                        </div>
+
+                        <!-- Nearby Candidate Buildings & All-Buildings Manual Switcher -->
+                        <div id="gpsCandidateButtons" class="flex flex-wrap items-center gap-1 pt-1.5 border-t border-slate-200/70 hidden"></div>
+                        <div id="gpsAllBuildingsGrid" class="hidden pt-1.5 border-t border-slate-200/70 flex flex-wrap gap-1 max-h-32 overflow-y-auto scrollbar-thin"></div>
                     </div>
                 </div>
 
                 <!-- Sidebar Swap & Accessibility Row (Desktop & Mobile Sidebar) -->
                 <div class="navmap-sidebar-only hidden lg:flex items-center justify-between py-0.5">
                     <!-- Swap Origin / Destination -->
-                    <button id="btnSwapLocations" type="button" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-600 hover:bg-slate-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer" title="{{ t('map.swap', default='Swap locations') }}">
+                    <button id="btnSwapLocations" type="button" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-600 hover:bg-slate-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer" title="{{ t('map.swap') }}" data-i18n-title="map.swap">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
-                        <span>{{ t('map.swap', default='Swap') }}</span>
+                        <span data-i18n="map.swap">{{ t('map.swap') }}</span>
                     </button>
 
                     <!-- Wheelchair Accessibility Toggle -->
@@ -455,7 +539,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                         <input type="checkbox" id="accessibleToggle" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
                         <span class="inline-flex items-center gap-1">
                             <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                            <span>{{ t('map.accessible_route', default='Wheelchair accessible') }}</span>
+                            <span data-i18n="map.accessible_route">{{ t('map.accessible_route') }}</span>
                         </span>
                     </label>
                 </div>
@@ -466,10 +550,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <div class="navmap-sidebar-only hidden lg:flex items-center justify-between mb-1.5">
                         <label for="destinationInput" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-rose-500 ring-4 ring-rose-100 inline-block"></span>
-                            {{ t('map.where_to_go', default='Where to?') }}
+                            <span data-i18n="map.where_to_go">{{ t('map.where_to_go') }}</span>
                         </label>
-                        <span class="text-[11px] text-slate-400">
-                            {{ t('map.direct_search', default='Search directly or pick category') }}
+                        <span class="text-[11px] text-slate-400" data-i18n="map.direct_search">
+                            {{ t('map.direct_search') }}
                         </span>
                     </div>
 
@@ -482,11 +566,12 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                         <input type="text" 
                                id="destinationInput" 
                                autocomplete="off"
-                               placeholder="{{ t('map.where_to_go_placeholder', default='Aula, oficina, laboratorio, servicio...') }}" 
+                               placeholder="{{ t('map.where_to_go_placeholder') }}" 
+                               data-i18n-placeholder="map.where_to_go_placeholder"
                                class="w-full pl-3 lg:pl-9 pr-8 py-2 bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all outline-hidden">
                         
                         <!-- Clear destination input button -->
-                        <button id="btnClearDestination" type="button" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer">
+                        <button id="btnClearDestination" type="button" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer" title="{{ t('map.clear_route') }}" data-i18n-title="map.clear_route" aria-label="{{ t('map.clear_route') }}" data-i18n-aria-label="map.clear_route">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
@@ -500,62 +585,53 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Mobile Swap Button on the right (Google Maps ⇅ icon, Bottom Sheet only) -->
             <button id="btnMobileSwap" type="button" 
                     class="navmap-bottom-sheet-only lg:hidden p-2 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition-all self-center shrink-0 cursor-pointer" 
-                    title="{{ t('map.swap', default='Swap locations') }}">
+                    title="{{ t('map.swap') }}"
+                    data-i18n-title="map.swap"
+                    aria-label="{{ t('map.swap') }}"
+                    data-i18n-aria-label="map.swap">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
             </button>
         </div>
 
         <!-- ================================================================== -->
-        <!-- HORIZONTAL MODE & CATEGORY PILLS BAR                               -->
-        <!-- Walking, Accessible, Bebederos, Baños, Comida, etc.            -->
+        <!-- HORIZONTAL CATEGORY PILLS BAR                                    -->
+        <!-- Bebederos, Baños, Comida, etc.                                   -->
         <!-- ================================================================== -->
         <div class="pt-2 border-t border-slate-100">
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin text-xs" id="categoryChipsContainer">
-                
-                <!-- Walking mode pill (Active Light-Theme Sky-Blue mode indicator) -->
-                <button type="button" id="btnModeWalking" class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-sky-500 text-white shadow-xs inline-flex items-center gap-1.5 shrink-0" title="{{ t('map.standard_route', default='Ruta peatonal óptima') }}">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 10l2 2 2-2m-2 2v6m-4 2l4-2 4 2"></path></svg>
-                    <span>{{ t('map.mode_walking', default='A pie') }}</span>
-                </button>
-
-                <!-- Wheelchair mode pill (Interactive toggle pill for mobile & desktop) -->
-                <button type="button" id="btnModeWheelchair" class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 inline-flex items-center gap-1.5 shrink-0 cursor-pointer" title="{{ t('map.accessible_route', default='Wheelchair accessible') }}">
-                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                    <span id="modeWheelchairText">{{ t('map.mode_accessible', default='Accesible') }}</span>
-                </button>
 
                 <!-- Category Chips -->
                 <button type="button" data-category="" class="category-chip active whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-sky-500 text-white shadow-2xs inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span>{{ t('map.categories.all', default='All') }}</span>
+                    <span data-i18n="map.categories.all">{{ t('map.categories.all') }}</span>
                 </button>
                 <button type="button" data-category="drinkingFountain" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <span>{{ t('map.categories.drinking_fountains', default='Bebederos') }}</span>
+                    <span data-i18n="map.categories.drinking_fountains">{{ t('map.categories.drinking_fountains') }}</span>
                 </button>
                 <button type="button" data-category="restroom" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    <span>{{ t('map.categories.restrooms', default='Baños') }}</span>
+                    <span data-i18n="map.categories.restrooms">{{ t('map.categories.restrooms') }}</span>
                 </button>
                 <button type="button" data-category="foodArea" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
-                    <span>{{ t('map.categories.food', default='Comida') }}</span>
+                    <span data-i18n="map.categories.food">{{ t('map.categories.food') }}</span>
                 </button>
                 <button type="button" data-category="medicalLab" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>{{ t('map.categories.clinics', default='Medicina') }}</span>
+                    <span data-i18n="map.categories.clinics">{{ t('map.categories.clinics') }}</span>
                 </button>
                 <button type="button" data-category="dentalLab" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    <span>{{ t('map.categories.dental', default='Odontología') }}</span>
+                    <span data-i18n="map.categories.dental">{{ t('map.categories.dental') }}</span>
                 </button>
                 <button type="button" data-category="faculty" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-purple-50 text-slate-700 hover:text-purple-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
-                    <span>{{ t('map.categories.admin', default='Facultades') }}</span>
+                    <span data-i18n="map.categories.admin">{{ t('map.categories.admin') }}</span>
                 </button>
                 <button type="button" data-category="accessibleRamp" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                    <span>{{ t('map.categories.ramps', default='Rampas') }}</span>
+                    <span data-i18n="map.categories.ramps">{{ t('map.categories.ramps') }}</span>
                 </button>
             </div>
         </div>
@@ -568,7 +644,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     class="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 hover:from-sky-600 hover:via-blue-600 hover:to-sky-700 text-white font-bold text-xs shadow-md shadow-sky-500/25 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer">
                 <!-- Navigation Route Arrow Icon -->
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                <span>{{ t('map.calculate_route', default='Find Optimal Route') }}</span>
+                <span data-i18n="map.calculate_route">{{ t('map.calculate_route') }}</span>
             </button>
         </div>
 
@@ -585,7 +661,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
      class="fixed bottom-[72px] inset-x-2.5 sm:inset-x-6 max-w-lg mx-auto z-40 bg-white rounded-2xl shadow-[0_10px_34px_rgba(15,23,42,0.18)] border border-slate-200/90 p-3.5 pointer-events-auto gmaps-slide-up lg:static lg:inset-auto lg:max-w-none lg:mt-3 lg:bg-white lg:rounded-2xl lg:shadow-md lg:border lg:border-slate-200/80 lg:p-4.5 hidden">
     
     <!-- Summary Metrics Banner (Tap to re-expand search/planner on mobile) -->
-    <div id="routeSummaryBanner" class="p-3 bg-brand-50/80 border border-brand-100 rounded-xl flex items-center justify-between mb-2 shadow-2xs cursor-pointer lg:cursor-default" title="Toca para editar ruta">
+    <div id="routeSummaryBanner" class="p-3 bg-brand-50/80 border border-brand-100 rounded-xl flex items-center justify-between mb-2 shadow-2xs cursor-pointer lg:cursor-default" title="{{ t('map.tap_edit_route') }}" data-i18n-title="map.tap_edit_route">
         <div class="flex items-center gap-2.5 min-w-0">
             <div class="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
                 <!-- Walking Pedestrian Icon -->
@@ -593,13 +669,13 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             </div>
             <div class="min-w-0">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                    <span id="routeDistanceText" class="text-sm font-extrabold text-brand-900 leading-tight">~1 min</span>
+                    <span id="routeDistanceText" class="text-sm font-extrabold text-brand-900 leading-tight">{{ t('map.initial_duration') }}</span>
                     <span class="text-slate-400 text-xs">•</span>
-                    <span id="routeMinutesText" class="text-xs font-bold text-brand-700">0 referencias</span>
+                    <span id="routeMinutesText" class="text-xs font-bold text-brand-700">{{ t('map.initial_refs') }}</span>
                 </div>
                 <span id="routeAccessibilityBadge" class="text-[10px] font-semibold text-emerald-700 flex items-center gap-1 mt-0.5">
                     <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                    <span>{{ t('map.accessible_route', default='Accessible Route') }}</span>
+                    <span data-i18n="map.accessible_route">{{ t('map.accessible_route') }}</span>
                 </span>
             </div>
         </div>
@@ -609,15 +685,19 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Mobile Steps Toggle Button ("Pasos", Bottom Sheet floating card only) -->
             <button id="btnToggleMobileSteps" type="button" 
                     class="navmap-bottom-sheet-only lg:hidden inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white border border-brand-200 hover:bg-brand-50 text-brand-800 font-bold text-xs transition-colors shadow-2xs cursor-pointer"
-                    title="Ver lista de pasos">
-                <span>Pasos</span>
+                    title="{{ t('map.view_steps') }}"
+                    data-i18n-title="map.view_steps">
+                <span data-i18n="map.steps_label">{{ t('map.steps_label') }}</span>
                 <span id="stepsCountBadge" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-brand-100 text-brand-800">0</span>
             </button>
 
             <!-- Voice TTS Button -->
             <button id="btnVoiceDirections" type="button" 
                     class="p-1.5 rounded-lg bg-white border border-brand-200 hover:bg-brand-50 text-brand-700 transition-colors shadow-2xs cursor-pointer"
-                    title="{{ t('map.listen_directions', default='Listen to voice directions') }}">
+                    title="{{ t('map.listen_directions') }}"
+                    data-i18n-title="map.listen_directions"
+                    aria-label="{{ t('map.listen_directions') }}"
+                    data-i18n-aria-label="map.listen_directions">
                 <span id="voiceIconContainer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
                 </span>
@@ -626,7 +706,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Clear / Close Route Button on Mobile -->
             <button id="btnCloseMobileRoute" type="button" 
                     class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" 
-                    title="Cerrar ruta">
+                    title="{{ t('map.close_route') }}"
+                    data-i18n-title="map.close_route"
+                    aria-label="{{ t('map.close_route') }}"
+                    data-i18n-aria-label="map.close_route">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
@@ -635,8 +718,8 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
     <!-- Step-by-Step Directions List (Collapsible on mobile; visible on desktop) -->
     <div id="routeStepsWrapper" class="hidden lg:block pt-1">
         <div class="flex items-center justify-between mb-1.5">
-            <h4 class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                {{ t('map.steps', default='Step-by-step directions') }}
+            <h4 class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500" data-i18n="map.steps">
+                {{ t('map.steps') }}
             </h4>
         </div>
         
@@ -678,8 +761,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const btnMobileBack = document.getElementById("btnMobileBack");
     const btnMobileSwap = document.getElementById("btnMobileSwap");
     const btnMobileGps = document.getElementById("btnMobileGps");
-    const btnModeWalking = document.getElementById("btnModeWalking");
-    const btnModeWheelchair = document.getElementById("btnModeWheelchair");
     const btnToggleMobileSteps = document.getElementById("btnToggleMobileSteps");
     const routeStepsWrapper = document.getElementById("routeStepsWrapper");
     const btnCloseMobileRoute = document.getElementById("btnCloseMobileRoute");
@@ -690,17 +771,41 @@ document.addEventListener("DOMContentLoaded", function() {
     const originSuggestions = document.getElementById("originSuggestions");
     const btnClearOrigin = document.getElementById("btnClearOrigin");
     const gpsDisambiguationBar = document.getElementById("gpsDisambiguationBar");
+    const gpsPanelBadgeIcon = document.getElementById("gpsPanelBadgeIcon");
     const gpsDisambiguationTitle = document.getElementById("gpsDisambiguationTitle");
+    const gpsConfidencePill = document.getElementById("gpsConfidencePill");
+    const gpsPanelSubtitle = document.getElementById("gpsPanelSubtitle");
+    const gpsEstimatedCard = document.getElementById("gpsEstimatedCard");
+    const gpsEstimatedSpotName = document.getElementById("gpsEstimatedSpotName");
+    const gpsEstimatedBuildingMeta = document.getElementById("gpsEstimatedBuildingMeta");
+    const gpsEstimatedAccuracyMeta = document.getElementById("gpsEstimatedAccuracyMeta");
+    const btnToggleGpsManualList = document.getElementById("btnToggleGpsManualList");
+    const gpsErrorActions = document.getElementById("gpsErrorActions");
+    const btnGpsErrorRetry = document.getElementById("btnGpsErrorRetry");
+    const btnGpsManualPick = document.getElementById("btnGpsManualPick");
+    const gpsFloorSection = document.getElementById("gpsFloorSection");
+    const gpsFloorSectionLabel = document.getElementById("gpsFloorSectionLabel");
+    const btnUseDefaultFloor = document.getElementById("btnUseDefaultFloor");
     const gpsFloorButtons = document.getElementById("gpsFloorButtons");
+    const gpsFallbackLocationsSection = document.getElementById("gpsFallbackLocationsSection");
+    const gpsFallbackListHeader = document.getElementById("gpsFallbackListHeader");
+    const gpsFallbackListCount = document.getElementById("gpsFallbackListCount");
+    const gpsLocationFilterInput = document.getElementById("gpsLocationFilterInput");
+    const gpsLocationsList = document.getElementById("gpsLocationsList");
     const gpsCandidateButtons = document.getElementById("gpsCandidateButtons");
+    const gpsAllBuildingsGrid = document.getElementById("gpsAllBuildingsGrid");
+    const btnRefreshGpsPanel = document.getElementById("btnRefreshGpsPanel");
     const btnCloseGpsDisambiguation = document.getElementById("btnCloseGpsDisambiguation");
     const btnGetGps = document.getElementById("btnGetGps");
     const gpsSpinner = document.getElementById("gpsSpinner");
     const gpsIcon = document.getElementById("gpsIcon");
+    const mobileGpsIcon = document.getElementById("mobileGpsIcon");
+    const mobileGpsSpinner = document.getElementById("mobileGpsSpinner");
 
     const destinationInput = document.getElementById("destinationInput");
     const destinationSuggestions = document.getElementById("destinationSuggestions");
     const btnClearDestination = document.getElementById("btnClearDestination");
+    const directorySearchInput = document.getElementById("directorySearchInput");
 
     const categoryChips = document.querySelectorAll(".category-chip");
     const btnSwap = document.getElementById("btnSwapLocations");
@@ -717,6 +822,105 @@ document.addEventListener("DOMContentLoaded", function() {
     const btnVoice = document.getElementById("btnVoiceDirections");
     const voiceIconContainer = document.getElementById("voiceIconContainer");
     const voiceBtnText = document.getElementById("voiceBtnText");
+
+    // ------------------------------------------------------------------------
+    // Scoped sessionStorage Draft Persistence for Navigation Form & Directory
+    // ------------------------------------------------------------------------
+    function syncCategoryChipVisual(category) {
+        categoryChips.forEach(c => {
+            const matches = (c.getAttribute("data-category") || "") === (category || "");
+            if (matches) {
+                c.classList.remove("bg-slate-100", "text-slate-700");
+                c.classList.add("bg-sky-500", "text-white");
+            } else {
+                c.classList.remove("bg-sky-500", "text-white");
+                c.classList.add("bg-slate-100", "text-slate-700");
+            }
+        });
+    }
+
+    let navDraftDirty = false;
+
+    const navDraftHandle = window.JaguarFormDrafts
+        ? window.JaguarFormDrafts.registerCustom("mapNavigation", {
+            read: () => {
+                if (!navDraftDirty) return null;
+                const originValue = originInput ? originInput.value : "";
+                const destinationValue = destinationInput ? destinationInput.value : "";
+                const accessibleOnly = Boolean(accessibleToggle && accessibleToggle.checked);
+                const selectedCategory = state.selectedCategory || "";
+                const directoryQuery = directorySearchInput ? directorySearchInput.value : "";
+                if (!originValue && !destinationValue && !accessibleOnly && !selectedCategory && !directoryQuery) {
+                    return null;
+                }
+                return {
+                    originValue,
+                    originNodeId: state.originNodeId || null,
+                    originPlaceId: state.originPlaceId || null,
+                    usedGpsOrigin: Boolean(state.usedGpsOrigin),
+                    destinationValue,
+                    destinationNodeId: state.destinationNodeId || null,
+                    destinationPlaceId: state.destinationPlaceId || null,
+                    accessibleOnly,
+                    selectedCategory,
+                    directoryQuery,
+                    updatedAt: Date.now(),
+                };
+            },
+            restore: (draft) => {
+                if (!draft || typeof draft !== "object") return;
+                navDraftDirty = true;
+                if (originInput && draft.originValue) {
+                    originInput.value = draft.originValue;
+                    state.originQuery = draft.originValue;
+                    state.originNodeId = draft.originNodeId || null;
+                    state.originPlaceId = draft.originPlaceId || null;
+                    state.usedGpsOrigin = Boolean(draft.usedGpsOrigin);
+                    if (btnClearOrigin) btnClearOrigin.classList.remove("hidden");
+                }
+                if (destinationInput && draft.destinationValue) {
+                    destinationInput.value = draft.destinationValue;
+                    state.destinationQuery = draft.destinationValue;
+                    state.destinationNodeId = draft.destinationNodeId || null;
+                    state.destinationPlaceId = draft.destinationPlaceId || null;
+                    window.currentSelectedDestination = {
+                        placeId: state.destinationPlaceId,
+                        title: state.destinationQuery,
+                        nodeId: state.destinationNodeId,
+                    };
+                    if (btnClearDestination) btnClearDestination.classList.remove("hidden");
+                }
+                if (accessibleToggle && typeof draft.accessibleOnly === "boolean") {
+                    accessibleToggle.checked = draft.accessibleOnly;
+                    state.accessibleOnly = draft.accessibleOnly;
+                }
+                if (typeof draft.selectedCategory === "string" && draft.selectedCategory) {
+                    state.selectedCategory = draft.selectedCategory;
+                    syncCategoryChipVisual(draft.selectedCategory);
+                }
+                if (directorySearchInput && draft.directoryQuery) {
+                    directorySearchInput.value = draft.directoryQuery;
+                    setTimeout(() => {
+                        directorySearchInput.dispatchEvent(new Event("input"));
+                    }, 0);
+                }
+            },
+        })
+        : null;
+
+    function saveNavDraft() {
+        navDraftDirty = true;
+        if (navDraftHandle) navDraftHandle.save();
+    }
+
+    function clearNavDraft() {
+        navDraftDirty = false;
+        if (navDraftHandle) navDraftHandle.clear();
+    }
+
+    if (directorySearchInput) {
+        directorySearchInput.addEventListener("input", saveNavDraft);
+    }
 
     // ------------------------------------------------------------------------
     // Mobile Bottom Sheet Controller (Open, Close, Directions Button Toggle)
@@ -866,13 +1070,33 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    function getCurrentLang() {
+        return (window.APP_CONFIG && window.APP_CONFIG.currentLang) || "eng";
+    }
+
+    function tr(key, params) {
+        if (typeof window.t === "function") {
+            return window.t(key, undefined, params);
+        }
+        return key;
+    }
+
+    function resolveNodeShortName(nodeId) {
+        if (!nodeId) return "";
+        const translated = tr(`nodes.${nodeId}`);
+        if (translated && translated !== `nodes.${nodeId}`) {
+            return translated.split("(")[0].trim();
+        }
+        return nodeId;
+    }
+
     // 1. Initial Data Fetching (Nodes & Places Catalog)
     async function loadCampusCatalog() {
         try {
-            const lang = window.APP_CONFIG.currentLang || "spa";
+            const lang = getCurrentLang();
             const [nodesRes, placesRes] = await Promise.all([
-                fetch(`/api/map/nodes?lang=${lang}`).then(r => r.json()),
-                fetch(`/api/map/places`).then(r => r.json())
+                fetch(`/api/map/nodes?lang=${encodeURIComponent(lang)}`).then(r => r.json()),
+                fetch(`/api/map/places?lang=${encodeURIComponent(lang)}`).then(r => r.json())
             ]);
 
             if (nodesRes.success) {
@@ -901,12 +1125,14 @@ document.addEventListener("DOMContentLoaded", function() {
             const matchKw = (place.keywords || []).some(k => k.toLowerCase().includes(clean));
 
             if (!clean || matchName || matchNotes || matchKw) {
+                const floorWord = tr('map.floor');
+                const parentLabel = resolveNodeShortName(place.parentBuildingId);
                 results.push({
                     type: "place",
                     id: place.placeId,
                     targetNodeId: place.parentBuildingId,
                     title: place.name,
-                    subtitle: `${place.parentBuildingId} • Piso ${place.floorLevel} • ${place.locationNotes || ''}`,
+                    subtitle: `${parentLabel} • ${floorWord} ${place.floorLevel}${place.locationNotes ? ` • ${place.locationNotes}` : ''}`,
                     category: place.category,
                     iconSvg: getCategorySvg(place.category)
                 });
@@ -915,6 +1141,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // 2. Match macro nodes (buildings, gates, parking)
         if (!categoryFilter) {
+            const floorWord = tr('map.floor');
+            const bldgSubtitle = tr('map.building_entry_subtitle');
             for (const node of state.allNodes) {
                 const matchNodeName = (node.name || "").toLowerCase().includes(clean);
                 const matchNodeId = (node.nodeId || "").toLowerCase().includes(clean);
@@ -924,7 +1152,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         id: node.nodeId,
                         targetNodeId: node.nodeId,
                         title: node.name,
-                        subtitle: `${window.t('map.title', 'Edificio / Entrada')} (Piso ${node.floorLevel})`,
+                        subtitle: `${bldgSubtitle} (${floorWord} ${node.floorLevel})`,
                         category: node.category,
                         iconSvg: `<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>`
                     });
@@ -957,7 +1185,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!items || items.length === 0) {
             container.innerHTML = `
                 <div class="p-2 text-center text-xs text-slate-400">
-                    ${window.t('map.no_matches', 'No se encontraron ubicaciones')}
+                    ${tr('map.no_matches')}
                 </div>
             `;
             container.classList.remove("hidden");
@@ -997,6 +1225,7 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originNodeId = null;
         state.originPlaceId = null;
         state.usedGpsOrigin = false;
+        saveNavDraft();
 
         if (val.trim().length > 0) {
             const matches = getMatches(val);
@@ -1007,11 +1236,655 @@ document.addEventListener("DOMContentLoaded", function() {
                 state.originPlaceId = selected.id;
                 state.usedGpsOrigin = false;
                 btnClearOrigin.classList.remove("hidden");
+                saveNavDraft();
             });
         } else {
             originSuggestions.classList.add("hidden");
         }
     });
+
+    // ------------------------------------------------------------------------
+    // 4. GPS Location Detection Controller (Permissions, Boundaries, Multi-Floor,
+    //    "Where I think you are" High-Confidence Display & Full Manual Fallback)
+    // ------------------------------------------------------------------------
+    const gpsUiState = {
+        lastCoords: null,
+        lastMatch: null,
+        lastErrorCode: null,
+        lastCampusEntrances: [],
+        lastConfirmedSelection: null,
+        lastConfirmedSourceKey: null,
+        lastConfirmedSourceParams: null,
+        lastLoadingKey: null,
+        activeBuildingId: null,
+        activeBuildingName: "",
+        activeAvailableFloors: [1],
+        activeFloor: 1,
+        locationsByFloor: {},
+        showAllBuildings: false,
+        manualExpanded: false,
+        filterText: "",
+    };
+
+    function gpsEscape(text) {
+        return window.JaguarGpsDetector ? window.JaguarGpsDetector.escapeHtml(text) : String(text || "");
+    }
+
+    function setGpsButtonsLoading(isLoading) {
+        if (gpsIcon) gpsIcon.classList.toggle("hidden", isLoading);
+        if (gpsSpinner) gpsSpinner.classList.toggle("hidden", !isLoading);
+        if (mobileGpsIcon) mobileGpsIcon.classList.toggle("hidden", isLoading);
+        if (mobileGpsSpinner) mobileGpsSpinner.classList.toggle("hidden", !isLoading);
+        if (btnGetGps) btnGetGps.disabled = isLoading;
+        if (btnMobileGps) btnMobileGps.disabled = isLoading;
+    }
+
+    function setGpsPanelTone(tone) {
+        if (!gpsDisambiguationBar || !gpsPanelBadgeIcon) return;
+        const toneMap = {
+            emerald: {
+                bar: "mt-2 p-2.5 rounded-xl bg-emerald-50/90 border border-emerald-200/90 text-[11px] space-y-2 shadow-xs",
+                iconBg: "mt-0.5 w-5 h-5 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0",
+            },
+            sky: {
+                bar: "mt-2 p-2.5 rounded-xl bg-sky-50/95 border border-sky-200/90 text-[11px] space-y-2 shadow-xs",
+                iconBg: "mt-0.5 w-5 h-5 rounded-lg bg-sky-500 text-white flex items-center justify-center shrink-0",
+            },
+            amber: {
+                bar: "mt-2 p-2.5 rounded-xl bg-amber-50/95 border border-amber-200/90 text-[11px] space-y-2 shadow-xs",
+                iconBg: "mt-0.5 w-5 h-5 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0",
+            },
+            rose: {
+                bar: "mt-2 p-2.5 rounded-xl bg-rose-50/95 border border-rose-200/90 text-[11px] space-y-2 shadow-xs",
+                iconBg: "mt-0.5 w-5 h-5 rounded-lg bg-rose-600 text-white flex items-center justify-center shrink-0",
+            },
+            slate: {
+                bar: "mt-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] space-y-2 shadow-xs",
+                iconBg: "mt-0.5 w-5 h-5 rounded-lg bg-slate-500 text-white flex items-center justify-center shrink-0",
+            },
+        };
+        const cfg = toneMap[tone] || toneMap.sky;
+        gpsDisambiguationBar.className = cfg.bar;
+        gpsPanelBadgeIcon.className = cfg.iconBg;
+    }
+
+    function applySelectedGpsOrigin(selection, options = {}) {
+        const floorWord = tr("map.floor");
+        const displayFloor = selection.floorLevel && (gpsUiState.activeAvailableFloors.length > 1 || options.showFloor)
+            ? ` (${floorWord} ${selection.floorLevel})`
+            : "";
+        const displayName = selection.name || selection.buildingName || tr("map.campus_pill");
+        originInput.value = displayName.includes(floorWord)
+            ? displayName
+            : `${displayName}${displayFloor}`;
+        state.originQuery = displayName;
+        state.originNodeId = selection.buildingId;
+        state.originPlaceId = selection.nodeId || selection.placeId || selection.buildingId;
+        state.usedGpsOrigin = options.fromGps !== false;
+        btnClearOrigin.classList.remove("hidden");
+        saveNavDraft();
+
+        if (options.renderConfirmedCard) {
+            gpsUiState.manualExpanded = false;
+            gpsUiState.lastErrorCode = null;
+            gpsUiState.lastConfirmedSelection = selection;
+            gpsUiState.lastConfirmedSourceKey = options.sourceKey || "map.gps.source_confirmed";
+            gpsUiState.lastConfirmedSourceParams = options.sourceParams || null;
+            renderConfirmedLocationCard(selection, options.sourceKey, options.sourceParams);
+        }
+
+        if (options.recalculateIfReady && (state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim())) {
+            calculateRoute();
+        }
+    }
+
+    function renderGpsLoadingState(statusKey) {
+        if (!gpsDisambiguationBar) return;
+        gpsUiState.lastLoadingKey = statusKey;
+        gpsUiState.lastErrorCode = null;
+        gpsUiState.lastConfirmedSelection = null;
+        setGpsPanelTone("sky");
+        gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+        const statusLabels = {
+            requesting_permission: tr("map.gps.requesting_permission"),
+            retrying_network: tr("map.gps.retrying_network"),
+            locating: tr("map.gps.locating"),
+        };
+        gpsDisambiguationTitle.textContent = statusLabels[statusKey] || statusLabels.locating;
+        if (gpsConfidencePill) gpsConfidencePill.classList.add("hidden");
+        if (gpsPanelSubtitle) gpsPanelSubtitle.classList.add("hidden");
+        if (gpsEstimatedCard) gpsEstimatedCard.classList.add("hidden");
+        if (gpsErrorActions) gpsErrorActions.classList.add("hidden");
+        if (gpsFloorSection) gpsFloorSection.classList.add("hidden");
+        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.add("hidden");
+        if (gpsCandidateButtons) gpsCandidateButtons.classList.add("hidden");
+        if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
+        gpsDisambiguationBar.classList.remove("hidden");
+    }
+
+    function renderGpsErrorState(errorObj, campusEntrances) {
+        if (!gpsDisambiguationBar || !errorObj) return;
+        gpsUiState.lastErrorCode = errorObj.code || null;
+        gpsUiState.lastCampusEntrances = Array.isArray(campusEntrances) ? campusEntrances : [];
+        gpsUiState.lastConfirmedSelection = null;
+        setGpsPanelTone(errorObj.tone || "amber");
+        gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+        gpsDisambiguationTitle.textContent = errorObj.title;
+        if (gpsConfidencePill) gpsConfidencePill.classList.add("hidden");
+
+        if (gpsPanelSubtitle) {
+            gpsPanelSubtitle.textContent = errorObj.description;
+            gpsPanelSubtitle.classList.remove("hidden");
+        }
+        if (gpsEstimatedCard) gpsEstimatedCard.classList.add("hidden");
+        if (gpsFloorSection) gpsFloorSection.classList.add("hidden");
+        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.add("hidden");
+        if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
+
+        if (gpsErrorActions) {
+            gpsErrorActions.classList.remove("hidden");
+            if (btnGpsErrorRetry) {
+                btnGpsErrorRetry.classList.toggle("hidden", errorObj.retryable === false);
+            }
+        }
+
+        // Render campus entrance quick-picks (e.g. when outside campus or GPS failed)
+        if (gpsCandidateButtons) {
+            const quickPicks = (Array.isArray(campusEntrances) && campusEntrances.length > 0)
+                ? campusEntrances
+                : (state.allNodes || []).filter(n => ["mainParking", "northGate", "northeastGate", "buildingA", "buildingK", "buildingC", "buildingI"].includes(n.nodeId));
+            if (quickPicks.length > 0) {
+                renderManualQuickBuildings(quickPicks);
+                gpsCandidateButtons.classList.remove("hidden");
+            } else {
+                gpsCandidateButtons.classList.add("hidden");
+            }
+        }
+
+        gpsDisambiguationBar.classList.remove("hidden");
+    }
+
+    function renderConfirmedLocationCard(selection, sourceKey, sourceParams) {
+        if (!gpsDisambiguationBar) return;
+        setGpsPanelTone("emerald");
+        gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`;
+        gpsDisambiguationTitle.textContent = tr("map.gps.where_i_think_you_are");
+
+        if (gpsConfidencePill) {
+            const pillTxt = sourceKey ? tr(sourceKey, sourceParams) : tr("map.gps.source_confirmed");
+            gpsConfidencePill.textContent = pillTxt;
+            gpsConfidencePill.className = "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200";
+        }
+        if (gpsPanelSubtitle) gpsPanelSubtitle.classList.add("hidden");
+        if (gpsErrorActions) gpsErrorActions.classList.add("hidden");
+
+        if (gpsEstimatedCard) {
+            const floorTxt = `${tr("map.floor")} ${selection.floorLevel || 1}`;
+            const bName = resolveNodeShortName(selection.buildingId) || selection.buildingName || gpsUiState.activeBuildingName || "";
+            gpsEstimatedSpotName.textContent = selection.name || bName;
+            gpsEstimatedBuildingMeta.textContent = bName && bName !== selection.name
+                ? `${bName.split("(")[0].trim()} • ${floorTxt}`
+                : floorTxt;
+            const acc = gpsUiState.lastCoords && typeof gpsUiState.lastCoords.accuracy === "number"
+                ? `GPS ±${Math.round(gpsUiState.lastCoords.accuracy)}m`
+                : tr("map.gps.source_confirmed");
+            gpsEstimatedAccuracyMeta.textContent = acc;
+            if (btnToggleGpsManualList) {
+                btnToggleGpsManualList.textContent = gpsUiState.manualExpanded
+                    ? tr("map.gps.hide_locations")
+                    : tr("map.gps.change_spot");
+            }
+            gpsEstimatedCard.classList.remove("hidden");
+        }
+
+        if (gpsFloorSection) gpsFloorSection.classList.toggle("hidden", !gpsUiState.manualExpanded || gpsUiState.activeAvailableFloors.length <= 1);
+        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.toggle("hidden", !gpsUiState.manualExpanded);
+        if (gpsCandidateButtons) gpsCandidateButtons.classList.toggle("hidden", !gpsUiState.manualExpanded);
+        if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
+        gpsDisambiguationBar.classList.remove("hidden");
+    }
+
+    function renderLocationsForActiveFloor() {
+        if (!gpsLocationsList || !gpsFallbackLocationsSection) return;
+        const floorKey = String(gpsUiState.activeFloor || 1);
+        const rawList = Array.isArray(gpsUiState.locationsByFloor[floorKey])
+            ? gpsUiState.locationsByFloor[floorKey]
+            : [];
+
+        const shortB = (resolveNodeShortName(gpsUiState.activeBuildingId) || gpsUiState.activeBuildingName || gpsUiState.activeBuildingId || "").split("(")[0].trim();
+        const isMulti = gpsUiState.activeAvailableFloors.length > 1;
+        if (gpsFallbackListHeader) {
+            gpsFallbackListHeader.textContent = isMulti
+                ? tr("map.gps.all_locations_in_floor", { floor: gpsUiState.activeFloor })
+                : tr("map.gps.all_locations_in_building", { building: shortB });
+        }
+
+        if (gpsLocationFilterInput) {
+            const showFilter = rawList.length > 5;
+            gpsLocationFilterInput.classList.toggle("hidden", !showFilter);
+            if (!showFilter) {
+                gpsLocationFilterInput.value = "";
+                gpsUiState.filterText = "";
+            }
+        }
+
+        const q = (gpsUiState.filterText || "").trim().toLowerCase();
+        const filtered = q
+            ? rawList.filter(loc => (loc.name || "").toLowerCase().includes(q) || (loc.category || "").toLowerCase().includes(q))
+            : rawList;
+
+        if (gpsFallbackListCount) {
+            gpsFallbackListCount.textContent = `${filtered.length}`;
+        }
+
+        gpsLocationsList.innerHTML = "";
+        if (filtered.length === 0) {
+            gpsLocationsList.innerHTML = `<div class="p-2 text-center text-[11px] text-slate-400">${gpsEscape(tr("map.gps.no_filtered_locations"))}</div>`;
+            return;
+        }
+
+        const nearestBadgeTxt = tr("map.gps.nearest_badge");
+        filtered.forEach((loc) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            const isSelected = Boolean(state.originPlaceId && state.originPlaceId === loc.nodeId);
+            btn.className = isSelected
+                ? "w-full text-left px-2 py-1.5 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-950 flex items-center justify-between gap-2 transition-colors cursor-pointer"
+                : "w-full text-left px-2 py-1.5 rounded-lg bg-white hover:bg-sky-50 border border-slate-200/80 hover:border-sky-300 text-slate-800 flex items-center justify-between gap-2 transition-colors cursor-pointer";
+
+            const distLabel = typeof loc.distanceMeters === "number"
+                ? `<span class="text-[9.5px] text-slate-400 font-semibold shrink-0">~${Math.round(loc.distanceMeters)}m</span>`
+                : "";
+            const recBadge = loc.isRecommended
+                ? `<span class="px-1.5 py-0.2 rounded-full bg-sky-100 text-sky-800 font-bold text-[9px] shrink-0">${gpsEscape(nearestBadgeTxt)}</span>`
+                : "";
+
+            btn.innerHTML = `
+                <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                    <span class="shrink-0">${getCategorySvg(loc.category)}</span>
+                    <span class="font-semibold text-[11px] leading-snug truncate">${gpsEscape(loc.name)}</span>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                    ${recBadge}
+                    ${distLabel}
+                </div>
+            `;
+
+            btn.addEventListener("click", () => {
+                applySelectedGpsOrigin(
+                    {
+                        nodeId: loc.nodeId,
+                        placeId: loc.placeId || loc.nodeId,
+                        name: loc.name,
+                        buildingId: loc.buildingId || gpsUiState.activeBuildingId,
+                        buildingName: loc.buildingName || gpsUiState.activeBuildingName,
+                        floorLevel: loc.floorLevel || gpsUiState.activeFloor,
+                    },
+                    {
+                        fromGps: Boolean(gpsUiState.lastCoords),
+                        showFloor: gpsUiState.activeAvailableFloors.length > 1,
+                        renderConfirmedCard: true,
+                        sourceKey: "map.gps.source_confirmed",
+                        recalculateIfReady: true,
+                    }
+                );
+            });
+            gpsLocationsList.appendChild(btn);
+        });
+    }
+
+    function renderFloorTabs(availableFloors, floorCandidates, showDefaultBtn) {
+        if (!gpsFloorSection || !gpsFloorButtons) return;
+        const floors = Array.isArray(availableFloors) && availableFloors.length > 0 ? availableFloors : [1];
+        if (floors.length <= 1) {
+            gpsFloorSection.classList.add("hidden");
+            return;
+        }
+
+        const defaultFloor = floors[0];
+        if (gpsFloorSectionLabel) {
+            gpsFloorSectionLabel.textContent = tr("map.gps.select_floor");
+        }
+        if (btnUseDefaultFloor) {
+            if (showDefaultBtn) {
+                btnUseDefaultFloor.textContent = tr("map.gps.use_default_floor", { floor: defaultFloor });
+                btnUseDefaultFloor.classList.remove("hidden");
+            } else {
+                btnUseDefaultFloor.classList.add("hidden");
+            }
+        }
+
+        gpsFloorButtons.innerHTML = "";
+        floors.forEach((fl) => {
+            const isActive = Number(gpsUiState.activeFloor) === Number(fl);
+            const flList = gpsUiState.locationsByFloor[String(fl)] || [];
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = isActive
+                ? "px-2.5 py-1 rounded-lg bg-sky-600 text-white border border-sky-600 font-extrabold text-[11px] shadow-2xs transition-colors cursor-pointer inline-flex items-center gap-1"
+                : "px-2.5 py-1 rounded-lg bg-white hover:bg-sky-100 text-sky-900 border border-sky-200 font-bold text-[11px] transition-colors cursor-pointer inline-flex items-center gap-1";
+            btn.innerHTML = `<span>${gpsEscape(tr("map.floor"))} ${fl}</span><span class="text-[9.5px] opacity-80">(${flList.length})</span>`;
+
+            btn.addEventListener("click", () => {
+                gpsUiState.activeFloor = fl;
+                gpsUiState.filterText = "";
+                if (gpsLocationFilterInput) gpsLocationFilterInput.value = "";
+                renderFloorTabs(floors, floorCandidates, showDefaultBtn);
+                renderLocationsForActiveFloor();
+                // Pre-select the nearest spot on this floor in originInput while keeping all rooms visible to refine
+                if (flList.length > 0) {
+                    const topLoc = flList[0];
+                    applySelectedGpsOrigin(
+                        {
+                            nodeId: topLoc.nodeId,
+                            placeId: topLoc.placeId || topLoc.nodeId,
+                            name: topLoc.name,
+                            buildingId: topLoc.buildingId || gpsUiState.activeBuildingId,
+                            buildingName: topLoc.buildingName || gpsUiState.activeBuildingName,
+                            floorLevel: fl,
+                        },
+                        { fromGps: true, showFloor: true, renderConfirmedCard: false, recalculateIfReady: false }
+                    );
+                    renderLocationsForActiveFloor();
+                }
+            });
+            gpsFloorButtons.appendChild(btn);
+        });
+
+        gpsFloorSection.classList.remove("hidden");
+    }
+
+    async function switchManualBuilding(buildingId, fallbackName) {
+        if (!buildingId || !window.JaguarGpsDetector) return;
+        gpsUiState.lastErrorCode = null;
+        gpsUiState.lastConfirmedSelection = null;
+        if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
+        gpsUiState.showAllBuildings = false;
+
+        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.remove("hidden");
+        if (gpsLocationsList) {
+            gpsLocationsList.innerHTML = `<div class="p-2 text-center text-[11px] text-slate-500">${gpsEscape(tr("map.gps.loading_building_locations"))}</div>`;
+        }
+
+        try {
+            const payload = await window.JaguarGpsDetector.fetchBuildingLocations(buildingId, {
+                coords: gpsUiState.lastCoords,
+                lang: getCurrentLang(),
+            });
+            if (payload && payload.success) {
+                gpsUiState.activeBuildingId = payload.buildingId;
+                gpsUiState.activeBuildingName = payload.buildingName || fallbackName || buildingId;
+                gpsUiState.activeAvailableFloors = payload.availableFloors || [1];
+                gpsUiState.activeFloor = gpsUiState.activeAvailableFloors[0] || 1;
+                gpsUiState.locationsByFloor = payload.locationsByFloor || {};
+                gpsUiState.filterText = "";
+                if (gpsLocationFilterInput) gpsLocationFilterInput.value = "";
+
+                const shortB = (resolveNodeShortName(gpsUiState.activeBuildingId) || gpsUiState.activeBuildingName).split("(")[0].trim();
+                gpsDisambiguationTitle.textContent = tr("map.gps.select_location_fallback", { building: shortB });
+                renderFloorTabs(gpsUiState.activeAvailableFloors, [], gpsUiState.activeAvailableFloors.length > 1);
+                renderLocationsForActiveFloor();
+            }
+        } catch (err) {
+            console.warn("Failed to load locations for building", buildingId, err);
+        }
+    }
+
+    function renderManualQuickBuildings(candidates) {
+        if (!gpsCandidateButtons) return;
+        gpsCandidateButtons.innerHTML = "";
+
+        const lbl = document.createElement("span");
+        lbl.className = "text-[10px] text-slate-500 font-bold mr-1";
+        lbl.textContent = tr("map.gps.other_nearby_buildings");
+        gpsCandidateButtons.appendChild(lbl);
+
+        (candidates || []).forEach((cand) => {
+            const bId = cand.buildingId || cand.nodeId;
+            if (!bId) return;
+            const btn = document.createElement("button");
+            btn.type = "button";
+            const isActive = bId === gpsUiState.activeBuildingId;
+            btn.className = isActive
+                ? "px-2 py-0.5 rounded-full bg-slate-800 text-white border border-slate-800 font-bold text-[10px] transition-colors cursor-pointer"
+                : "px-2 py-0.5 rounded-full bg-white hover:bg-slate-800 hover:text-white text-slate-700 border border-slate-200 font-semibold text-[10px] transition-colors cursor-pointer";
+            btn.textContent = (resolveNodeShortName(bId) || cand.buildingName || cand.name || bId).split("(")[0].trim();
+            btn.addEventListener("click", () => {
+                switchManualBuilding(bId, cand.buildingName || cand.name);
+            });
+            gpsCandidateButtons.appendChild(btn);
+        });
+
+        // "Browse all buildings" toggle button
+        const btnAll = document.createElement("button");
+        btnAll.type = "button";
+        btnAll.className = "px-2 py-0.5 rounded-full bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 font-bold text-[10px] transition-colors cursor-pointer";
+        btnAll.textContent = tr("map.gps.browse_all_buildings");
+        btnAll.addEventListener("click", () => {
+            gpsUiState.showAllBuildings = !gpsUiState.showAllBuildings;
+            renderAllBuildingsPicker();
+        });
+        gpsCandidateButtons.appendChild(btnAll);
+    }
+
+    function renderAllBuildingsPicker() {
+        if (!gpsAllBuildingsGrid) return;
+        if (!gpsUiState.showAllBuildings) {
+            gpsAllBuildingsGrid.classList.add("hidden");
+            return;
+        }
+        gpsAllBuildingsGrid.innerHTML = "";
+        (state.allNodes || []).forEach((node) => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "px-2 py-0.5 rounded-md bg-white hover:bg-brand-600 hover:text-white text-slate-700 border border-slate-200 font-semibold text-[10px] transition-colors cursor-pointer";
+            chip.textContent = (node.name || node.nodeId).split("(")[0].trim();
+            chip.addEventListener("click", () => {
+                switchManualBuilding(node.nodeId, node.name);
+            });
+            gpsAllBuildingsGrid.appendChild(chip);
+        });
+        gpsAllBuildingsGrid.classList.remove("hidden");
+    }
+
+    function renderGpsDetectionResult(nearest, coords) {
+        if (!gpsDisambiguationBar || !nearest) return;
+
+        gpsUiState.lastErrorCode = null;
+        gpsUiState.lastConfirmedSelection = null;
+        gpsUiState.lastMatch = nearest;
+        gpsUiState.lastCoords = coords || null;
+        gpsUiState.activeBuildingId = nearest.nearestNodeId || (nearest.bestMatch && nearest.bestMatch.buildingId) || null;
+        gpsUiState.activeBuildingName = nearest.buildingName || nearest.nodeName || "";
+        gpsUiState.activeAvailableFloors = Array.isArray(nearest.availableFloors) && nearest.availableFloors.length > 0
+            ? nearest.availableFloors
+            : [1];
+        gpsUiState.locationsByFloor = nearest.buildingLocationsByFloor || {};
+        gpsUiState.showAllBuildings = false;
+        gpsUiState.filterText = "";
+        if (gpsLocationFilterInput) gpsLocationFilterInput.value = "";
+
+        const floorInfo = nearest.floorDetection || {};
+        const boundaryInfo = nearest.boundaryMatch || {};
+        const confidence = nearest.confidence || (nearest.needsFloorSelection || nearest.isAmbiguous ? "medium" : "high");
+        const detectedFloor = floorInfo.detectedFloor != null ? floorInfo.detectedFloor : (floorInfo.defaultFloor || gpsUiState.activeAvailableFloors[0] || 1);
+        gpsUiState.activeFloor = detectedFloor;
+
+        const shortB = (resolveNodeShortName(gpsUiState.activeBuildingId) || gpsUiState.activeBuildingName).split("(")[0].trim();
+        const altCandidates = (Array.isArray(nearest.topCandidates) ? nearest.topCandidates : []);
+
+        if (gpsErrorActions) gpsErrorActions.classList.add("hidden");
+        if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
+
+        // CASE 1: HIGH CONFIDENCE -> Display "Where I think you are"
+        if (confidence === "high" && !nearest.needsManualFallback) {
+            gpsUiState.manualExpanded = false;
+            setGpsPanelTone("emerald");
+            gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`;
+            gpsDisambiguationTitle.textContent = tr("map.gps.where_i_think_you_are");
+
+            if (gpsConfidencePill) {
+                let pillText = tr("map.gps.high_confidence");
+                if (floorInfo.source === "beacon") {
+                    pillText = `${tr("map.gps.source_beacon")} • ${pillText}`;
+                } else if (floorInfo.source === "altitude") {
+                    pillText = `${tr("map.gps.source_altitude")} • ${pillText}`;
+                } else if (boundaryInfo.isInsideBoundary) {
+                    pillText = tr("map.gps.inside_boundary");
+                }
+                gpsConfidencePill.textContent = pillText;
+                gpsConfidencePill.className = "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200";
+            }
+
+            if (gpsPanelSubtitle) gpsPanelSubtitle.classList.add("hidden");
+
+            if (gpsEstimatedCard) {
+                const floorTxt = `${tr("map.floor")} ${detectedFloor}`;
+                gpsEstimatedSpotName.textContent = nearest.nodeName || shortB;
+                gpsEstimatedBuildingMeta.textContent = shortB && nearest.nodeName !== nearest.buildingName
+                    ? `${shortB} • ${floorTxt}`
+                    : floorTxt;
+                const accParts = [];
+                if (coords && typeof coords.accuracy === "number") accParts.push(`GPS ±${Math.round(coords.accuracy)}m`);
+                if (typeof nearest.distanceMeters === "number") accParts.push(`~${Math.round(nearest.distanceMeters)}m`);
+                gpsEstimatedAccuracyMeta.textContent = accParts.join(" • ") || tr("map.gps.high_confidence");
+                if (btnToggleGpsManualList) {
+                    btnToggleGpsManualList.textContent = tr("map.gps.change_spot");
+                }
+                gpsEstimatedCard.classList.remove("hidden");
+            }
+
+            // Prepare fallback sections in background (collapsed until user taps "Change spot")
+            renderFloorTabs(gpsUiState.activeAvailableFloors, nearest.floorCandidates, false);
+            renderLocationsForActiveFloor();
+            renderManualQuickBuildings(altCandidates);
+            if (gpsFloorSection) gpsFloorSection.classList.add("hidden");
+            if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.add("hidden");
+            if (gpsCandidateButtons) gpsCandidateButtons.classList.add("hidden");
+
+            gpsDisambiguationBar.classList.remove("hidden");
+            return;
+        }
+
+        // CASE 2: MULTI-FLOOR BUILDING DETECTED OR UNCERTAIN SPOT -> Prompt floor & render ALL available building/floor locations!
+        gpsUiState.manualExpanded = true;
+        const isMultiFloorPrompt = Boolean(nearest.needsFloorSelection && gpsUiState.activeAvailableFloors.length > 1);
+        setGpsPanelTone(isMultiFloorPrompt ? "sky" : "amber");
+        gpsPanelBadgeIcon.innerHTML = isMultiFloorPrompt
+            ? `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>`
+            : `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`;
+
+        if (isMultiFloorPrompt) {
+            gpsDisambiguationTitle.textContent = `${shortB} — ${tr("map.gps.building_detected_choose_floor")}`;
+            if (gpsPanelSubtitle) {
+                gpsPanelSubtitle.textContent = tr("map.gps.indoor_altitude_hint");
+                gpsPanelSubtitle.classList.remove("hidden");
+            }
+        } else {
+            gpsDisambiguationTitle.textContent = tr("map.gps.select_location_fallback", {
+                building: shortB || tr("map.campus_pill"),
+            });
+            if (gpsPanelSubtitle) {
+                const reasonParts = [];
+                if (coords && typeof coords.accuracy === "number") reasonParts.push(`GPS ±${Math.round(coords.accuracy)}m`);
+                if (boundaryInfo.isInsideBoundary) {
+                    reasonParts.push(tr("map.gps.inside_boundary"));
+                } else {
+                    reasonParts.push(tr("map.gps.near_boundary"));
+                }
+                gpsPanelSubtitle.textContent = reasonParts.join(" • ");
+                gpsPanelSubtitle.classList.remove("hidden");
+            }
+        }
+
+        if (gpsConfidencePill) {
+            const confLabel = confidence === "low"
+                ? tr("map.gps.low_confidence")
+                : tr("map.gps.medium_confidence");
+            gpsConfidencePill.textContent = confLabel;
+            gpsConfidencePill.className = isMultiFloorPrompt
+                ? "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-sky-100 text-sky-800 border border-sky-200"
+                : "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-amber-100 text-amber-800 border border-amber-200";
+        }
+
+        if (gpsEstimatedCard) gpsEstimatedCard.classList.add("hidden");
+
+        renderFloorTabs(gpsUiState.activeAvailableFloors, nearest.floorCandidates, isMultiFloorPrompt);
+        renderLocationsForActiveFloor();
+        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.remove("hidden");
+
+        renderManualQuickBuildings(altCandidates);
+        if (gpsCandidateButtons) gpsCandidateButtons.classList.remove("hidden");
+
+        gpsDisambiguationBar.classList.remove("hidden");
+    }
+
+    async function runGpsLocationDetection(options = {}) {
+        if (!window.JaguarGpsDetector) return;
+
+        setGpsButtonsLoading(true);
+        renderGpsLoadingState("locating");
+
+        try {
+            const result = await window.JaguarGpsDetector.detectCampusLocation({
+                forceFresh: Boolean(options.forceFresh),
+                reuseFreshLive: !options.forceFresh,
+                floorHint: options.floorHint,
+                beaconId: options.beaconId,
+                beaconFloor: options.beaconFloor,
+                lang: getCurrentLang(),
+                onStatusChange: (statusKey) => renderGpsLoadingState(statusKey),
+            });
+
+            if (result.ok && result.nearest) {
+                const n = result.nearest;
+                const coords = result.coords || {};
+                const floorInfo = n.floorDetection || {};
+                const displayFloor = floorInfo.detectedFloor != null ? floorInfo.detectedFloor : (floorInfo.defaultFloor || 1);
+
+                applySelectedGpsOrigin(
+                    {
+                        nodeId: n.nearestSpecificNodeId || n.nearestNodeId,
+                        placeId: n.nearestSpecificNodeId || n.nearestNodeId,
+                        name: n.nodeName || n.buildingName,
+                        buildingId: n.nearestNodeId,
+                        buildingName: n.buildingName,
+                        floorLevel: displayFloor,
+                    },
+                    {
+                        fromGps: true,
+                        showFloor: Boolean(floorInfo.isMultiFloor && floorInfo.detectedFloor != null),
+                        renderConfirmedCard: false,
+                        recalculateIfReady: false,
+                    }
+                );
+
+                renderGpsDetectionResult(n, coords);
+
+                window.dispatchEvent(new CustomEvent("jaguarGpsLocationUpdated", {
+                    detail: Object.assign({}, n, {
+                        lat: coords.latitude,
+                        lng: coords.longitude,
+                        accuracy: coords.accuracy,
+                        altitude: coords.altitude,
+                        altitudeAccuracy: coords.altitudeAccuracy,
+                    })
+                }));
+            } else {
+                gpsUiState.lastCoords = result.coords || null;
+                gpsUiState.lastMatch = result.nearest || null;
+                renderGpsErrorState(
+                    result.error || window.JaguarGpsDetector.getErrorCopy(window.JaguarGpsDetector.ERROR_CODES.NETWORK_ERROR),
+                    result.campusEntrances || []
+                );
+            }
+        } finally {
+            setGpsButtonsLoading(false);
+        }
+    }
+
+    window.triggerJaguarGpsDetection = runGpsLocationDetection;
 
     btnClearOrigin.addEventListener("click", () => {
         originInput.value = "";
@@ -1022,6 +1895,7 @@ document.addEventListener("DOMContentLoaded", function() {
         btnClearOrigin.classList.add("hidden");
         originSuggestions.classList.add("hidden");
         if (gpsDisambiguationBar) gpsDisambiguationBar.classList.add("hidden");
+        saveNavDraft();
     });
 
     if (btnCloseGpsDisambiguation && gpsDisambiguationBar) {
@@ -1030,163 +1904,110 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    function renderGpsDisambiguation(nearest) {
-        if (!gpsDisambiguationBar || !nearest) return;
-        const hasFloors = Boolean(nearest.needsFloorSelection && Array.isArray(nearest.floorCandidates) && nearest.floorCandidates.length > 1);
-        const altCandidates = (Array.isArray(nearest.topCandidates) ? nearest.topCandidates : []).slice(1);
-        const showAlts = Boolean(nearest.isAmbiguous && altCandidates.length > 0);
-
-        if (!hasFloors && !showAlts) {
-            gpsDisambiguationBar.classList.add("hidden");
-            return;
-        }
-
-        const bShort = (nearest.buildingName || "este edificio").split("(")[0].trim();
-        gpsDisambiguationTitle.textContent = hasFloors
-            ? `Detectado en ${bShort}. ¿En qué piso estás?`
-            : `Ubicado cerca de ${bShort}. ¿O estás en otro edificio?`;
-
-        gpsFloorButtons.innerHTML = "";
-        if (hasFloors) {
-            gpsFloorButtons.classList.remove("hidden");
-            nearest.floorCandidates.forEach(fc => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                const shortRoom = (fc.name || "").split("(")[0].trim().slice(0, 24);
-                btn.className = "px-2 py-1 rounded-lg bg-white hover:bg-sky-500 hover:text-white text-sky-900 border border-sky-200 font-bold text-[11px] transition-colors cursor-pointer";
-                btn.textContent = `Piso ${fc.floorLevel}: ${shortRoom}`;
-                btn.addEventListener("click", () => {
-                    originInput.value = `${fc.name} (Piso ${fc.floorLevel})`;
-                    state.originQuery = fc.name;
-                    state.originNodeId = fc.buildingId;
-                    state.originPlaceId = fc.nodeId;
-                    btnClearOrigin.classList.remove("hidden");
-                    gpsDisambiguationBar.classList.add("hidden");
-                    if (state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim()) {
-                        calculateRoute();
-                    }
-                });
-                gpsFloorButtons.appendChild(btn);
-            });
-        } else {
-            gpsFloorButtons.classList.add("hidden");
-        }
-
-        gpsCandidateButtons.innerHTML = "";
-        if (showAlts) {
-            gpsCandidateButtons.classList.remove("hidden");
-            const lbl = document.createElement("span");
-            lbl.className = "text-[10px] text-slate-500 font-semibold self-center mr-1";
-            lbl.textContent = "¿O cerca de:";
-            gpsCandidateButtons.appendChild(lbl);
-            altCandidates.forEach(cand => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.className = "px-2 py-0.5 rounded-full bg-white hover:bg-slate-800 hover:text-white text-slate-700 border border-slate-200 font-semibold text-[10px] transition-colors cursor-pointer";
-                btn.textContent = (cand.buildingName || cand.name || "").split("(")[0].trim();
-                btn.addEventListener("click", () => {
-                    originInput.value = cand.name || cand.buildingName;
-                    state.originQuery = cand.name || cand.buildingName;
-                    state.originNodeId = cand.buildingId;
-                    state.originPlaceId = cand.nodeId;
-                    btnClearOrigin.classList.remove("hidden");
-                    gpsDisambiguationBar.classList.add("hidden");
-                    if (state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim()) {
-                        calculateRoute();
-                    }
-                });
-                gpsCandidateButtons.appendChild(btn);
-            });
-        } else {
-            gpsCandidateButtons.classList.add("hidden");
-        }
-
-        gpsDisambiguationBar.classList.remove("hidden");
+    if (btnRefreshGpsPanel) {
+        btnRefreshGpsPanel.addEventListener("click", () => runGpsLocationDetection({ forceFresh: true }));
     }
 
-    // 4. GPS "Get via GPS" Integration (Full Subgraph + Walkway + Floor Matching)
-    btnGetGps.addEventListener("click", function() {
-        if (!navigator.geolocation) {
-            alert(window.t('map.gps_unsupported', 'Tu navegador no soporta geolocalización GPS.'));
-            return;
-        }
+    if (btnGpsErrorRetry) {
+        btnGpsErrorRetry.addEventListener("click", () => runGpsLocationDetection({ forceFresh: true }));
+    }
 
-        gpsIcon.classList.add("hidden");
-        gpsSpinner.classList.remove("hidden");
+    if (btnGpsManualPick) {
+        btnGpsManualPick.addEventListener("click", () => {
+            gpsUiState.showAllBuildings = true;
+            renderAllBuildingsPicker();
+            if (originInput) originInput.focus();
+        });
+    }
 
-        navigator.geolocation.getCurrentPosition(
-            async (pos) => {
-                const { latitude, longitude, accuracy } = pos.coords;
-                const lang = window.APP_CONFIG.currentLang || "spa";
-                try {
-                    const accParam = (typeof accuracy === "number" && !Number.isNaN(accuracy)) ? `&accuracy=${accuracy.toFixed(1)}` : "";
-                    const res = await fetch(`/api/map/nearest-gps?lat=${latitude}&lng=${longitude}${accParam}&lang=${lang}`);
-                    const data = await res.json();
-                    if (data.outsideCampus) {
-                        alert(window.t('map.outside_campus', 'Te encuentras fuera del campus de la UAM. Se ha establecido la entrada principal como punto de partida.'));
-                        originInput.value = "Parqueo Principal (Caseta Sur)";
-                        state.originNodeId = "mainParking";
-                        state.originPlaceId = "mainParking";
-                        state.originQuery = "Parqueo Principal (Caseta Sur)";
-                        state.usedGpsOrigin = false;
-                        btnClearOrigin.classList.remove("hidden");
-                        if (gpsDisambiguationBar) gpsDisambiguationBar.classList.add("hidden");
-                    } else if (data.success && data.nearest && data.nearest.nodeName) {
-                        const n = data.nearest;
-                        originInput.value = n.nodeName;
-                        state.originQuery = n.nodeName;
-                        state.originNodeId = n.nearestNodeId;
-                        state.originPlaceId = n.nearestSpecificNodeId || n.nearestNodeId;
-                        state.usedGpsOrigin = true;
-                        btnClearOrigin.classList.remove("hidden");
-                        renderGpsDisambiguation(n);
-                        window.dispatchEvent(new CustomEvent("jaguarGpsLocationUpdated", {
-                            detail: Object.assign({}, n, { lat: latitude, lng: longitude, accuracy: accuracy })
-                        }));
-                    } else {
-                        originInput.value = "Parqueo Principal";
-                        state.originNodeId = "mainParking";
-                        state.originPlaceId = "mainParking";
-                        state.originQuery = "Parqueo Principal";
-                        state.usedGpsOrigin = false;
-                        btnClearOrigin.classList.remove("hidden");
-                    }
-                } catch (e) {
-                    originInput.value = "Parqueo Principal";
-                    state.originNodeId = "mainParking";
-                    state.originPlaceId = "mainParking";
-                    state.originQuery = "Parqueo Principal";
-                } finally {
-                    gpsIcon.classList.remove("hidden");
-                    gpsSpinner.classList.add("hidden");
+    if (btnToggleGpsManualList) {
+        btnToggleGpsManualList.addEventListener("click", () => {
+            gpsUiState.manualExpanded = !gpsUiState.manualExpanded;
+            btnToggleGpsManualList.textContent = gpsUiState.manualExpanded
+                ? tr("map.gps.hide_locations")
+                : tr("map.gps.change_spot");
+            if (gpsFloorSection) {
+                gpsFloorSection.classList.toggle("hidden", !gpsUiState.manualExpanded || gpsUiState.activeAvailableFloors.length <= 1);
+            }
+            if (gpsFallbackLocationsSection) {
+                gpsFallbackLocationsSection.classList.toggle("hidden", !gpsUiState.manualExpanded);
+            }
+            if (gpsCandidateButtons) {
+                gpsCandidateButtons.classList.toggle("hidden", !gpsUiState.manualExpanded);
+            }
+            if (gpsUiState.manualExpanded) {
+                renderLocationsForActiveFloor();
+            }
+        });
+    }
+
+    if (btnUseDefaultFloor) {
+        btnUseDefaultFloor.addEventListener("click", () => {
+            const defFloor = gpsUiState.activeAvailableFloors[0] || 1;
+            const flList = gpsUiState.locationsByFloor[String(defFloor)] || [];
+            const topLoc = flList[0] || {
+                nodeId: gpsUiState.activeBuildingId,
+                name: gpsUiState.activeBuildingName,
+                buildingId: gpsUiState.activeBuildingId,
+                buildingName: gpsUiState.activeBuildingName,
+                floorLevel: defFloor,
+            };
+            gpsUiState.activeFloor = defFloor;
+            applySelectedGpsOrigin(
+                {
+                    nodeId: topLoc.nodeId,
+                    placeId: topLoc.placeId || topLoc.nodeId,
+                    name: topLoc.name,
+                    buildingId: topLoc.buildingId || gpsUiState.activeBuildingId,
+                    buildingName: topLoc.buildingName || gpsUiState.activeBuildingName,
+                    floorLevel: defFloor,
+                },
+                {
+                    fromGps: true,
+                    showFloor: true,
+                    renderConfirmedCard: true,
+                    sourceKey: "api.map_floor_label",
+                    sourceParams: { floor: defFloor },
+                    recalculateIfReady: true,
                 }
-            },
-            (err) => {
-                console.warn("GPS error, defaulting to main entrance:", err.message);
-                originInput.value = "Parqueo Principal (Caseta Sur)";
-                state.originNodeId = "mainParking";
-                state.originPlaceId = "mainParking";
-                state.originQuery = "Parqueo Principal (Caseta Sur)";
-                gpsIcon.classList.remove("hidden");
-                gpsSpinner.classList.add("hidden");
-                btnClearOrigin.classList.remove("hidden");
-            },
-            { enableHighAccuracy: true, timeout: 8000 }
-        );
+            );
+        });
+    }
+
+    if (gpsLocationFilterInput) {
+        gpsLocationFilterInput.addEventListener("input", function () {
+            gpsUiState.filterText = this.value || "";
+            renderLocationsForActiveFloor();
+        });
+    }
+
+    btnGetGps.addEventListener("click", function () {
+        runGpsLocationDetection({ forceFresh: true });
     });
+
+    // Reactively reflect browser geolocation permission state on the GPS button
+    if (window.JaguarGpsDetector && typeof window.JaguarGpsDetector.onPermissionChange === "function") {
+        window.JaguarGpsDetector.onPermissionChange((permState) => {
+            if (!btnGetGps) return;
+            if (permState === "denied") {
+                btnGetGps.classList.remove("text-brand-600", "bg-brand-50", "hover:bg-brand-100/80");
+                btnGetGps.classList.add("text-rose-700", "bg-rose-50", "hover:bg-rose-100");
+                btnGetGps.title = tr("map.gps.err_permission_denied_title");
+            } else {
+                btnGetGps.classList.remove("text-rose-700", "bg-rose-50", "hover:bg-rose-100");
+                btnGetGps.classList.add("text-brand-600", "bg-brand-50", "hover:bg-brand-100/80");
+                btnGetGps.title = tr("map.use_gps");
+            }
+        });
+    }
 
     // 5. Category Pills Direct Selection
     categoryChips.forEach(chip => {
         chip.addEventListener("click", function() {
-            categoryChips.forEach(c => {
-                c.classList.remove("bg-sky-500", "text-white");
-                c.classList.add("bg-slate-100", "text-slate-700");
-            });
-            this.classList.remove("bg-slate-100", "text-slate-700");
-            this.classList.add("bg-sky-500", "text-white");
-
             const category = this.getAttribute("data-category");
             state.selectedCategory = category;
+            syncCategoryChipVisual(category);
+            saveNavDraft();
 
             // Direct search: immediately show matches for this category in the dropdown!
             const matches = getMatches(destinationInput.value, category);
@@ -1201,6 +2022,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     nodeId: selected.targetNodeId
                 };
                 btnClearDestination.classList.remove("hidden");
+                saveNavDraft();
             });
         });
     });
@@ -1213,6 +2035,7 @@ document.addEventListener("DOMContentLoaded", function() {
         state.destinationNodeId = null;
         state.destinationPlaceId = null;
         window.currentSelectedDestination = { placeId: null, title: val, nodeId: null };
+        saveNavDraft();
 
         const matches = getMatches(val, state.selectedCategory);
         renderSuggestionsList(destinationSuggestions, matches, (selected) => {
@@ -1226,6 +2049,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 nodeId: selected.targetNodeId
             };
             btnClearDestination.classList.remove("hidden");
+            saveNavDraft();
         });
     });
 
@@ -1242,6 +2066,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 nodeId: selected.targetNodeId
             };
             btnClearDestination.classList.remove("hidden");
+            saveNavDraft();
         });
     });
 
@@ -1253,6 +2078,7 @@ document.addEventListener("DOMContentLoaded", function() {
         window.currentSelectedDestination = null;
         btnClearDestination.classList.add("hidden");
         destinationSuggestions.classList.add("hidden");
+        saveNavDraft();
     });
 
     // Close dropdowns on outside click
@@ -1289,6 +2115,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         btnClearOrigin.classList.toggle("hidden", !originInput.value);
         btnClearDestination.classList.toggle("hidden", !destinationInput.value);
+        saveNavDraft();
 
         if (originInput.value && destinationInput.value) {
             calculateRoute();
@@ -1307,25 +2134,9 @@ document.addEventListener("DOMContentLoaded", function() {
         btnMobileGps.addEventListener("click", () => btnGetGps.click());
     }
 
-    // Mode Bar: Wheelchair accessible toggle pill
-    if (btnModeWheelchair) {
-        btnModeWheelchair.addEventListener("click", () => {
-            accessibleToggle.checked = !accessibleToggle.checked;
-            accessibleToggle.dispatchEvent(new Event("change"));
-        });
-    }
-
     accessibleToggle.addEventListener("change", function() {
         state.accessibleOnly = this.checked;
-        if (btnModeWheelchair) {
-            if (this.checked) {
-                btnModeWheelchair.classList.remove("bg-slate-100", "text-slate-700");
-                btnModeWheelchair.classList.add("bg-teal-700", "text-white", "font-bold");
-            } else {
-                btnModeWheelchair.classList.remove("bg-teal-700", "text-white", "font-bold");
-                btnModeWheelchair.classList.add("bg-slate-100", "text-slate-700");
-            }
-        }
+        saveNavDraft();
         if ((state.originPlaceId || state.originNodeId) && (state.destinationPlaceId || state.destinationNodeId)) {
             calculateRoute();
         }
@@ -1358,12 +2169,12 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         if (!origin || !dest) {
-            alert(window.t('map.missing_inputs', 'Por favor ingresa tu origen y destino.'));
+            alert(tr('map.missing_inputs'));
             return;
         }
 
         const accessibleOnly = accessibleToggle.checked;
-        const lang = window.APP_CONFIG.currentLang || "spa";
+        const lang = getCurrentLang();
 
         btnCalculate.disabled = true;
         btnCalculate.classList.add("opacity-75");
@@ -1385,6 +2196,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 routeData.usedGpsOrigin = Boolean(state.usedGpsOrigin);
                 state.currentRoute = routeData;
                 window.lastJaguarRouteData = routeData;
+                clearNavDraft();
                 displayRouteResults(routeData);
 
                 // On mobile, close sidebar drawer (if open) or collapse planner sheet and keep floating steps tucked away
@@ -1402,11 +2214,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Dispatch global event so the interactive SVG map draws the polyline!
                 window.dispatchEvent(new CustomEvent("jaguarMapRouteCalculated", { detail: routeData }));
             } else {
-                alert(routeData.error || window.t('navigation.no_route_found', 'No se encontró una ruta transitable.'));
+                alert(routeData.error || tr('navigation.no_route_found'));
             }
         } catch (err) {
             console.error("Route calculation error:", err);
-            alert(window.t('map.error', 'Ocurrió un error al calcular la ruta.'));
+            alert(tr('map.error'));
         } finally {
             btnCalculate.disabled = false;
             btnCalculate.classList.remove("opacity-75");
@@ -1428,19 +2240,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 isIndoor: false,
             }));
 
-        routeDistanceText.textContent = route.humanDuration || `~${route.estimatedWalkingMinutes || 1} ${window.t('map.minutes', 'min')}`;
-        routeMinutesText.textContent = `${stepsList.length} ${stepsList.length === 1 ? "referencia" : "referencias"}`;
+        routeDistanceText.textContent = route.humanDuration || `~${route.estimatedWalkingMinutes || 1} ${tr('map.hud25d.unit_min')}`;
+        const refWord = stepsList.length === 1
+            ? tr('map.reference_singular')
+            : tr('map.reference_plural');
+        routeMinutesText.textContent = `${stepsList.length} ${refWord}`;
         
         if (route.isAccessibleRoute) {
             routeAccessibilityBadge.innerHTML = `
                 <svg class="w-3 h-3 text-emerald-600 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                <span>${window.t('map.accessible_route', 'Ruta 100% Accesible (Rampas)')}</span>
+                <span>${tr('map.accessible_route')}</span>
             `;
             routeAccessibilityBadge.className = "text-[10px] font-semibold text-emerald-700 flex items-center gap-1 mt-0.5";
         } else {
             routeAccessibilityBadge.innerHTML = `
                 <svg class="w-3 h-3 text-slate-500 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 10l2 2 2-2m-2 2v6m-4 2l4-2 4 2"></path></svg>
-                <span>${window.t('map.standard_route', 'Ruta Peatonal por Referencias')}</span>
+                <span>${tr('map.standard_route')}</span>
             `;
             routeAccessibilityBadge.className = "text-[10px] font-semibold text-slate-500 flex items-center gap-1 mt-0.5";
         }
@@ -1448,6 +2263,7 @@ document.addEventListener("DOMContentLoaded", function() {
         stepsCountBadge.textContent = `${stepsList.length}`;
 
         routeStepsList.innerHTML = "";
+        const floorWord = tr('map.floor');
         stepsList.forEach((stepObj, idx) => {
             const li = document.createElement("li");
             li.id = `routeStep_${idx}`;
@@ -1456,7 +2272,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 ? "bg-emerald-600"
                 : (stepObj.isIndoor ? "bg-indigo-600" : "bg-brand-600");
             const floorChip = (stepObj.isIndoor && stepObj.floorLevel)
-                ? `<span class="inline-block ml-1 px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-700 font-bold text-[9.5px]">Piso ${stepObj.floorLevel}</span>`
+                ? `<span class="inline-block ml-1 px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-700 font-bold text-[9.5px]">${floorWord} ${stepObj.floorLevel}</span>`
                 : "";
             const headlineHtml = stepObj.headline
                 ? `<div class="text-[10.5px] font-extrabold text-sky-700 leading-tight mb-0.5">${stepObj.headline}${floorChip}</div>`
@@ -1502,7 +2318,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         state.isSpeaking = false;
         voiceIconContainer.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`;
-        if (voiceBtnText) voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
+        if (voiceBtnText) voiceBtnText.textContent = tr('map.listen_directions');
     }
 
     btnVoice.addEventListener("click", function(e) {
@@ -1517,9 +2333,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         state.isSpeaking = true;
         voiceIconContainer.innerHTML = `<svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" stroke-width="2"></rect></svg>`;
-        if (voiceBtnText) voiceBtnText.textContent = window.t('map.voice_stop', 'Detener');
+        if (voiceBtnText) voiceBtnText.textContent = tr('map.voice_stop');
 
-        const language = window.APP_CONFIG.currentLang === "spa" ? "es-MX" : "en-US";
+        const language = getCurrentLang() === "spa" ? "es-MX" : "en-US";
         const steps = state.currentRoute.stepInstructions;
         let stepIdx = 0;
 
@@ -1559,7 +2375,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 await state.audioElement.play();
             } catch (error) {
                 if (error.name !== "AbortError") {
-                    alert("No se pudo reproducir la guía de voz con Azure Speech.");
+                    alert(tr('map.speech_error'));
                     stopAzureSpeech();
                 }
             }
@@ -1605,8 +2421,72 @@ document.addEventListener("DOMContentLoaded", function() {
             stopAzureSpeech();
         }
 
+        clearNavDraft();
+
         window.dispatchEvent(new CustomEvent("jaguarMapRouteCleared"));
     }
+
+    // Reactive language change: keep all form inputs intact, refresh catalog, GPS panel & active route text
+    window.addEventListener("jaguarLanguageChanged", async function() {
+        await loadCampusCatalog();
+
+        if (!state.currentRoute) {
+            if (routeDistanceText) routeDistanceText.textContent = tr("map.initial_duration");
+            if (routeMinutesText) routeMinutesText.textContent = tr("map.initial_refs");
+        }
+        if (voiceBtnText) {
+            voiceBtnText.textContent = state.isSpeaking ? tr("map.voice_stop") : tr("map.listen_directions");
+        }
+        if (gpsDisambiguationBar && !gpsDisambiguationBar.classList.contains("hidden")) {
+            if (gpsUiState.lastErrorCode && window.JaguarGpsDetector) {
+                renderGpsErrorState(
+                    window.JaguarGpsDetector.getErrorCopy(gpsUiState.lastErrorCode),
+                    gpsUiState.lastCampusEntrances
+                );
+            } else if (gpsUiState.lastConfirmedSelection) {
+                renderConfirmedLocationCard(
+                    gpsUiState.lastConfirmedSelection,
+                    gpsUiState.lastConfirmedSourceKey,
+                    gpsUiState.lastConfirmedSourceParams
+                );
+                if (gpsUiState.manualExpanded) {
+                    renderFloorTabs(gpsUiState.activeAvailableFloors, [], false);
+                    renderLocationsForActiveFloor();
+                }
+            } else if (gpsUiState.lastMatch) {
+                renderGpsDetectionResult(gpsUiState.lastMatch, gpsUiState.lastCoords);
+            }
+        }
+        if (originSuggestions && !originSuggestions.classList.contains("hidden") && originInput.value.trim()) {
+            renderSuggestionsList(originSuggestions, getMatches(originInput.value), (selected) => {
+                originInput.value = selected.title;
+                state.originQuery = selected.title;
+                state.originNodeId = selected.targetNodeId;
+                state.originPlaceId = selected.id;
+                state.usedGpsOrigin = false;
+                btnClearOrigin.classList.remove("hidden");
+                saveNavDraft();
+            });
+        }
+        if (destinationSuggestions && !destinationSuggestions.classList.contains("hidden")) {
+            renderSuggestionsList(destinationSuggestions, getMatches(destinationInput.value, state.selectedCategory), (selected) => {
+                destinationInput.value = selected.title;
+                state.destinationQuery = selected.title;
+                state.destinationNodeId = selected.targetNodeId;
+                state.destinationPlaceId = selected.id;
+                window.currentSelectedDestination = {
+                    placeId: selected.id,
+                    title: selected.title,
+                    nodeId: selected.targetNodeId
+                };
+                btnClearDestination.classList.remove("hidden");
+                saveNavDraft();
+            });
+        }
+        if (state.currentRoute && (state.originPlaceId || state.originNodeId || originInput.value.trim()) && (state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim())) {
+            calculateRoute();
+        }
+    });
 
     btnReset.addEventListener("click", resetNavigation);
     if (btnCloseMobileRoute) {
@@ -1676,22 +2556,29 @@ document.addEventListener("DOMContentLoaded", function() {
                     navComponent.classList.remove("hidden", "navmap-animated-exit");
                     navComponent.classList.add("navmap-animated-enter");
                 }
+                const savedTab = sessionStorage.getItem("jaguar_map_active_tab") || "nav";
                 if (typeof window.setSidebarActiveTab === "function") {
-                    window.setSidebarActiveTab("nav");
+                    window.setSidebarActiveTab(savedTab);
                 } else {
                     const tabNav = document.getElementById("sidebarTabNav");
                     const tabDir = document.getElementById("sidebarTabDir");
+                    const tabCatalog = document.getElementById("sidebarTabCatalog");
                     const panelNav = document.getElementById("sidebarPanelNav");
                     const panelDir = document.getElementById("sidebarPanelDir");
+                    const panelCatalog = document.getElementById("sidebarPanelCatalog");
                     if (tabNav && tabDir && panelNav && panelDir) {
                         panelNav.classList.remove("hidden");
                         panelDir.classList.add("hidden");
-                        tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer";
-                        tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all cursor-pointer";
+                        if (panelCatalog) panelCatalog.classList.add("hidden");
+                        tabNav.className = "min-w-0 py-1.5 px-1 sm:px-2 rounded-lg bg-white text-slate-900 shadow-xs flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer";
+                        tabDir.className = "min-w-0 py-1.5 px-1 sm:px-2 rounded-lg text-slate-600 hover:text-slate-900 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer";
+                        if (tabCatalog) {
+                            tabCatalog.className = "min-w-0 py-1.5 px-1 sm:px-2 rounded-lg text-slate-600 hover:text-slate-900 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer";
+                        }
                     }
                 }
             } else {
-                // On mobile, include navigateMap in the sidebar drawer alongside Directorio UAM
+                // On mobile, include navigateMap in the sidebar drawer alongside Directorio UAM and Objetos Perdidos
                 const savedTab = sessionStorage.getItem("jaguar_map_active_tab") || "nav";
                 if (typeof window.setSidebarActiveTab === "function") {
                     window.setSidebarActiveTab(savedTab);
@@ -1747,9 +2634,16 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Close sidebar on Escape key
+    // Close sidebar on Escape key (only when no modal dialog is open on top)
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
+            const openDialogIds = ["adminStateModal", "reportObjectModal", "itemDetailModal"];
+            const hasOpenDialog = openDialogIds.some((id) => {
+                const modalEl = document.getElementById(id);
+                return Boolean(modalEl && !modalEl.classList.contains("hidden"));
+            });
+            if (hasOpenDialog) return;
+
             const sidebarCol = document.getElementById("mapSidebarColumn");
             const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
             if (sidebarCol) {

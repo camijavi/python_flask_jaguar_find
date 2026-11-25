@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ current_language or 'spa' }}" class="h-full bg-slate-100">
+<html lang="{{ current_language }}" class="h-full bg-slate-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Admin Portal · JaguarFind{% endblock %}</title>
+    <title{% block title_attrs %} data-i18n="admin.page_title_dashboard"{% endblock %}>{% block title %}{{ t('admin.page_title_dashboard') }}{% endblock %}</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
 
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -66,13 +68,13 @@
             <!-- Brand Header -->
             <div class="h-16 px-5 border-b border-slate-800 flex items-center justify-between">
                 <a href="/admin/dashboard" class="flex items-center gap-3">
-                    <img src="{{ url_for('static', filename='img/jaguarLogo.jpg') }}" alt="Jaguar Find" class="w-9 h-9 rounded-full ring-2 ring-brand-400 bg-white">
+                    <img src="{{ url_for('static', filename='img/jaguarLogo.jpg') }}" alt="{{ t('app.logo_alt') }}" data-i18n-alt="app.logo_alt" class="w-9 h-9 rounded-full ring-2 ring-brand-400 bg-white">
                     <div>
-                        <span class="font-extrabold text-base tracking-tight text-white block leading-tight">JaguarFind</span>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-brand-400">Panel Admin CAE</span>
+                        <span class="font-extrabold text-base tracking-tight text-white block leading-tight" data-i18n="app.name">{{ t('app.name') }}</span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-brand-400" data-i18n="admin.panel_title">{{ t('admin.panel_title') }}</span>
                     </div>
                 </a>
-                <button id="btnCloseAdminSidebar" type="button" class="lg:hidden text-slate-400 hover:text-white p-1">
+                <button id="btnCloseAdminSidebar" type="button" class="lg:hidden text-slate-400 hover:text-white p-1" aria-label="{{ t('common.close') }}" data-i18n-aria-label="common.close">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
@@ -82,35 +84,29 @@
                 <!-- 1. Dashboard -->
                 <a href="/admin/dashboard" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {% if request.path == '/admin/dashboard' %}bg-brand-600 text-white shadow-md shadow-brand-600/30 font-extrabold{% else %}text-slate-400 hover:text-white hover:bg-slate-800/80{% endif %}">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                    <span>Dashboard</span>
+                    <span data-i18n="admin.nav_dashboard">{{ t('admin.nav_dashboard') }}</span>
                 </a>
 
-                <!-- 2. Catálogo de Objetos Perdidos -->
+                <!-- 2. Lost & Found Items Catalog -->
                 <a href="/admin/items" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {% if request.path in ['/admin/items', '/lost-found-object/catalogo'] %}bg-brand-600 text-white shadow-md shadow-brand-600/30 font-extrabold{% else %}text-slate-400 hover:text-white hover:bg-slate-800/80{% endif %}">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                    <span>Catálogo de Objetos</span>
+                    <span data-i18n="admin.nav_catalog">{{ t('admin.nav_catalog') }}</span>
                 </a>
 
-                <!-- 3. Usuarios -->
+                <!-- 3. Users -->
                 <a href="/admin/users" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {% if request.path == '/admin/users' %}bg-brand-600 text-white shadow-md shadow-brand-600/30 font-extrabold{% else %}text-slate-400 hover:text-white hover:bg-slate-800/80{% endif %}">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    <span>Usuarios</span>
+                    <span data-i18n="admin.nav_users">{{ t('admin.nav_users') }}</span>
                 </a>
 
-                <!-- 4. Configuración -->
-                <a href="/admin/configuracion" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all {% if request.path == '/admin/configuracion' %}bg-brand-600 text-white shadow-md shadow-brand-600/30 font-extrabold{% else %}text-slate-400 hover:text-white hover:bg-slate-800/80{% endif %}">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    <span>Configuración</span>
-                </a>
-
-                <div class="pt-3 pb-1 border-t border-slate-800 text-[10px] uppercase font-bold tracking-wider text-slate-500 px-3">
-                    Navegación General
+                <div class="pt-3 pb-1 border-t border-slate-800 text-[10px] uppercase font-bold tracking-wider text-slate-500 px-3" data-i18n="admin.nav_general">
+                    {{ t('admin.nav_general') }}
                 </div>
 
-                <!-- 5. Mapa UAM -->
+                <!-- 4. Campus Map -->
                 <a href="/map" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/80 transition-all">
                     <svg class="w-4 h-4 shrink-0 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                    <span>Mapa UAM</span>
+                    <span data-i18n="admin.nav_map">{{ t('admin.nav_map') }}</span>
                 </a>
             </nav>
         </div>
@@ -123,14 +119,20 @@
                         A
                     </div>
                     <div class="min-w-0">
+                        {% if session.get('user') and session['user'].get('FullName') %}
                         <span class="block text-xs font-bold text-white truncate leading-tight">
-                            {{ session['user'].get('FullName', 'Administrador') if session.get('user') else 'Admin' }}
+                            {{ session['user'].get('FullName') }}
                         </span>
-                        <span class="block text-[10px] text-amber-400 font-medium">CAE Edificio A</span>
+                        {% else %}
+                        <span class="block text-xs font-bold text-white truncate leading-tight" data-i18n="auth.role_admin">
+                            {{ t('auth.role_admin') }}
+                        </span>
+                        {% endif %}
+                        <span class="block text-[10px] text-amber-400 font-medium" data-i18n="admin.cae_office_short">{{ t('admin.cae_office_short') }}</span>
                     </div>
                 </div>
                 <form action="/logout" method="POST" class="shrink-0">
-                    <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-700/60 transition" title="Cerrar Sesión">
+                    <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-700/60 transition" title="{{ t('admin.logout_title') }}" data-i18n-title="admin.logout_title" aria-label="{{ t('admin.logout_title') }}" data-i18n-aria-label="admin.logout_title">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                     </button>
                 </form>
@@ -145,30 +147,30 @@
         <!-- Top Action Bar -->
         <header class="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shrink-0 z-30">
             <div class="flex items-center gap-3">
-                <button id="btnOpenAdminSidebar" type="button" class="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100">
+                <button id="btnOpenAdminSidebar" type="button" class="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100" aria-label="{{ t('nav.toggle_menu') }}" data-i18n-aria-label="nav.toggle_menu">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <div>
-                    <h1 class="text-base sm:text-lg font-black text-slate-900 leading-tight">
-                        {% block header_title %}Dashboard Administrativo{% endblock %}
+                    <h1 class="text-base sm:text-lg font-black text-slate-900 leading-tight"{% block header_title_attrs %} data-i18n="admin.dashboard_title"{% endblock %}>
+                        {% block header_title %}{{ t('admin.dashboard_title') }}{% endblock %}
                     </h1>
-                    <p class="text-[11px] text-slate-500 hidden sm:block">
-                        {% block header_subtitle %}Gestión y control de inventario de objetos perdidos en campus UAM{% endblock %}
+                    <p class="text-[11px] text-slate-500 hidden sm:block"{% block header_subtitle_attrs %} data-i18n="admin.dashboard_subtitle"{% endblock %}>
+                        {% block header_subtitle %}{{ t('admin.dashboard_subtitle') }}{% endblock %}
                     </p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <!-- Language Switcher -->
-                <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs font-bold">
-                    <a href="{{ url_for('setLanguage', lang='spa') }}" class="px-2 py-0.5 rounded-md {% if current_language == 'spa' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500{% endif %}">ES</a>
-                    <a href="{{ url_for('setLanguage', lang='eng') }}" class="px-2 py-0.5 rounded-md {% if current_language == 'eng' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500{% endif %}">EN</a>
+                <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs font-bold" role="group" aria-label="{{ t('nav.language') }}" data-i18n-aria-label="nav.language">
+                    <a href="{{ url_for('setLanguage', lang='spa') }}" data-lang-switch="spa" aria-pressed="{{ 'true' if current_language == 'spa' else 'false' }}" {% if current_language == 'spa' %}aria-current="true"{% endif %} title="{{ t('nav.switch_to_es') }}" data-i18n-title="nav.switch_to_es" class="px-2 py-0.5 rounded-md transition-all {% if current_language == 'spa' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}">ES</a>
+                    <a href="{{ url_for('setLanguage', lang='eng') }}" data-lang-switch="eng" aria-pressed="{{ 'true' if current_language == 'eng' else 'false' }}" {% if current_language == 'eng' %}aria-current="true"{% endif %} title="{{ t('nav.switch_to_en') }}" data-i18n-title="nav.switch_to_en" class="px-2 py-0.5 rounded-md transition-all {% if current_language == 'eng' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}">EN</a>
                 </div>
 
                 <!-- Live Map Shortcut -->
                 <a href="/map" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
                     <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                    <span>Ver Mapa</span>
+                    <span data-i18n="admin.view_map">{{ t('admin.view_map') }}</span>
                 </a>
             </div>
         </header>
@@ -178,6 +180,27 @@
             {% block admin_content %}{% endblock %}
         </main>
     </div>
+
+    <!-- Client-side i18n & Form Draft Persistence -->
+    <script>
+        window.APP_CONFIG = window.APP_CONFIG || {
+            currentLang: "{{ current_language }}",
+            endpoints: {
+                mapNodes: "/api/map/nodes",
+                mapCategories: "/api/map/categories",
+                mapPlaces: "/api/map/places",
+                mapRoute: "/api/map/route",
+                nearestGps: "/api/map/nearest-gps",
+                mapBoundaries: "/api/map/boundaries",
+                buildingLocations: "/api/map/buildings"
+            }
+        };
+        window.APP_TRANSLATIONS = {{ (i18n_dict or {})|tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/formDraftManager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/i18nManager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/passwordVisibilityToggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/gpsLocationDetector.js') }}"></script>
 
     <!-- Script for mobile drawer toggling -->
     <script>

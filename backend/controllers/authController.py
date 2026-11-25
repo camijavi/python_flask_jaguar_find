@@ -16,8 +16,11 @@ from typing import Any, Dict, Optional
 from flask import Blueprint, request, jsonify, session, redirect
 from werkzeug.security import check_password_hash
 
-from backend.auth_guard import L, getSessionUser, sanitizeUser
+from backend.auth_guard import getSessionUser, sanitizeUser
+from backend.i18n import t
 from backend.database import (
+    MAX_CEDULA_LENGTH,
+    MIN_CEDULA_LENGTH,
     createUser,
     getUserById,
     getUserByIdentifier,
@@ -76,8 +79,7 @@ def login():
     if not identifier or not str(identifier).strip():
         return jsonify({
             "success": False,
-            "error": L("Ingresa tu identificación (CIF, cédula o correo).",
-                       "An identifier (CIF, Government ID, Email, or UserName) is required.")
+            "error": t("auth.errors.identifier_required")
         }), 400
 
     identifier = str(identifier).strip()
@@ -95,18 +97,15 @@ def login():
 
     if not user:
         if userTypeId == 4:
-            message = L("Correo o contraseña de administrador incorrectos.",
-                        "Invalid email or password for administrator.")
+            message = t("auth.errors.admin_invalid_credentials")
         else:
-            message = L("No encontramos una cuenta con ese dato para este rol.",
-                        f"No active user found with identifier: '{identifier}'.")
+            message = t("auth.errors.account_not_found_identifier", identifier=identifier)
         return jsonify({"success": False, "error": message}), 401
 
     if not user.get("IsActive", 1):
         return jsonify({
             "success": False,
-            "error": L("Esta cuenta fue dada de baja. Contacta a la administración del campus.",
-                       "This account has been deactivated. Please contact campus administration.")
+            "error": t("auth.errors.account_inactive")
         }), 403
 
     # Password policy: admins always, students/collaborators when a password was set, visitors never
@@ -119,14 +118,13 @@ def login():
             return jsonify({
                 "success": False,
                 "passwordRequired": True,
-                "error": L("Esta cuenta requiere contraseña.", "This account requires a password.")
+                "error": t("auth.errors.password_required")
             }), 401
         if not passwordHash or not check_password_hash(passwordHash, password):
             if typeId == 4:
-                message = L("Correo o contraseña de administrador incorrectos.",
-                            "Invalid email or password for administrator.")
+                message = t("auth.errors.admin_invalid_credentials")
             else:
-                message = L("Contraseña incorrecta.", "Incorrect password.")
+                message = t("auth.errors.invalid_password")
             return jsonify({"success": False, "error": message}), 401
 
     cleanUser = _sanitizeUser(user)
@@ -134,8 +132,7 @@ def login():
 
     return jsonify({
         "success": True,
-        "message": L(f"¡Bienvenido/a, {cleanUser.get('FullName', 'Usuario')}!",
-                     f"Welcome back, {cleanUser.get('FullName', 'User')}!"),
+        "message": t("auth.messages.welcome_back", name=cleanUser.get("FullName") or cleanUser.get("Email") or ""),
         "user": cleanUser,
         "redirect": _homeUrlFor(cleanUser),
     }), 200
@@ -157,16 +154,15 @@ def signup():
     try:
         userTypeId = int(userTypeIdRaw)
     except (ValueError, TypeError):
-        return jsonify({"success": False, "error": L("Rol inválido.", "Invalid userTypeId format.")}), 400
+        return jsonify({"success": False, "error": t("auth.errors.invalid_user_type")}), 400
 
     if userTypeId == 4:
         return jsonify({
             "success": False,
-            "error": L("Las cuentas de administrador no se pueden autorregistrar.",
-                       "Administrator accounts cannot be self-registered.")
+            "error": t("auth.errors.admin_cannot_self_register")
         }), 403
     if userTypeId not in (1, 2, 3):
-        return jsonify({"success": False, "error": L("Rol inválido.", "Invalid userTypeId.")}), 400
+        return jsonify({"success": False, "error": t("auth.errors.invalid_user_type")}), 400
 
     fullName = (payload.get("fullName") or "").strip()
     userName = payload.get("userName") or payload.get("username")
@@ -182,71 +178,53 @@ def signup():
     password = payload.get("password") or None
 
     if not fullName or len(fullName) < 2:
-        return jsonify({"success": False, "field": "nombre", "error": L("El nombre completo es obligatorio.", "FullName is required.")}), 400
+        return jsonify({"success": False, "field": "nombre", "error": t("auth.errors.full_name_required")}), 400
 
     # Role specific validations
     if userTypeId == 1:
         if not cif or not re.fullmatch(r"\d{8}", cif):
-            return jsonify({"success": False, "field": "cif", "error": L("El CIF debe tener exactamente 8 dígitos.",
-                                                         "CIF must be exactly 8 digits.")}), 400
+            return jsonify({"success": False, "field": "cif", "error": t("auth.errors.cif_required_digits")}), 400
     if userTypeId == 2:
         if not govermentId:
-            return jsonify({"success": False, "field": "cedula", "error": L("La cédula es obligatoria para colaboradores.",
-                                                         "Government ID is required for collaborators.")}), 400
-        if not CEDULA_REGEX.fullmatch(govermentId):
-            return jsonify({"success": False, "field": "cedula", "error": L("Formato de cédula inválido. Debe ser: 001-000000-0000A.",
-                                                         "Invalid National ID format. Expected format: 001-000000-0000A.")}), 400
+            return jsonify({"success": False, "field": "cedula", "error": t("auth.errors.cedula_required")}), 400
+        if not MIN_CEDULA_LENGTH <= len(govermentId) <= MAX_CEDULA_LENGTH or not CEDULA_REGEX.fullmatch(govermentId):
+            return jsonify({"success": False, "field": "cedula", "error": t("auth.errors.cedula_invalid_format")}), 400
         cleanGov = govermentId.replace("-", "").upper()
         govermentId = f"{cleanGov[:3]}-{cleanGov[3:9]}-{cleanGov[9:13]}{cleanGov[13]}"
 
     if userTypeId == 3:
-        # Enforce required-field validation on every input in the visitor form so no empty fields can be submitted:
-        # 1. Full name (already checked above)
-        # 2. ID (Cédula): Validate against the expected format
         if not govermentId:
-            return jsonify({"success": False, "field": "cedula", "error": L("La cédula de identidad es obligatoria para visitantes.",
-                                                         "National ID is required for visitors.")}), 400
-        if not CEDULA_REGEX.fullmatch(govermentId):
-            return jsonify({"success": False, "field": "cedula", "error": L("Formato de cédula inválido. Debe ser: 001-000000-0000A.",
-                                                         "Invalid National ID format. Expected format: 001-000000-0000A.")}), 400
+            return jsonify({"success": False, "field": "cedula", "error": t("auth.errors.cedula_required")}), 400
+        if not MIN_CEDULA_LENGTH <= len(govermentId) <= MAX_CEDULA_LENGTH or not CEDULA_REGEX.fullmatch(govermentId):
+            return jsonify({"success": False, "field": "cedula", "error": t("auth.errors.cedula_invalid_format")}), 400
         cleanGov = govermentId.replace("-", "").upper()
         govermentId = f"{cleanGov[:3]}-{cleanGov[3:9]}-{cleanGov[9:13]}{cleanGov[13]}"
 
-        # 3. Phone Number: Strip or reject non-numeric characters; allow digits only
         if not phoneNumber:
-            return jsonify({"success": False, "field": "telefono", "error": L("El número de teléfono es obligatorio para visitantes.",
-                                                         "Phone number is required for visitors.")}), 400
+            return jsonify({"success": False, "field": "telefono", "error": t("auth.errors.phone_required")}), 400
         if re.search(r"[a-zA-Z]", phoneNumber):
-            return jsonify({"success": False, "field": "telefono", "error": L("El número de teléfono no debe contener letras; solo dígitos.",
-                                                         "Phone number must not contain letters; digits only.")}), 400
+            return jsonify({"success": False, "field": "telefono", "error": t("auth.errors.phone_no_letters")}), 400
         cleanPhone = re.sub(r"\D", "", phoneNumber)
         if not cleanPhone or len(cleanPhone) < 7:
-            return jsonify({"success": False, "field": "telefono", "error": L("El número de teléfono debe contener solo dígitos (mínimo 8 dígitos).",
-                                                         "Phone number must contain digits only (minimum 8 digits).")}), 400
+            return jsonify({"success": False, "field": "telefono", "error": t("auth.errors.phone_min_digits")}), 400
         phoneNumber = cleanPhone
 
-        # 4. Email: Validate standard email format, requiring @ and a valid domain
         if not email:
-            return jsonify({"success": False, "field": "correoPersonal", "error": L("El correo electrónico es obligatorio para visitantes.",
-                                                         "Email is required for visitors.")}), 400
+            return jsonify({"success": False, "field": "correoPersonal", "error": t("auth.errors.email_required")}), 400
         if not EMAIL_REGEX.fullmatch(email):
-            return jsonify({"success": False, "field": "correoPersonal", "error": L("Ingresa un correo electrónico válido con '@' y un dominio válido.",
-                                                         "Enter a valid email address with '@' and a valid domain.")}), 400
+            return jsonify({"success": False, "field": "correoPersonal", "error": t("auth.errors.email_invalid")}), 400
 
     if userTypeId in (1, 2):
         if not email or not email.endswith(INSTITUTIONAL_DOMAIN):
-            return jsonify({"success": False, "field": "correo", "error": L(f"Usa tu correo institucional ({INSTITUTIONAL_DOMAIN}).",
-                                                         f"Use your institutional email ({INSTITUTIONAL_DOMAIN}).")}), 400
+            return jsonify({"success": False, "field": "correo", "error": t("auth.errors.institutional_email_required")}), 400
         if not password or len(password) < MIN_PASSWORD_LENGTH:
-            return jsonify({"success": False, "field": "password", "error": L(f"La contraseña debe tener al menos {MIN_PASSWORD_LENGTH} caracteres.",
-                                                         f"Password must be at least {MIN_PASSWORD_LENGTH} characters.")}), 400
+            return jsonify({"success": False, "field": "password", "error": t("auth.errors.password_min")}), 400
     else:
         password = None  # visitors are passwordless
 
     # Check for duplicate userName
     if userName and getUserByUsername(userName):
-        return jsonify({"success": False, "error": L(f"El usuario '{userName}' ya está en uso.",
-                                                     f"UserName '{userName}' is already in use.")}), 409
+        return jsonify({"success": False, "error": t("auth.errors.username_taken", userName=userName)}), 409
 
     try:
         newUserId = createUser(
@@ -262,33 +240,28 @@ def signup():
     except sqlite3.IntegrityError as err:
         errStr = str(err).lower()
         if "cif" in errStr:
-            msg = L("Ya existe un usuario con ese CIF.", "A user with this CIF already exists.")
-            return jsonify({"success": False, "field": "cif", "error": msg}), 409
+            return jsonify({"success": False, "field": "cif", "error": t("auth.errors.duplicate_cif")}), 409
         if "govermentid" in errStr:
-            msg = L("Ya existe un usuario con esa cédula.", "A user with this Government ID already exists.")
-            return jsonify({"success": False, "field": "cedula", "error": msg}), 409
+            return jsonify({"success": False, "field": "cedula", "error": t("auth.errors.duplicate_cedula")}), 409
         if "email" in errStr:
-            msg = L("Ya existe un usuario con ese correo.", "A user with this Email already exists.")
             fieldKey = "correoPersonal" if userTypeId == 3 else "correo"
-            return jsonify({"success": False, "field": fieldKey, "error": msg}), 409
+            return jsonify({"success": False, "field": fieldKey, "error": t("auth.errors.duplicate_email")}), 409
         if "username" in errStr:
-            msg = L("Ese nombre de usuario ya está tomado.", "This UserName is already taken.")
-            return jsonify({"success": False, "error": msg}), 409
-        return jsonify({"success": False, "error": L("Los datos no cumplen las reglas del rol.",
-                                                     "Database constraint violation occurred.")}), 400
+            return jsonify({"success": False, "error": t("auth.errors.duplicate_username")}), 409
+        return jsonify({"success": False, "error": t("auth.errors.constraint_violation")}), 400
     except Exception as err:
-        return jsonify({"success": False, "error": str(err)}), 500
+        return jsonify({"success": False, "error": t("auth.errors.registration_failed", detail=str(err))}), 500
 
     createdUser = getUserById(newUserId)
     if not createdUser:
-        return jsonify({"success": False, "error": "Failed to retrieve created user."}), 500
+        return jsonify({"success": False, "error": t("auth.errors.user_retrieval_failed")}), 500
 
     cleanUser = _sanitizeUser(createdUser)
     session["user"] = cleanUser
 
     return jsonify({
         "success": True,
-        "message": L("Registro completado.", "User registration completed successfully."),
+        "message": t("auth.messages.account_created"),
         "userId": newUserId,
         "user": cleanUser,
         "redirect": _homeUrlFor(cleanUser),
@@ -305,7 +278,7 @@ def logout():
     if request.is_json or request.headers.get("Accept") == "application/json":
         return jsonify({
             "success": True,
-            "message": "Logged out successfully.",
+            "message": t("auth.messages.signed_out"),
             "redirect": "/"
         }), 200
     return redirect("/")

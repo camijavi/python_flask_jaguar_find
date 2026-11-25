@@ -1,0 +1,212 @@
+<!--
+================================================================================
+SIDEBARLOSTFOUNDCATALOG COMPONENT (sidebarLostFoundCatalog.html)
+================================================================================
+Responsive Lost & Found Objects Catalog tab panel embedded inside the
+interactive campus map sidebar menu.
+Features:
+- Compact live search + category, custody status, and building filters
+- Responsive catalog cards optimized for both mobile drawers & desktop sidebars
+- Selecting any card opens the shared Item Detail Dialog (#itemDetailModal)
+- Quick map-focus button on each card & quick "+ Report" action
+- Full bilingual ES/EN support (server-rendered + reactive jaguarLanguageChanged)
+================================================================================
+-->
+{% set user = session.get('user') %}
+{% set isAdmin = user and user.get('UserTypeId') == 4 %}
+{% set fullCatalogHref = '/lost-found-object/catalogo' if user else '/auth' %}
+
+<div id="sidebarLostFoundComponent"
+     data-is-admin="{{ 'true' if isAdmin else 'false' }}"
+     data-user-name="{{ (user.get('FullName') or '') if user else '' }}"
+     data-user-contact="{{ (user.get('Email') or user.get('PhoneNumber') or '') if user else '' }}"
+     class="p-0 transition-all flex flex-col min-h-[360px]">
+
+    <!-- Header & Filters -->
+    <div class="pb-2.5 border-b border-slate-100 mb-2 space-y-2">
+        <!-- Title Row -->
+        <div class="flex items-center justify-between gap-2">
+            <h3 class="text-sm font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5 min-w-0">
+                <svg class="w-4 h-4 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <span class="truncate" data-i18n="lost_found.sidebar_catalog_title">{{ t('lost_found.sidebar_catalog_title') }}</span>
+            </h3>
+            <div class="flex items-center gap-1 shrink-0">
+                <span id="sidebarCatalogCountBadge"
+                      class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200/80 whitespace-nowrap">
+                    {{ t('common.loading') }}
+                </span>
+                <button id="btnSidebarReportObject" type="button"
+                        class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-[10.5px] font-bold shadow-2xs active:scale-95 transition-all cursor-pointer"
+                        title="{{ t('lost_found.report_item') }}"
+                        data-i18n-title="lost_found.report_item"
+                        aria-label="{{ t('lost_found.report_item') }}"
+                        data-i18n-aria-label="lost_found.report_item">
+                    <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    <span class="hidden sm:inline" data-i18n="lost_found.report_item">{{ t('lost_found.report_item') }}</span>
+                </button>
+                <button id="btnCloseCatalogSidebar" type="button"
+                        class="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                        title="{{ t('nav.close_menu') }}"
+                        data-i18n-title="nav.close_menu"
+                        aria-label="{{ t('nav.close_menu') }}"
+                        data-i18n-aria-label="nav.close_menu">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar + Refresh -->
+        <div class="flex items-center gap-1.5">
+            <div class="relative flex-1 min-w-0">
+                <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <input type="text"
+                       id="sidebarCatalogSearchInput"
+                       autocomplete="off"
+                       placeholder="{{ t('lost_found.sidebar_search_placeholder') }}"
+                       data-i18n-placeholder="lost_found.sidebar_search_placeholder"
+                       class="w-full pl-8 pr-7 py-1.5 bg-slate-50 hover:bg-white focus:bg-white text-xs font-medium text-slate-800 placeholder-slate-400 rounded-lg border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 transition-all outline-hidden">
+                <button id="btnSidebarClearSearch" type="button"
+                        aria-label="{{ t('lost_found.clear_filters') }}"
+                        data-i18n-aria-label="lost_found.clear_filters"
+                        class="hidden absolute inset-y-0 right-0 pr-2 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <button id="btnSidebarCatalogRefresh" type="button"
+                    class="p-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-brand-700 transition-colors cursor-pointer shrink-0"
+                    title="{{ t('lost_found.sidebar_refresh') }}"
+                    data-i18n-title="lost_found.sidebar_refresh"
+                    aria-label="{{ t('lost_found.sidebar_refresh') }}"
+                    data-i18n-aria-label="lost_found.sidebar_refresh">
+                <svg id="sidebarCatalogRefreshIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </button>
+        </div>
+
+        <!-- Compact Filters Grid (Category, Status & Building) -->
+        <div class="space-y-1.5">
+            <div class="grid grid-cols-2 gap-1.5">
+                <select id="sidebarCatalogCategory"
+                        aria-label="{{ t('lost_found.all_categories') }}"
+                        data-i18n-aria-label="lost_found.all_categories"
+                        class="w-full min-w-0 px-2 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white focus:bg-white text-[11px] font-semibold text-slate-700 focus:border-brand-500 focus:outline-hidden transition cursor-pointer">
+                    <option value="" data-i18n="lost_found.all_categories">{{ t('lost_found.all_categories') }}</option>
+                    <option value="electronics" data-i18n="lost_found.cat_electronics">{{ t('lost_found.cat_electronics') }}</option>
+                    <option value="documents" data-i18n="lost_found.cat_documents">{{ t('lost_found.cat_documents') }}</option>
+                    <option value="personalItems" data-i18n="lost_found.cat_personal">{{ t('lost_found.cat_personal') }}</option>
+                    <option value="clothing" data-i18n="lost_found.cat_clothing">{{ t('lost_found.cat_clothing') }}</option>
+                    <option value="other" data-i18n="lost_found.cat_other">{{ t('lost_found.cat_other') }}</option>
+                </select>
+
+                <select id="sidebarCatalogState"
+                        aria-label="{{ t('lost_found.all_statuses') }}"
+                        data-i18n-aria-label="lost_found.all_statuses"
+                        class="w-full min-w-0 px-2 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white focus:bg-white text-[11px] font-semibold text-slate-700 focus:border-brand-500 focus:outline-hidden transition cursor-pointer">
+                    <option value="" data-i18n="lost_found.all_statuses">{{ t('lost_found.all_statuses') }}</option>
+                    <option value="1" data-i18n="lost_found.state_reported">{{ t('lost_found.state_reported') }}</option>
+                    <option value="2" data-i18n="lost_found.state_custody">{{ t('lost_found.state_custody') }}</option>
+                    <option value="3" data-i18n="lost_found.state_claimed">{{ t('lost_found.state_claimed') }}</option>
+                </select>
+            </div>
+
+            <select id="sidebarCatalogBuilding"
+                    aria-label="{{ t('lost_found.all_buildings') }}"
+                    data-i18n-aria-label="lost_found.all_buildings"
+                    class="w-full min-w-0 px-2 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white focus:bg-white text-[11px] font-semibold text-slate-700 focus:border-brand-500 focus:outline-hidden transition cursor-pointer">
+                <option value="" data-i18n="lost_found.all_buildings">{{ t('lost_found.all_buildings') }}</option>
+                <optgroup label="{{ t('lost_found.optgroup_main_buildings') }}" data-i18n-label="lost_found.optgroup_main_buildings">
+                    <option value="buildingA" data-i18n="nodes.buildingA">{{ t('nodes.buildingA') }}</option>
+                    <option value="buildingB" data-i18n="nodes.buildingB">{{ t('nodes.buildingB') }}</option>
+                    <option value="buildingC" data-i18n="nodes.buildingC">{{ t('nodes.buildingC') }}</option>
+                    <option value="buildingD" data-i18n="nodes.buildingD">{{ t('nodes.buildingD') }}</option>
+                    <option value="buildingE" data-i18n="nodes.buildingE">{{ t('nodes.buildingE') }}</option>
+                    <option value="buildingF" data-i18n="nodes.buildingF">{{ t('nodes.buildingF') }}</option>
+                    <option value="buildingG" data-i18n="nodes.buildingG">{{ t('nodes.buildingG') }}</option>
+                    <option value="buildingH" data-i18n="nodes.buildingH">{{ t('nodes.buildingH') }}</option>
+                    <option value="buildingI" data-i18n="nodes.buildingI">{{ t('nodes.buildingI') }}</option>
+                    <option value="buildingJ" data-i18n="nodes.buildingJ">{{ t('nodes.buildingJ') }}</option>
+                    <option value="buildingK" data-i18n="nodes.buildingK">{{ t('nodes.buildingK') }}</option>
+                    <option value="buildingL" data-i18n="nodes.buildingL">{{ t('nodes.buildingL') }}</option>
+                    <option value="buildingM" data-i18n="nodes.buildingM">{{ t('nodes.buildingM') }}</option>
+                    <option value="buildingN" data-i18n="nodes.buildingN">{{ t('nodes.buildingN') }}</option>
+                    <option value="buildingO" data-i18n="nodes.buildingO">{{ t('nodes.buildingO') }}</option>
+                    <option value="buildingP" data-i18n="nodes.buildingP">{{ t('nodes.buildingP') }}</option>
+                </optgroup>
+                <optgroup label="{{ t('lost_found.optgroup_sports_outdoor') }}" data-i18n-label="lost_found.optgroup_sports_outdoor">
+                    <option value="jaguarCenter" data-i18n="nodes.jaguarCenter">{{ t('nodes.jaguarCenter') }}</option>
+                    <option value="jaguarGym" data-i18n="nodes.jaguarGym">{{ t('nodes.jaguarGym') }}</option>
+                    <option value="physiotherapy" data-i18n="nodes.physiotherapy">{{ t('nodes.physiotherapy') }}</option>
+                    <option value="sportsZone" data-i18n="nodes.sportsZone">{{ t('nodes.sportsZone') }}</option>
+                    <option value="chilamatesPlaza" data-i18n="nodes.chilamatesPlaza">{{ t('nodes.chilamatesPlaza') }}</option>
+                    <option value="jaguarJungle" data-i18n="nodes.jaguarJungle">{{ t('nodes.jaguarJungle') }}</option>
+                    <option value="miRanchito" data-i18n="nodes.miRanchito">{{ t('nodes.miRanchito') }}</option>
+                    <option value="labDigitalFia" data-i18n="nodes.labDigitalFia">{{ t('nodes.labDigitalFia') }}</option>
+                    <option value="areaDeMesas" data-i18n="nodes.areaDeMesas">{{ t('nodes.areaDeMesas') }}</option>
+                    <option value="mainParking" data-i18n="nodes.mainParking">{{ t('nodes.mainParking') }}</option>
+                    <option value="northeastGate" data-i18n="nodes.northeastGate">{{ t('nodes.northeastGate') }}</option>
+                    <option value="northGate" data-i18n="nodes.northGate">{{ t('nodes.northGate') }}</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <!-- Active Filter Reset Bar -->
+        <div id="sidebarCatalogActiveFilterBar" class="hidden flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-brand-50 border border-brand-200/80 text-[11px]">
+            <span id="sidebarCatalogActiveFilterLabel" class="font-bold text-brand-900 truncate"></span>
+            <button id="btnSidebarClearFilters" type="button"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white hover:bg-brand-600 text-brand-700 hover:text-white border border-brand-200 hover:border-brand-600 font-bold text-[10.5px] transition-colors cursor-pointer shrink-0">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <span data-i18n="lost_found.clear_filters">{{ t('lost_found.clear_filters') }}</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="sidebarCatalogLoading" class="py-10 text-center">
+        <div class="inline-block w-6 h-6 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+        <p class="text-xs font-semibold text-slate-500" data-i18n="lost_found.loading_catalog">{{ t('lost_found.loading_catalog') }}</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="sidebarCatalogError" class="hidden py-10 px-3 text-center">
+        <div class="w-11 h-11 mx-auto rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-2.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <p class="text-xs font-bold text-slate-700" data-i18n="lost_found.sidebar_load_error">{{ t('lost_found.sidebar_load_error') }}</p>
+        <button id="btnSidebarCatalogRetry" type="button"
+                class="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition cursor-pointer">
+            <span data-i18n="lost_found.sidebar_retry">{{ t('lost_found.sidebar_retry') }}</span>
+        </button>
+    </div>
+
+    <!-- Empty State -->
+    <div id="sidebarCatalogEmpty" class="hidden py-10 px-3 text-center">
+        <div class="w-12 h-12 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        </div>
+        <h4 class="text-xs font-extrabold text-slate-800" data-i18n="lost_found.no_items_found">{{ t('lost_found.no_items_found') }}</h4>
+        <p class="text-[11px] text-slate-500 mt-1 leading-relaxed" data-i18n="lost_found.no_items_hint">{{ t('lost_found.no_items_hint') }}</p>
+        <button id="btnSidebarClearFiltersEmpty" type="button"
+                class="hidden mt-3 inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-[11px] font-bold transition cursor-pointer">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <span data-i18n="lost_found.clear_filters">{{ t('lost_found.clear_filters') }}</span>
+        </button>
+    </div>
+
+    <!-- Scrollable Catalog Cards List -->
+    <div id="sidebarCatalogList"
+         class="hidden flex-1 space-y-2.5 pr-0.5 lg:max-h-[calc(100vh-320px)] lg:min-h-[220px] lg:overflow-y-auto custom-scrollbar text-xs">
+    </div>
+
+    <!-- Compact Footer Strip -->
+    <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between gap-2 text-[10.5px] text-slate-500">
+        <span class="truncate font-semibold" data-i18n="lost_found.cae_office">{{ t('lost_found.cae_office') }}</span>
+        <a href="{{ fullCatalogHref }}"
+           class="inline-flex items-center gap-1 font-bold text-brand-700 hover:text-brand-900 whitespace-nowrap shrink-0 transition-colors">
+            <span data-i18n="lost_found.sidebar_open_full_catalog">{{ t('lost_found.sidebar_open_full_catalog') }}</span>
+            <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+    </div>
+</div>

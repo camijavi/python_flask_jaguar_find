@@ -44,6 +44,30 @@ class TestVisitorValidation(unittest.TestCase):
         self.assertFalse(data["success"])
         self.assertEqual(data.get("field"), "nombre")
 
+    def test_signup_cedula_inputs_have_matching_length_limits(self):
+        for role in ("visitante", "colaborador"):
+            with self.subTest(role=role):
+                res = self.client.get(f"/auth/signup?rol={role}")
+                self.assertEqual(res.status_code, 200)
+                self.assertIn('id="cedula"', res.get_data(as_text=True))
+                self.assertIn('minlength="14" maxlength="16"', res.get_data(as_text=True))
+
+    def test_password_visibility_toggle_is_rendered_on_auth_forms(self):
+        for route in (
+            "/auth/signup?rol=colaborador",
+            "/auth/signin?rol=colaborador",
+            "/admin/adminsignin",
+        ):
+            with self.subTest(route=route):
+                res = self.client.get(route)
+                self.assertEqual(res.status_code, 200)
+                html = res.get_data(as_text=True)
+                self.assertIn('type="button" data-password-toggle', html)
+                self.assertIn('aria-controls="password"', html)
+                self.assertIn('data-i18n-aria-label="auth.show_password"', html)
+                self.assertIn('pl-11 pr-12', html)
+                self.assertIn("passwordVisibilityToggle.js", html)
+
     def test_visitor_signup_missing_cedula(self):
         res = self.client.post("/api/auth/signup", json={
             "userTypeId": 3,
@@ -87,6 +111,8 @@ class TestVisitorValidation(unittest.TestCase):
     def test_visitor_signup_invalid_cedula_format(self):
         invalid_cedulas = [
             "123",
+            "001111990001A",       # shorter than the minimum length
+            "001-111199-00001AA",   # longer than the maximum length
             "001-111199-0001",      # missing trailing letter
             "001-AAAAAA-0001A",     # letters in date
             "01-111199-0001A",      # only 2 digits in municipality
@@ -105,6 +131,20 @@ class TestVisitorValidation(unittest.TestCase):
             data = res.get_json()
             self.assertFalse(data["success"])
             self.assertEqual(data.get("field"), "cedula")
+
+    def test_database_rejects_government_ids_outside_length_bounds(self):
+        conn = sqlite3.connect(self.temp_db_path)
+        try:
+            for invalid_id in ("001111990001A", "001-111199-00001AA"):
+                with self.subTest(government_id=invalid_id):
+                    with self.assertRaises(sqlite3.IntegrityError):
+                        conn.execute(
+                            "INSERT INTO UserTbl (UserTypeId, FullName, GovermentId) VALUES (2, ?, ?);",
+                            ("Invalid Length", invalid_id)
+                        )
+                    conn.rollback()
+        finally:
+            conn.close()
 
     def test_visitor_signup_valid_cedula_format(self):
         res = self.client.post("/api/auth/signup", json={

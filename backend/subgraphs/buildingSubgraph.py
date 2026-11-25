@@ -21,6 +21,7 @@ from typing import Dict, List, Optional, Tuple, Union
 from backend.graph.directedGraph import DirectedEdge, DirectedGraph, Node, Vertex
 from backend.graph.dijkstraRouter import DijkstraRouter
 from backend.graph.geoUtils import CampusGeoUtils
+from backend.i18n import t, normalize_language
 
 
 def calcIndoorDistance(
@@ -196,20 +197,22 @@ class BuildingSubgraph:
         upperNodeId: str,
         distanceMeters: float = 12.0,
         isAccessible: bool = False,
-        upInstruction: str = "Sube al siguiente piso por las escaleras.",
-        downInstruction: str = "Baja al piso inferior por las escaleras.",
+        upInstruction: Optional[str] = None,
+        downInstruction: Optional[str] = None,
     ) -> None:
         """
         Adds vertical transition between floors (stairs, ramps, or elevators).
         """
         vType = "ramp" if isAccessible else "stairs"
+        resolvedUp = upInstruction if upInstruction is not None else t("navigation.indoor_stairs_up_default", lang="eng")
+        resolvedDown = downInstruction if downInstruction is not None else t("navigation.indoor_stairs_down_default", lang="eng")
         self.graph.addDirectedEdge(
             lowerNodeId, upperNodeId, distanceMeters,
-            isAccessible=isAccessible, stepInstruction=upInstruction, walkwayType=vType,
+            isAccessible=isAccessible, stepInstruction=resolvedUp, walkwayType=vType,
         )
         self.graph.addDirectedEdge(
             upperNodeId, lowerNodeId, distanceMeters,
-            isAccessible=isAccessible, stepInstruction=downInstruction, walkwayType=vType,
+            isAccessible=isAccessible, stepInstruction=resolvedDown, walkwayType=vType,
         )
 
     def getNode(self, nodeId: str) -> Optional[Node]:
@@ -282,21 +285,21 @@ class BuildingSubgraph:
         """
         Calculates turn-by-turn indoor route between two locations inside this building.
         """
+        activeLang = normalize_language(lang)
+        localizedBuilding = t(f"nodes.{self.macroNodeId}", lang=activeLang, default=self.name)
         originId = self.resolveRoomQuery(originQuery) or originQuery
         destId = self.resolveRoomQuery(destinationQuery) or destinationQuery
 
         if originId not in self.graph.nodes:
             return {
                 "success": False,
-                "error": f"Ubicación de origen '{originQuery}' no encontrada en {self.name}." if lang == "spa"
-                         else f"Origin location '{originQuery}' not found in {self.name}.",
+                "error": t("navigation.indoor_origin_not_found", lang=activeLang, query=originQuery, building=localizedBuilding),
             }
 
         if destId not in self.graph.nodes:
             return {
                 "success": False,
-                "error": f"Destino '{destinationQuery}' no encontrado en {self.name}." if lang == "spa"
-                         else f"Destination '{destinationQuery}' not found in {self.name}.",
+                "error": t("navigation.indoor_dest_not_found", lang=activeLang, query=destinationQuery, building=localizedBuilding),
             }
 
         path, dist, mins, _ = self.router.findShortestPathWithEdges(
@@ -306,8 +309,7 @@ class BuildingSubgraph:
         if not path:
             return {
                 "success": False,
-                "error": "No se encontró una ruta transitable dentro del edificio con las restricciones dadas." if lang == "spa"
-                         else "No walkable indoor route found with requested accessibility restrictions.",
+                "error": t("navigation.indoor_no_route", lang=activeLang),
             }
 
         from backend.graph.humanInstructions import buildHumanIndoorSteps, formatHumanWalkingTime

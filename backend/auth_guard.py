@@ -13,12 +13,13 @@ Provides route decorators and utilities to protect private endpoints:
 
 from functools import wraps
 from typing import Any, Callable, Dict, Optional
+from urllib.parse import quote
 from flask import session, request, redirect, url_for, jsonify
-from backend.i18n import get_current_language
+from backend.i18n import get_current_language, t
 
 
 def L(esText: str, enText: str) -> str:
-    """Returns bilingual text according to current user session language."""
+    """Backward-compatible helper returning text for current session language."""
     lang = get_current_language()
     return enText if str(lang).lower().startswith("en") else esText
 
@@ -49,9 +50,10 @@ def login_required(view_func: Callable) -> Callable:
             if request.path.startswith("/api/") or request.is_json:
                 return jsonify({
                     "success": False,
-                    "error": L("Se requiere iniciar sesión.", "Authentication required.")
+                    "error": t("auth.errors.login_required")
                 }), 401
-            return redirect("/auth?next=" + request.path)
+            nextTarget = request.full_path.rstrip("?")
+            return redirect("/auth?next=" + quote(nextTarget, safe="/"))
         return view_func(*args, **kwargs)
     return decorated_view
 
@@ -68,8 +70,9 @@ def admin_required(view_func: Callable) -> Callable:
             if request.path.startswith("/api/") or request.is_json:
                 return jsonify({
                     "success": False,
-                    "error": L("Se requieren privilegios de administrador.", "Administrator privileges required.")
+                    "error": t("auth.errors.admin_required")
                 }), 403
-            return redirect("/admin/adminsignin?next=" + request.path)
+            nextTarget = request.full_path.rstrip("?")
+            return redirect("/admin/adminsignin?next=" + quote(nextTarget, safe="/"))
         return view_func(*args, **kwargs)
     return decorated_view

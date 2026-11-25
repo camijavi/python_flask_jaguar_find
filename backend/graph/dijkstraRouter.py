@@ -139,12 +139,12 @@ class DijkstraRouter:
         lang: str = "eng",
     ) -> List[str]:
         if len(path) < 2:
-            return [t("navigation.already_at_destination", lang=lang, default="You are already at your destination.")]
+            return [t("navigation.already_at_destination", lang=lang)]
 
         directions: List[str] = []
         startNodeName = self._vertexDisplayName(path[0], lang)
         directions.append(
-            t("navigation.start_route", lang=lang, default=f"Start your route at {startNodeName}.", startNode=startNodeName)
+            t("navigation.start_route", lang=lang, startNode=startNodeName)
         )
 
         for i in range(len(path) - 1):
@@ -156,18 +156,18 @@ class DijkstraRouter:
             else:
                 targetName = self._vertexDisplayName(v, lang)
                 directions.append(
-                    t("navigation.walk_towards", lang=lang, default=f"Walk towards {targetName}.", targetNode=targetName)
+                    t("navigation.walk_towards", lang=lang, targetNode=targetName)
                 )
 
         destName = self._vertexDisplayName(path[-1], lang)
         directions.append(
-            t("navigation.arrived_at_destination", lang=lang, default=f"You have arrived at your destination: {destName}.", destNode=destName)
+            t("navigation.arrived_at_destination", lang=lang, destNode=destName)
         )
         destVertex = self._getVertex(path[-1])
         accessNotice = destVertex.getAccessNotice(lang) if isinstance(destVertex, Node) else None
         if accessNotice:
             directions.append(
-                t("navigation.access_notice", lang=lang, default=f"Access notice: {accessNotice}", notice=accessNotice)
+                t("navigation.access_notice", lang=lang, notice=accessNotice)
             )
 
         return directions

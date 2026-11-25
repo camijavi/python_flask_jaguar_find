@@ -31,6 +31,47 @@
     const btnViewCatalog = document.getElementById("btnViewInCatalog");
     const btnReportHere = document.getElementById("btnReportHere");
 
+    function escapeHtml(value) {
+        return String(value == null ? "" : value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function tr(key, params) {
+        if (typeof window.t === "function") {
+            return window.t(key, undefined, params);
+        }
+        return key;
+    }
+
+    function getNodeDisplayName(nodeId, fallbackName) {
+        if (!nodeId) return fallbackName || "";
+        if (typeof window.t === "function") {
+            return window.t(`nodes.${nodeId}`, fallbackName || nodeId);
+        }
+        return fallbackName || nodeId;
+    }
+
+    function getLocalizedStateLabel(stateId, fallbackName) {
+        if (stateId === 1) return tr("lost_found.state_reported");
+        if (stateId === 2) return tr("lost_found.state_custody");
+        if (stateId === 3) return tr("lost_found.state_claimed");
+        return fallbackName || tr("lost_found.state_reported");
+    }
+
+    function buildCatalogBuildingUrl(buildingId) {
+        if (!buildingId) return "/lost-found-object/catalogo";
+        return `/lost-found-object/catalogo?building=${encodeURIComponent(buildingId)}`;
+    }
+
+    function buildCatalogItemUrl(itemId) {
+        if (itemId == null || itemId === "") return "/lost-found-object/catalogo";
+        return `/lost-found-object/catalogo?item=${encodeURIComponent(itemId)}`;
+    }
+
     function getSvgCoordinates(pin) {
         if (pin.xPercent != null && pin.yPercent != null) {
             return {
@@ -224,7 +265,9 @@
                     marker.className = "waze-lost-pin-25d absolute pointer-events-auto cursor-pointer transition-transform hover:scale-115";
                     marker.style.display = "none";
                     marker.setAttribute("data-node-id", pin.locationNodeId);
-                    marker.title = `${pin.itemsCount} objeto(s) reportado(s) en ${pin.locationName || pin.locationNodeId}`;
+                    const tooltipKey = pin.itemsCount === 1 ? "lost_found.pin_tooltip_singular" : "lost_found.pin_tooltip_plural";
+                    const tooltipLocation = getNodeDisplayName(pin.locationNodeId, pin.locationName || pin.locationNodeId);
+                    marker.title = tr(tooltipKey, { count: pin.itemsCount, location: tooltipLocation });
 
                     marker.innerHTML = `
                         <div class="relative flex flex-col items-center">
@@ -340,36 +383,59 @@
             bldgPopover.classList.add("hidden");
         }
 
-        pinNodeName.textContent = pin.locationName || pin.locationNodeId;
-        pinCountSub.textContent = `${pin.itemsCount} objeto${pin.itemsCount === 1 ? '' : 's'} extraviado${pin.itemsCount === 1 ? '' : 's'} o en custodia`;
+        const resolvedNodeName = getNodeDisplayName(pin.locationNodeId, pin.locationName || pin.locationNodeId);
+        pinNodeName.textContent = resolvedNodeName;
+        const countKey = pin.itemsCount === 1 ? "lost_found.map_pin_items_singular" : "lost_found.map_pin_items_plural";
+        pinCountSub.textContent = tr(countKey, { count: pin.itemsCount });
+
+        const detailBtnLabel = tr("lost_found.view_details");
 
         pinItemsList.innerHTML = "";
-        pin.items.forEach(item => {
+        (pin.items || []).forEach(item => {
             const itemRow = document.createElement("div");
-            itemRow.className = "p-2 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-2";
+            itemRow.className = "p-2.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-100 hover:border-brand-200 flex items-center justify-between gap-2.5 transition-colors";
 
             const isCustody = item.lostObjectStateId === 2;
             const stateColor = isCustody ? 'bg-sky-50 text-sky-700 border-sky-200' : 'bg-amber-50 text-amber-800 border-amber-200';
+            const stateLabel = getLocalizedStateLabel(item.lostObjectStateId, item.stateName);
+            const dateStr = item.dateTimeReported ? String(item.dateTimeReported).split(' ')[0] : '';
+            const itemDetailHref = buildCatalogItemUrl(item.id);
+            const safeItemName = escapeHtml(item.itemName);
+            const safeStateLabel = escapeHtml(stateLabel);
+            const safeDate = escapeHtml(dateStr);
+            const safeDetailLabel = escapeHtml(detailBtnLabel);
 
             itemRow.innerHTML = `
-                <div class="min-w-0 flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shrink-0">
+                <div class="min-w-0 flex-1 flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 shrink-0 shadow-2xs">
                         <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                     </span>
-                    <div class="min-w-0">
-                        <span class="font-bold text-slate-800 text-xs block truncate leading-tight">${item.itemName}</span>
-                        <span class="text-[10px] text-slate-400">${item.dateTimeReported ? item.dateTimeReported.split(' ')[0] : ''}</span>
+                    <div class="min-w-0 flex-1">
+                        <span class="font-bold text-slate-800 text-xs block truncate leading-tight" title="${safeItemName}">${safeItemName}</span>
+                        <div class="flex items-center flex-wrap gap-1.5 mt-1">
+                            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold leading-none border ${stateColor}">
+                                ${safeStateLabel}
+                            </span>
+                            ${safeDate ? `<span class="text-[10px] text-slate-400 leading-none">${safeDate}</span>` : ''}
+                        </div>
                     </div>
                 </div>
-                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold shrink-0 border ${stateColor}">
-                    ${item.stateName || 'Reportado'}
-                </span>
+                <a href="${itemDetailHref}"
+                   data-item-detail-link
+                   data-item-id="${escapeHtml(item.id)}"
+                   aria-label="${safeDetailLabel}: ${safeItemName}"
+                   title="${safeDetailLabel}"
+                   class="px-2.5 py-1.5 rounded-lg bg-brand-50 hover:bg-brand-600 text-brand-700 hover:text-white border border-brand-200 hover:border-brand-600 text-[10px] font-extrabold inline-flex items-center gap-1 transition-all shrink-0 shadow-2xs">
+                    <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    <span>${safeDetailLabel}</span>
+                </a>
             `;
             pinItemsList.appendChild(itemRow);
         });
 
         if (btnViewCatalog) {
-            btnViewCatalog.href = `/lost-found-object/catalogo?q=${encodeURIComponent(pin.locationNodeId)}`;
+            btnViewCatalog.href = buildCatalogBuildingUrl(pin.locationNodeId);
+            btnViewCatalog.textContent = tr("lost_found.view_in_catalog");
         }
 
         if (btnFocus25d) {
@@ -422,6 +488,23 @@
     }
 
     window.addEventListener("lostObjectReported", fetchAndRenderPins);
+    window.addEventListener("jaguarLanguageChanged", () => {
+        if (activePinsData.length > 0) {
+            renderPins();
+        }
+        if (selectedPin && popover && !popover.classList.contains("hidden")) {
+            showPinPopover(selectedPin);
+        }
+    });
+
+    window.JaguarLostFoundMap = {
+        buildCatalogBuildingUrl,
+        buildCatalogItemUrl,
+        showPinPopover,
+        getActivePins: () => activePinsData,
+        getSelectedPin: () => selectedPin,
+        refreshPins: fetchAndRenderPins,
+    };
 
     document.addEventListener("DOMContentLoaded", fetchAndRenderPins);
     if (document.readyState === "complete" || document.readyState === "interactive") {

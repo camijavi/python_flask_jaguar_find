@@ -16,7 +16,7 @@ from jinja2 import ChoiceLoader, FileSystemLoader
 from backend.config import Config
 from backend.database import initDb
 from backend.controllers import registerControllers
-from backend.i18n import init_i18n, I18nManager, t, get_current_language
+from backend.i18n import init_i18n, I18nManager, t, get_current_language, normalize_language
 from backend.auth_guard import login_required, admin_required
 
 
@@ -109,10 +109,18 @@ def createApp(configClass=Config) -> Flask:
     # ==========================================================================
 
     @app.route("/lost-found-object/catalogo", methods=["GET"])
+    @app.route("/catalog", methods=["GET"])
     @login_required
     def renderLostFoundCatalog():
         """Renders the Lost & Found objects catalog for authenticated campus users."""
-        return render_template("screens/lostFoundObject/catalogScreen.html")
+        return render_template("screens/lostFoundObject/catalogScreen.html", initial_item_id=None)
+
+    @app.route("/lost-found-object/catalogo/<int:itemId>", methods=["GET"])
+    @app.route("/catalog/<int:itemId>", methods=["GET"])
+    @login_required
+    def renderLostFoundItemDetail(itemId: int):
+        """Renders the Lost & Found catalog and auto-opens the requested item's detail modal."""
+        return render_template("screens/lostFoundObject/catalogScreen.html", initial_item_id=itemId)
 
     @app.route("/admin/dashboard", methods=["GET"])
     @admin_required
@@ -132,43 +140,45 @@ def createApp(configClass=Config) -> Flask:
         """Renders the user identity and credential control screen."""
         return render_template("screens/admin/userManagementScreen.html")
 
-    @app.route("/admin/configuracion", methods=["GET"])
-    @admin_required
-    def renderAdminConfiguration():
-        """Renders system custody configuration and parameters."""
-        return render_template("screens/admin/configScreen.html")
-
     @app.route("/logout", methods=["GET", "POST"])
     def webLogout():
         """Clears user session and redirects to Module 1 (Interactive Campus Map)."""
         session.pop("user", None)
         return redirect(url_for("renderMapScreen"))
 
+    def _normalizeLang(lang: str) -> str:
+        return normalize_language(lang)
+
     @app.route("/set-language/<lang>", methods=["GET", "POST"])
     def setLanguage(lang: str):
-        """Web route to switch language and redirect user back to previous page."""
-        cleanLang = "spa" if str(lang).lower().startswith("sp") else "eng"
+        """Web route fallback to switch language and redirect user back to previous page."""
+        cleanLang = _normalizeLang(lang)
         session["idioma"] = cleanLang
         session["lang"] = cleanLang
+        nextUrl = request.args.get("next", "")
+        if nextUrl and nextUrl.startswith("/") and not nextUrl.startswith("//"):
+            return redirect(nextUrl)
         referrer = request.referrer or url_for("renderMapScreen")
         return redirect(referrer)
 
     @app.route("/api/i18n/set-language/<lang>", methods=["GET", "POST"])
     def apiSetLanguage(lang: str):
-        """API route to dynamically update language in user session."""
-        cleanLang = "spa" if str(lang).lower().startswith("sp") else "eng"
+        """API route to dynamically update language in user session and return translations."""
+        cleanLang = _normalizeLang(lang)
         session["idioma"] = cleanLang
         session["lang"] = cleanLang
+        i18nMgr = I18nManager.getInstance()
         return jsonify({
             "success": True,
             "language": cleanLang,
-            "message": f"Language switched to {cleanLang}."
+            "translations": i18nMgr.translations.get(cleanLang, {}),
+            "message": i18nMgr.get("app.language_switched", lang=cleanLang).replace("{lang}", cleanLang)
         }), 200
 
     @app.route("/api/i18n/translations/<lang>", methods=["GET"])
     def apiGetTranslations(lang: str):
         """Returns translation dictionary for client-side JavaScript rendering."""
-        cleanLang = "spa" if str(lang).lower().startswith("sp") else "eng"
+        cleanLang = _normalizeLang(lang)
         i18nMgr = I18nManager.getInstance()
         return jsonify({
             "success": True,
@@ -201,7 +211,7 @@ def createApp(configClass=Config) -> Flask:
         if request.path.startswith("/api/"):
             return jsonify({
                 "success": False,
-                "error": "Requested API endpoint not found.",
+                "error": t("api.not_found"),
                 "path": request.path,
             }), 404
         return render_template("mapScreen.html"), 404
@@ -210,7 +220,7 @@ def createApp(configClass=Config) -> Flask:
     def internalServerError(error):
         return jsonify({
             "success": False,
-            "error": "An internal server error occurred.",
+            "error": t("api.internal_error"),
         }), 500
 
     return app

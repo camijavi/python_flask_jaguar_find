@@ -13,6 +13,13 @@
  */
 
 (function () {
+    function t25d(key, params) {
+        if (typeof window.t === "function") {
+            return window.t(key, undefined, params);
+        }
+        return key;
+    }
+
     class Campus25dController {
         constructor() {
             // Waze-Style Navigation State
@@ -246,15 +253,6 @@
                 "buildingM": "M", "buildingN": "N", "buildingO": "O", "buildingP": "P",
                 "sportsZone": "S", "jaguarCenter": "JC", "jaguarGym": "JG", "physiotherapy": "FT"
             };
-            const nameMap = {
-                "buildingA": "Edificio A", "buildingB": "Edificio B", "buildingC": "Edificio C",
-                "buildingD": "Edificio D", "buildingE": "Edificio E", "buildingF": "Edificio F",
-                "buildingG": "Edificio G", "buildingH": "Edificio H", "buildingI": "Edificio I",
-                "buildingJ": "Edificio J", "buildingK": "Edificio K", "buildingL": "Edificio L",
-                "buildingM": "Edificio M", "buildingN": "Edificio N", "buildingO": "Edificio O",
-                "buildingP": "Edificio P", "sportsZone": "Campos Deportivos", "jaguarCenter": "Jaguar Center",
-                "jaguarGym": "Jaguar Gym", "physiotherapy": "Fisioterapia"
-            };
             const colorMap = {
                 "buildingA": "#991b1b", "buildingB": "#581c87", "buildingC": "#4c1d95",
                 "buildingD": "#15803d", "buildingE": "#0284c7", "buildingF": "#be185d",
@@ -264,10 +262,13 @@
                 "buildingP": "#be185d", "sportsZone": "#15803d", "jaguarCenter": "#0f766e",
                 "jaguarGym": "#0f766e", "physiotherapy": "#0284c7"
             };
+            const gatePinKey = (nodeId === "northGate" || nodeId === "northeastGate")
+                ? `map.buildings.${nodeId}.pin_code`
+                : null;
             return {
                 id: nodeId,
-                letter: letterMap[nodeId] || nodeId.charAt(0).toUpperCase(),
-                name: nameMap[nodeId] || nodeId,
+                letter: gatePinKey ? t25d(gatePinKey) : (letterMap[nodeId] || nodeId.charAt(0).toUpperCase()),
+                name: t25d(`nodes.${nodeId}`),
                 badgeBg: colorMap[nodeId] || "#1e3a8a"
             };
         }
@@ -324,7 +325,7 @@
                     <div class="flex flex-col items-center">
                         <div class="px-2 py-0.5 rounded-md bg-red-600 text-white font-extrabold text-[10px] shadow-md flex items-center gap-1">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
-                            <span>Meta</span>
+                            <span data-dest-pin-label>${t25d("map.hud25d.dest_pin_label")}</span>
                         </div>
                         <div class="w-1 h-3 bg-red-700 shadow-sm"></div>
                         <div class="w-2.5 h-1 rounded-full bg-slate-900/40"></div>
@@ -410,6 +411,8 @@
                         lat: info.lat,
                         lng: info.lng,
                         accuracy: info.accuracy || 15,
+                        altitude: typeof info.altitude === "number" ? info.altitude : null,
+                        altitudeAccuracy: typeof info.altitudeAccuracy === "number" ? info.altitudeAccuracy : null,
                         timestamp: Date.now(),
                     };
                 }
@@ -436,6 +439,35 @@
                     this.toggleParkingHighlight();
                 });
             }
+
+            // Re-translate dynamic 2.5D HUD, badges, and status pills on live language change
+            window.addEventListener("jaguarLanguageChanged", () => {
+                if (this.is25dActive) {
+                    this.initOverlayBadges();
+                    this.updateOverlays();
+                } else if (this.wazeDestPin) {
+                    const destSpan = this.wazeDestPin.querySelector("[data-dest-pin-label]");
+                    if (destSpan) destSpan.textContent = t25d("map.hud25d.dest_pin_label");
+                }
+                this.syncWazeChrome();
+                this.updateLiveCompassButtonUI();
+                if (this.labelSimPlay) {
+                    this.labelSimPlay.textContent = this.isSimulating
+                        ? t25d("map.hud25d.tray_pause")
+                        : t25d("map.hud25d.tray_simulate");
+                }
+                if (this.currentRoute) {
+                    this.applyActiveStepUI(this.currentStepIndex);
+                    this.updateRouteProgressVisuals(this.routeProgressDistPx || 0);
+                } else if (this.focusedBuildingId && this.is25dActive) {
+                    this.showBuildingFocusBanner(this.getBuildingData(this.focusedBuildingId));
+                } else if (this.is25dActive) {
+                    this.showExploreHud();
+                } else {
+                    if (this.wazeEtaTime) this.wazeEtaTime.textContent = t25d("map.campus_pill");
+                    if (this.wazeTripMeta) this.wazeTripMeta.textContent = t25d("map.hud25d.dock_prompt");
+                }
+            });
 
             // Waze Re-center button (re-engages user follow mode & anchors camera back to live user arrow)
             if (this.btnWazeRecenter) {
@@ -917,7 +949,7 @@
             }
             if (!this.currentRoute) {
                 if (this.wazeDialValue) this.wazeDialValue.textContent = this.is25dActive ? "3D" : "2D";
-                if (this.wazeDialUnit) this.wazeDialUnit.textContent = this.is25dActive ? "vista" : "mapa";
+                if (this.wazeDialUnit) this.wazeDialUnit.textContent = this.is25dActive ? t25d("map.hud25d.speed_label_view") : t25d("map.hud25d.speed_label_map");
                 if (this.wazeActiveRoadPill) this.wazeActiveRoadPill.classList.add("hidden");
                 if (this.wazeOrangeFabIcon) {
                     this.wazeOrangeFabIcon.innerHTML = `<path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/>`;
@@ -1030,8 +1062,8 @@
                 }
 
                 if (!this.currentRoute) {
-                    if (this.wazeEtaTime) this.wazeEtaTime.textContent = "Campus UAM";
-                    if (this.wazeTripMeta) this.wazeTripMeta.textContent = "¿A dónde vas? • Toca para buscar";
+                    if (this.wazeEtaTime) this.wazeEtaTime.textContent = t25d("map.campus_pill");
+                    if (this.wazeTripMeta) this.wazeTripMeta.textContent = t25d("map.hud25d.dock_prompt");
                     if (this.wazeProgressBar) this.wazeProgressBar.style.width = "0%";
                 }
 
@@ -1302,15 +1334,15 @@
 
             const rawName = bldgData.name || bldgData.id;
             const cleanName = rawName.includes("•") ? rawName.split("•")[0].trim() : rawName;
-            const subtitle = rawName.includes("•") ? rawName.split("•")[1].trim() : "Campus UAM";
+            const subtitle = rawName.includes("•") ? rawName.split("•")[1].trim() : t25d("map.campus_pill");
 
-            if (this.tbtStepCounter) this.tbtStepCounter.textContent = "Vista 2.5D";
+            if (this.tbtStepCounter) this.tbtStepCounter.textContent = t25d("map.hud25d.dock_focus_subtitle");
             if (this.tbtStepDistance) this.tbtStepDistance.textContent = cleanName;
             if (this.tbtStepInstruction) this.tbtStepInstruction.textContent = subtitle;
 
             if (this.tbtNextPreview) {
                 this.tbtNextPreview.classList.remove("hidden");
-                this.tbtNextPreview.textContent = "Toca «Ir aquí» para iniciar navegación JaguarFind";
+                this.tbtNextPreview.textContent = t25d("map.hud25d.dock_focus_hint");
             }
 
             if (this.btnTbtConfirmStep && this.btnTbtConfirmStep.parentElement) {
@@ -2157,11 +2189,11 @@
                     this.wazeDialValue.textContent = isFinal ? "✓" : `~${remMinutes}`;
                 }
                 if (this.wazeDialUnit) {
-                    this.wazeDialUnit.textContent = isFinal ? "fin" : "min";
+                    this.wazeDialUnit.textContent = isFinal ? t25d("map.hud25d.end_short") : t25d("map.hud25d.unit_min");
                 }
                 if (this.wazeEtaTime) {
                     if (isFinal) {
-                        this.wazeEtaTime.textContent = "Llegaste";
+                        this.wazeEtaTime.textContent = t25d("map.hud25d.arrived_short");
                     } else {
                         const arrivalDate = new Date(Date.now() + remMinutes * 60000);
                         this.wazeEtaTime.textContent = arrivalDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
@@ -2169,11 +2201,12 @@
                 }
                 if (this.wazeTripMeta && steps.length > 0) {
                     const step = steps[this.currentStepIndex] || steps[steps.length - 1];
-                    const landmark = (step && step.landmark) || "Campus UAM";
+                    const landmark = (step && step.landmark) || t25d("map.campus_pill");
                     const stepsLeft = Math.max(0, steps.length - 1 - this.currentStepIndex);
+                    const refLabel = t25d(stepsLeft === 1 ? "map.reference_singular" : "map.reference_plural");
                     this.wazeTripMeta.textContent = isFinal
-                        ? `${landmark} • Destino alcanzado`
-                        : `~${remMinutes} min • ${stepsLeft} ${stepsLeft === 1 ? "referencia" : "referencias"}`;
+                        ? `${landmark} • ${t25d("map.hud25d.arrived_destination")}`
+                        : `~${remMinutes} ${t25d("map.hud25d.unit_min")} • ${stepsLeft} ${refLabel}`;
                 }
             }
         }
@@ -2396,8 +2429,8 @@
                 this.showExploreHud();
                 this.centerOnCampusLowerThird();
             } else {
-                if (this.wazeEtaTime) this.wazeEtaTime.textContent = "Campus UAM";
-                if (this.wazeTripMeta) this.wazeTripMeta.textContent = "¿A dónde vas? • Toca para buscar";
+                if (this.wazeEtaTime) this.wazeEtaTime.textContent = t25d("map.campus_pill");
+                if (this.wazeTripMeta) this.wazeTripMeta.textContent = t25d("map.hud25d.dock_prompt");
                 if (this.wazeProgressBar) this.wazeProgressBar.style.width = "0%";
             }
         }
@@ -2425,12 +2458,12 @@
             }
             if (this.wazeBottomBar) {
                 this.wazeBottomBar.classList.remove("hidden");
-                if (this.wazeEtaTime) this.wazeEtaTime.textContent = "Campus UAM";
-                if (this.wazeTripMeta) this.wazeTripMeta.textContent = "¿A dónde vas? • Toca para buscar";
+                if (this.wazeEtaTime) this.wazeEtaTime.textContent = t25d("map.campus_pill");
+                if (this.wazeTripMeta) this.wazeTripMeta.textContent = t25d("map.hud25d.dock_prompt");
                 if (this.wazeProgressBar) this.wazeProgressBar.style.width = "0%";
             }
             if (this.wazeActiveRoadPill) {
-                this.wazeActiveRoadPill.textContent = "Campus UAM";
+                this.wazeActiveRoadPill.textContent = t25d("map.campus_pill");
                 this.wazeActiveRoadPill.classList.remove("hidden");
             }
             this.syncWazeChrome();
@@ -2520,7 +2553,7 @@
                 if (Math.min(p1.lat, p2.lat) < lat && lat <= Math.max(p1.lat, p2.lat)) {
                     if (p1.lat !== p2.lat) {
                         const xinters = ((lat - p1.lat) * (p2.lng - p1.lng)) / (p2.lat - p1.lat) + p1.lng;
-                        if (p1.lng === p2.lng || lng <= xinters) {
+                        if (lng <= xinters) {
                             inside = !inside;
                         }
                     }
@@ -2666,12 +2699,12 @@
                     this.btnLiveCompass.classList.remove("text-slate-600", "hover:bg-emerald-50", "bg-sky-50", "text-sky-700");
                     this.btnLiveCompass.classList.add("bg-emerald-500", "text-white", "shadow-xs");
                     if (this.liveCompassDot) this.liveCompassDot.className = "w-2 h-2 rounded-full bg-white animate-pulse";
-                    if (this.labelLiveCompass) this.labelLiveCompass.textContent = "En vivo";
+                    if (this.labelLiveCompass) this.labelLiveCompass.textContent = t25d("map.hud25d.live_badge");
                 } else if (this.isLiveGpsActive && this.gpsStatus === "tracking") {
                     this.btnLiveCompass.classList.remove("bg-emerald-500", "text-white", "shadow-xs", "text-slate-600");
                     this.btnLiveCompass.classList.add("bg-sky-50", "text-sky-700", "hover:bg-emerald-50");
                     if (this.liveCompassDot) this.liveCompassDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                    if (this.labelLiveCompass) this.labelLiveCompass.textContent = "GPS";
+                    if (this.labelLiveCompass) this.labelLiveCompass.textContent = t25d("map.hud25d.gps_label");
                 } else {
                     this.btnLiveCompass.classList.remove("bg-emerald-500", "text-white", "shadow-xs", "bg-sky-50", "text-sky-700");
                     this.btnLiveCompass.classList.add("text-slate-600", "hover:bg-emerald-50");
@@ -2680,7 +2713,7 @@
                             ? "w-2 h-2 rounded-full bg-amber-400 animate-pulse"
                             : "w-2 h-2 rounded-full bg-slate-300";
                     }
-                    if (this.labelLiveCompass) this.labelLiveCompass.textContent = "En vivo";
+                    if (this.labelLiveCompass) this.labelLiveCompass.textContent = t25d("map.hud25d.live_badge");
                 }
             }
 
@@ -2689,19 +2722,19 @@
                 if (this.isLiveCompassActive) {
                     this.btnTbtLiveGps.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white border border-emerald-600 shadow-2xs transition-colors cursor-pointer";
                     if (this.tbtLiveGpsDot) this.tbtLiveGpsDot.className = "w-1.5 h-1.5 rounded-full bg-white animate-pulse";
-                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = "En vivo";
+                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = t25d("map.hud25d.live_badge");
                 } else if (this.isLiveGpsActive && this.gpsStatus === "tracking") {
                     this.btnTbtLiveGps.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors cursor-pointer";
                     if (this.tbtLiveGpsDot) this.tbtLiveGpsDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
-                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = "GPS activo";
+                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = t25d("map.hud25d.gps_active");
                 } else if (this.isLiveGpsActive && this.gpsStatus === "searching") {
                     this.btnTbtLiveGps.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-50 hover:bg-emerald-50 text-sky-700 border border-sky-200 transition-colors cursor-pointer";
                     if (this.tbtLiveGpsDot) this.tbtLiveGpsDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse";
-                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = "GPS...";
+                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = t25d("map.hud25d.gps_searching");
                 } else {
                     this.btnTbtLiveGps.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200 transition-colors cursor-pointer";
                     if (this.tbtLiveGpsDot) this.tbtLiveGpsDot.className = "w-1.5 h-1.5 rounded-full bg-slate-400";
-                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = "En vivo";
+                    if (this.labelTbtLiveGps) this.labelTbtLiveGps.textContent = t25d("map.hud25d.live_badge");
                 }
             }
         }
@@ -2761,7 +2794,7 @@
             if (!this.isLiveGpsActive && !this.isLiveCompassActive) return;
             if (!pos || !pos.coords) return;
 
-            const { latitude, longitude, accuracy, heading, speed } = pos.coords;
+            const { latitude, longitude, accuracy, altitude, altitudeAccuracy, heading, speed } = pos.coords;
             if (typeof latitude !== "number" || typeof longitude !== "number" || Number.isNaN(latitude) || Number.isNaN(longitude)) {
                 return;
             }
@@ -2770,6 +2803,8 @@
                 lat: latitude,
                 lng: longitude,
                 accuracy: typeof accuracy === "number" ? accuracy : 20,
+                altitude: typeof altitude === "number" && !Number.isNaN(altitude) ? altitude : null,
+                altitudeAccuracy: typeof altitudeAccuracy === "number" && !Number.isNaN(altitudeAccuracy) ? altitudeAccuracy : null,
                 timestamp: Date.now(),
             };
 
@@ -3024,18 +3059,18 @@
             let isAligned = false;
 
             if (absDiff <= 25) {
-                cueText = "¡Bien orientado! Sigue de frente";
+                cueText = t25d("map.hud25d.cue_aligned");
                 isAligned = true;
             } else if (absDiff >= 145) {
-                cueText = "Da media vuelta para seguir el camino";
+                cueText = t25d("map.hud25d.cue_turn_around");
             } else if (diff > 25 && diff <= 65) {
-                cueText = "Gira un poco a tu derecha para alinearte";
+                cueText = t25d("map.hud25d.cue_slight_right");
             } else if (diff > 65) {
-                cueText = "Gira a tu derecha hacia el camino";
+                cueText = t25d("map.hud25d.cue_turn_right");
             } else if (diff < -25 && diff >= -65) {
-                cueText = "Gira un poco a tu izquierda para alinearte";
+                cueText = t25d("map.hud25d.cue_slight_left");
             } else {
-                cueText = "Gira a tu izquierda hacia el camino";
+                cueText = t25d("map.hud25d.cue_turn_left");
             }
 
             this.tbtOrientationCueText.textContent = cueText;
@@ -3062,10 +3097,10 @@
                 const pt = this.resolveSvgPoint(c);
                 return {
                     index: idx,
-                    instruction: instructions[idx] || `Avanza hacia ${c.name || "el siguiente punto"}`,
-                    headline: idx === coords.length - 1 ? "Has llegado" : "Sigue recto",
+                    instruction: instructions[idx] || t25d("map.hud25d.step_fallback_advance", { name: c.name || t25d("map.hud25d.next_point_default") }),
+                    headline: idx === coords.length - 1 ? t25d("map.hud25d.arrived_headline") : t25d("map.hud25d.default_headline"),
                     maneuver: idx === coords.length - 1 ? "arrive" : "straight",
-                    landmark: c.name ? c.name.split("(")[0].trim() : "Campus UAM",
+                    landmark: c.name ? c.name.split("(")[0].trim() : t25d("map.campus_pill"),
                     x: pt.x,
                     y: pt.y,
                     targetX: pt.x,
@@ -3187,12 +3222,12 @@
 
         updateBannerUI(stepIdx, totalSteps, step, nextStep) {
             const isFinal = stepIdx === totalSteps - 1;
-            const headline = (step && step.headline) || (isFinal ? "Has llegado" : "Sigue recto");
+            const headline = (step && step.headline) || (isFinal ? t25d("map.hud25d.arrived_headline") : t25d("map.hud25d.default_headline"));
             const instruction = (step && step.instruction) || "";
-            const landmark = (step && step.landmark) || "Campus UAM";
+            const landmark = (step && step.landmark) || t25d("map.campus_pill");
 
             if (this.tbtStepCounter) {
-                this.tbtStepCounter.textContent = `Referencia ${stepIdx + 1} de ${totalSteps}`;
+                this.tbtStepCounter.textContent = t25d("map.hud25d.step_counter", { current: stepIdx + 1, total: totalSteps });
             }
             if (this.tbtStepDistance) {
                 this.tbtStepDistance.textContent = headline;
@@ -3207,7 +3242,8 @@
 
             if (this.tbtNextPreview) {
                 if (nextStep && nextStep.headline) {
-                    this.tbtNextPreview.textContent = `Luego: ${nextStep.headline} → ${nextStep.landmark || ""}`;
+                    const nextSummary = nextStep.landmark ? `${nextStep.headline} → ${nextStep.landmark}` : nextStep.headline;
+                    this.tbtNextPreview.textContent = t25d("map.hud25d.next_prefix", { text: nextSummary });
                     this.tbtNextPreview.classList.remove("hidden");
                 } else {
                     this.tbtNextPreview.classList.add("hidden");
@@ -3220,8 +3256,8 @@
                 } else {
                     this.tbtConfirmRow.classList.remove("hidden");
                     this.labelTbtConfirmStep.textContent = nextStep && nextStep.landmark
-                        ? `Ya llegué aquí • Ir a ${nextStep.landmark.slice(0, 22)}`
-                        : "Ya llegué aquí • Siguiente";
+                        ? t25d("map.hud25d.btn_arrived_next_to", { landmark: nextStep.landmark.slice(0, 22) })
+                        : t25d("map.hud25d.btn_arrived_next");
                 }
             }
 
@@ -3242,7 +3278,7 @@
                 this.wazeDialValue.textContent = isFinal ? "✓" : `~${remMinutes}`;
             }
             if (this.wazeDialUnit) {
-                this.wazeDialUnit.textContent = isFinal ? "fin" : "min";
+                this.wazeDialUnit.textContent = isFinal ? t25d("map.hud25d.end_short") : t25d("map.hud25d.unit_min");
             }
 
             // Bottom Dock: Arrival clock + human summary (time + landmarks remaining)
@@ -3251,14 +3287,16 @@
             const timeStr = arrivalDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
 
             if (this.wazeEtaTime) {
-                this.wazeEtaTime.textContent = isFinal ? "Llegaste" : timeStr;
+                this.wazeEtaTime.textContent = isFinal ? t25d("map.hud25d.arrived_short") : timeStr;
             }
 
             const stepsLeft = Math.max(0, totalSteps - 1 - stepIdx);
             if (this.wazeTripMeta) {
+                const refLabel = t25d(stepsLeft === 1 ? "map.reference_singular" : "map.reference_plural");
+                const unitMin = t25d("map.hud25d.unit_min");
                 this.wazeTripMeta.textContent = isFinal
-                    ? `${landmark} • Destino alcanzado`
-                    : `${this.currentRoute.humanDuration || `~${remMinutes} min`} • ${stepsLeft} ${stepsLeft === 1 ? "referencia" : "referencias"}`;
+                    ? `${landmark} • ${t25d("map.hud25d.arrived_destination")}`
+                    : `${this.currentRoute.humanDuration || `~${remMinutes} ${unitMin}`} • ${stepsLeft} ${refLabel}`;
             }
 
             if (this.wazeProgressBar) {
@@ -3286,7 +3324,7 @@
             this.isSimulating = true;
             this.isFollowingUser = true;
             this.isOverview = false;
-            if (this.labelSimPlay) this.labelSimPlay.textContent = "Pausa";
+            if (this.labelSimPlay) this.labelSimPlay.textContent = t25d("map.hud25d.tray_pause");
 
             // Indoor-only single-point route fallback (step interval)
             if (!this.activeRoutePolyline || this.activeRoutePolyline.length < 2 || this.totalRoutePx <= 1) {
@@ -3374,7 +3412,7 @@
 
         stopSimulation() {
             this.isSimulating = false;
-            if (this.labelSimPlay) this.labelSimPlay.textContent = "Simular";
+            if (this.labelSimPlay) this.labelSimPlay.textContent = t25d("map.hud25d.tray_simulate");
             if (this.simInterval) {
                 clearInterval(this.simInterval);
                 this.simInterval = null;

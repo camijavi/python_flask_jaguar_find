@@ -8,8 +8,7 @@
 ### 1. Propósito y Acceso 100% Público
 El módulo de mapa de **JaguarFind** opera como un "Google Maps" peatonal del campus de la UAM:
 * **Sin Registro:** Los visitantes y estudiantes pueden consultar el mapa, buscar destinos y calcular rutas sin crear cuentas ni iniciar sesión.
-* **Cobertura en las Tres Entradas del Campus:** 
- Dado que los mapas físicos de la UAM están ubicados solo cerca de los Edificios A y B, se despliegan Códigos QR en los 3 accesos:
+* **Estado de los códigos QR:** No están implementados actualmente. Si la UAM adopta la aplicación como sitio oficial, se deberán implementar códigos QR en los accesos del campus antes del lanzamiento. Al escanearlos, deberán abrir el mapa público y establecer como origen una ubicación válida y aprobada por la universidad. Las siguientes URLs son ejemplos propuestos, no funcionalidad disponible:
  1. **Entrada Principal (Sur / Parqueo Principal):** `https://.../mapa?origen=PARQUEO_PPAL`
  2. **Segundo Acceso (Noreste / Campos Deportivos):** `https://.../mapa?origen=SEGUNDO_ACCESO`
  3. **Tercer Acceso (Norte / Copérnico y FIA):** `https://.../mapa?origen=TERCER_ACCESO`
@@ -40,7 +39,7 @@ El módulo de mapa de **JaguarFind** opera como un "Google Maps" peatonal del ca
 ### 3. Mecánica Operativa del Grafo y Algoritmo de Dijkstra
 
 El cálculo de ruta se ejecuta mediante el siguiente procedimiento algorítmico estricto:
-1. **Modelado en Grafo Ponderado:** Vértices $V$ (puertas de aulas, casetas QR, baños e intersecciones) y Aristas $E$ con peso $w(u,v) = \text{distancia métrica en metros}$ y bandera `esRutaAccesible`.
+1. **Modelado en Grafo Ponderado:** Vértices $V$ (puertas de aulas, accesos del campus, baños e intersecciones) y Aristas $E$ con peso $w(u,v) = \text{distancia métrica en metros}$ y bandera `esRutaAccesible`.
 2. **Cola de Prioridad Min-Heap (`heapq`):**
  * Inicialización: $\text{dist}[\text{origen}] = 0$ y $\text{dist}[v] = \infty \quad \forall v \neq \text{origen}$.
  * Extracción del nodo con menor costo acumulado en tiempo $\mathcal{O}(\log V)$.
@@ -59,8 +58,7 @@ El cálculo de ruta se ejecuta mediante el siguiente procedimiento algorítmico 
 ### 1. Scope & 100% Public Access
 The map module of **JaguarFind** functions as a campus-tailored pedestrian "Google Maps":
 * **No Login Required:** Visitors, parents, and students can search destinations and compute optimal paths without signing in.
-* **Three Campus Gate Coverage:** 
- Because physical map totems are concentrated only near Buildings A and B, QR codes are placed at all three entrances:
+* **QR-code status:** QR support is not implemented. If UAM adopts the application as its official site, QR entry points must be implemented before launch. Scanning one must open the public map and set a university-approved, valid campus location as the origin. The following URLs are proposed examples, not available functionality:
  1. **Main Entrance (South / Main Parking):** `https://.../mapa?origen=PARQUEO_PPAL`
  2. **Second Entrance (Northeast / Sports Fields):** `https://.../mapa?origen=SEGUNDO_ACCESO`
  3. **Third Entrance (North / Copernicus & Engineering):** `https://.../mapa?origen=TERCER_ACCESO`
@@ -91,7 +89,7 @@ The map module of **JaguarFind** functions as a campus-tailored pedestrian "Goog
 ### 3. Operational Mechanics of Graph and Dijkstra's Algorithm
 
 Route computation is executed via the following strict algorithmic procedure:
-1. **Weighted Graph Modeling:** Vertices $V$ (classroom doors, gate QR codes, restrooms, intersections) and Edges $E$ with weight $w(u,v) = \text{metric distance in meters}$ and an `esRutaAccesible` boolean flag.
+1. **Weighted Graph Modeling:** Vertices $V$ (classroom doors, campus entrances, restrooms, intersections) and Edges $E$ with weight $w(u,v) = \text{metric distance in meters}$ and an `esRutaAccesible` boolean flag.
 2. **Min-Heap Priority Queue (`heapq`):**
  * Initialization: $\text{dist}[\text{origin}] = 0$ and $\text{dist}[v] = \infty \quad \forall v \neq \text{origin}$.
  * Extraction of minimum accumulated cost node in $\mathcal{O}(\log V)$ time.

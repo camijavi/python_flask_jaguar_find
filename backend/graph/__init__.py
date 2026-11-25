@@ -8,6 +8,13 @@ Built directly on top of the central `graph.graphCombined` data structure
 from .directedGraph import Vertex, Graph, DirectedEdge, Node, DirectedGraph
 from .dijkstraRouter import DijkstraRouter
 from .geoUtils import CampusGeoUtils
+from .buildingBoundaries import (
+    BuildingBoundary,
+    BUILDING_BOUNDARIES,
+    BEACON_REGISTRY,
+    getBuildingBoundary,
+    getAllBuildingBoundaries,
+)
 from .campusGraphBuilder import buildUamCampusGraph
 from .pedestrianWalkwayGraph import buildPedestrianWalkwayGraph, globalPedestrianWalkwayGraph
 from .navigationService import NavigationService, globalNavigationService
@@ -40,6 +47,11 @@ __all__ = [
     "DirectedGraph",
     "DijkstraRouter",
     "CampusGeoUtils",
+    "BuildingBoundary",
+    "BUILDING_BOUNDARIES",
+    "BEACON_REGISTRY",
+    "getBuildingBoundary",
+    "getAllBuildingBoundaries",
     "buildUamCampusGraph",
     "buildPedestrianWalkwayGraph",
     "globalPedestrianWalkwayGraph",

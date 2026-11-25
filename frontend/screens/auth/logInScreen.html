@@ -1,6 +1,7 @@
 {% extends "screens/base.html" %}
 
-{% block title %}{{ t('nav.lost_found', default='Lost & Found') }} · JaguarFind{% endblock %}
+{% block title_attrs %} data-i18n="auth.login_page_title"{% endblock %}
+{% block title %}{{ t('auth.login_page_title') }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/screens/auth/logInScreen.css') }}">
@@ -9,18 +10,18 @@
 {% block content %}
 <section class="auth-hero flex-1 flex items-start sm:items-center justify-center px-4 py-6 sm:py-10">
     <div class="options w-full max-w-sm bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-xl p-6 sm:p-8 flex flex-col items-center gap-5">
-        <img src="{{ url_for('static', filename='img/jaguarLogo.png') }}" alt="Jaguar Find" class="w-28 h-28 object-contain">
+        <img src="{{ url_for('static', filename='img/jaguarLogo.png') }}" alt="{{ t('app.logo_alt') }}" data-i18n-alt="app.logo_alt" class="w-28 h-28 object-contain rounded-full bg-ocean-50 ring-4 ring-brand-200 shadow">
 
         <div class="text-center">
-            <h1 class="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-ocean-900 to-brand-500 bg-clip-text text-transparent">Jaguar Find</h1>
-            <p class="mt-1 text-sm text-slate-500">{{ t('auth.login_subtitle', default='Inicia sesión o regístrate para gestionar objetos perdidos' if current_language == 'spa' else 'Sign in or sign up to manage lost objects') }}</p>
+            <h1 class="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-ocean-900 to-brand-500 bg-clip-text text-transparent" data-i18n="app.name">{{ t('app.name') }}</h1>
+            <p class="mt-1 text-sm text-slate-500" data-i18n="auth.login_subtitle">{{ t('auth.login_subtitle') }}</p>
         </div>
 
         <div class="w-full flex flex-col gap-3">
             <a class="btn w-full text-center px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 shadow-md shadow-brand-500/30 active:scale-95 transition-all"
-               href="/auth/options?mode=signup">{{ 'Registrarse' if current_language == 'spa' else 'Sign up' }}</a>
+               href="/auth/options?mode=signup" data-i18n="auth.sign_up_cta">{{ t('auth.sign_up_cta') }}</a>
             <a class="btn w-full text-center px-4 py-2.5 rounded-xl text-sm font-bold text-ocean-700 bg-ocean-50 hover:bg-ocean-100 border border-ocean-200 active:scale-95 transition-all"
-               href="/auth/options?mode=signin">{{ 'Iniciar sesión' if current_language == 'spa' else 'Sign in' }}</a>
+               href="/auth/options?mode=signin" data-i18n="auth.sign_in_cta">{{ t('auth.sign_in_cta') }}</a>
         </div>
     </div>
 </section>

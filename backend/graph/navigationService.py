@@ -89,7 +89,7 @@ class NavigationService:
                     "displayName": node.getName(lang),
                     "category": node.category,
                     "floorLevel": node.floorLevel,
-                    "locationNotes": t("navigation.main_building", lang=lang, default="Main building."),
+                    "locationNotes": t("navigation.main_building", lang=lang),
                     "isSubPlace": False,
                 }
 
@@ -125,7 +125,7 @@ class NavigationService:
                     "displayName": sNode.name,
                     "category": sNode.category,
                     "floorLevel": sNode.floorLevel,
-                    "locationNotes": f"{sg.name} (Piso {sNode.floorLevel})" if lang == "spa" else f"{sg.name} (Floor {sNode.floorLevel})",
+                    "locationNotes": t("navigation.building_floor_note", lang=lang, building=t(f"nodes.{sg.macroNodeId}", lang=lang, default=sg.name), floor=sNode.floorLevel),
                     "isSubPlace": True,
                 }
             # Exact registered alias
@@ -141,7 +141,7 @@ class NavigationService:
                         "displayName": sNode.name,
                         "category": sNode.category,
                         "floorLevel": sNode.floorLevel,
-                        "locationNotes": f"{sg.name} (Piso {sNode.floorLevel})" if lang == "spa" else f"{sg.name} (Floor {sNode.floorLevel})",
+                        "locationNotes": t("navigation.building_floor_note", lang=lang, building=t(f"nodes.{sg.macroNodeId}", lang=lang, default=sg.name), floor=sNode.floorLevel),
                         "isSubPlace": True,
                     }
 
@@ -206,7 +206,7 @@ class NavigationService:
                         "displayName": sNode.name,
                         "category": sNode.category,
                         "floorLevel": sNode.floorLevel,
-                        "locationNotes": f"{sg.name} (Piso {sNode.floorLevel})" if lang == "spa" else f"{sg.name} (Floor {sNode.floorLevel})",
+                        "locationNotes": t("navigation.building_floor_note", lang=lang, building=t(f"nodes.{sg.macroNodeId}", lang=lang, default=sg.name), floor=sNode.floorLevel),
                         "isSubPlace": True,
                     }
 
@@ -225,7 +225,7 @@ class NavigationService:
                     "displayName": node.getName(lang),
                     "category": node.category,
                     "floorLevel": node.floorLevel,
-                    "locationNotes": t("navigation.main_building", lang=lang, default="Main building."),
+                    "locationNotes": t("navigation.main_building", lang=lang),
                     "isSubPlace": False,
                 }
 
@@ -330,10 +330,10 @@ class NavigationService:
         targetDest = self.resolveQueryToDestination(destinationQuery, lang=lang)
 
         if not originDest:
-            err = t("navigation.origin_not_found", lang=lang, default=f"Origin not found: '{originQuery}'", query=originQuery)
+            err = t("navigation.origin_not_found", lang=lang, query=originQuery)
             return {"success": False, "error": err}
         if not targetDest:
-            err = t("navigation.destination_not_found", lang=lang, default=f"Destination not found: '{destinationQuery}'", query=destinationQuery)
+            err = t("navigation.destination_not_found", lang=lang, query=destinationQuery)
             return {"success": False, "error": err}
 
         sourceNodeId = originDest["targetNodeId"]
@@ -358,8 +358,7 @@ class NavigationService:
                         startIndoorId, endIndoorId, accessibleOnly=accessibleOnly
                     )
                     if not indoorPath:
-                        err = t("navigation.no_route_found", lang=lang,
-                                default="No walkable indoor route found with the requested accessibility restrictions.")
+                        err = t("navigation.indoor_no_route", lang=lang)
                         return {"success": False, "error": err}
                     humanSteps = buildHumanIndoorSteps(
                         originSg, indoorPath, lang=lang, mode="standalone", buildingAnchorSvg=macroAnchor
@@ -410,8 +409,7 @@ class NavigationService:
         )
 
         if not walkwayPathIds and not macroPathNodes:
-            err = t("navigation.no_route_found", lang=lang,
-                    default="No walkable pedestrian route found between both locations with the requested restrictions.")
+            err = t("navigation.no_route_found", lang=lang)
             return {"success": False, "error": err}
 
         allSteps: List[Dict[str, Any]] = []
@@ -458,10 +456,11 @@ class NavigationService:
                 hasDestIndoorLeg = True
             elif accessibleOnly and targetDest.get("floorLevel", 1) > 1:
                 # Target room is on an upper floor unreachable by wheelchair without elevator
-                err = (
-                    f"{targetDest['displayName']} se encuentra en el Piso {targetDest['floorLevel']} y actualmente solo cuenta con acceso por escaleras."
-                    if lang == "spa"
-                    else f"{targetDest['displayName']} is on Floor {targetDest['floorLevel']} and currently only has stair access."
+                err = t(
+                    "navigation.upper_floor_stairs_only",
+                    lang=lang,
+                    dest=targetDest["displayName"],
+                    floor=targetDest["floorLevel"],
                 )
                 return {"success": False, "error": err}
 
@@ -506,15 +505,17 @@ class NavigationService:
         elif targetDest.get("isSubPlace") and targetDest.get("locationNotes"):
             # Fallback descriptive indoor hint for any subplace not mapped in a subgraph
             lastStep = allSteps[-1] if allSteps else {}
-            subMsg = (
-                f"Dentro del edificio, busca {targetDest['displayName']} (Piso {targetDest['floorLevel']}): {targetDest['locationNotes']}"
-                if lang == "spa"
-                else f"Inside the building, look for {targetDest['displayName']} (Floor {targetDest['floorLevel']}): {targetDest['locationNotes']}"
+            subMsg = t(
+                "navigation.steps.indoor_subplace_hint",
+                lang=lang,
+                name=targetDest["displayName"],
+                floor=targetDest["floorLevel"],
+                notes=targetDest["locationNotes"],
             )
             allSteps.append({
                 "index": len(allSteps),
                 "instruction": subMsg,
-                "headline": "Ubicación interior" if lang == "spa" else "Indoor location",
+                "headline": t("navigation.headlines.indoor_location", lang=lang),
                 "maneuver": "arrive",
                 "landmark": targetDest["displayName"],
                 "passedLandmarks": [],
@@ -537,8 +538,8 @@ class NavigationService:
             lastStep = allSteps[-1] if allSteps else {}
             allSteps.append({
                 "index": len(allSteps),
-                "instruction": f"Aviso de acceso: {macroNotice}" if lang == "spa" else f"Access notice: {macroNotice}",
-                "headline": "Aviso de acceso" if lang == "spa" else "Access notice",
+                "instruction": t("navigation.access_notice", lang=lang, notice=macroNotice),
+                "headline": t("navigation.headlines.access_notice", lang=lang),
                 "maneuver": "arrive",
                 "landmark": destMacroNode.getName(lang),
                 "passedLandmarks": [],
@@ -642,10 +643,14 @@ class NavigationService:
         lang: str = "eng",
         accuracyMeters: Optional[float] = None,
         floorHint: Optional[int] = None,
+        altitudeMeters: Optional[float] = None,
+        altitudeAccuracyMeters: Optional[float] = None,
+        beaconId: Optional[str] = None,
+        beaconFloor: Optional[int] = None,
     ) -> dict:
         """
-        Matches user GPS coordinates against the full campus graph hierarchy
-        (18 building subgraphs + pedestrian walkways + macro nodes).
+        Matches user GPS coordinates against defined campus building boundaries
+        (polygons & radius checks), multi-floor inference, and the full graph hierarchy.
         """
         return self.gpsMatcher.matchLocation(
             userLat,
@@ -653,7 +658,32 @@ class NavigationService:
             accuracyMeters=accuracyMeters,
             floorHint=floorHint,
             lang=lang,
+            altitudeMeters=altitudeMeters,
+            altitudeAccuracyMeters=altitudeAccuracyMeters,
+            beaconId=beaconId,
+            beaconFloor=beaconFloor,
         )
+
+    def getBuildingLocations(
+        self,
+        buildingId: str,
+        userLat: Optional[float] = None,
+        userLng: Optional[float] = None,
+        floor: Optional[int] = None,
+        lang: str = "spa",
+    ) -> dict:
+        """Returns all manual location options for a campus building grouped by floor."""
+        return self.gpsMatcher.getBuildingLocations(
+            buildingId=buildingId,
+            userLat=userLat,
+            userLng=userLng,
+            floor=floor,
+            lang=lang,
+        )
+
+    def getCampusEntranceOptions(self, lang: str = "spa") -> List[dict]:
+        """Returns quick-pick campus entrances and central hubs for fallback selection."""
+        return self.gpsMatcher.getCampusEntranceOptions(lang=lang)
 
 
 # Singleton instance for convenient import

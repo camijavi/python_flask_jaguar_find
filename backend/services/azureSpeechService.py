@@ -47,15 +47,15 @@ class AzureSpeechService:
     def synthesize(self, text: str, language: str = "es-MX") -> bytes:
         cleanText = str(text or "").strip()
         if not cleanText:
-            raise ValueError("Text is required.")
+            raise ValueError("api.speech_text_required")
         if len(cleanText) > 2000:
-            raise ValueError("Text must not exceed 2000 characters.")
+            raise ValueError("api.speech_text_too_long")
 
         normalizedLanguage = "en-US" if str(language).lower().startswith("en") else "es-MX"
         voiceName = self.VOICES[normalizedLanguage]
 
         if not self.resource_id:
-            raise RuntimeError("AZURE_SPEECH_RESOURCE_ID is not configured.")
+            raise RuntimeError("api.speech_not_configured")
 
         synthesisEndpoint = (
             f"https://{self.region}.tts.speech.microsoft.com/cognitiveservices/v1"

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ current_language or 'spa' }}" class="h-full bg-slate-50">
+<html lang="{{ current_language }}" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ t('app.name', default='JaguarFind') }}{% endblock %}</title>
+    <title{% block title_attrs %} data-i18n="app.name"{% endblock %}>{% block title %}{{ t('app.name') }}{% endblock %}</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/jaguarLogo.png') }}">
@@ -92,33 +92,28 @@
     <script>
         // Global client-side translation registry from backend/i18n.py
         window.APP_CONFIG = {
-            currentLang: "{{ current_language or 'spa' }}",
+            currentLang: "{{ current_language }}",
             endpoints: {
                 mapNodes: "/api/map/nodes",
                 mapCategories: "/api/map/categories",
                 mapPlaces: "/api/map/places",
                 mapRoute: "/api/map/route",
-                nearestGps: "/api/map/nearest-gps"
+                nearestGps: "/api/map/nearest-gps",
+                mapBoundaries: "/api/map/boundaries",
+                buildingLocations: "/api/map/buildings"
             }
         };
 
         window.APP_TRANSLATIONS = {{ (i18n_dict or {})|tojson }};
-
-        // Client-side translation helper identical to backend t(key)
-        window.t = function(keyPath, defaultText) {
-            if (!keyPath) return defaultText || '';
-            const keys = keyPath.split('.');
-            let curr = window.APP_TRANSLATIONS;
-            for (const k of keys) {
-                if (curr && typeof curr === 'object' && k in curr) {
-                    curr = curr[k];
-                } else {
-                    return defaultText || keyPath;
-                }
-            }
-            return (typeof curr === 'string') ? curr : (defaultText || keyPath);
-        };
     </script>
+
+    <!-- Scoped sessionStorage Form Draft Persistence & Reactive Client-Side i18n -->
+    <script src="{{ url_for('static', filename='js/formDraftManager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/i18nManager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/passwordVisibilityToggle.js') }}"></script>
+
+    <!-- Shared Browser Geolocation API, Permission & Campus Location Detector -->
+    <script src="{{ url_for('static', filename='js/gpsLocationDetector.js') }}"></script>
 
     {% block scripts %}{% endblock %}
 </body>

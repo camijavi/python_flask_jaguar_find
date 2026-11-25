@@ -1,12 +1,29 @@
 {% extends "screens/admin/adminBase.html" %}
 
-{% block title %}Gestión de Objetos Perdidos · JaguarFind{% endblock %}
-{% block header_title %}Catálogo y Custodia de Objetos Perdidos{% endblock %}
-{% block header_subtitle %}Edición de tickets, auditoría de detalles secretos y cambio de estados (Reportado &rarr; En Custodia &rarr; Entregado){% endblock %}
+{% block title_attrs %} data-i18n="admin.page_title_items"{% endblock %}
+{% block title %}{{ t('admin.page_title_items') }}{% endblock %}
+{% block header_title_attrs %} data-i18n="admin.items_title"{% endblock %}
+{% block header_title %}{{ t('admin.items_title') }}{% endblock %}
+{% block header_subtitle_attrs %} data-i18n="admin.items_subtitle"{% endblock %}
+{% block header_subtitle %}{{ t('admin.items_subtitle') }}{% endblock %}
+
+{% block head %}
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
 
 {% block admin_content %}
 <div class="h-full flex flex-col">
-    <!-- Embed Catalog Interface with Admin Capabilities -->
-    {% include "screens/lostFoundObject/catalogScreen.html" %}
+    {% include "components/lostFoundObject/catalogContent.html" %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/catalogScreen.js') }}"></script>
 {% endblock %}

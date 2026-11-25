@@ -1,0 +1,64 @@
+    "Facultad de Ingeniería y Arquitectura" (FIA)
+            "Ing. de Sistemas", 
+            "Ing. Industrial", 
+            "Ing. Civil", 
+            "Arquitectura"
+
+    "Facultad de Ciencias Médicas" (FCCMM)
+            "Medicina", 
+            "Psicología", 
+            "Nutrición",
+
+    "Facultad de Ciencias Jurídicas, Humanidades y Relaciones Internacionales" (FCJHRI)
+            "Derecho", 
+            "Diplomacia y RRII", 
+
+    "Facultad de Ciencias Administrativas y Económicas" (FCAE)
+             "Administración de Empresas", 
+            "Contabilidad y Finanzas", 
+            "Economía Empresarial", 
+            "Negocios Internacionales",
+
+    "Facultad de Marketing, Diseño y Ciencias de la Comunicación" (FMDCC)
+            "Marketing y Publicidad", 
+            "Diseño y Comunicación Visual", 
+            "Comunicación y RR.PP.", 
+    
+    "UAM College" --> facultad y carrera
+
+
+
+    **Faculty of Engineering and Architecture (FIA)**
+
+* Systems Engineering
+* Industrial Engineering
+* Civil Engineering
+* Architecture
+
+**Faculty of Medical Sciences (FCCMM)**
+
+* Medicine
+* Psychology
+* Nutrition
+
+**Faculty of Legal Sciences, Humanities, and International Relations (FCJHRI)**
+
+* Law
+* Diplomacy and International Relations
+
+**Faculty of Administrative and Economic Sciences (FCAE)**
+
+* Business Administration
+* Accounting and Finance
+* Business Economics
+* International Business
+
+**Faculty of Marketing, Design, and Communication Sciences (FMDCC)**
+
+* Marketing and Advertising
+* Design and Visual Communication
+* Communication and Public Relations
+
+**UAM College** --> faculty and carreer 
+
+ 
