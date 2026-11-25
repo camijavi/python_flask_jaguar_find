@@ -533,12 +533,12 @@ def getSubgraphsCatalog():
         metrics = sg.graph.getGraphSummary()
         catalog.append({
             "buildingId": sg.buildingId,
-            "name": sg.name,
+            "name": sg.getName(lang),
             "code": sg.code,
             "floors": sg.floors,
             "macroNodeId": sg.macroNodeId,
             "entranceNodeIds": sg.entranceNodeIds,
-            "description": sg.description,
+            "description": sg.getDescription(lang),
             "totalNodes": len(sg.getAllNodes()),
             "totalDirectedEdges": metrics["directedEdgeCount"],
             "density": metrics["density"],

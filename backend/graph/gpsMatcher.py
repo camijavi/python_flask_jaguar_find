@@ -58,6 +58,7 @@ class GlobalGpsMatcher:
         """
         from backend.subgraphs import getBuildingSubgraph
         from backend.data.placesCatalog import PLACES_CATALOG
+        from backend.data.campusLocalization import getLocalizedPlaceName
 
         macroNode = self.macroGraph.getNode(buildingId)
         sg = getBuildingSubgraph(buildingId)
@@ -66,7 +67,7 @@ class GlobalGpsMatcher:
         buildingName = (
             macroNode.getName(lang)
             if macroNode
-            else (sg.name if sg else buildingId)
+            else (sg.getName(lang) if sg else buildingId)
         )
 
         if sg and sg.floors:
@@ -131,7 +132,7 @@ class GlobalGpsMatcher:
                 _appendLocation({
                     "nodeId": place.get("placeId"),
                     "placeId": place.get("placeId"),
-                    "name": place.get("name"),
+                    "name": getLocalizedPlaceName(place, lang),
                     "buildingId": buildingId,
                     "buildingName": buildingName,
                     "floorLevel": int(place.get("floorLevel", 1) or 1),
@@ -300,7 +301,7 @@ class GlobalGpsMatcher:
         # ------------------------------------------------------------------
         for buildingId, sg in subgraphs.items():
             macroNode = self.macroGraph.getNode(sg.macroNodeId)
-            buildingName = macroNode.getName(lang) if macroNode else sg.name
+            buildingName = macroNode.getName(lang) if macroNode else sg.getName(lang)
             for node in sg.getAllNodes():
                 if not node.latitude or not node.longitude:
                     continue

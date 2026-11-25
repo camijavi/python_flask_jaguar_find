@@ -88,7 +88,7 @@ def runGpsDetectionTests():
     assert libMatch["confidence"] == "high", f"Expected high confidence, got {libMatch['confidence']} ({libMatch['confidenceReasons']})"
     assert libMatch["needsManualFallback"] is False
     assert libMatch["estimatedLocation"]["isExactSpotConfident"] is True
-    assert len(libMatch["buildingLocationsByFloor"]["1"]) == 15
+    assert len(libMatch["buildingLocationsByFloor"]["1"]) == 21
     print(f"  [OK] High confidence match: {libMatch['nodeName']} | conf={libMatch['confidence']} | floor=1 | locations={len(libMatch['buildingLocations'])}")
 
     # ------------------------------------------------------------------
@@ -192,7 +192,7 @@ def runGpsDetectionTests():
     assert poorAcc["confidence"] == "low"
     assert poorAcc["needsManualFallback"] is True
     assert poorAcc["fallbackReason"] == "low_gps_accuracy"
-    assert len(poorAcc["buildingLocations"]) == 15
+    assert len(poorAcc["buildingLocations"]) == 21
     assert len(poorAcc["topCandidates"]) >= 2
     print(f"  [OK] Poor accuracy (+/-55m) triggered fallback: conf={poorAcc['confidence']}, reason={poorAcc['fallbackReason']}, options={len(poorAcc['buildingLocations'])}")
 
@@ -255,6 +255,19 @@ def runGpsDetectionTests():
     assert rLocF2.status_code == 200
     dLocF2 = rLocF2.get_json()
     assert all(loc["floorLevel"] == 2 for loc in dLocF2["locations"])
+
+    # 7g-bis. Verify left-to-right ordering preserved on non-GPS building location queries
+    rLocB1 = client.get("/api/map/buildings/buildingB/locations?floor=1&lang=spa").get_json()
+    b1Rooms = [loc["nodeId"] for loc in rLocB1["locations"] if loc["nodeId"].startswith("b_room_")]
+    assert b1Rooms == [f"b_room_{n}" for n in range(101, 110)], f"Building B F1 API ordering mismatch: {b1Rooms}"
+
+    rLocB2 = client.get("/api/map/buildings/buildingB/locations?floor=2&lang=spa").get_json()
+    b2Rooms = [loc["nodeId"] for loc in rLocB2["locations"] if loc["nodeId"].startswith("b_room_")]
+    assert b2Rooms == [f"b_room_{n}" for n in range(201, 211)], f"Building B F2 API ordering mismatch: {b2Rooms}"
+
+    rLocP3 = client.get("/api/map/buildings/buildingP/locations?floor=3&lang=spa").get_json()
+    p3Rooms = [loc["nodeId"] for loc in rLocP3["locations"] if loc["nodeId"].startswith("p_room_")]
+    assert p3Rooms == [f"p_room_{n}" for n in range(301, 309)], f"Building P F3 API ordering mismatch: {p3Rooms}"
 
     # 7h. Unknown building -> 404
     r404 = client.get("/api/map/buildings/unknownBuilding999/locations")

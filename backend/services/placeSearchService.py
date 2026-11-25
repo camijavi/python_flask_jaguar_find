@@ -24,8 +24,13 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 from backend.data.campusCategories import CampusCategory
 from backend.data.placesCatalog import PLACES_CATALOG
+from backend.data.campusLocalization import (
+    getLocalizedPlaceName,
+    getLocalizedPlaceNotes,
+    getPlaceBilingualNames,
+)
 from backend.graph.navigationService import globalNavigationService
-from backend.i18n import t
+from backend.i18n import t, normalize_language
 from backend.subgraphs import getAllBuildingSubgraphs
 
 _CAMEL_BOUNDARY_RE = re.compile(r"([a-z0-9])([A-Z])")
@@ -85,7 +90,7 @@ def extractRoomCodes(text: str) -> Set[str]:
 
 
 def naturalSortKey(text: str) -> Tuple[Any, ...]:
-    """Natural sort key so B-201, B-202, ..., B-209, B-210 sort numerically."""
+    """Natural sort key so B201, B202, ..., B209, B210 sort numerically."""
     canon = canonicalizeSearchText(text)
     parts: List[Any] = []
     for chunk in _NATURAL_CHUNK_RE.split(canon):
@@ -131,15 +136,17 @@ def _dedupeKeywords(keywords: List[str]) -> List[str]:
 def buildIndexedPlaces(lang: str = "spa") -> List[Dict[str, Any]]:
     """
     Builds the complete, deduplicated list of campus places combining
-    PLACES_CATALOG and all 18 indoor building subgraphs.
+    PLACES_CATALOG and all 18 indoor building subgraphs with localized
+    names & location notes while preserving full bilingual searchability.
     """
+    activeLang = normalize_language(lang)
     macroGraph = globalNavigationService.graph
     subgraphs = getAllBuildingSubgraphs()
 
-    def _getShortBuilding(buildingId: str, fallback: str = "") -> str:
+    def _getShortBuilding(buildingId: str, targetLang: str = activeLang, fallback: str = "") -> str:
         macroNode = macroGraph.getNode(buildingId)
         if macroNode:
-            return shortBuildingLabel(macroNode.getName(lang))
+            return shortBuildingLabel(macroNode.getName(targetLang))
         return shortBuildingLabel(fallback or buildingId)
 
     combinedPlaces: List[Dict[str, Any]] = []
@@ -151,22 +158,34 @@ def buildIndexedPlaces(lang: str = "spa") -> List[Dict[str, Any]]:
         place = dict(rawPlace)
         parentId = place.get("parentBuildingId", "")
         parentNorm = normalizeText(parentId)
-        shortBldg = _getShortBuilding(parentId)
+        shortBldg = _getShortBuilding(parentId, activeLang)
+        shortBldgSpa = _getShortBuilding(parentId, "spa")
+        shortBldgEng = _getShortBuilding(parentId, "eng")
 
-        ownCodes = extractRoomCodes(place.get("name", "")) | extractRoomCodes(place.get("placeId", ""))
+        localizedName = getLocalizedPlaceName(rawPlace, activeLang)
+        localizedNotes = getLocalizedPlaceNotes(rawPlace, activeLang)
+        bilingualNames = getPlaceBilingualNames(rawPlace)
+
+        place["name"] = localizedName
+        place["locationNotes"] = localizedNotes
+
+        ownCodes = extractRoomCodes(localizedName) | extractRoomCodes(rawPlace.get("name", "")) | extractRoomCodes(place.get("placeId", ""))
         for kw in place.get("keywords", []):
             ownCodes |= extractRoomCodes(kw)
 
         keywords = list(place.get("keywords", []))
+        keywords.extend(bilingualNames)
         keywords.extend(_expandRoomCodeKeywords(ownCodes))
-        if shortBldg:
-            keywords.append(shortBldg)
+        for bLabel in (shortBldg, shortBldgSpa, shortBldgEng):
+            if bLabel:
+                keywords.append(bLabel)
         place["keywords"] = _dedupeKeywords(keywords)
         place["buildingName"] = shortBldg
         place["roomCodes"] = sorted(ownCodes)
 
         combinedPlaces.append(place)
-        seenNameKeys.add((parentNorm, canonicalizeSearchText(place.get("name", ""))))
+        for nameVariant in bilingualNames:
+            seenNameKeys.add((parentNorm, canonicalizeSearchText(nameVariant)))
         if ownCodes:
             catalogRoomCodesByBuilding.setdefault(parentNorm, set()).update(ownCodes)
 
@@ -174,7 +193,9 @@ def buildIndexedPlaces(lang: str = "spa") -> List[Dict[str, Any]]:
     for _, sg in subgraphs.items():
         parentId = sg.macroNodeId
         parentNorm = normalizeText(parentId)
-        shortBldg = _getShortBuilding(parentId, fallback=sg.name)
+        shortBldg = _getShortBuilding(parentId, activeLang, fallback=sg.getName(activeLang))
+        shortBldgSpa = _getShortBuilding(parentId, "spa", fallback=sg.getName("spa"))
+        shortBldgEng = _getShortBuilding(parentId, "eng", fallback=sg.getName("eng"))
 
         aliasesByNodeId: Dict[str, List[str]] = {}
         for alias, targetNodeId in sg.roomAliases.items():
@@ -183,19 +204,25 @@ def buildIndexedPlaces(lang: str = "spa") -> List[Dict[str, Any]]:
         coveredCodes = catalogRoomCodesByBuilding.get(parentNorm, set())
 
         for node in sg.getAllNodes():
-            localizedName = node.getName(lang)
-            nameKey = (parentNorm, canonicalizeSearchText(localizedName))
-            if nameKey in seenNameKeys:
+            localizedName = node.getName(activeLang)
+            spaName = node.getName("spa")
+            engName = node.getName("eng")
+            candidateNameKeys = [
+                (parentNorm, canonicalizeSearchText(variant))
+                for variant in (localizedName, spaName, engName)
+                if variant
+            ]
+            if any(nk in seenNameKeys for nk in candidateNameKeys):
                 continue
 
             nodeAliases = aliasesByNodeId.get(node.nodeId, [])
-            nodeCodes = extractRoomCodes(localizedName) | extractRoomCodes(node.nodeId)
+            nodeCodes = extractRoomCodes(localizedName) | extractRoomCodes(spaName) | extractRoomCodes(node.nodeId)
             for alias in nodeAliases:
                 nodeCodes |= extractRoomCodes(alias)
 
             # Avoid duplicate entries for combined/mirrored room nodes when ALL
             # of their rooms are already individually represented in PLACES_CATALOG
-            # (e.g. 'Aulas B-209 y B-210' when both 'Aula B-209' and 'Aula B-210'
+            # (e.g. 'Aulas B209 y B210' when both 'Aula B209' and 'Aula B210'
             # are already indexed individually in buildingB).
             if (
                 nodeCodes
@@ -204,13 +231,15 @@ def buildIndexedPlaces(lang: str = "spa") -> List[Dict[str, Any]]:
             ):
                 continue
 
-            seenNameKeys.add(nameKey)
+            for nk in candidateNameKeys:
+                seenNameKeys.add(nk)
 
-            nodeKeywords = [node.nodeId]
+            nodeKeywords = [node.nodeId, spaName, engName]
             nodeKeywords.extend(nodeAliases)
             nodeKeywords.extend(_expandRoomCodeKeywords(nodeCodes))
-            if shortBldg:
-                nodeKeywords.append(shortBldg)
+            for bLabel in (shortBldg, shortBldgSpa, shortBldgEng):
+                if bLabel:
+                    nodeKeywords.append(bLabel)
 
             combinedPlaces.append({
                 "placeId": node.nodeId,
@@ -224,7 +253,7 @@ def buildIndexedPlaces(lang: str = "spa") -> List[Dict[str, Any]]:
                 "longitude": node.longitude,
                 "locationNotes": t(
                     "api.map_floor_note",
-                    lang=lang,
+                    lang=activeLang,
                     floor=node.floorLevel,
                     building=shortBldg,
                 ),

@@ -23,31 +23,31 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
     <!-- Right-Edge Waze Control Stack (Compact Map Controls + Circular Compass) -->
     <div id="mapRightToolbar" class="waze-right-stack absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex flex-col items-center gap-2.5 transition-all duration-300 pointer-events-none">
         <div class="flex flex-col gap-1 bg-white/95 backdrop-blur-md p-1 rounded-2xl border border-slate-200/90 shadow-lg shadow-slate-900/10 pointer-events-auto">
-            <button id="btnMapZoomIn" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.zoom_in') }}" data-i18n-aria-label="map.toolbar.zoom_in">
+            <button id="btnMapZoomIn" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer" title="{{ t('map.toolbar.zoom_in') }}" data-i18n-title="map.toolbar.zoom_in" aria-label="{{ t('map.toolbar.zoom_in') }}" data-i18n-aria-label="map.toolbar.zoom_in">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
             </button>
-            <button id="btnMapZoomOut" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.zoom_out') }}" data-i18n-aria-label="map.toolbar.zoom_out">
+            <button id="btnMapZoomOut" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer" title="{{ t('map.toolbar.zoom_out') }}" data-i18n-title="map.toolbar.zoom_out" aria-label="{{ t('map.toolbar.zoom_out') }}" data-i18n-aria-label="map.toolbar.zoom_out">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M20 12H4"></path></svg>
             </button>
-            <button id="btnMapResetView" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center text-xs transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.center_map') }}" data-i18n-aria-label="map.toolbar.center_map">
+            <button id="btnMapResetView" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center text-xs transition-colors cursor-pointer" title="{{ t('map.toolbar.center_map') }}" data-i18n-title="map.toolbar.center_map" aria-label="{{ t('map.toolbar.center_map') }}" data-i18n-aria-label="map.toolbar.center_map">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle><circle cx="12" cy="12" r="2.8" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3m10-10h-3M5 12H2"></path></svg>
             </button>
-            <button id="btnToggle25dQuick" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-sky-50 hover:text-sky-600 text-slate-700 flex items-center justify-center transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_25d') }}" data-i18n-aria-label="map.toolbar.toggle_25d">
+            <button id="btnToggle25dQuick" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-sky-50 hover:text-sky-600 text-slate-700 flex items-center justify-center transition-colors cursor-pointer" title="{{ t('map.toolbar.toggle_25d') }}" data-i18n-title="map.toolbar.toggle_25d" aria-label="{{ t('map.toolbar.toggle_25d') }}" data-i18n-aria-label="map.toolbar.toggle_25d">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19h16M6 17l3-9h6l3 9M12 8v9M9 8l3 9m3-9-3 9"></path>
                 </svg>
             </button>
-            <button id="btnToggleEmergencyLayer" type="button" aria-pressed="false" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_emergency') }}" data-i18n-aria-label="map.toolbar.toggle_emergency">
+            <button id="btnToggleEmergencyLayer" type="button" aria-pressed="false" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer" title="{{ t('map.toolbar.toggle_emergency') }}" data-i18n-title="map.toolbar.toggle_emergency" aria-label="{{ t('map.toolbar.toggle_emergency') }}" data-i18n-aria-label="map.toolbar.toggle_emergency">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </button>
             <!-- Lost & Found Waze Alert Layer Toggle (Visible only for authenticated users) -->
             {% if session.get('user') %}
-            <button id="btnToggleLostObjectsLayer" type="button" aria-pressed="true" class="relative w-9 h-9 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 flex items-center justify-center transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_lost_pins') }}" data-i18n-aria-label="map.toolbar.toggle_lost_pins">
+            <button id="btnToggleLostObjectsLayer" type="button" aria-pressed="true" class="relative w-9 h-9 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 flex items-center justify-center transition-colors cursor-pointer" title="{{ t('map.toolbar.toggle_lost_pins') }}" data-i18n-title="map.toolbar.toggle_lost_pins" aria-label="{{ t('map.toolbar.toggle_lost_pins') }}" data-i18n-aria-label="map.toolbar.toggle_lost_pins">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 <span id="mapLostPinsBadgeCount" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center shadow-xs hidden">0</span>
             </button>
             {% endif %}
-            <button id="btnToggleWalkwaysLayer"  type="button" aria-pressed="false" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_walkways') }}" data-i18n-aria-label="map.toolbar.toggle_walkways">
+            <button id="btnToggleWalkwaysLayer"  type="button" aria-pressed="false" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer" title="{{ t('map.toolbar.toggle_walkways') }}" data-i18n-title="map.toolbar.toggle_walkways" aria-label="{{ t('map.toolbar.toggle_walkways') }}" data-i18n-aria-label="map.toolbar.toggle_walkways">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="4.5" r="2" stroke-width="2.1"></circle>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.1" d="M9.5 10.5l2.5 1.8 3-1.3M12 12.3V16l-2.8 4.5M12 16l3.2 4.2M7.5 13.5l2-3"></path>
@@ -262,7 +262,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
                 </svg>
             </div>
             <!-- JaguarFind Light-Themed White & Sky-Blue Active Location Pill Badge -->
-            <div id="wazeActiveRoadPill" class="waze-road-pill hidden">{{ t('map.campus_pill') }}</div>
+            <div id="wazeActiveRoadPill" class="waze-road-pill hidden" data-i18n="map.campus_pill">{{ t('map.campus_pill') }}</div>
         </div>
         <div id="wazeBadgesContainer" class="absolute inset-0 pointer-events-none"></div>
         <div id="wazeLostPinsContainer" class="absolute inset-0 pointer-events-none z-20"></div>

@@ -20,6 +20,9 @@
         "p_ramp_parking": { x: 100, y: 550, floor: 1 },
         "p_stairs_f1_west": { x: 162, y: 550, floor: 1 },
         "p_restrooms_f1": { x: 238, y: 550, floor: 1 },
+        "p_restrooms_men_f1": { x: 220, y: 550, floor: 1 },
+        "p_restrooms_women_f1": { x: 256, y: 550, floor: 1 },
+        "p_fountain_f1_west": { x: 274, y: 547, floor: 1 },
         "p_room_108": { x: 289, y: 536, floor: 1 },
         "p_room_107": { x: 362, y: 536, floor: 1 },
         "p_room_106": { x: 435, y: 536, floor: 1 },
@@ -29,12 +32,16 @@
         "p_room_102": { x: 727, y: 536, floor: 1 },
         "p_room_101": { x: 800, y: 536, floor: 1 },
         "p_fountain_f1": { x: 877, y: 547, floor: 1 },
+        "p_weather_station": { x: 896, y: 550, floor: 1 },
         "p_stairs_f1_east": { x: 920, y: 550, floor: 1 },
         "p_stairs_f1_ext_left": { x: 975, y: 550, floor: 1 },
 
         // --- FLOOR 2 ---
         "p_stairs_f2_west": { x: 162, y: 365, floor: 2 },
         "p_restrooms_f2": { x: 238, y: 365, floor: 2 },
+        "p_restrooms_men_f2": { x: 220, y: 365, floor: 2 },
+        "p_restrooms_women_f2": { x: 256, y: 365, floor: 2 },
+        "p_fountain_f2_west": { x: 274, y: 362, floor: 2 },
         "p_room_208": { x: 289, y: 350, floor: 2 },
         "p_room_207": { x: 362, y: 350, floor: 2 },
         "p_room_206": { x: 435, y: 350, floor: 2 },
@@ -47,14 +54,20 @@
         "p_stairs_f2_east": { x: 920, y: 365, floor: 2 },
 
         // --- FLOOR 3 ---
+        "p_stairs_f3_west": { x: 162, y: 175, floor: 3 },
         "p_restrooms_f3": { x: 238, y: 175, floor: 3 },
-        "p_room_306": { x: 291, y: 160, floor: 3 },
-        "p_room_305": { x: 389, y: 160, floor: 3 },
-        "p_room_304": { x: 487, y: 160, floor: 3 },
-        "p_room_303": { x: 585, y: 160, floor: 3 },
-        "p_room_302": { x: 683, y: 160, floor: 3 },
-        "p_room_301": { x: 781, y: 160, floor: 3 },
-        "p_fountain_f3": { x: 881, y: 172, floor: 3 },
+        "p_restrooms_men_f3": { x: 220, y: 175, floor: 3 },
+        "p_restrooms_women_f3": { x: 256, y: 175, floor: 3 },
+        "p_fountain_f3_west": { x: 274, y: 172, floor: 3 },
+        "p_room_308": { x: 289, y: 160, floor: 3 },
+        "p_room_307": { x: 362, y: 160, floor: 3 },
+        "p_room_306": { x: 435, y: 160, floor: 3 },
+        "p_room_305": { x: 508, y: 160, floor: 3 },
+        "p_room_304": { x: 581, y: 160, floor: 3 },
+        "p_room_303": { x: 654, y: 160, floor: 3 },
+        "p_room_302": { x: 727, y: 160, floor: 3 },
+        "p_room_301": { x: 800, y: 160, floor: 3 },
+        "p_fountain_f3": { x: 877, y: 172, floor: 3 },
         "p_stairs_f3_east": { x: 920, y: 175, floor: 3 },
     };
 
@@ -337,7 +350,7 @@
                 targetPin.setAttribute("transform", `translate(${lastPt.x - 37}, ${lastPt.y - 30})`);
                 targetPin.classList.remove("hidden");
                 if (targetPinText) {
-                    const label = destId.replace("p_room_", "P-").replace("p_", "").toUpperCase();
+                    const label = destId.replace("p_room_", "P").replace("p_", "").toUpperCase();
                     targetPinText.textContent = `DEST: ${label}`;
                 }
             }

@@ -599,8 +599,43 @@ Fully localized (ES / EN) with reactive DOM & JS updates via JaguarI18n.
         }
     }
 
-    window.addEventListener("jaguarLanguageChanged", () => {
+    window.addEventListener("jaguarLanguageChanged", async () => {
         if (!modal || modal.classList.contains("hidden")) return;
+        if (detectedNodeId) {
+            const localizedNode = tr(`nodes.${detectedNodeId}`);
+            if (localizedNode && localizedNode !== `nodes.${detectedNodeId}`) {
+                detectedLocationName = localizedNode;
+            }
+        }
+        if (lastGpsResult && lastGpsResult.ok && lastGpsResult.nearest && detectedNodeId && window.JaguarGpsDetector) {
+            try {
+                const fresh = await window.JaguarGpsDetector.fetchBuildingLocations(detectedNodeId, {
+                    coords: lastGpsResult.coords || null,
+                    lang: getCurrentLang(),
+                });
+                if (fresh && fresh.success) {
+                    const n = lastGpsResult.nearest;
+                    const matched = (fresh.locations || []).find(l => l && l.nodeId === n.nearestSpecificNodeId);
+                    lastGpsResult = Object.assign({}, lastGpsResult, {
+                        nearest: Object.assign({}, n, {
+                            buildingName: fresh.buildingName || detectedLocationName,
+                            nodeName: (matched && matched.name) || fresh.buildingName || n.nodeName,
+                            buildingLocations: fresh.locations || [],
+                            buildingLocationsByFloor: fresh.locationsByFloor || {},
+                            topCandidates: (Array.isArray(n.topCandidates) ? n.topCandidates : []).map(c => {
+                                const bId = c.buildingId || c.nodeId;
+                                const loc = bId ? tr(`nodes.${bId}`) : "";
+                                return Object.assign({}, c, {
+                                    buildingName: (loc && loc !== `nodes.${bId}`) ? loc : (c.buildingName || c.name),
+                                });
+                            }),
+                        }),
+                    });
+                }
+            } catch (_) {
+                // Keep existing result if refresh fails
+            }
+        }
         if (isLocationConfirmed && detectedLocationName) {
             showConfirmedLocationBanner(detectedLocationName);
         } else if (lastGpsResult) {

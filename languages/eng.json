@@ -260,15 +260,15 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Accounting, CAE (Student Care Center), Admissions, Academic Records, Collections, Finance, ATMs."
+            "rooms": "Accounting (A101), Student Care Center (CAE) / Common Area, Marketing & Admissions Directorate, Academic Records, Collections, Academic Directorate, Finance Directorate, Lost & Found; Outdoor: ATMs (BAC & LAFISE)."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "Administrative Directorate, Academic Logistics, IT (TIC), Marketing & Advertising, HR & Talent."
+            "rooms": "Administrative Directorate (A201), Academic Logistics, Information & Communication Technology Directorate (A203), Marketing & Advertising (A204), Talent Management Directorate, Human Resources (A205)."
           },
           "f3": {
             "label": "Floor 3",
-            "rooms": "Audiovisual Production (DPA), Cyclorama Recording Set, Sound Studio, Master Control, Radio Set."
+            "rooms": "Audiovisual Production Directorate (DPA - A301), Cyclorama Recording Set, Sound Studio, DPA Auxiliary Offices, Master Control, Radio Set."
           }
         }
       },
@@ -278,11 +278,11 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Commercial Module 1 (Pharmacy), Classrooms B101 - B109, Men's / Women's Restrooms, Jaguar Shop."
+            "rooms": "Commercial Module 1 (Pharmacy), Classrooms B101 to B109, Men's Restrooms, Drinking Fountain, Women's Restrooms, Photocopies."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "Classrooms B201 - B210."
+            "rooms": "Classrooms B201 to B210."
           }
         }
       },
@@ -292,15 +292,15 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Auditoriums C101 & C109, Classrooms C102-C106, UAM Cashier / Treasury C105, MAC Lab C107, ACAI-Erasmus+ Lab (C108), Accessible Ramp."
+            "rooms": "Auditorium C101, Classrooms C102 to C105, Drinking Fountain, UAM Cashier / Treasury, Classroom C106, MAC Lab C107, ACAI-Erasmus+ Computer Lab (C108), Auditorium C109."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "Computer Labs C201, C202, C204, C205, MAC Lab C203, Storage C206, Men's / Women's Restrooms, Classrooms C209-C211."
+            "rooms": "Computer Labs C201, C202, C204 & C205, MAC Lab C203, Storage C206, Men's & Women's Restrooms, Classrooms C209, C210 & C211."
           },
           "f3": {
             "label": "Floor 3",
-            "rooms": "Audiovisual Studio A-301, Classrooms C301-C305, Procurement Coordination C306, Classrooms C307-C310."
+            "rooms": "Classrooms C301 to C305, Procurement Coordination (C306), Classrooms C307 to C310."
           }
         }
       },
@@ -320,21 +320,21 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "UAM Medical Clinics, Cardiology Center, Medicine Deanery, Inclusive Restrooms, Student Life (DVE), Innovation (DIE)."
+            "rooms": "Medical Clinics, Men's, Women's & Accessible Restrooms, Cardiology Center, Faculty of Medical Sciences, Student Life Directorate (West Annex), Innovation & Entrepreneurship Directorate (DIE - North Annex), Benches."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "Medical Clinical Skills Simulators Laboratory."
+            "rooms": "Medical Skills Simulators Lab (E201), Medical Simulators Lab, Psychology Office, Medical Clinical Laboratory."
           }
         }
       },
       "buildingF": {
-        "name": "Building F • Business & Economics (FCAE)",
+        "name": "Building F • Business & Marketing",
         "badge": "1 Floor",
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "FCAE Deanery, FMDCC Deanery, Postgraduate & Continuing Education, Classrooms F101-F104, Events Hall."
+            "rooms": "Faculty Lounge, Postgraduate & Continuing Education Directorate, Faculty of Administrative & Economic Sciences (FCAE), Faculty of Marketing, Design & Communication Sciences (FMDCC)."
           }
         }
       },
@@ -344,11 +344,11 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Faculty of Legal Sciences (FCJP), Mediation Center, Language Center, UAM College, International Relations, Accessible Ramp."
+            "rooms": "Faculty of Legal Sciences, Humanities & International Relations (FCJHRI), FCJHRI Auditorium, Mediation & Arbitration Center, Language Center, UAM College, International Relations Directorate, All-Gender & Accessible Restrooms."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "Rubén Darío Central Auditorium, Mock Trial Courtroom."
+            "rooms": "Central Auditorium / Rubén Darío Auditorium."
           }
         }
       },
@@ -358,11 +358,11 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Basic Sciences Labs H101 - H107, Lab Coordination, Chemical Storage, Men's / Women's Restrooms."
+            "rooms": "Men's & Women's Restrooms, Medical Labs H101 to H103, Quality Management Coordination (H104), Medical Lab Supervision Office (Necropsy), Medical Labs H105 to H107."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "Medical Research & Anatomy Labs H201 - H207, Practice Operating Room, Lab Supervision."
+            "rooms": "Medical Labs H201 to H207."
           }
         }
       },
@@ -372,7 +372,7 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Rectorate, Vice Presidency, General Management, General Secretariat, Academic Directorate, UAM Central Library."
+            "rooms": "Vice Presidency, Directors' Meeting Room, Academic Directorate, Rectorate, General Management, General Secretariat, Office / Meeting Room, Pablo Antonio Cuadra Library, Library Men's & Women's Restrooms, Public Relations Directorate."
           }
         }
       },
@@ -382,27 +382,31 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Preclinical Dental Simulation Labs J-101 & J-102, Instrument Depot, Men's & Women's Restrooms."
+            "rooms": "Dental Lab J101, Dental Lab J102, Men's & Women's Restrooms."
           }
         }
       },
       "buildingK": {
-        "name": "Building K • Cafeteria & Central Plaza",
-        "badge": "1 Floor",
+        "name": "Building K • Cafeteria & Food Court",
+        "badge": "2 Floors",
         "floors": {
           "f1": {
-            "label": "Central Plaza",
-            "rooms": "Rubén Darío Plaza, Central Cafeteria, Jaguar Corner, Food Kiosks, Covered Terraces, Banpro / BAC ATMs."
+            "label": "Floor 1",
+            "rooms": "Men's & Women's Restrooms, Seating Area, Terraces, Jaguar Shop, Commercial Modules (Food Court), Kiosk 1."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "Kiosk 1, Kiosk 2, Seating Area."
           }
         }
       },
       "buildingL": {
-        "name": "Building L • Culture & Bleachers",
+        "name": "Building L • Culture, Music & Showers",
         "badge": "1 Floor",
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Music & Dance Rehearsal Room, Jaguar Auditorium, Sports Complex Bleachers Access, Sports Offices."
+            "rooms": "Visitor Showers, Home Showers, Culture Hall, Music Room, Men's & Women's Restrooms."
           }
         }
       },
@@ -412,15 +416,15 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Auditoriums M101 & M102, Environmental & Energy Management Directorate, Research & University Extension, Restrooms & Fountain."
+            "rooms": "Auditorium M101, Auditorium M102, Environmental & Energy Management Directorate, Research & University Extension Directorate, Classroom, Men's, Women's & Accessible Restrooms, Drinking Fountain."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "Classrooms M201 - M204."
+            "rooms": "Classrooms M201 to M204."
           },
           "f3": {
             "label": "Floor 3",
-            "rooms": "Classrooms M301 - M304."
+            "rooms": "Classrooms M301 to M304."
           }
         }
       },
@@ -430,11 +434,11 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Patient Reception, Triage Module, Undergraduate & Postgraduate Dental Clinics, Dental Operating Rooms, Sterilization."
+            "rooms": "Operating Rooms 1 & 2, Reception, Records-Cashier, Medical Clinics A, B & E, Records & Files Office, Clinics Coordination, Radiology 1-3, Supply Room, Radiographic Interpretation, Tomography, Instrument Washing, Prep & Packaging, Sterilization, Postgraduate Clinics C-D, Digital Fabrication Lab, Archive Storage, IDEA Office, Dental Clinics Supervision, Men's & Women's Restrooms."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "Faculty of Dentistry (FODO) Reception."
+            "rooms": "Faculty of Dentistry (FODO), Dental Technicians, Simulators Lab, Undergraduate Lab, Supply Room, Postgraduate Lab, Radiology No.1 - No.2, Digital Imaging."
           }
         }
       },
@@ -444,11 +448,11 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "FIA Deanery (O-101), Soils Lab (O-102), Materials Lab (O-104), Fluids, Risk Management (O-105), North Annex."
+            "rooms": "Faculty of Engineering & Architecture (O101), Soil Mechanics Lab (O102), Exhibition Area, Strength of Materials Lab (O104), Mixing Area, Curing Area, Lab Technicians, Fluid Mechanics Lab, Risk Management (O105), Men's & Women's Restrooms, FIA Faculty Room (North Annex)."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "CIAR (AI & Robotics), Networks Lab (O-201), Tutoring Room, Classrooms O201 - O208, CAD / BIM Labs."
+            "rooms": "Networks Lab O201, Classroom O202, Tutoring Room, Artificial Intelligence & Robotics Center (CIAR), Network Center."
           }
         }
       },
@@ -458,15 +462,23 @@
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Classrooms P-101 to P-108, Parking Ramp, Restrooms & Drinking Fountain F1."
+            "rooms": "Weather Station, Classrooms P101 to P108, Drinking Fountains, Men's & Women's Restrooms."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "Classrooms P-201 to P-208, Central Restrooms & Drinking Fountains F2."
+            "rooms": "Classrooms P201 to P208, Drinking Fountains, Men's & Women's Restrooms."
           },
           "f3": {
-            "label": "Floors 3–5",
-            "rooms": "Classrooms P-301 to P-308, Hall P-401 (F4), Copernicus Astronomical Observatory (F5)."
+            "label": "Floor 3",
+            "rooms": "Classrooms P301 to P308, Drinking Fountains, Men's & Women's Restrooms."
+          },
+          "f4": {
+            "label": "Floor 4",
+            "rooms": "Classroom P401."
+          },
+          "f5": {
+            "label": "Floor 5",
+            "rooms": "Copernicus Observatory (P501)."
           }
         }
       },
@@ -481,32 +493,32 @@
         }
       },
       "chilamatesPlaza": {
-        "name": "Chilamates Plaza (Kiosks & Fast Food)",
+        "name": "Chilamates Plaza (Kiosks & Fast Point)",
         "badge": "Outdoor Plaza",
         "floors": {
           "f1": {
             "label": "Plaza",
-            "rooms": "Fast Food Kiosks, Coffee Spots, Outdoor Seating Tables, Student Recreation Area."
+            "rooms": "Commercial Modules 1, 2 & 3, Seating Area, Fast Point, Vending Machine."
           }
         }
       },
       "sportsZone": {
-        "name": "Sports Complex & Stadiums",
+        "name": "Sports Fields",
         "badge": "East Campus",
         "floors": {
           "f1": {
             "label": "Facilities",
-            "rooms": "Baseball Stadium, Regulation Grass Soccer Field, Jaguar Center, Tennis Courts, Bleachers."
+            "rooms": "Baseball Stadium (Jaguar Stadium), Soccer Field, Men's & Women's Restrooms, Kiosko Jaguarcito, Sports Offices, Sports Storage."
           }
         }
       },
       "jaguarCenter": {
-        "name": "Jaguar Center (Sports Complex)",
+        "name": "Jaguar Center Sports Complex",
         "badge": "1 Floor",
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Indoor Basketball & Volleyball Courts, Main Bleachers, Sports Complex Entrance."
+            "rooms": "Martial Arts Hall, Multi-Purpose Hall - DVE, Multi-Use Court, Beach Volleyball Court, Jaguar Sport Kiosk, Physiotherapy Clinic, JAGUAR GYM, Sports Psychology Office, General Warehouse, Sports Offices 1-3, Staff Dining Hall."
           }
         }
       },
@@ -536,7 +548,7 @@
         "floors": {
           "f1": {
             "label": "Connection",
-            "rooms": "Natural shaded area with pedestrian paths connecting Building O, Mi Ranchito, Lab Digital FIA, Building H & Main Avenue."
+            "rooms": "Natural shaded area with pedestrian paths connecting Building O, Mi Ranchito, FIA Digital Lab, Building H & Main Avenue."
           }
         }
       },
@@ -546,12 +558,12 @@
         "floors": {
           "f1": {
             "label": "Location",
-            "rooms": "Outdoor dining & rest pavilion next to Jaguar Jungle, Building N & Lab Digital FIA."
+            "rooms": "Outdoor dining & rest pavilion next to Jaguar Jungle, Building N & FIA Digital Lab."
           }
         }
       },
       "labDigitalFia": {
-        "name": "Lab Digital FIA",
+        "name": "FIA Digital Lab",
         "badge": "Laboratory",
         "floors": {
           "f1": {
@@ -566,7 +578,7 @@
         "floors": {
           "f1": {
             "label": "Location",
-            "rooms": "Shaded outdoor study & dining tables between Lab Digital FIA, Central Parking & Building C."
+            "rooms": "Shaded outdoor study & dining tables between FIA Digital Lab, Central Parking & Building C."
           }
         }
       },
@@ -907,7 +919,7 @@
       "location_label": "Campus Location",
       "location_placeholder": "Select a building or place...",
       "exact_spot_label": "Specific Room / Area (Optional)",
-      "exact_spot_placeholder": "e.g. Room B-103, 2nd floor hallway, terrace table...",
+      "exact_spot_placeholder": "e.g. Room B103, 2nd floor hallway, terrace table...",
       "description_label": "Public Description",
       "description_placeholder": "Indicate color, brand, or where it was found or lost...",
       "antifraud_title": "Secret Detail / Anti-Fraud Question (Private)",
@@ -1017,8 +1029,8 @@
     "physiotherapy": "Physiotherapy Building",
     "jaguarJungle": "Jaguar Jungle (Nature Garden & Central Connector)",
     "miRanchito": "Mi Ranchito (Dining & Rest Pavilion)",
-    "labDigitalFia": "Lab Digital FIA (FIA Digital Laboratory)",
-    "areaDeMesas": "Área de Mesas (Outdoor Tables Area)",
+    "labDigitalFia": "FIA Digital Laboratory",
+    "areaDeMesas": "Outdoor Tables Area",
     "buildingL": "Building L (Culture & Music)",
     "northeastGate": "Second Access (Jaguar Stadium Road)",
     "northGate": "Third Access (Copernicus Gate)"
@@ -1120,26 +1132,26 @@
     "buildingH_jaguarJungle": "Enter Jaguar Jungle from Building H and walk 25m along the central garden path.",
     "jaguarJungle_miRanchito": "Walk 20m along the Jaguar Jungle walkway towards Mi Ranchito.",
     "miRanchito_jaguarJungle": "Enter Jaguar Jungle from Mi Ranchito, walking 20m along the main garden walkway.",
-    "jaguarJungle_labDigitalFia": "Follow the Jaguar Jungle walkway 20m to the corridor beside Lab Digital FIA.",
-    "labDigitalFia_jaguarJungle": "Enter Jaguar Jungle from the Lab Digital FIA corridor, walking 20m into the central garden.",
+    "jaguarJungle_labDigitalFia": "Follow the Jaguar Jungle walkway 20m to the corridor beside FIA Digital Lab.",
+    "labDigitalFia_jaguarJungle": "Enter Jaguar Jungle from the FIA Digital Lab corridor, walking 20m into the central garden.",
     "jaguarJungle_sportsZone": "Exit Jaguar Jungle onto the main internal road and cross 55m towards the Sports Fields.",
     "sportsZone_jaguarJungle": "Cross the main internal road 55m from the Sports Fields into Jaguar Jungle.",
     "miRanchito_buildingO": "Walk 30m skirting Jaguar Jungle from Mi Ranchito towards Building O (FIA).",
     "buildingO_miRanchito": "Walk 30m from Building O skirting Jaguar Jungle towards Mi Ranchito.",
     "miRanchito_buildingN": "Walk 25m along the pedestrian walkway from Mi Ranchito towards Building N (Dental Clinics).",
     "buildingN_miRanchito": "Walk 25m from Building N along the pedestrian walkway towards Mi Ranchito.",
-    "miRanchito_labDigitalFia": "Walk 15m along the pedestrian corridor from Mi Ranchito to Lab Digital FIA.",
-    "labDigitalFia_miRanchito": "Walk 15m along the pedestrian corridor from Lab Digital FIA to Mi Ranchito.",
-    "labDigitalFia_buildingN": "Walk 15m from Lab Digital FIA directly to Building N (Dental Clinics).",
-    "buildingN_labDigitalFia": "Exit Building N and walk 15m to Lab Digital FIA.",
-    "labDigitalFia_areaDeMesas": "Continue 15m along the walkway from Lab Digital FIA to the Outdoor Tables Area (Área de Mesas).",
-    "areaDeMesas_labDigitalFia": "Walk 15m along the walkway from Área de Mesas to Lab Digital FIA.",
-    "areaDeMesas_buildingC": "Walk 20m from Área de Mesas towards Building C (Computer Labs & Cashier).",
-    "buildingC_areaDeMesas": "Walk 20m from Building C towards the Outdoor Tables Area (Área de Mesas).",
-    "areaDeMesas_buildingH": "Follow the walkway 25m from Área de Mesas towards Building H (Medical Labs).",
-    "buildingH_areaDeMesas": "Follow the walkway 25m from Building H towards the Outdoor Tables Area (Área de Mesas).",
-    "areaDeMesas_buildingM": "Follow the pedestrian walkway 30m from Área de Mesas towards Building M.",
-    "buildingM_areaDeMesas": "Follow the pedestrian walkway 30m from Building M towards the Outdoor Tables Area (Área de Mesas)."
+    "miRanchito_labDigitalFia": "Walk 15m along the pedestrian corridor from Mi Ranchito to FIA Digital Lab.",
+    "labDigitalFia_miRanchito": "Walk 15m along the pedestrian corridor from FIA Digital Lab to Mi Ranchito.",
+    "labDigitalFia_buildingN": "Walk 15m from FIA Digital Lab directly to Building N (Dental Clinics).",
+    "buildingN_labDigitalFia": "Exit Building N and walk 15m to FIA Digital Lab.",
+    "labDigitalFia_areaDeMesas": "Continue 15m along the walkway from FIA Digital Lab to the Outdoor Tables Area.",
+    "areaDeMesas_labDigitalFia": "Walk 15m along the walkway from the Outdoor Tables Area to FIA Digital Lab.",
+    "areaDeMesas_buildingC": "Walk 20m from the Outdoor Tables Area towards Building C (Computer Labs & Cashier).",
+    "buildingC_areaDeMesas": "Walk 20m from Building C towards the Outdoor Tables Area.",
+    "areaDeMesas_buildingH": "Follow the walkway 25m from the Outdoor Tables Area towards Building H (Medical Labs).",
+    "buildingH_areaDeMesas": "Follow the walkway 25m from Building H towards the Outdoor Tables Area.",
+    "areaDeMesas_buildingM": "Follow the pedestrian walkway 30m from the Outdoor Tables Area towards Building M.",
+    "buildingM_areaDeMesas": "Follow the pedestrian walkway 30m from Building M towards the Outdoor Tables Area."
   },
   "navigation": {
     "already_at_destination": "You are already at your destination.",

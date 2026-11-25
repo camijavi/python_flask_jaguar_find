@@ -648,7 +648,7 @@ WALKWAY_LANDMARKS: Dict[str, Tuple[str, str, Optional[str], Optional[str]]] = {
     "a_corridor_b":         ("el pasillo de conexión hacia el Edificio B", "the connecting corridor to Building B", "corridor", "buildingA"),
     "a_north_exit":         ("la salida del Edificio A hacia el paso peatonal", "Building A exit toward the crosswalk", "door", "buildingA"),
     "a_south_exit":         ("la salida del Edificio A hacia el Edificio K", "Building A exit toward Building K", "door", "buildingA"),
-    "c_east_entry":         ("la entrada del Edificio C (Auditorio C-101)", "Building C entrance (Auditorium C-101)", "door", "buildingC"),
+    "c_east_entry":         ("la entrada del Edificio C (Auditorio C101)", "Building C entrance (Auditorium C101)", "door", "buildingC"),
     "c_mid":                ("el pasillo central del Edificio C (Caja UAM)", "Building C central corridor (Cashier Office)", "corridor", "buildingC"),
     "c_west_exit":          ("la salida del Edificio C hacia el Edificio M", "Building C exit toward Building M", "door", "buildingC"),
     "court_annex_mid":      ("el puente techado entre los Edificios B y C (2.º piso)", "the 2nd-floor covered bridge between Buildings B and C", "skybridge", None),

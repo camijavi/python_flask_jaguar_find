@@ -463,9 +463,21 @@
                     this.showBuildingFocusBanner(this.getBuildingData(this.focusedBuildingId));
                 } else if (this.is25dActive) {
                     this.showExploreHud();
+                    if (this.tbtStepCounter) {
+                        this.tbtStepCounter.textContent = t25d("map.hud25d.step_counter", { current: 1, total: 1 });
+                    }
+                    if (this.wazeActiveRoadPill) {
+                        this.wazeActiveRoadPill.textContent = t25d("map.campus_pill");
+                    }
                 } else {
                     if (this.wazeEtaTime) this.wazeEtaTime.textContent = t25d("map.campus_pill");
                     if (this.wazeTripMeta) this.wazeTripMeta.textContent = t25d("map.hud25d.dock_prompt");
+                    if (this.tbtStepCounter) {
+                        this.tbtStepCounter.textContent = t25d("map.hud25d.step_counter", { current: 1, total: 1 });
+                    }
+                    if (this.wazeActiveRoadPill) {
+                        this.wazeActiveRoadPill.textContent = t25d("map.campus_pill");
+                    }
                 }
             });
 

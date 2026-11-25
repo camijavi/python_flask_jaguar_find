@@ -44,8 +44,8 @@ def buildUamCampusGraph() -> DirectedGraph:
     g.addNode(Node("physiotherapy", "Physiotherapy Building", CampusCategory.MEDICAL_LAB, 81.5, 79.6, 12.109303, -86.258511))
     g.addNode(Node("jaguarJungle", "Jaguar Jungle (Nature Garden & Central Connector)", CampusCategory.FOOD_AREA, 52.2, 36.0, 12.108073, -86.257787))
     g.addNode(Node("miRanchito", "Mi Ranchito (Dining & Rest Pavilion)", CampusCategory.FOOD_AREA, 46.3, 34.8, 12.108058, -86.257323))
-    g.addNode(Node("labDigitalFia", "Digital FIA Laboratory (Lab Digital FIA)", CampusCategory.FACULTY, 44.2, 38.6, 12.108110, -86.257290))
-    g.addNode(Node("areaDeMesas", "Outdoor Tables Area (Área de Mesas)", CampusCategory.FOOD_AREA, 44.3, 43.1, 12.108195, -86.257314))
+    g.addNode(Node("labDigitalFia", "FIA Digital Laboratory", CampusCategory.FACULTY, 44.2, 38.6, 12.108110, -86.257290))
+    g.addNode(Node("areaDeMesas", "Outdoor Tables Area", CampusCategory.FOOD_AREA, 44.3, 43.1, 12.108195, -86.257314))
     g.addNode(Node("buildingL", "Building L (Culture & Music)", CampusCategory.CLASSROOM, 82.4, 72.0, 12.109123, -86.258504))
     g.addNode(Node("northeastGate", "Second Access (Jaguar Stadium Road)", CampusCategory.PARKING_LOT, 75.5, 2.0, 12.106364, -86.258808))
     g.addNode(Node("northGate", "Third Access (Copernicus / West Avenue Gate)", CampusCategory.PARKING_LOT, 15.5, 9.0, 12.107223, -86.256261))
@@ -255,23 +255,23 @@ def buildUamCampusGraph() -> DirectedGraph:
                              backwardInstruction="Walk 15m along the pedestrian corridor from Lab Digital FIA to Mi Ranchito.")
 
     g.addBidirectionalWalkway("labDigitalFia", "buildingN", 15.0, isAccessible=True,
-                             forwardInstruction="Walk 15m from Lab Digital FIA directly to Building N (Dental Clinics).",
-                             backwardInstruction="Exit Building N and walk 15m to Lab Digital FIA.")
+                             forwardInstruction="Walk 15m from FIA Digital Lab directly to Building N (Dental Clinics).",
+                             backwardInstruction="Exit Building N and walk 15m to FIA Digital Lab.")
 
     g.addBidirectionalWalkway("labDigitalFia", "areaDeMesas", 15.0, isAccessible=True,
-                             forwardInstruction="Continue 15m along the walkway from Lab Digital FIA to the Outdoor Tables Area (Área de Mesas).",
-                             backwardInstruction="Walk 15m along the walkway from Área de Mesas to Lab Digital FIA.")
+                             forwardInstruction="Continue 15m along the walkway from FIA Digital Lab to the Outdoor Tables Area.",
+                             backwardInstruction="Walk 15m along the walkway from the Outdoor Tables Area to FIA Digital Lab.")
 
     g.addBidirectionalWalkway("areaDeMesas", "buildingC", 20.0, isAccessible=True,
-                             forwardInstruction="Walk 20m from Área de Mesas towards Building C (Computer Labs & Cashier).",
-                             backwardInstruction="Walk 20m from Building C towards the Outdoor Tables Area (Área de Mesas).")
+                             forwardInstruction="Walk 20m from the Outdoor Tables Area towards Building C (Computer Labs & Cashier).",
+                             backwardInstruction="Walk 20m from Building C towards the Outdoor Tables Area.")
 
     g.addBidirectionalWalkway("areaDeMesas", "buildingH", 25.0, isAccessible=True,
-                             forwardInstruction="Follow the walkway 25m from Área de Mesas towards Building H (Medical Labs).",
-                             backwardInstruction="Follow the walkway 25m from Building H towards the Outdoor Tables Area (Área de Mesas).")
+                             forwardInstruction="Follow the walkway 25m from the Outdoor Tables Area towards Building H (Medical Labs).",
+                             backwardInstruction="Follow the walkway 25m from Building H towards the Outdoor Tables Area.")
 
     g.addBidirectionalWalkway("areaDeMesas", "buildingM", 30.0, isAccessible=True,
-                             forwardInstruction="Follow the pedestrian walkway 30m from Área de Mesas towards Building M.",
-                             backwardInstruction="Follow the pedestrian walkway 30m from Building M towards the Outdoor Tables Area (Área de Mesas).")
+                             forwardInstruction="Follow the pedestrian walkway 30m from the Outdoor Tables Area towards Building M.",
+                             backwardInstruction="Follow the pedestrian walkway 30m from Building M towards the Outdoor Tables Area.")
 
     return g

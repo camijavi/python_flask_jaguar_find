@@ -674,9 +674,9 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             </div>
             <div class="min-w-0">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                    <span id="routeDistanceText" class="text-sm font-extrabold text-brand-900 leading-tight">{{ t('map.initial_duration') }}</span>
+                    <span id="routeDistanceText" class="text-sm font-extrabold text-brand-900 leading-tight" data-i18n="map.initial_duration">{{ t('map.initial_duration') }}</span>
                     <span class="text-slate-400 text-xs">•</span>
-                    <span id="routeMinutesText" class="text-xs font-bold text-brand-700">{{ t('map.initial_refs') }}</span>
+                    <span id="routeMinutesText" class="text-xs font-bold text-brand-700" data-i18n="map.initial_refs">{{ t('map.initial_refs') }}</span>
                 </div>
                 <span id="routeAccessibilityBadge" class="text-[10px] font-semibold text-emerald-700 flex items-center gap-1 mt-0.5">
                     <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
@@ -743,9 +743,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const state = {
         originQuery: "",
         originNodeId: null,
+        originPlaceId: null,
+        originFloorLevel: null,
+        originShowFloor: false,
         usedGpsOrigin: false,
         destinationQuery: "",
         destinationNodeId: null,
+        destinationPlaceId: null,
         selectedCategory: "",
         accessibleOnly: false,
         allNodes: [],
@@ -756,7 +760,8 @@ document.addEventListener("DOMContentLoaded", function() {
         activeSpeechIndex: 0,
         audioElement: null,
         speechController: null,
-        speechObjectUrl: null
+        speechObjectUrl: null,
+        gpsPermissionState: null
     };
 
     // DOM Elements - Hoisted safely to top of DOMContentLoaded
@@ -862,6 +867,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     originValue,
                     originNodeId: state.originNodeId || null,
                     originPlaceId: state.originPlaceId || null,
+                    originFloorLevel: state.originFloorLevel || null,
+                    originShowFloor: Boolean(state.originShowFloor),
                     usedGpsOrigin: Boolean(state.usedGpsOrigin),
                     destinationValue,
                     destinationNodeId: state.destinationNodeId || null,
@@ -880,6 +887,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     state.originQuery = draft.originValue;
                     state.originNodeId = draft.originNodeId || null;
                     state.originPlaceId = draft.originPlaceId || null;
+                    state.originFloorLevel = draft.originFloorLevel || null;
+                    state.originShowFloor = Boolean(draft.originShowFloor);
                     state.usedGpsOrigin = Boolean(draft.usedGpsOrigin);
                     if (btnClearOrigin) btnClearOrigin.classList.remove("hidden");
                 }
@@ -1095,6 +1104,119 @@ document.addEventListener("DOMContentLoaded", function() {
         return nodeId;
     }
 
+    function resolveLocalizedSelectionTitle(placeId, nodeId, fallbackTitle) {
+        if (placeId && Array.isArray(state.allPlaces)) {
+            const matchedPlace = state.allPlaces.find(p => p && p.placeId === placeId);
+            if (matchedPlace && matchedPlace.name) {
+                return matchedPlace.name;
+            }
+        }
+        const lookupNodeId = placeId || nodeId;
+        if (lookupNodeId && Array.isArray(state.allNodes)) {
+            const matchedNode = state.allNodes.find(n => n && n.nodeId === lookupNodeId);
+            if (matchedNode && matchedNode.name) {
+                return matchedNode.name;
+            }
+        }
+        if (lookupNodeId) {
+            const translated = tr(`nodes.${lookupNodeId}`);
+            if (translated && translated !== `nodes.${lookupNodeId}`) {
+                return translated;
+            }
+        }
+        return fallbackTitle || "";
+    }
+
+    function formatOriginDisplayValue(baseName, floorLevel, showFloor) {
+        const floorWord = tr("map.floor");
+        if (!baseName) return "";
+        if (!showFloor || !floorLevel) return baseName;
+        if (new RegExp(`\\b${floorWord}\\s+${floorLevel}\\b`, "i").test(baseName)) {
+            return baseName;
+        }
+        return `${baseName} (${floorWord} ${floorLevel})`;
+    }
+
+    function retranslateSelectedNavInputs() {
+        let changed = false;
+        if (originInput && (state.originPlaceId || state.originNodeId)) {
+            const localizedOrigin = resolveLocalizedSelectionTitle(
+                state.originPlaceId,
+                state.originNodeId,
+                state.originQuery || originInput.value
+            );
+            if (localizedOrigin) {
+                const formattedOrigin = formatOriginDisplayValue(
+                    localizedOrigin,
+                    state.originFloorLevel,
+                    state.originShowFloor
+                );
+                if (originInput.value !== formattedOrigin) {
+                    originInput.value = formattedOrigin;
+                    changed = true;
+                }
+                state.originQuery = localizedOrigin;
+            }
+        }
+        if (destinationInput && (state.destinationPlaceId || state.destinationNodeId)) {
+            const localizedDest = resolveLocalizedSelectionTitle(
+                state.destinationPlaceId,
+                state.destinationNodeId,
+                state.destinationQuery || destinationInput.value
+            );
+            if (localizedDest) {
+                if (destinationInput.value !== localizedDest) {
+                    destinationInput.value = localizedDest;
+                    changed = true;
+                }
+                state.destinationQuery = localizedDest;
+                window.currentSelectedDestination = {
+                    placeId: state.destinationPlaceId,
+                    title: localizedDest,
+                    nodeId: state.destinationNodeId,
+                };
+            }
+        }
+        if (changed && navDraftDirty) {
+            saveNavDraft();
+        }
+    }
+
+    function setNavigationOriginFromBuilding(nodeId, fallbackLabel) {
+        if (!originInput || !nodeId) return;
+        const localized = resolveLocalizedSelectionTitle(nodeId, nodeId, fallbackLabel);
+        originInput.value = localized || fallbackLabel || nodeId;
+        state.originQuery = originInput.value;
+        state.originNodeId = nodeId;
+        state.originPlaceId = nodeId;
+        state.originFloorLevel = null;
+        state.originShowFloor = false;
+        state.usedGpsOrigin = false;
+        if (btnClearOrigin) btnClearOrigin.classList.remove("hidden");
+        if (originSuggestions) originSuggestions.classList.add("hidden");
+        saveNavDraft();
+    }
+
+    function setNavigationDestinationFromBuilding(nodeId, fallbackLabel) {
+        if (!destinationInput || !nodeId) return;
+        const localized = resolveLocalizedSelectionTitle(nodeId, nodeId, fallbackLabel);
+        destinationInput.value = localized || fallbackLabel || nodeId;
+        state.destinationQuery = destinationInput.value;
+        state.destinationNodeId = nodeId;
+        state.destinationPlaceId = nodeId;
+        window.currentSelectedDestination = {
+            placeId: nodeId,
+            title: destinationInput.value,
+            nodeId: nodeId,
+        };
+        if (btnClearDestination) btnClearDestination.classList.remove("hidden");
+        if (destinationSuggestions) destinationSuggestions.classList.add("hidden");
+        saveNavDraft();
+    }
+
+    window.setJaguarNavigationOrigin = setNavigationOriginFromBuilding;
+    window.setJaguarNavigationDestination = setNavigationDestinationFromBuilding;
+
     // 1. Initial Data Fetching (Nodes & Places Catalog)
     async function loadCampusCatalog() {
         try {
@@ -1111,6 +1233,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 state.allPlaces = placesRes.places || [];
                 window.jaguarCampusPlaces = state.allPlaces;
             }
+            retranslateSelectedNavInputs();
             window.dispatchEvent(new CustomEvent("jaguarCatalogLoaded", {
                 detail: { nodes: state.allNodes, places: state.allPlaces }
             }));
@@ -1358,17 +1481,14 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function applySelectedGpsOrigin(selection, options = {}) {
-        const floorWord = tr("map.floor");
-        const displayFloor = selection.floorLevel && (gpsUiState.activeAvailableFloors.length > 1 || options.showFloor)
-            ? ` (${floorWord} ${selection.floorLevel})`
-            : "";
+        const showFloor = Boolean(selection.floorLevel && (gpsUiState.activeAvailableFloors.length > 1 || options.showFloor));
         const displayName = selection.name || selection.buildingName || tr("map.campus_pill");
-        originInput.value = displayName.includes(floorWord)
-            ? displayName
-            : `${displayName}${displayFloor}`;
+        originInput.value = formatOriginDisplayValue(displayName, selection.floorLevel, showFloor);
         state.originQuery = displayName;
         state.originNodeId = selection.buildingId;
         state.originPlaceId = selection.nodeId || selection.placeId || selection.buildingId;
+        state.originFloorLevel = selection.floorLevel || null;
+        state.originShowFloor = showFloor;
         state.usedGpsOrigin = options.fromGps !== false;
         btnClearOrigin.classList.remove("hidden");
         saveNavDraft();
@@ -2041,6 +2161,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Reactively reflect browser geolocation permission state on the GPS button
     if (window.JaguarGpsDetector && typeof window.JaguarGpsDetector.onPermissionChange === "function") {
         window.JaguarGpsDetector.onPermissionChange((permState) => {
+            state.gpsPermissionState = permState;
             if (!btnGetGps) return;
             if (permState === "denied") {
                 btnGetGps.classList.remove("text-brand-600", "bg-brand-50", "hover:bg-brand-100/80");
@@ -2293,22 +2414,24 @@ document.addEventListener("DOMContentLoaded", function() {
                 isIndoor: false,
             }));
 
+        routeDistanceText.removeAttribute("data-i18n");
         routeDistanceText.textContent = route.humanDuration || `~${route.estimatedWalkingMinutes || 1} ${tr('map.hud25d.unit_min')}`;
         const refWord = stepsList.length === 1
             ? tr('map.reference_singular')
             : tr('map.reference_plural');
+        routeMinutesText.removeAttribute("data-i18n");
         routeMinutesText.textContent = `${stepsList.length} ${refWord}`;
         
         if (route.isAccessibleRoute) {
             routeAccessibilityBadge.innerHTML = `
                 <svg class="w-3 h-3 text-emerald-600 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                <span>${tr('map.accessible_route')}</span>
+                <span data-i18n="map.accessible_route">${tr('map.accessible_route')}</span>
             `;
             routeAccessibilityBadge.className = "text-[10px] font-semibold text-emerald-700 flex items-center gap-1 mt-0.5";
         } else {
             routeAccessibilityBadge.innerHTML = `
                 <svg class="w-3 h-3 text-slate-500 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 10l2 2 2-2m-2 2v6m-4 2l4-2 4 2"></path></svg>
-                <span>${tr('map.standard_route')}</span>
+                <span data-i18n="map.standard_route">${tr('map.standard_route')}</span>
             `;
             routeAccessibilityBadge.className = "text-[10px] font-semibold text-slate-500 flex items-center gap-1 mt-0.5";
         }
@@ -2444,6 +2567,8 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originQuery = "";
         state.originNodeId = null;
         state.originPlaceId = null;
+        state.originFloorLevel = null;
+        state.originShowFloor = false;
         state.usedGpsOrigin = false;
         state.destinationQuery = "";
         state.destinationNodeId = null;
@@ -2451,6 +2576,15 @@ document.addEventListener("DOMContentLoaded", function() {
         state.currentRoute = null;
         window.lastJaguarRouteData = null;
         window.currentSelectedDestination = null;
+
+        if (routeDistanceText) {
+            routeDistanceText.setAttribute("data-i18n", "map.initial_duration");
+            routeDistanceText.textContent = tr("map.initial_duration");
+        }
+        if (routeMinutesText) {
+            routeMinutesText.setAttribute("data-i18n", "map.initial_refs");
+            routeMinutesText.textContent = tr("map.initial_refs");
+        }
 
         btnClearOrigin.classList.add("hidden");
         btnClearDestination.classList.add("hidden");
@@ -2479,10 +2613,13 @@ document.addEventListener("DOMContentLoaded", function() {
         window.dispatchEvent(new CustomEvent("jaguarMapRouteCleared"));
     }
 
-    // Reactive language change: keep all form inputs intact, refresh catalog, GPS panel & active route text
+    // Reactive language change: keep raw user input intact, re-localize selected places, catalog, GPS panel & active route
     window.addEventListener("jaguarLanguageChanged", async function() {
         await loadCampusCatalog();
 
+        if (btnGetGps && state.gpsPermissionState === "denied") {
+            btnGetGps.title = tr("map.gps.err_permission_denied_title");
+        }
         if (!state.currentRoute) {
             if (routeDistanceText) routeDistanceText.textContent = tr("map.initial_duration");
             if (routeMinutesText) routeMinutesText.textContent = tr("map.initial_refs");
@@ -2492,22 +2629,109 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         if (gpsDisambiguationBar && !gpsDisambiguationBar.classList.contains("hidden")) {
             if (gpsUiState.lastErrorCode && window.JaguarGpsDetector) {
+                const localizedEntrances = (gpsUiState.lastCampusEntrances || []).map((c) => {
+                    const bId = c.buildingId || c.nodeId;
+                    const locName = resolveLocalizedSelectionTitle(bId, bId, c.buildingName || c.name);
+                    return Object.assign({}, c, { name: locName, buildingName: locName });
+                });
+                gpsUiState.lastCampusEntrances = localizedEntrances;
                 renderGpsErrorState(
                     window.JaguarGpsDetector.getErrorCopy(gpsUiState.lastErrorCode),
-                    gpsUiState.lastCampusEntrances
+                    localizedEntrances
                 );
-            } else if (gpsUiState.lastConfirmedSelection) {
-                renderConfirmedLocationCard(
-                    gpsUiState.lastConfirmedSelection,
-                    gpsUiState.lastConfirmedSourceKey,
-                    gpsUiState.lastConfirmedSourceParams
-                );
-                if (gpsUiState.manualExpanded) {
-                    renderFloorTabs(gpsUiState.activeAvailableFloors, [], false);
-                    renderLocationsForActiveFloor();
+                if (gpsUiState.showAllBuildings) renderAllBuildingsPicker();
+            } else if (gpsUiState.activeBuildingId && window.JaguarGpsDetector) {
+                const prevFloor = gpsUiState.activeFloor;
+                const prevManualExpanded = gpsUiState.manualExpanded;
+                const prevShowAll = gpsUiState.showAllBuildings;
+                try {
+                    const freshLocs = await window.JaguarGpsDetector.fetchBuildingLocations(gpsUiState.activeBuildingId, {
+                        coords: gpsUiState.lastCoords,
+                        lang: getCurrentLang(),
+                    });
+                    if (freshLocs && freshLocs.success) {
+                        gpsUiState.activeBuildingName = freshLocs.buildingName || resolveLocalizedSelectionTitle(gpsUiState.activeBuildingId, gpsUiState.activeBuildingId, gpsUiState.activeBuildingName);
+                        gpsUiState.activeAvailableFloors = freshLocs.availableFloors || gpsUiState.activeAvailableFloors;
+                        gpsUiState.locationsByFloor = freshLocs.locationsByFloor || {};
+                        gpsUiState.activeFloor = prevFloor;
+                        const allFreshLocs = Array.isArray(freshLocs.locations) ? freshLocs.locations : [];
+                        const findFreshLoc = (nid) => allFreshLocs.find(l => l && (l.nodeId === nid || l.placeId === nid));
+
+                        if (gpsUiState.lastConfirmedSelection) {
+                            const sel = gpsUiState.lastConfirmedSelection;
+                            const matched = findFreshLoc(sel.nodeId || sel.placeId);
+                            const freshName = (matched && matched.name) || resolveLocalizedSelectionTitle(sel.placeId || sel.nodeId, sel.buildingId, sel.name);
+                            gpsUiState.lastConfirmedSelection = Object.assign({}, sel, {
+                                name: freshName,
+                                buildingName: gpsUiState.activeBuildingName,
+                            });
+                            if (originInput && state.originPlaceId && (state.originPlaceId === sel.nodeId || state.originPlaceId === sel.placeId)) {
+                                originInput.value = formatOriginDisplayValue(freshName, state.originFloorLevel, state.originShowFloor);
+                                state.originQuery = freshName;
+                            }
+                        }
+                        if (gpsUiState.lastMatch) {
+                            const m = gpsUiState.lastMatch;
+                            const matchedSpot = findFreshLoc(m.nearestSpecificNodeId || m.nearestNodeId);
+                            const freshSpotName = (matchedSpot && matchedSpot.name) || resolveLocalizedSelectionTitle(m.nearestSpecificNodeId || m.nearestNodeId, m.nearestNodeId, m.nodeName);
+                            gpsUiState.lastMatch = Object.assign({}, m, {
+                                nodeName: freshSpotName,
+                                buildingName: gpsUiState.activeBuildingName,
+                                buildingLocations: allFreshLocs,
+                                buildingLocationsByFloor: gpsUiState.locationsByFloor,
+                                topCandidates: (Array.isArray(m.topCandidates) ? m.topCandidates : []).map((cand) => {
+                                    const bId = cand.buildingId || cand.nodeId;
+                                    const bName = resolveLocalizedSelectionTitle(bId, bId, cand.buildingName || cand.name);
+                                    return Object.assign({}, cand, { buildingName: bName });
+                                }),
+                            });
+                            if (originInput && state.originPlaceId && state.originPlaceId === (m.nearestSpecificNodeId || m.nearestNodeId)) {
+                                originInput.value = formatOriginDisplayValue(freshSpotName, state.originFloorLevel, state.originShowFloor);
+                                state.originQuery = freshSpotName;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Failed to re-fetch localized GPS building locations:", err);
                 }
-            } else if (gpsUiState.lastMatch) {
-                renderGpsDetectionResult(gpsUiState.lastMatch, gpsUiState.lastCoords);
+
+                if (gpsUiState.lastConfirmedSelection) {
+                    gpsUiState.manualExpanded = prevManualExpanded;
+                    renderConfirmedLocationCard(
+                        gpsUiState.lastConfirmedSelection,
+                        gpsUiState.lastConfirmedSourceKey,
+                        gpsUiState.lastConfirmedSourceParams
+                    );
+                    if (gpsUiState.manualExpanded) {
+                        renderFloorTabs(gpsUiState.activeAvailableFloors, [], false);
+                        renderLocationsForActiveFloor();
+                        renderManualQuickBuildings(gpsUiState.lastMatch ? gpsUiState.lastMatch.topCandidates : []);
+                    }
+                } else if (gpsUiState.lastMatch) {
+                    renderGpsDetectionResult(gpsUiState.lastMatch, gpsUiState.lastCoords);
+                    gpsUiState.activeFloor = prevFloor;
+                    if (prevManualExpanded && !gpsUiState.manualExpanded) {
+                        gpsUiState.manualExpanded = true;
+                        if (btnToggleGpsManualList) btnToggleGpsManualList.textContent = tr("map.gps.hide_locations");
+                        if (gpsFloorSection) gpsFloorSection.classList.toggle("hidden", gpsUiState.activeAvailableFloors.length <= 1);
+                        if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.remove("hidden");
+                        if (gpsCandidateButtons) gpsCandidateButtons.classList.remove("hidden");
+                    }
+                    renderFloorTabs(gpsUiState.activeAvailableFloors, gpsUiState.lastMatch.floorCandidates, Boolean(gpsUiState.lastMatch.needsFloorSelection && gpsUiState.activeAvailableFloors.length > 1));
+                    renderLocationsForActiveFloor();
+                } else {
+                    const shortB = (resolveNodeShortName(gpsUiState.activeBuildingId) || gpsUiState.activeBuildingName).split("(")[0].trim();
+                    gpsDisambiguationTitle.textContent = tr("map.gps.select_location_fallback", { building: shortB });
+                    renderFloorTabs(gpsUiState.activeAvailableFloors, [], gpsUiState.activeAvailableFloors.length > 1);
+                    renderLocationsForActiveFloor();
+                    renderManualQuickBuildings([]);
+                }
+                if (prevShowAll) {
+                    gpsUiState.showAllBuildings = true;
+                    renderAllBuildingsPicker();
+                }
+            } else if (gpsUiState.lastLoadingKey) {
+                renderGpsLoadingState(gpsUiState.lastLoadingKey);
             }
         }
         if (originSuggestions && !originSuggestions.classList.contains("hidden") && originInput.value.trim()) {
@@ -2516,6 +2740,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 state.originQuery = selected.title;
                 state.originNodeId = selected.targetNodeId;
                 state.originPlaceId = selected.id;
+                state.originFloorLevel = null;
+                state.originShowFloor = false;
                 state.usedGpsOrigin = false;
                 btnClearOrigin.classList.remove("hidden");
                 saveNavDraft();

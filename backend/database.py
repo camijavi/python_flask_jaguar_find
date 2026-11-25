@@ -229,7 +229,7 @@ def _seedInitialData(cursor: sqlite3.Cursor) -> None:
                 Description, SecretDetail
             ) VALUES
             (2, 2, 'Calculadora Casio fx-991LA Plus', 'electronics', 'buildingB',
-             'Calculadora científica gris con tapa azul encontrada en aula B-103.',
+             'Calculadora científica gris con tapa azul encontrada en aula B103.',
              'Tiene un sticker pequeño del jaguar en la parte posterior.'),
             (1, 4, 'Termo Yeti Azul Marino', 'personalItems', 'buildingK',
              'Termo de acero inoxidable 26oz olvidado en una mesa exterior de cafetería.',

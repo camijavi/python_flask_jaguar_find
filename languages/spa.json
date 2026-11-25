@@ -260,15 +260,15 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Contabilidad, CAE (Centro de Atención al Estudiante), Admisiones, Registro Académico, Cartera y Cobro, Finanzas, Cajeros Automáticos."
+            "rooms": "Contabilidad (A101), Centro de Atención al Estudiante (CAE) / Zona Común, Dirección de Mercadeo y Admisión, Registro Académico, Cartera y Cobro, Dirección Académica, Dirección Financiera, Objetos Perdidos; Exterior: Cajeros Automáticos (BAC y LAFISE)."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "Dirección Administrativa, Logística Académica, TIC (Tecnología de la Información), Mercadeo y Publicidad, Gestión del Talento y RRHH."
+            "rooms": "Dirección Administrativa (A201), Logística Académica, Dirección de Tecnología de la Información y Comunicación (A203), Mercadeo y Publicidad (A204), Dirección de Gestión del Talento, Recursos Humanos (A205)."
           },
           "f3": {
             "label": "Piso 3",
-            "rooms": "Dirección de Producción Audiovisual (DPA), Set de Grabación Ciclograma, Estudio de Sonido, Control Máster, Set de Radio."
+            "rooms": "Dirección de Producción Audiovisual (DPA - A301), Set de Grabación Ciclograma, Estudio de Sonido, Oficinas Auxiliares DPA, Control Máster, Set de Radio."
           }
         }
       },
@@ -278,11 +278,11 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Módulo Comercial 1 (Farmacia), Aulas B101 - B109, SS Hombres / Mujeres, Jaguar Shop."
+            "rooms": "Módulo Comercial 1 (Farmacia), Aulas B101 a B109, Servicios Sanitarios Hombres, Bebedero de Agua, Servicios Sanitarios Mujeres, Fotocopias."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "Aulas B201 - B210."
+            "rooms": "Aulas B201 a B210."
           }
         }
       },
@@ -292,15 +292,15 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Auditorios C101 y C109, Aulas C102-C106, Caja UAM / Tesorería C105, Lab MAC C107, Lab ACAI-Erasmus+ (C108), Rampa Accesible."
+            "rooms": "Auditorio C101, Aulas C102 a C105, Bebedero de Agua, Caja UAM / Tesorería, Aula C106, Laboratorio MAC C107, Laboratorio de Computación ACAI-Erasmus+ (C108), Auditorio C109."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "Labs de Cómputo C201, C202, C204, C205, Lab MAC C203, Bodega C206, Sanitarios H/M, Aulas C209-C211."
+            "rooms": "Laboratorios de Computación C201, C202, C204 y C205, Laboratorio MAC C203, Bodega C206, Sanitarios Hombres y Mujeres, Aulas C209, C210 y C211."
           },
           "f3": {
             "label": "Piso 3",
-            "rooms": "Estudio Audiovisual A-301, Aulas C301-C305, Coordinación de Compras C306, Aulas C307-C310."
+            "rooms": "Aulas C301 a C305, Coordinación de Compras (C306), Aulas C307 a C310."
           }
         }
       },
@@ -310,7 +310,7 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Aula D102, Laboratorio de Odontología Digital CAM-CAM, Servicio al Cliente, Sala de Reunión."
+            "rooms": "Aula D102, Laboratorio de Odontología Digital CAM-CAM, Oficina de Servicio al Cliente, Sala de Reunión."
           }
         }
       },
@@ -320,21 +320,21 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Clínicas Médicas UAM, Centro de Cardiología, Decanatura de Medicina, Sanitarios Inclusivos, Vida Estudiantil (DVE), Innovación (DIE)."
+            "rooms": "Clínicas Médicas, Servicios Sanitarios Hombres, Mujeres y Personas con Discapacidades Mixtos, Centro de Cardiología, Facultad de Ciencias Médicas, Dirección de Vida Estudiantil (Anexo Oeste), Dirección de Innovación y Emprendimientos (DIE - Anexo Norte), Bancas."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "Laboratorio Simuladores de Habilidades Clínicas de Medicina."
+            "rooms": "Laboratorio Simuladores de Habilidades Medicina (E201), Laboratorio Simuladores de Medicina, Oficina Psicología, Laboratorio Clínico de Medicina."
           }
         }
       },
       "buildingF": {
-        "name": "Edificio F • Ciencias Económicas (FCAE)",
+        "name": "Edificio F • Ciencias Económicas & Marketing",
         "badge": "1 Piso",
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Decanatura FCAE, Decanatura FMDCC, Dirección de Postgrado y Formación Continua, Aulas F101-F104, Salón de Eventos."
+            "rooms": "Salón de Profesores, Dirección de Posgrados y Educación Continua, Facultad de Ciencias Administrativas y Económicas (FCAE), Facultad de Marketing, Diseño y Ciencias de la Comunicación (FMDCC)."
           }
         }
       },
@@ -344,11 +344,11 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Facultad de Ciencias Jurídicas (FCJP), Centro de Mediación, Language Center, UAM College, Relaciones Internacionales, Rampa Accesible."
+            "rooms": "Facultad de Ciencias Jurídicas, Humanidades y Relaciones Internacionales (FCJHRI), Auditorio FCJHRI, Centro de Mediación y Arbitraje, Language Center, UAM College, Dirección de Relaciones Internacionales e Internacionalización, Baños Mixtos y Accesibles."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "Auditorio Central Rubén Darío, Sala de Juicios Orales Simulados."
+            "rooms": "Auditorio Central / Auditorio Rubén Darío."
           }
         }
       },
@@ -358,11 +358,11 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Laboratorios de Ciencias Básicas H101 - H107, Coordinación de Laboratorios, Sustancias Químicas, SS Hombres / Mujeres."
+            "rooms": "Baños Hombres y Mujeres, Lab Med H101 a H103, Coordinación de Gestión de Calidad (H104), Oficina de Supervisión de Laboratorios de Medicina (Necroteca), Lab Med H105 a H107."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "Laboratorios de Investigación Médica y Anatomía H201 - H207, Quirófano de Práctica, Supervisión de Laboratorios."
+            "rooms": "Lab Med H201 a H207."
           }
         }
       },
@@ -372,7 +372,7 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Rectoría, Vicepresidencia, Gerencia General, Secretaría General, Dirección Académica, Biblioteca Central UAM."
+            "rooms": "Vicepresidencia, Sala de Reunión Directores, Dirección Académica, Rectoría, Gerencia General, Secretaría General, Oficina / Sala de Reunión, Biblioteca Pablo Antonio Cuadra, Baños Biblioteca Hombres y Mujeres, Dirección de Relaciones Públicas."
           }
         }
       },
@@ -382,27 +382,31 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Laboratorio de Simulación Odontológica J-101 y J-102, Depósito de Instrumental, Servicios Sanitarios Hombres y Mujeres."
+            "rooms": "Lab Odonto J101, Lab Odonto J102, Baños Hombres y Mujeres."
           }
         }
       },
       "buildingK": {
-        "name": "Edificio K • Cafetería & Plaza Central",
-        "badge": "1 Piso",
+        "name": "Edificio K • Cafetería & Food Court",
+        "badge": "2 Pisos",
         "floors": {
           "f1": {
-            "label": "Plaza Central",
-            "rooms": "Plaza Rubén Darío, Cafetería Central, Jaguar Corner, Kioskos de Comida, Terrazas Techadas, Cajeros Banpro / BAC."
+            "label": "Piso 1",
+            "rooms": "Baños Hombres y Mujeres, Área de Mesas, Terrazas, Jaguar Shop, Módulos Comerciales (Food Court), Kiosko 1."
+          },
+          "f2": {
+            "label": "Piso 2",
+            "rooms": "Kiosko 1, Kiosko 2, Área de Mesas."
           }
         }
       },
       "buildingL": {
-        "name": "Edificio L • Cultura & Graderías",
+        "name": "Edificio L • Cultura, Música & Duchas",
         "badge": "1 Piso",
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Sala de Ensayo Musical y Danza, Auditorio Jaguar, Acceso a Graderías del Complejo Deportivo, Oficinas de Deportes."
+            "rooms": "Duchas Visitantes, Duchas Home, Salón de Cultura, Aula de Música, Baños Hombres y Mujeres."
           }
         }
       },
@@ -412,15 +416,15 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Auditorios M101 y M102, Dirección de Gestión Ambiental y Energética, Investigación y Extensión Universitaria, Baños y Bebedero."
+            "rooms": "Auditorio M101, Auditorio M102, Dirección de Gestión Ambiental y Energética, Dirección Investigación y Extensión Universitaria, Aula, Baños Hombres, Mujeres y Mixtos Discapacitados, Bebedero de Agua."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "Aulas M201 - M204."
+            "rooms": "Aulas M201 a M204."
           },
           "f3": {
             "label": "Piso 3",
-            "rooms": "Aulas M301 - M304."
+            "rooms": "Aulas M301 a M304."
           }
         }
       },
@@ -430,11 +434,11 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Recepción de Pacientes, Módulo de Triaje, Clínicas Dentales de Grado y Posgrado, Quirófanos Odontológicos, Esterilización."
+            "rooms": "Quirófanos 1 y 2, Recepción, Archivo-Caja, Clínicas Médicas A, B y E, Archivo y Expedientes, Coordinación de Clínicas, Radiología 1-3, Proveeduría, Interpretación Radiográfica, Tomografía, Lavado, Preparación, Esterilización, Clínicas Postgrado C-D, Lab Fabricación Digital, Bodega Archivo, Oficina IDEA, Supervisión Clínicas, Sanitarios Hombres y Mujeres."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "Recepción Facultad de Odontología (FODO)."
+            "rooms": "Facultad de Odontología (FODO), Técnicos Odontológicos, Lab Simuladores, Lab de Grado, Proveeduría, Lab Postgrado, Radiología No.1 - No.2, Revelado Digital."
           }
         }
       },
@@ -444,11 +448,11 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Decanatura FIA (O-101), Lab Suelos (O-102), Lab Materiales (O-104), Fluidos, Riesgos (O-105), Anexo Norte."
+            "rooms": "Facultad de Ingeniería y Arquitectura (O101), Lab Mecánica de Suelos (O102), Área de Exhibición, Lab Resistencia de Materiales (O104), Área de Mezclado, Área de Curado, Técnicos de Lab, Lab Mecánica de Fluidos, Gestión de Riesgos (O105), Baños Hombres y Mujeres, Sala de Maestros FIA (Anexo Norte)."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "CIAR (Inteligencia Artificial & Robótica), Lab Redes (O-201), Sala de Tutoría, Aulas O201 - O208, Salas CAD / BIM."
+            "rooms": "Lab Redes O201, Aula O202, Sala de Tutoría, Centro de Inteligencia Artificial y Robótica (CIAR), Centro de Redes."
           }
         }
       },
@@ -458,15 +462,23 @@
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Aulas P-101 a P-108, Rampa Estacionamiento, Baños y Bebedero P1."
+            "rooms": "Estación de Meteorología, Aulas P101 a P108, Bebederos de Agua, Baños Hombres y Mujeres."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "Aulas P-201 a P-208, Baños Centrales y Bebederos P2."
+            "rooms": "Aulas P201 a P208, Bebederos de Agua, Baños Hombres y Mujeres."
           },
           "f3": {
-            "label": "Pisos 3–5",
-            "rooms": "Aulas P-301 a P-308, Salón P-401 (P4), Observatorio Astronómico Copérnico (P5)."
+            "label": "Piso 3",
+            "rooms": "Aulas P301 a P308, Bebederos de Agua, Baños Hombres y Mujeres."
+          },
+          "f4": {
+            "label": "Piso 4",
+            "rooms": "Aula P401."
+          },
+          "f5": {
+            "label": "Piso 5",
+            "rooms": "Observatorio Copérnico (P501)."
           }
         }
       },
@@ -481,32 +493,32 @@
         }
       },
       "chilamatesPlaza": {
-        "name": "Plaza Chilamates (Kioskos & Fast Food)",
+        "name": "Plaza Chilamates (Kioskos & Fast Point)",
         "badge": "Plaza Exterior",
         "floors": {
           "f1": {
             "label": "Plaza",
-            "rooms": "Kioskos de Comida Rápida, Puntos de Café, Mesas al Aire Libre, Espacio de Recreación Estudiantil."
+            "rooms": "Módulo Comercial 1, 2 y 3, Área de Mesas, Fast Point, Máquina Expendedora."
           }
         }
       },
       "sportsZone": {
-        "name": "Complejo Deportivo & Estadios",
+        "name": "Campos Deportivos",
         "badge": "Campus Este",
         "floors": {
           "f1": {
             "label": "Instalaciones",
-            "rooms": "Estadio de Béisbol, Cancha de Fútbol Reglamentaria, Jaguar Center, Canchas de Tenis, Graderías."
+            "rooms": "Estadio de Baseball (Jaguar Stadium), Cancha de Fútbol, Baños Hombres y Mujeres, Kiosko Jaguarcito, Oficinas de Deportes, Bodega de Deportes."
           }
         }
       },
       "jaguarCenter": {
-        "name": "Jaguar Center (Complejo Deportivo)",
+        "name": "Complejo Deportivo Jaguar Center",
         "badge": "1 Piso",
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Canchas Techadas de Baloncesto y Voleibol, Graderías Principales, Acceso al Complejo Deportivo."
+            "rooms": "Salón de Artes Marciales, Salón de Usos Múltiples - DVE, Cancha Multi-Usos, Cancha de Volleyball Arena, Kiosko Jaguar Sport, Clínica Fisioterapia, Gimnasio JAGUAR GYM, Oficina Psicología Deportiva, Bodega General, Oficinas Deportivas 1-3, Comedor de Colaboradores."
           }
         }
       },
@@ -907,7 +919,7 @@
       "location_label": "Ubicación en el Campus",
       "location_placeholder": "Selecciona un edificio o lugar...",
       "exact_spot_label": "Aula / Punto Específico (Opcional)",
-      "exact_spot_placeholder": "Ej. Aula B-103, pasillo 2.º piso, mesa de terraza...",
+      "exact_spot_placeholder": "Ej. Aula B103, pasillo 2.º piso, mesa de terraza...",
       "description_label": "Descripción Pública",
       "description_placeholder": "Indica color, marca o circunstancias donde fue encontrado o extraviado...",
       "antifraud_title": "Detalle Secreto / Pregunta Antifraude (Privado)",

@@ -103,7 +103,7 @@ Key UX & Mobile Features:
                     <div class="relative pointer-events-auto max-w-md">
                         <div class="flex items-center bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-xl shadow-md px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-pink-700/20 focus-within:border-pink-700 transition-all">
                             <svg class="w-4 h-4 text-slate-400 shrink-0 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            <input id="p-search-input" type="text" autocomplete="off" placeholder="Buscar aula (ej. P-204), baños, cúpula..." class="w-full text-xs sm:text-xs font-medium bg-transparent text-slate-800 placeholder-slate-400 outline-hidden">
+                            <input id="p-search-input" type="text" autocomplete="off" placeholder="Buscar aula (ej. P204), baños, cúpula..." class="w-full text-xs sm:text-xs font-medium bg-transparent text-slate-800 placeholder-slate-400 outline-hidden">
                             <button id="p-search-clear" type="button" class="hidden text-slate-400 hover:text-slate-600 p-0.5 ml-1" aria-label="Limpiar búsqueda">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
@@ -1874,7 +1874,7 @@ Key UX & Mobile Features:
         }
 
         // =====================================================================
-        // PISO 4: PRIMER NIVEL DEL ANEXO SUPERIOR (SALÓN P-401)
+        // PISO 4: PRIMER NIVEL DEL ANEXO SUPERIOR (AULA P401)
         // (Sin puerta exterior, sin terraza/pasillo exterior ni barandales;
         //  puerta en el lado izquierdo hacia el descanso de escaleras,
         //  al igual que el Observatorio Copérnico del Piso 5)
@@ -1931,11 +1931,11 @@ Key UX & Mobile Features:
                 code: "401",
                 graphNodeId: "p_room_401",
                 graphNodeIds: ["p_room_401"],
-                lat: 12.107461,
-                lng: -86.256743,
+                lat: 12.107470,
+                lng: -86.256753,
                 floor: 4,
                 type: "Salón Conferencia",
-                name: "Salón P-401 (Anexo Superior)",
+                name: "Aula P401 (Anexo Superior)",
                 wing: "Anexo Superior (Nivel 4)",
                 doors: 1,
                 area: "105.6 m²",
@@ -2154,14 +2154,16 @@ Key UX & Mobile Features:
                 restroomLng: -86.257337
             },
             3: {
-                // Floor 3 has 6 classrooms (P301 to P306, each 8.8m wide = 52.8m total) with dual access nodes on P301 & P306
+                // Floor 3 has 8 classrooms (P301 to P308, each 6.6m wide = 52.8m total) matching buildings.txt & coordenadas.txt
                 rooms: [
-                    { code: "301", w: 8.8, nodeIds: ["p_room_301", "p_room_301_b"], lat: 12.107461, lng: -86.256717 },
-                    { code: "302", w: 8.8, nodeIds: ["p_room_302"], lat: 12.107443, lng: -86.256934 },
-                    { code: "303", w: 8.8, nodeIds: ["p_room_303"], lat: 12.107442, lng: -86.256936 },
-                    { code: "304", w: 8.8, nodeIds: ["p_room_304"], lat: 12.107443, lng: -86.256999 },
-                    { code: "305", w: 8.8, nodeIds: ["p_room_305"], lat: 12.107454, lng: -86.257114 },
-                    { code: "306", w: 8.8, nodeIds: ["p_room_306", "p_room_306_b"], lat: 12.107461, lng: -86.257145 }
+                    { code: "301", w: 6.6, nodeIds: ["p_room_301"], lat: 12.107461, lng: -86.256717 },
+                    { code: "302", w: 6.6, nodeIds: ["p_room_302"], lat: 12.107462, lng: -86.256862 },
+                    { code: "303", w: 6.6, nodeIds: ["p_room_303"], lat: 12.107443, lng: -86.256934 },
+                    { code: "304", w: 6.6, nodeIds: ["p_room_304"], lat: 12.107442, lng: -86.256936 },
+                    { code: "305", w: 6.6, nodeIds: ["p_room_305"], lat: 12.107443, lng: -86.256999 },
+                    { code: "306", w: 6.6, nodeIds: ["p_room_306"], lat: 12.107454, lng: -86.257114 },
+                    { code: "307", w: 6.6, nodeIds: ["p_room_307"], lat: 12.107461, lng: -86.257145 },
+                    { code: "308", w: 6.6, nodeIds: ["p_room_308"], lat: 12.107435, lng: -86.257136 }
                 ],
                 restroomNodeId: "p_restrooms_f3",
                 restroomLat: 12.107468,
@@ -2261,11 +2263,11 @@ Key UX & Mobile Features:
             const el = createLabel(labelText, item.kind === "room" ? "" : "restroom", fullId, item.kind === "room" ? null : "restroom");
 
             const spaceName = item.kind === "room"
-                ? `Salón P-${item.code}`
+                ? `Aula P${item.code}`
                 : (item.kind === "restroom-men" ? `Baños Hombres (Piso ${floorNum})` : `Baños Mujeres (Piso ${floorNum})`);
 
             const spaceNotes = item.kind === "room"
-                ? `Salón P-${item.code} en Piso ${floorNum} (Coords: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}).`
+                ? `Aula P${item.code} en Piso ${floorNum} (Coords: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}).`
                 : (item.kind === "restroom-men"
                     ? `Servicios sanitarios de hombres (Piso ${floorNum}) equipados con inodoros en cubículos privados, urinarios de pared con divisores, lavamanos y espejo (Coords: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}).`
                     : `Servicios sanitarios de mujeres (Piso ${floorNum}) equipados con inodoros en cubículos privados, mesón de lavamanos y espejos (Coords: ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}).`);
@@ -2282,7 +2284,7 @@ Key UX & Mobile Features:
                 name: spaceName,
                 wing: item.kind === "room" ? "Pasillo Principal" : "Sector Sanitarios",
                 doors: item.kind === "room" ? 2 : 1,
-                area: item.kind === "room" ? (floorNum === 3 ? "70.4 m²" : "52.8 m²") : "44.8 m²",
+                area: item.kind === "room" ? "52.8 m²" : "44.8 m²",
                 x: cx,
                 z: zCenter,
                 doorX: doorXs[0],
@@ -2302,13 +2304,26 @@ Key UX & Mobile Features:
                 1,
                 "FOUNTAIN-1",
                 "p_fountain_f1",
-                "P1",
-                "Bebedero 1er Piso del P",
+                "P1-E",
+                "Bebedero 1er Piso del P (Este)",
                 -31.5,
                 1.85,
                 12.107460,
                 -86.256743,
-                "Bebedero de agua en Planta Baja junto a las escaleras este y entrada al Salón P-101."
+                "Bebedero de agua en Planta Baja junto a las escaleras este y entrada al Aula P101."
+            );
+            addWaterFountain(
+                floorGroup,
+                1,
+                "FOUNTAIN-1W",
+                "p_fountain_f1_west",
+                "P1-O",
+                "Bebedero 1er Piso del P (Oeste)",
+                20.8,
+                1.85,
+                12.107459,
+                -86.257314,
+                "Bebedero oeste del Piso 1 ubicado entre el Aula P108 y la batería de baños."
             );
         } else if (floorNum === 2) {
             addWaterFountain(
@@ -2317,12 +2332,12 @@ Key UX & Mobile Features:
                 "FOUNTAIN-2E",
                 "p_fountain_f2_east",
                 "P2-E",
-                "2do Bebedero del P (Piso 2 Este)",
+                "Bebedero del P (Piso 2 Este)",
                 -25.4,
                 1.85,
                 12.107434,
                 -86.256781,
-                "Bebedero este del Piso 2 ubicado entre el Salón P-201 y el Salón P-202."
+                "Bebedero este del Piso 2 ubicado entre el Aula P201 y el Aula P202."
             );
             addWaterFountain(
                 floorGroup,
@@ -2335,7 +2350,7 @@ Key UX & Mobile Features:
                 1.85,
                 12.107407,
                 -86.257298,
-                "Bebedero oeste del Piso 2 ubicado entre el Salón P-208 y la batería de baños."
+                "Bebedero oeste del Piso 2 ubicado entre el Aula P208 y la batería de baños."
             );
         } else if (floorNum === 3) {
             addWaterFountain(
@@ -2343,13 +2358,26 @@ Key UX & Mobile Features:
                 3,
                 "FOUNTAIN-3",
                 "p_fountain_f3",
-                "P3",
-                "1er Bebedero del P (Piso 3)",
-                -27.6,
+                "P3-E",
+                "Bebedero del P (Piso 3 Este)",
+                -25.4,
                 1.85,
                 12.107434,
                 -86.256751,
-                "Bebedero del Piso 3 ubicado frente al Salón P-301 (entre Acceso 1 y Acceso 2)."
+                "Bebedero este del Piso 3 ubicado entre el Aula P301 y el Aula P302."
+            );
+            addWaterFountain(
+                floorGroup,
+                3,
+                "FOUNTAIN-3W",
+                "p_fountain_f3_west",
+                "P3-O",
+                "Bebedero del P (Piso 3 Oeste)",
+                20.8,
+                1.85,
+                12.107452,
+                -86.257162,
+                "Bebedero oeste del Piso 3 ubicado entre el Aula P308 y la batería de baños."
             );
         }
 
@@ -2429,112 +2457,116 @@ Key UX & Mobile Features:
         // --- FLOOR 1 ---
         "p_stairs_f1_ext_left": { id: "p_stairs_f1_ext_left", spaceId: "F1-ENT-W", name: "Escaleras del P (Izquierda / Exterior)", floor: 1, lat: 12.107584, lng: -86.256779, hallX: -36.5, hallZ: 4.8 },
         "p_stairs_f1_east":     { id: "p_stairs_f1_east",     spaceId: "F1-ST-W",  name: "Escaleras Este del P (Piso 1)",          floor: 1, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 3.5, isStair: true, stairX: -36 },
-        "p_fountain_f1":        { id: "p_fountain_f1",        spaceId: "F1-FOUNTAIN-1", name: "Bebedero 1er Piso del P",           floor: 1, lat: 12.107460, lng: -86.256743, hallX: -31.5, hallZ: 3.5 },
-        "p_room_101":           { id: "p_room_101",           spaceId: "F1-101",   name: "Salón P-101",                            floor: 1, lat: 12.107460, lng: -86.256743, hallX: -30.22, hallZ: 3.5 },
-        "p_room_102":           { id: "p_room_102",           spaceId: "F1-102",   name: "Salón P-102",                            floor: 1, lat: 12.107431, lng: -86.256783, hallX: -23.62, hallZ: 3.5 },
-        "p_room_103":           { id: "p_room_103",           spaceId: "F1-103",   name: "Salón P-103",                            floor: 1, lat: 12.107439, lng: -86.256947, hallX: -17.02, hallZ: 3.5 },
-        "p_room_104":           { id: "p_room_104",           spaceId: "F1-104",   name: "Salón P-104",                            floor: 1, lat: 12.107455, lng: -86.256981, hallX: -10.42, hallZ: 3.5 },
-        "p_room_105":           { id: "p_room_105",           spaceId: "F1-105",   name: "Salón P-105",                            floor: 1, lat: 12.107453, lng: -86.257149, hallX: -3.82,  hallZ: 3.5 },
-        "p_room_106":           { id: "p_room_106",           spaceId: "F1-106",   name: "Salón P-106",                            floor: 1, lat: 12.107467, lng: -86.257202, hallX: 2.78,   hallZ: 3.5 },
-        "p_room_107":           { id: "p_room_107",           spaceId: "F1-107",   name: "Salón P-107",                            floor: 1, lat: 12.107450, lng: -86.257270, hallX: 9.38,   hallZ: 3.5 },
-        "p_room_108":           { id: "p_room_108",           spaceId: "F1-108",   name: "Salón P-108",                            floor: 1, lat: 12.107477, lng: -86.257206, hallX: 15.98,  hallZ: 3.5 },
-        "p_restrooms_f1":       { id: "p_restrooms_f1",       spaceId: "F1-HOMBRES-1", name: "Baños del P (Primer Piso)",          floor: 1, lat: 12.107441, lng: -86.257422, hallX: 26.4,   hallZ: 3.5 },
-        "p_stairs_f1_west":     { id: "p_stairs_f1_west",     spaceId: "F1-ST-E",  name: "Segundas Escaleras Oeste del P (Piso 1)",floor: 1, lat: 12.107410, lng: -86.257431, hallX: 36.0,   hallZ: 3.5, isStair: true, stairX: 36 },
-        "p_stairs_to_building_o": { id: "p_stairs_to_building_o", spaceId: "F1-ENT-O", name: "Escaleras del P hacia Edificio O",   floor: 1, lat: 12.107453, lng: -86.257413, hallX: 33.8,   hallZ: 4.8 },
-        "p_ramp_parking":       { id: "p_ramp_parking",       spaceId: "F1-ENT-E", name: "Rampa del Estacionamiento hacia el P",   floor: 1, lat: 12.106991, lng: -86.258233, hallX: 38.2,   hallZ: 4.8 },
+        "p_fountain_f1":        { id: "p_fountain_f1",        spaceId: "F1-FOUNTAIN-1", name: "Bebedero 1er Piso del P (Este)",     floor: 1, lat: 12.107460, lng: -86.256743, hallX: -31.5, hallZ: 3.5 },
+        "p_room_101":           { id: "p_room_101",           spaceId: "F1-101",   name: "Aula P101",                              floor: 1, lat: 12.107460, lng: -86.256743, hallX: -30.22, hallZ: 3.5 },
+        "p_room_102":           { id: "p_room_102",           spaceId: "F1-102",   name: "Aula P102",                              floor: 1, lat: 12.107431, lng: -86.256783, hallX: -23.62, hallZ: 3.5 },
+        "p_room_103":           { id: "p_room_103",           spaceId: "F1-103",   name: "Aula P103",                              floor: 1, lat: 12.107439, lng: -86.256947, hallX: -17.02, hallZ: 3.5 },
+        "p_room_104":           { id: "p_room_104",           spaceId: "F1-104",   name: "Aula P104",                              floor: 1, lat: 12.107455, lng: -86.256981, hallX: -10.42, hallZ: 3.5 },
+        "p_room_105":           { id: "p_room_105",           spaceId: "F1-105",   name: "Aula P105",                              floor: 1, lat: 12.107453, lng: -86.257149, hallX: -3.82,  hallZ: 3.5 },
+        "p_room_106":           { id: "p_room_106",           spaceId: "F1-106",   name: "Aula P106",                              floor: 1, lat: 12.107467, lng: -86.257202, hallX: 2.78,   hallZ: 3.5 },
+        "p_room_107":           { id: "p_room_107",           spaceId: "F1-107",   name: "Aula P107",                              floor: 1, lat: 12.107450, lng: -86.257270, hallX: 9.38,   hallZ: 3.5 },
+        "p_room_108":           { id: "p_room_108",           spaceId: "F1-108",   name: "Aula P108",                              floor: 1, lat: 12.107477, lng: -86.257206, hallX: 15.98,  hallZ: 3.5 },
+        "p_fountain_f1_west":   { id: "p_fountain_f1_west",   spaceId: "F1-FOUNTAIN-1W", name: "Bebedero 1er Piso del P (Oeste)",   floor: 1, lat: 12.107459, lng: -86.257314, hallX: 20.8,   hallZ: 3.5 },
+        "p_restrooms_f1":       { id: "p_restrooms_f1",       spaceId: "F1-HOMBRES-1", name: "Baños del P (Primer Piso)",           floor: 1, lat: 12.107441, lng: -86.257422, hallX: 26.4,   hallZ: 3.5 },
+        "p_stairs_f1_west":     { id: "p_stairs_f1_west",     spaceId: "F1-ST-E",  name: "Segundas Escaleras Oeste del P (Piso 1)", floor: 1, lat: 12.107410, lng: -86.257431, hallX: 36.0,   hallZ: 3.5, isStair: true, stairX: 36 },
+        "p_stairs_to_building_o": { id: "p_stairs_to_building_o", spaceId: "F1-ENT-O", name: "Escaleras del P hacia Edificio O",    floor: 1, lat: 12.107453, lng: -86.257413, hallX: 33.8,   hallZ: 4.8 },
+        "p_ramp_parking":       { id: "p_ramp_parking",       spaceId: "F1-ENT-E", name: "Rampa del Estacionamiento hacia el P",    floor: 1, lat: 12.106991, lng: -86.258233, hallX: 38.2,   hallZ: 4.8 },
 
         // --- FLOOR 2 ---
-        "p_stairs_f2_east":     { id: "p_stairs_f2_east",     spaceId: "F2-ST-W",  name: "Escaleras Este del P (Piso 2)",          floor: 2, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 3.5, isStair: true, stairX: -36 },
-        "p_room_201":           { id: "p_room_201",           spaceId: "F2-201",   name: "Salón P-201",                            floor: 2, lat: 12.107484, lng: -86.256721, hallX: -30.22, hallZ: 3.5 },
-        "p_fountain_f2_east":   { id: "p_fountain_f2_east",   spaceId: "F2-FOUNTAIN-2E", name: "2do Bebedero del P (Piso 2 Este)", floor: 2, lat: 12.107434, lng: -86.256781, hallX: -25.4,  hallZ: 3.5 },
-        "p_room_202":           { id: "p_room_202",           spaceId: "F2-202",   name: "Salón P-202",                            floor: 2, lat: 12.107428, lng: -86.256817, hallX: -23.62, hallZ: 3.5 },
-        "p_room_203":           { id: "p_room_203",           spaceId: "F2-203",   name: "Salón P-203",                            floor: 2, lat: 12.107447, lng: -86.256957, hallX: -17.02, hallZ: 3.5 },
-        "p_room_204":           { id: "p_room_204",           spaceId: "F2-204",   name: "Salón P-204",                            floor: 2, lat: 12.107434, lng: -86.257043, hallX: -10.42, hallZ: 3.5 },
-        "p_room_205":           { id: "p_room_205",           spaceId: "F2-205",   name: "Salón P-205",                            floor: 2, lat: 12.107492, lng: -86.257090, hallX: -3.82,  hallZ: 3.5 },
-        "p_room_206":           { id: "p_room_206",           spaceId: "F2-206",   name: "Salón P-206",                            floor: 2, lat: 12.107413, lng: -86.257153, hallX: 2.78,   hallZ: 3.5 },
-        "p_room_207":           { id: "p_room_207",           spaceId: "F2-207",   name: "Salón P-207",                            floor: 2, lat: 12.107427, lng: -86.257217, hallX: 9.38,   hallZ: 3.5 },
-        "p_room_208":           { id: "p_room_208",           spaceId: "F2-208",   name: "Salón P-208",                            floor: 2, lat: 12.107402, lng: -86.257297, hallX: 15.98,  hallZ: 3.5 },
-        "p_fountain_f2_west":   { id: "p_fountain_f2_west",   spaceId: "F2-FOUNTAIN-2W", name: "Bebedero del P (Piso 2 Oeste)",    floor: 2, lat: 12.107407, lng: -86.257298, hallX: 20.8,   hallZ: 3.5 },
-        "p_restrooms_f2":       { id: "p_restrooms_f2",       spaceId: "F2-HOMBRES-2", name: "Baños del P (Segundo Piso)",         floor: 2, lat: 12.107480, lng: -86.257337, hallX: 26.4,   hallZ: 3.5 },
-        "p_stairs_f2_west":     { id: "p_stairs_f2_west",     spaceId: "F2-ST-E",  name: "Segundas Escaleras Oeste del P (Piso 2)",floor: 2, lat: 12.107410, lng: -86.257431, hallX: 36.0,   hallZ: 3.5, isStair: true, stairX: 36 },
+        "p_stairs_f2_east":     { id: "p_stairs_f2_east",     spaceId: "F2-ST-W",  name: "Escaleras Este del P (Piso 2)",           floor: 2, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 3.5, isStair: true, stairX: -36 },
+        "p_room_201":           { id: "p_room_201",           spaceId: "F2-201",   name: "Aula P201",                               floor: 2, lat: 12.107484, lng: -86.256721, hallX: -30.22, hallZ: 3.5 },
+        "p_fountain_f2_east":   { id: "p_fountain_f2_east",   spaceId: "F2-FOUNTAIN-2E", name: "Bebedero del P (Piso 2 Este)",      floor: 2, lat: 12.107434, lng: -86.256781, hallX: -25.4,  hallZ: 3.5 },
+        "p_room_202":           { id: "p_room_202",           spaceId: "F2-202",   name: "Aula P202",                               floor: 2, lat: 12.107428, lng: -86.256817, hallX: -23.62, hallZ: 3.5 },
+        "p_room_203":           { id: "p_room_203",           spaceId: "F2-203",   name: "Aula P203",                               floor: 2, lat: 12.107447, lng: -86.256957, hallX: -17.02, hallZ: 3.5 },
+        "p_room_204":           { id: "p_room_204",           spaceId: "F2-204",   name: "Aula P204",                               floor: 2, lat: 12.107434, lng: -86.257043, hallX: -10.42, hallZ: 3.5 },
+        "p_room_205":           { id: "p_room_205",           spaceId: "F2-205",   name: "Aula P205",                               floor: 2, lat: 12.107492, lng: -86.257090, hallX: -3.82,  hallZ: 3.5 },
+        "p_room_206":           { id: "p_room_206",           spaceId: "F2-206",   name: "Aula P206",                               floor: 2, lat: 12.107413, lng: -86.257153, hallX: 2.78,   hallZ: 3.5 },
+        "p_room_207":           { id: "p_room_207",           spaceId: "F2-207",   name: "Aula P207",                               floor: 2, lat: 12.107427, lng: -86.257217, hallX: 9.38,   hallZ: 3.5 },
+        "p_room_208":           { id: "p_room_208",           spaceId: "F2-208",   name: "Aula P208",                               floor: 2, lat: 12.107402, lng: -86.257297, hallX: 15.98,  hallZ: 3.5 },
+        "p_fountain_f2_west":   { id: "p_fountain_f2_west",   spaceId: "F2-FOUNTAIN-2W", name: "Bebedero del P (Piso 2 Oeste)",     floor: 2, lat: 12.107407, lng: -86.257298, hallX: 20.8,   hallZ: 3.5 },
+        "p_restrooms_f2":       { id: "p_restrooms_f2",       spaceId: "F2-HOMBRES-2", name: "Baños del P (Segundo Piso)",          floor: 2, lat: 12.107480, lng: -86.257337, hallX: 26.4,   hallZ: 3.5 },
+        "p_stairs_f2_west":     { id: "p_stairs_f2_west",     spaceId: "F2-ST-E",  name: "Segundas Escaleras Oeste del P (Piso 2)", floor: 2, lat: 12.107410, lng: -86.257431, hallX: 36.0,   hallZ: 3.5, isStair: true, stairX: 36 },
 
-        // --- FLOOR 3 ---
-        "p_stairs_f3_east":     { id: "p_stairs_f3_east",     spaceId: "F3-ST-W",  name: "Escaleras Este del P (Piso 3)",          floor: 3, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 3.5, isStair: true, stairX: -36 },
-        "p_room_301":           { id: "p_room_301",           spaceId: "F3-301",   name: "Salón P-301 (Acceso 1)",                 floor: 3, lat: 12.107461, lng: -86.256717, hallX: -29.62, hallZ: 3.5 },
-        "p_fountain_f3":        { id: "p_fountain_f3",        spaceId: "F3-FOUNTAIN-3", name: "1er Bebedero del P (Piso 3)",       floor: 3, lat: 12.107434, lng: -86.256751, hallX: -27.6,  hallZ: 3.5 },
-        "p_room_301_b":         { id: "p_room_301_b",         spaceId: "F3-301",   name: "Salón P-301 (Acceso 2)",                 floor: 3, lat: 12.107462, lng: -86.256862, hallX: -25.58, hallZ: 3.5 },
-        "p_room_302":           { id: "p_room_302",           spaceId: "F3-302",   name: "Salón P-302",                            floor: 3, lat: 12.107443, lng: -86.256934, hallX: -20.82, hallZ: 3.5 },
-        "p_room_303":           { id: "p_room_303",           spaceId: "F3-303",   name: "Salón P-303",                            floor: 3, lat: 12.107442, lng: -86.256936, hallX: -12.02, hallZ: 3.5 },
-        "p_room_304":           { id: "p_room_304",           spaceId: "F3-304",   name: "Salón P-304",                            floor: 3, lat: 12.107443, lng: -86.256999, hallX: -3.22,  hallZ: 3.5 },
-        "p_room_305":           { id: "p_room_305",           spaceId: "F3-305",   name: "Salón P-305",                            floor: 3, lat: 12.107454, lng: -86.257114, hallX: 5.58,   hallZ: 3.5 },
-        "p_room_306":           { id: "p_room_306",           spaceId: "F3-306",   name: "Salón P-306 (Acceso 1)",                 floor: 3, lat: 12.107461, lng: -86.257145, hallX: 14.38,  hallZ: 3.5 },
-        "p_room_306_b":         { id: "p_room_306_b",         spaceId: "F3-306",   name: "Salón P-306 (Acceso 2)",                 floor: 3, lat: 12.107435, lng: -86.257136, hallX: 18.42,  hallZ: 3.5 },
-        "p_restrooms_f3":       { id: "p_restrooms_f3",       spaceId: "F3-HOMBRES-3", name: "Baños del P (Tercer Piso)",          floor: 3, lat: 12.107468, lng: -86.257189, hallX: 26.4,   hallZ: 3.5 },
-        "p_stairs_f3_west":     { id: "p_stairs_f3_west",     spaceId: "F3-ST-E",  name: "Segundas Escaleras Oeste del P (Piso 3)",floor: 3, lat: 12.107410, lng: -86.257431, hallX: 36.0,   hallZ: 3.5, isStair: true, stairX: 36 },
+        // --- FLOOR 3 (P301..P308) ---
+        "p_stairs_f3_east":     { id: "p_stairs_f3_east",     spaceId: "F3-ST-W",  name: "Escaleras Este del P (Piso 3)",           floor: 3, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 3.5, isStair: true, stairX: -36 },
+        "p_room_301":           { id: "p_room_301",           spaceId: "F3-301",   name: "Aula P301",                               floor: 3, lat: 12.107461, lng: -86.256717, hallX: -30.22, hallZ: 3.5 },
+        "p_fountain_f3":        { id: "p_fountain_f3",        spaceId: "F3-FOUNTAIN-3", name: "Bebedero del P (Piso 3 Este)",       floor: 3, lat: 12.107434, lng: -86.256751, hallX: -25.4,  hallZ: 3.5 },
+        "p_room_302":           { id: "p_room_302",           spaceId: "F3-302",   name: "Aula P302",                               floor: 3, lat: 12.107462, lng: -86.256862, hallX: -23.62, hallZ: 3.5 },
+        "p_room_303":           { id: "p_room_303",           spaceId: "F3-303",   name: "Aula P303",                               floor: 3, lat: 12.107443, lng: -86.256934, hallX: -17.02, hallZ: 3.5 },
+        "p_room_304":           { id: "p_room_304",           spaceId: "F3-304",   name: "Aula P304",                               floor: 3, lat: 12.107442, lng: -86.256936, hallX: -10.42, hallZ: 3.5 },
+        "p_room_305":           { id: "p_room_305",           spaceId: "F3-305",   name: "Aula P305",                               floor: 3, lat: 12.107443, lng: -86.256999, hallX: -3.82,  hallZ: 3.5 },
+        "p_room_306":           { id: "p_room_306",           spaceId: "F3-306",   name: "Aula P306",                               floor: 3, lat: 12.107454, lng: -86.257114, hallX: 2.78,   hallZ: 3.5 },
+        "p_room_307":           { id: "p_room_307",           spaceId: "F3-307",   name: "Aula P307",                               floor: 3, lat: 12.107461, lng: -86.257145, hallX: 9.38,   hallZ: 3.5 },
+        "p_room_308":           { id: "p_room_308",           spaceId: "F3-308",   name: "Aula P308",                               floor: 3, lat: 12.107435, lng: -86.257136, hallX: 15.98,  hallZ: 3.5 },
+        "p_fountain_f3_west":   { id: "p_fountain_f3_west",   spaceId: "F3-FOUNTAIN-3W", name: "Bebedero del P (Piso 3 Oeste)",     floor: 3, lat: 12.107452, lng: -86.257162, hallX: 20.8,   hallZ: 3.5 },
+        "p_restrooms_f3":       { id: "p_restrooms_f3",       spaceId: "F3-HOMBRES-3", name: "Baños del P (Tercer Piso)",           floor: 3, lat: 12.107468, lng: -86.257189, hallX: 26.4,   hallZ: 3.5 },
+        "p_stairs_f3_west":     { id: "p_stairs_f3_west",     spaceId: "F3-ST-E",  name: "Segundas Escaleras Oeste del P (Piso 3)", floor: 3, lat: 12.107410, lng: -86.257431, hallX: 36.0,   hallZ: 3.5, isStair: true, stairX: 36 },
 
         // --- FLOOR 4 (ANNEX P401) ---
-        "p_stairs_f4_east":     { id: "p_stairs_f4_east",     spaceId: "F4-ST-W",  name: "Escaleras del Anexo del P (Piso 4)",     floor: 4, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 0.8, isStair: true, stairX: -36 },
-        "p_room_401":           { id: "p_room_401",           spaceId: "F4-401",   name: "Salón P-401",                            floor: 4, lat: 12.107461, lng: -86.256743, hallX: -32.0, hallZ: 0.8 },
+        "p_stairs_f4_east":     { id: "p_stairs_f4_east",     spaceId: "F4-ST-W",  name: "Escaleras del Anexo del P (Piso 4)",      floor: 4, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 0.8, isStair: true, stairX: -36 },
+        "p_room_401":           { id: "p_room_401",           spaceId: "F4-401",   name: "Aula P401",                               floor: 4, lat: 12.107470, lng: -86.256753, hallX: -32.0, hallZ: 0.8 },
 
         // --- FLOOR 5 (OBSERVATORY COPERNICO) ---
-        "p_stairs_f5_east":     { id: "p_stairs_f5_east",     spaceId: "F5-ST-W",  name: "Escaleras del Observatorio (Piso 5)",    floor: 5, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 0.8, isStair: true, stairX: -36 },
-        "p_observatory_501":    { id: "p_observatory_501",    spaceId: "F5-501",   name: "Observatory Copernico (P-501)",          floor: 5, lat: 12.107461, lng: -86.256743, hallX: -32.0, hallZ: 0.8 }
+        "p_stairs_f5_east":     { id: "p_stairs_f5_east",     spaceId: "F5-ST-W",  name: "Escaleras del Observatorio (Piso 5)",     floor: 5, lat: 12.107470, lng: -86.256753, hallX: -36.0, hallZ: 0.8, isStair: true, stairX: -36 },
+        "p_observatory_501":    { id: "p_observatory_501",    spaceId: "F5-501",   name: "Observatorio Copérnico (P501)",           floor: 5, lat: 12.107470, lng: -86.256753, hallX: -32.0, hallZ: 0.8 }
     };
 
     const BUILDING_P_GRAPH_EDGES = [
         // Floor 1 Corridor Edges
         { u: "p_stairs_f1_ext_left", v: "p_stairs_f1_east", dist: 13.0, fwd: "Baja por las escaleras exteriores hacia la entrada este del Edificio P.", bwd: "Sube por las escaleras exteriores izquierdas." },
-        { u: "p_stairs_f1_east",     v: "p_fountain_f1",    dist: 1.6,  fwd: "Avanza 2m hacia el bebedero y entrada al Salón P-101.", bwd: "Dirígete hacia las escaleras este del primer piso." },
-        { u: "p_fountain_f1",        v: "p_room_101",       dist: 1.5,  fwd: "Avanza hacia el Salón P-101.", bwd: "Avanza hacia el bebedero del primer piso." },
-        { u: "p_room_101",           v: "p_room_102",       dist: 5.4,  fwd: "Camina 5m por el pasillo hacia el Salón P-102.", bwd: "Camina 5m por el pasillo hacia el Salón P-101." },
-        { u: "p_room_102",           v: "p_room_103",       dist: 17.9, fwd: "Avanza 18m por el pasillo principal hacia el Salón P-103.", bwd: "Avanza 18m por el pasillo hacia el Salón P-102." },
-        { u: "p_room_103",           v: "p_room_104",       dist: 4.1,  fwd: "Avanza 4m hacia el Salón P-104.", bwd: "Avanza 4m hacia el Salón P-103." },
-        { u: "p_room_104",           v: "p_room_105",       dist: 18.3, fwd: "Continúa 18m por el pasillo central hacia el Salón P-105.", bwd: "Continúa 18m hacia el Salón P-104." },
-        { u: "p_room_105",           v: "p_room_106",       dist: 6.0,  fwd: "Avanza 6m hacia el Salón P-106.", bwd: "Avanza 6m hacia el Salón P-105." },
-        { u: "p_room_106",           v: "p_room_107",       dist: 7.6,  fwd: "Camina 7m hacia el Salón P-107.", bwd: "Camina 7m hacia el Salón P-106." },
-        { u: "p_room_107",           v: "p_room_108",       dist: 7.6,  fwd: "Avanza hacia el Salón P-108.", bwd: "Avanza hacia el Salón P-107." },
-        { u: "p_room_108",           v: "p_restrooms_f1",   dist: 23.8, fwd: "Camina 24m hacia los baños del primer piso.", bwd: "Camina 24m por el pasillo hacia el Salón P-108." },
+        { u: "p_stairs_f1_east",     v: "p_fountain_f1",    dist: 1.6,  fwd: "Avanza 2m hacia el bebedero y entrada al Aula P101.", bwd: "Dirígete hacia las escaleras este del primer piso." },
+        { u: "p_fountain_f1",        v: "p_room_101",       dist: 1.5,  fwd: "Avanza hacia el Aula P101.", bwd: "Avanza hacia el bebedero del primer piso." },
+        { u: "p_room_101",           v: "p_room_102",       dist: 5.4,  fwd: "Camina 5m por el pasillo hacia el Aula P102.", bwd: "Camina 5m por el pasillo hacia el Aula P101." },
+        { u: "p_room_102",           v: "p_room_103",       dist: 17.9, fwd: "Avanza 18m por el pasillo principal hacia el Aula P103.", bwd: "Avanza 18m por el pasillo hacia el Aula P102." },
+        { u: "p_room_103",           v: "p_room_104",       dist: 4.1,  fwd: "Avanza 4m hacia el Aula P104.", bwd: "Avanza 4m hacia el Aula P103." },
+        { u: "p_room_104",           v: "p_room_105",       dist: 18.3, fwd: "Continúa 18m por el pasillo central hacia el Aula P105.", bwd: "Continúa 18m hacia el Aula P104." },
+        { u: "p_room_105",           v: "p_room_106",       dist: 6.0,  fwd: "Avanza 6m hacia el Aula P106.", bwd: "Avanza 6m hacia el Aula P105." },
+        { u: "p_room_106",           v: "p_room_107",       dist: 7.6,  fwd: "Camina 7m hacia el Aula P107.", bwd: "Camina 7m hacia el Aula P106." },
+        { u: "p_room_107",           v: "p_room_108",       dist: 7.6,  fwd: "Avanza hacia el Aula P108.", bwd: "Avanza hacia el Aula P107." },
+        { u: "p_room_108",           v: "p_fountain_f1_west", dist: 12.0, fwd: "Camina 12m hacia el bebedero oeste del primer piso.", bwd: "Camina 12m por el pasillo hacia el Aula P108." },
+        { u: "p_fountain_f1_west",   v: "p_restrooms_f1",   dist: 11.8, fwd: "Avanza 12m hacia los baños del primer piso.", bwd: "Avanza 12m hacia el bebedero oeste del primer piso." },
         { u: "p_restrooms_f1",       v: "p_stairs_f1_west", dist: 3.6,  fwd: "Gira hacia las segundas escaleras oeste del primer piso.", bwd: "Avanza hacia los baños del primer piso." },
         { u: "p_stairs_f1_west",     v: "p_stairs_to_building_o", dist: 5.2, fwd: "Sal hacia las escaleras de interconexión con el Edificio O.", bwd: "Entra hacia las escaleras oeste del Edificio P." },
         { u: "p_stairs_f1_west",     v: "p_ramp_parking",   dist: 14.0, fwd: "Toma la rampa exterior hacia el estacionamiento enfrente del Edificio O.", bwd: "Sube por la rampa accesible hacia la entrada oeste del Edificio P." },
-        { u: "p_room_108",           v: "p_ramp_parking",   dist: 22.0, fwd: "Sal por el acceso accesible hacia la rampa del estacionamiento.", bwd: "Entra por el acceso oeste accesible hacia el Salón P-108." },
+        { u: "p_room_108",           v: "p_ramp_parking",   dist: 22.0, fwd: "Sal por el acceso accesible hacia la rampa del estacionamiento.", bwd: "Entra por el acceso oeste accesible hacia el Aula P108." },
 
         // Floor 2 Corridor Edges
-        { u: "p_stairs_f2_east",     v: "p_room_201",       dist: 8.6,  fwd: "Avanza 8m por el pasillo este hacia el Salón P-201.", bwd: "Dirígete hacia el descanso de las escaleras este en el Piso 2." },
-        { u: "p_room_201",           v: "p_fountain_f2_east", dist: 8.6, fwd: "Camina 8m hacia el bebedero este del segundo piso.", bwd: "Camina 8m hacia el Salón P-201." },
-        { u: "p_fountain_f2_east",   v: "p_room_202",       dist: 4.0,  fwd: "Avanza 4m hacia el Salón P-202.", bwd: "Avanza hacia el bebedero este." },
-        { u: "p_room_202",           v: "p_room_203",       dist: 15.4, fwd: "Camina 15m por el pasillo central hacia el Salón P-203.", bwd: "Camina 15m hacia el Salón P-202." },
-        { u: "p_room_203",           v: "p_room_204",       dist: 9.5,  fwd: "Avanza 9m hacia el Salón P-204.", bwd: "Avanza 9m hacia el Salón P-203." },
-        { u: "p_room_204",           v: "p_room_205",       dist: 8.2,  fwd: "Continúa 8m hacia el Salón P-205.", bwd: "Continúa hacia el Salón P-204." },
-        { u: "p_room_205",           v: "p_room_206",       dist: 11.1, fwd: "Avanza 11m hacia el Salón P-206.", bwd: "Avanza 11m hacia el Salón P-205." },
-        { u: "p_room_206",           v: "p_room_207",       dist: 7.1,  fwd: "Camina 7m hacia el Salón P-207.", bwd: "Camina 7m hacia el Salón P-206." },
-        { u: "p_room_207",           v: "p_room_208",       dist: 9.1,  fwd: "Avanza 9m hacia el Salón P-208.", bwd: "Avanza 9m hacia el Salón P-207." },
-        { u: "p_room_208",           v: "p_fountain_f2_west", dist: 1.5, fwd: "Avanza al bebedero oeste del segundo piso.", bwd: "Avanza hacia el Salón P-208." },
+        { u: "p_stairs_f2_east",     v: "p_room_201",       dist: 8.6,  fwd: "Avanza 8m por el pasillo este hacia el Aula P201.", bwd: "Dirígete hacia el descanso de las escaleras este en el Piso 2." },
+        { u: "p_room_201",           v: "p_fountain_f2_east", dist: 8.6, fwd: "Camina 8m hacia el bebedero este del segundo piso.", bwd: "Camina 8m hacia el Aula P201." },
+        { u: "p_fountain_f2_east",   v: "p_room_202",       dist: 4.0,  fwd: "Avanza 4m hacia el Aula P202.", bwd: "Avanza hacia el bebedero este." },
+        { u: "p_room_202",           v: "p_room_203",       dist: 15.4, fwd: "Camina 15m por el pasillo central hacia el Aula P203.", bwd: "Camina 15m hacia el Aula P202." },
+        { u: "p_room_203",           v: "p_room_204",       dist: 9.5,  fwd: "Avanza 9m hacia el Aula P204.", bwd: "Avanza 9m hacia el Aula P203." },
+        { u: "p_room_204",           v: "p_room_205",       dist: 8.2,  fwd: "Continúa 8m hacia el Aula P205.", bwd: "Continúa hacia el Aula P204." },
+        { u: "p_room_205",           v: "p_room_206",       dist: 11.1, fwd: "Avanza 11m hacia el Aula P206.", bwd: "Avanza 11m hacia el Aula P205." },
+        { u: "p_room_206",           v: "p_room_207",       dist: 7.1,  fwd: "Camina 7m hacia el Aula P207.", bwd: "Camina 7m hacia el Aula P206." },
+        { u: "p_room_207",           v: "p_room_208",       dist: 9.1,  fwd: "Avanza 9m hacia el Aula P208.", bwd: "Avanza 9m hacia el Aula P207." },
+        { u: "p_room_208",           v: "p_fountain_f2_west", dist: 1.5, fwd: "Avanza al bebedero oeste del segundo piso.", bwd: "Avanza hacia el Aula P208." },
         { u: "p_fountain_f2_west",   v: "p_restrooms_f2",   dist: 9.2,  fwd: "Avanza 9m hacia los baños del segundo piso.", bwd: "Dirígete hacia el bebedero oeste." },
         { u: "p_restrooms_f2",       v: "p_stairs_f2_west", dist: 5.0,  fwd: "Avanza hacia las escaleras oeste del segundo piso.", bwd: "Avanza hacia los baños del segundo piso." },
 
-        // Floor 3 Corridor Edges
-        { u: "p_stairs_f3_east",     v: "p_room_301",       dist: 4.8,  fwd: "Avanza 5m hacia el Salón P-301.", bwd: "Dirígete hacia las escaleras este del Piso 3." },
-        { u: "p_room_301",           v: "p_fountain_f3",    dist: 4.8,  fwd: "Avanza hacia el bebedero del tercer piso.", bwd: "Avanza hacia el Salón P-301." },
-        { u: "p_fountain_f3",        v: "p_room_301_b",     dist: 12.5, fwd: "Camina 12m hacia el acceso 2 del Salón P-301.", bwd: "Camina hacia el bebedero del tercer piso." },
-        { u: "p_room_301_b",         v: "p_room_302",       dist: 8.1,  fwd: "Avanza 8m hacia el Salón P-302.", bwd: "Avanza 8m hacia el Salón P-301 (Acceso 2)." },
-        { u: "p_room_302",           v: "p_room_303",       dist: 2.0,  fwd: "Continúa al Salón P-303 contiguo.", bwd: "Regresa al Salón P-302." },
-        { u: "p_room_303",           v: "p_room_304",       dist: 6.9,  fwd: "Avanza 7m hacia el Salón P-304.", bwd: "Avanza 7m hacia el Salón P-303." },
-        { u: "p_room_304",           v: "p_room_305",       dist: 12.6, fwd: "Camina 13m por el pasillo central hacia el Salón P-305.", bwd: "Camina 13m hacia el Salón P-304." },
-        { u: "p_room_305",           v: "p_room_306",       dist: 3.5,  fwd: "Avanza 3m hacia el Salón P-306.", bwd: "Avanza 3m hacia el Salón P-305." },
-        { u: "p_room_306",           v: "p_room_306_b",     dist: 3.1,  fwd: "Avanza hacia el segundo acceso del Salón P-306.", bwd: "Avanza hacia el primer acceso del Salón P-306." },
-        { u: "p_room_306_b",         v: "p_restrooms_f3",   dist: 6.8,  fwd: "Camina 7m hacia los baños del tercer piso.", bwd: "Camina hacia el Salón P-306." },
+        // Floor 3 Corridor Edges (P301..P308)
+        { u: "p_stairs_f3_east",     v: "p_room_301",       dist: 4.8,  fwd: "Avanza 5m hacia el Aula P301.", bwd: "Dirígete hacia las escaleras este del Piso 3." },
+        { u: "p_room_301",           v: "p_fountain_f3",    dist: 4.8,  fwd: "Avanza hacia el bebedero este del tercer piso.", bwd: "Avanza hacia el Aula P301." },
+        { u: "p_fountain_f3",        v: "p_room_302",       dist: 12.5, fwd: "Camina 12m hacia el Aula P302.", bwd: "Camina hacia el bebedero este del tercer piso." },
+        { u: "p_room_302",           v: "p_room_303",       dist: 8.1,  fwd: "Avanza 8m hacia el Aula P303.", bwd: "Avanza 8m hacia el Aula P302." },
+        { u: "p_room_303",           v: "p_room_304",       dist: 2.0,  fwd: "Continúa al Aula P304 contigua.", bwd: "Regresa al Aula P303." },
+        { u: "p_room_304",           v: "p_room_305",       dist: 6.9,  fwd: "Avanza 7m hacia el Aula P305.", bwd: "Avanza 7m hacia el Aula P304." },
+        { u: "p_room_305",           v: "p_room_306",       dist: 12.6, fwd: "Camina 13m por el pasillo central hacia el Aula P306.", bwd: "Camina 13m hacia el Aula P305." },
+        { u: "p_room_306",           v: "p_room_307",       dist: 3.5,  fwd: "Avanza 3m hacia el Aula P307.", bwd: "Avanza 3m hacia el Aula P306." },
+        { u: "p_room_307",           v: "p_room_308",       dist: 3.1,  fwd: "Avanza 3m hacia el Aula P308.", bwd: "Avanza 3m hacia el Aula P307." },
+        { u: "p_room_308",           v: "p_fountain_f3_west", dist: 3.5, fwd: "Avanza hacia el bebedero oeste del tercer piso.", bwd: "Avanza hacia el Aula P308." },
+        { u: "p_fountain_f3_west",   v: "p_restrooms_f3",   dist: 3.5,  fwd: "Camina hacia los baños del tercer piso.", bwd: "Camina hacia el bebedero oeste del tercer piso." },
         { u: "p_restrooms_f3",       v: "p_stairs_f3_west", dist: 6.0,  fwd: "Avanza hacia las escaleras oeste del tercer piso.", bwd: "Avanza hacia los baños del tercer piso." },
 
         // Floor 4 & Floor 5 Corridor Edges
-        { u: "p_stairs_f4_east",     v: "p_room_401",       dist: 4.0,  fwd: "Entra al Salón P-401 por la puerta izquierda.", bwd: "Sal del Salón P-401 hacia las escaleras del 4to piso." },
-        { u: "p_stairs_f5_east",     v: "p_observatory_501",dist: 4.0,  fwd: "Entra al Observatory Copernico (P-501) por la puerta izquierda.", bwd: "Sal del Observatory Copernico hacia las escaleras del 5to piso." },
+        { u: "p_stairs_f4_east",     v: "p_room_401",       dist: 4.0,  fwd: "Entra al Aula P401 por la puerta izquierda.", bwd: "Sal del Aula P401 hacia las escaleras del 4to piso." },
+        { u: "p_stairs_f5_east",     v: "p_observatory_501",dist: 4.0,  fwd: "Entra al Observatorio Copérnico (P501) por la puerta izquierda.", bwd: "Sal del Observatorio Copérnico hacia las escaleras del 5to piso." },
 
         // Vertical Stair Connections (East & West Stairwells)
         { u: "p_stairs_f1_east",     v: "p_stairs_f2_east", dist: 12.0, isVertical: true, fwd: "Sube por las escaleras este hacia el Piso 2 del Edificio P.", bwd: "Baja por las escaleras este hacia el Piso 1 del Edificio P." },
         { u: "p_stairs_f2_east",     v: "p_stairs_f3_east", dist: 12.0, isVertical: true, fwd: "Sube por las escaleras este hacia el Piso 3 del Edificio P.", bwd: "Baja por las escaleras este hacia el Piso 2 del Edificio P." },
         { u: "p_stairs_f3_east",     v: "p_stairs_f4_east", dist: 10.5, isVertical: true, fwd: "Sube por las escaleras estrechas hacia el Piso 4 (Anexo P401).", bwd: "Baja por las escaleras estrechas hacia el Piso 3." },
-        { u: "p_stairs_f4_east",     v: "p_stairs_f5_east", dist: 10.5, isVertical: true, fwd: "Sube por las escaleras estrechas hacia el Piso 5 (Observatory Copernico).", bwd: "Baja por las escaleras estrechas hacia el Piso 4 (P401)." },
+        { u: "p_stairs_f4_east",     v: "p_stairs_f5_east", dist: 10.5, isVertical: true, fwd: "Sube por las escaleras estrechas hacia el Piso 5 (Observatorio Copérnico).", bwd: "Baja por las escaleras estrechas hacia el Piso 4 (P401)." },
         { u: "p_stairs_f1_west",     v: "p_stairs_f2_west", dist: 12.0, isVertical: true, fwd: "Sube por las segundas escaleras oeste hacia el Piso 2 del Edificio P.", bwd: "Baja por las segundas escaleras oeste hacia el Piso 1 del Edificio P." },
         { u: "p_stairs_f2_west",     v: "p_stairs_f3_west", dist: 12.0, isVertical: true, fwd: "Sube por las escaleras oeste hacia el Piso 3 del Edificio P.", bwd: "Baja por las escaleras oeste hacia el Piso 2 del Edificio P." }
     ];
@@ -2556,7 +2588,7 @@ Key UX & Mobile Features:
             return null;
         }
 
-        // 1. Check room numbers first (P101..P108, P201..P208, P301..P306, P401, P501)
+        // 1. Check room numbers first (P101..P108, P201..P208, P301..P308, P401, P501)
         const roomMatch = clean.match(/p?([12345]0[1-8])/);
         if (roomMatch) {
             const code = roomMatch[1];
@@ -2565,13 +2597,18 @@ Key UX & Mobile Features:
         }
 
         // 2. Check fountains, restrooms, entrances, and Observatory Copernico
+        if (clean.includes("fountainp1west") || clean.includes("bebederop1oeste")) return "F1-FOUNTAIN-1W";
         if (clean.includes("fountainp1") || clean.includes("bebederop1") || clean.includes("bebedero1")) return "F1-FOUNTAIN-1";
         if (clean.includes("fountainp2east") || clean.includes("bebederop2este") || clean.includes("2dobebedero")) return "F2-FOUNTAIN-2E";
         if (clean.includes("fountainp2west") || clean.includes("bebederop2oeste")) return "F2-FOUNTAIN-2W";
+        if (clean.includes("fountainp3west") || clean.includes("bebederop3oeste")) return "F3-FOUNTAIN-3W";
         if (clean.includes("fountainp3") || clean.includes("bebederop3") || clean.includes("1erbebedero")) return "F3-FOUNTAIN-3";
-        if (clean.includes("restroomsp1") || clean.includes("banosp1") || clean.includes("primerpiso")) return "F1-HOMBRES-1";
-        if (clean.includes("restroomsp2") || clean.includes("banosp2") || clean.includes("segundopiso")) return "F2-HOMBRES-2";
-        if (clean.includes("restroomsp3") || clean.includes("banosp3") || clean.includes("tercerpiso")) return "F3-HOMBRES-3";
+        if (clean.includes("restroomswomenp1") || clean.includes("prestroomswomenf1")) return "F1-MUJERES-1";
+        if (clean.includes("restroomswomenp2") || clean.includes("prestroomswomenf2")) return "F2-MUJERES-2";
+        if (clean.includes("restroomswomenp3") || clean.includes("prestroomswomenf3")) return "F3-MUJERES-3";
+        if (clean.includes("restroomsp1") || clean.includes("restroomsmenp1") || clean.includes("prestroomsmenf1") || clean.includes("banosp1") || clean.includes("primerpiso")) return "F1-HOMBRES-1";
+        if (clean.includes("restroomsp2") || clean.includes("restroomsmenp2") || clean.includes("prestroomsmenf2") || clean.includes("banosp2") || clean.includes("segundopiso")) return "F2-HOMBRES-2";
+        if (clean.includes("restroomsp3") || clean.includes("restroomsmenp3") || clean.includes("prestroomsmenf3") || clean.includes("banosp3") || clean.includes("tercerpiso")) return "F3-HOMBRES-3";
         if (clean.includes("rampparking") || clean.includes("rampa")) return "F1-ENT-E";
         if (clean.includes("buildingo") || clean.includes("edificioo")) return "F1-ENT-O";
         if (clean === "copernicusobservatoryp" || clean.startsWith("observator") || clean.includes("cupula")) return "F5-501";
@@ -2626,7 +2663,7 @@ Key UX & Mobile Features:
             }
         }
 
-        // Pick the target door node (e.g., p_room_301 vs p_room_301_b) that yields the shortest total distance
+        // Pick the target node that yields the shortest total distance when multiple nodeIds map to a space
         let bestTarget = null;
         let minTargetDist = Infinity;
         targetNodeIds.forEach(tid => {

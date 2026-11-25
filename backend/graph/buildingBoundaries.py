@@ -309,10 +309,10 @@ BUILDING_BOUNDARIES: Dict[str, BuildingBoundary] = {
     "buildingJ": BuildingBoundary(
         buildingId="buildingJ",
         boundaryType="polygon",
-        center=(12.108089, -86.256792),
-        radiusMeters=11.0,
+        center=(12.108089, -86.256775),
+        radiusMeters=12.0,
         floors=[1],
-        polygon=_paddedRectPolygon(12.108030, 12.108126, -86.256830, -86.256756, padMeters=3.0),
+        polygon=_paddedRectPolygon(12.108030, 12.108126, -86.256830, -86.256693, padMeters=3.0),
         bufferMeters=6.0,
     ),
     "buildingK": BuildingBoundary(
@@ -383,7 +383,7 @@ BUILDING_BOUNDARIES: Dict[str, BuildingBoundary] = {
         center=(12.109269, -86.258719),
         radiusMeters=34.0,
         floors=[1],
-        polygon=_paddedRectPolygon(12.109111, 12.109332, -86.258882, -86.258508, padMeters=5.0),
+        polygon=_paddedRectPolygon(12.109111, 12.109332, -86.258888, -86.258508, padMeters=5.0),
         bufferMeters=9.0,
     ),
     "sportsZone": BuildingBoundary(
