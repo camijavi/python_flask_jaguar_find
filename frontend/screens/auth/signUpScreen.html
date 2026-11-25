@@ -1,10 +1,11 @@
 {% extends "screens/base.html" %}
-{% from "components/auth/authMacros.html" import field, select, roleBadge with context %}
+{% from "components/auth/authMacros.html" import field, studentCareerSelect, studentFacultyField, roleBadge with context %}
 
 {% set es = current_language == 'spa' %}
 {% set rolMap = {'estudiante': 1, 'colaborador': 2, 'visitante': 3} %}
 {% set userTypeId = rolMap.get(rol, 1) %}
 
+{% block title_attrs %} data-i18n="auth.sign_up_page_title"{% endblock %}
 {% block title %}{{ 'Crear una cuenta' if es else 'Create account' }} · JaguarFind{% endblock %}
 
 {% block head %}
@@ -22,7 +23,7 @@
             <img src="{{ url_for('static', filename='img/jaguarLogo.jpg') }}" alt="Jaguar Find"
                  class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 object-contain rounded-full bg-ocean-50 ring-4 ring-brand-200 shadow">
             <div class="flex flex-col items-center sm:items-start gap-2">
-                <h1 class="font-extrabold text-2xl sm:text-3xl tracking-tight bg-gradient-to-r from-ocean-900 to-brand-500 bg-clip-text text-transparent">
+                <h1 class="font-extrabold text-2xl sm:text-3xl tracking-tight bg-gradient-to-r from-ocean-900 to-brand-500 bg-clip-text text-transparent" data-i18n="auth.sign_up_heading">
                     {{ 'Crear una cuenta' if es else 'Create account' }}
                 </h1>
                 {{ roleBadge(rol, es) }}
@@ -33,38 +34,33 @@
         <div id="signUpAlert" class="hidden rounded-xl p-3.5 text-xs font-semibold flex items-center gap-2"></div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
-            {{ field('nombre', 'Nombre completo' if es else 'Full name', 'user', 'text', 'Juan Pérez' if es else 'John Doe', full=true) }}
+            {{ field('nombre', 'Nombre completo' if es else 'Full name', 'user', 'text', 'Juan Pérez' if es else 'John Doe', full=true, label_key='auth.full_name_label', placeholder_key='auth.full_name_placeholder') }}
 
             {% if rol == 'visitante' %}
-                {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', 'text', '001-000000-0000A', 'maxlength="16"') }}
-                {{ field('telefono', 'Número de Teléfono' if es else 'Phone Number', 'phone', 'tel', '88881234', 'inputmode="numeric"') }}
-                {{ field('correoPersonal', 'Correo electrónico' if es else 'Email', 'mail', 'email', 'correo@ejemplo.com', full=true) }}
+                {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', 'text', '001-000000-0000A', 'maxlength="16"', label_key='auth.national_id_label') }}
+                {{ field('telefono', 'Número de Teléfono' if es else 'Phone Number', 'phone', 'tel', '88881234', 'inputmode="numeric"', label_key='auth.phone_label') }}
+                {{ field('correoPersonal', 'Correo electrónico' if es else 'Email', 'mail', 'email', 'correo@ejemplo.com', full=true, label_key='auth.personal_email_label') }}
             {% else %}
-                {{ field('correo', 'Correo institucional' if es else 'Institutional email', 'mail', 'email', 'usuario@uamv.edu.ni') }}
-                {{ field('password', 'Contraseña' if es else 'Password', 'lock', 'password', '', 'minlength="6"') }}
+                {{ field('correo', 'Correo institucional' if es else 'Institutional email', 'mail', 'email', 'usuario@uamv.edu.ni', label_key='auth.institutional_email_label') }}
+                {{ field('password', 'Contraseña' if es else 'Password', 'lock', 'password', '', 'minlength="6"', label_key='auth.password_label') }}
                 {% if rol == 'estudiante' %}
-                    {{ field('cif', 'Número CIF' if es else 'CIF number', 'hash', 'text', '8 dígitos' if es else '8 digits', 'pattern="\\d{8}" maxlength="8"') }}
-                    {{ field('carrera', 'Carrera' if es else 'Degree program', 'book') }}
-                    {{ select('facultad', 'Facultad' if es else 'Faculty', 'school', [
-                        ('FIA', 'Ingeniería y Arquitectura' if es else 'Engineering & Architecture'),
-                        ('FODO', 'Odontología' if es else 'Dentistry'),
-                        ('FCM', 'Ciencias Médicas' if es else 'Medical Sciences'),
-                        ('FCE', 'Ciencias Económicas y Administrativas' if es else 'Economic & Administrative Sciences'),
-                        ('FCJ', 'Ciencias Jurídicas' if es else 'Legal Sciences')], full=true) }}
+                    {{ field('cif', 'Número CIF' if es else 'CIF number', 'hash', 'text', '8 dígitos' if es else '8 digits', 'pattern="\\d{8}" maxlength="8"', label_key='auth.cif_label', placeholder_key='auth.cif_placeholder') }}
+                    {{ studentCareerSelect(es) }}
+                    {{ studentFacultyField(es) }}
                 {% else %}
-                    {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', full=true) }}
+                    {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', full=true, label_key='auth.national_id_label') }}
                 {% endif %}
             {% endif %}
         </div>
 
         <button id="btnSubmitSignUp" type="submit"
                 class="w-full px-4 py-3 rounded-xl text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 shadow-md shadow-brand-500/30 active:scale-95 transition-all flex items-center justify-center gap-2">
-            <span>{{ 'Registrarme' if es else 'Sign up' }}</span>
+            <span data-i18n="auth.submit_sign_up">{{ 'Registrarme' if es else 'Sign up' }}</span>
         </button>
 
         <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
-            <a href="/auth/options?mode=signup" class="font-semibold text-slate-500 hover:text-brand-700">← {{ 'Cambiar rol' if es else 'Change role' }}</a>
-            <a href="/auth/signin?rol={{ rol }}" class="font-semibold text-ocean-700 hover:text-ocean-900">{{ '¿Ya tienes cuenta? Inicia sesión' if es else 'Already have an account? Sign in' }}</a>
+            <a href="/auth/options?mode=signup" class="font-semibold text-slate-500 hover:text-brand-700">← <span data-i18n="auth.change_role">{{ 'Cambiar rol' if es else 'Change role' }}</span></a>
+            <a href="/auth/signin?rol={{ rol }}" class="font-semibold text-ocean-700 hover:text-ocean-900" data-i18n="auth.already_have_account">{{ '¿Ya tienes cuenta? Inicia sesión' if es else 'Already have an account? Sign in' }}</a>
         </div>
     </form>
 </section>
@@ -76,18 +72,48 @@ document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("signUpForm");
     const alertBox = document.getElementById("signUpAlert");
     const submitBtn = document.getElementById("btnSubmitSignUp");
-    const isEs = {{ 'true' if es else 'false' }};
     const currentRol = "{{ rol }}";
+    const draftKey = "signUp:" + currentRol;
+    const careerSelect = document.getElementById("carrera");
+    const facultyInput = document.getElementById("facultad");
 
-    function showAlert(msg, isSuccess = false) {
+    const draftHandle = window.JaguarFormDrafts
+        ? window.JaguarFormDrafts.registerForm(form, { draftKey })
+        : null;
+
+    let activeAlertState = null;
+
+    function tr(key, fallbackEs, fallbackEn) {
+        const isEs = window.JaguarI18n ? window.JaguarI18n.isSpanish() : (window.APP_CONFIG && window.APP_CONFIG.currentLang === "spa");
+        return window.t ? window.t(key, isEs ? fallbackEs : fallbackEn) : (isEs ? fallbackEs : fallbackEn);
+    }
+
+    function updateFacultyFromCareer() {
+        if (!careerSelect || !facultyInput) return;
+        const selectedMajor = careerSelect.selectedOptions[0];
+        const isEs = window.JaguarI18n
+            ? window.JaguarI18n.isSpanish()
+            : (window.APP_CONFIG && window.APP_CONFIG.currentLang === "spa");
+        facultyInput.value = selectedMajor && selectedMajor.value
+            ? selectedMajor.dataset[isEs ? "facultyEs" : "facultyEn"] || ""
+            : "";
+    }
+
+    function resetSubmitButton() {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span data-i18n="auth.submit_sign_up">${tr("auth.submit_sign_up", "Registrarme", "Sign up")}</span>`;
+    }
+
+    function showAlert(msg, isSuccess = false, i18nMeta = null) {
         if (!alertBox) return;
+        activeAlertState = i18nMeta ? { isSuccess, ...i18nMeta } : null;
         alertBox.className = "rounded-xl p-3.5 text-xs font-semibold flex items-center gap-2 " + 
             (isSuccess ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-rose-50 text-rose-800 border border-rose-200");
         alertBox.innerHTML = (isSuccess ? "✓ " : "⚠️ ") + msg;
         alertBox.classList.remove("hidden");
     }
 
-    function setFieldError(fieldId, errorMsg) {
+    function setFieldError(fieldId, errorMsg, errorKey = "") {
         const input = document.getElementById(fieldId);
         const errContainer = document.getElementById(fieldId + "-error");
         if (input) {
@@ -97,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function() {
             input.setAttribute("aria-describedby", fieldId + "-error");
         }
         if (errContainer) {
+            errContainer.dataset.errorKey = errorKey || "";
             const textSpan = errContainer.querySelector(".error-text");
             if (textSpan) {
                 textSpan.textContent = errorMsg;
@@ -117,6 +144,7 @@ document.addEventListener("DOMContentLoaded", function() {
             input.removeAttribute("aria-describedby");
         }
         if (errContainer) {
+            delete errContainer.dataset.errorKey;
             errContainer.classList.add("hidden");
             const textSpan = errContainer.querySelector(".error-text");
             if (textSpan) textSpan.textContent = "";
@@ -124,16 +152,27 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function validateField(fieldId) {
+        if (fieldId === "carrera") {
+            const input = document.getElementById("carrera");
+            if (!input) return true;
+            if (!input.value) {
+                setFieldError("carrera", tr("auth.validation.career_required", "Selecciona tu carrera.", "Select your major."), "auth.validation.career_required");
+                return false;
+            }
+            clearFieldError("carrera");
+            return true;
+        }
+
         if (fieldId === "nombre") {
             const input = document.getElementById("nombre");
             if (!input) return true;
             const val = (input.value || "").trim();
             if (!val) {
-                setFieldError("nombre", isEs ? "El nombre completo es obligatorio." : "Full name is required.");
+                setFieldError("nombre", tr("auth.validation.name_required", "El nombre completo es obligatorio.", "Full name is required."), "auth.validation.name_required");
                 return false;
             }
             if (val.length < 2) {
-                setFieldError("nombre", isEs ? "El nombre debe tener al menos 2 caracteres." : "Full name must be at least 2 characters.");
+                setFieldError("nombre", tr("auth.validation.name_min", "El nombre debe tener al menos 2 caracteres.", "Full name must be at least 2 characters."), "auth.validation.name_min");
                 return false;
             }
             clearFieldError("nombre");
@@ -145,17 +184,18 @@ document.addEventListener("DOMContentLoaded", function() {
             if (!input) return true;
             let val = (input.value || "").trim().toUpperCase();
             if (!val) {
-                setFieldError("cedula", isEs ? "La cédula de identidad es obligatoria." : "National ID is required.");
+                setFieldError("cedula", tr("auth.validation.cedula_required", "La cédula de identidad es obligatoria.", "National ID is required."), "auth.validation.cedula_required");
                 return false;
             }
             // If entered without hyphens (14 chars), normalize format: 0012003920045B -> 001-200392-0045B
             if (/^\d{13}[A-Z]$/.test(val)) {
                 val = `${val.slice(0, 3)}-${val.slice(3, 9)}-${val.slice(9, 13)}${val.slice(13)}`;
                 input.value = val;
+                if (draftHandle) draftHandle.save();
             }
             const cedulaRegex = /^\d{3}-\d{6}-\d{4}[A-Z]$/;
             if (!cedulaRegex.test(val)) {
-                setFieldError("cedula", isEs ? "Formato de cédula inválido. Debe ser: 001-000000-0000A." : "Invalid National ID format. Expected format: 001-000000-0000A.");
+                setFieldError("cedula", tr("auth.validation.cedula_invalid", "Formato de cédula inválido. Debe ser: 001-000000-0000A.", "Invalid National ID format. Expected format: 001-000000-0000A."), "auth.validation.cedula_invalid");
                 return false;
             }
             clearFieldError("cedula");
@@ -169,14 +209,15 @@ document.addEventListener("DOMContentLoaded", function() {
             const stripped = (input.value || "").replace(/\D/g, "");
             if (input.value !== stripped) {
                 input.value = stripped;
+                if (draftHandle) draftHandle.save();
             }
             const val = stripped.trim();
             if (!val) {
-                setFieldError("telefono", isEs ? "El número de teléfono es obligatorio." : "Phone number is required.");
+                setFieldError("telefono", tr("auth.validation.phone_required", "El número de teléfono es obligatorio.", "Phone number is required."), "auth.validation.phone_required");
                 return false;
             }
             if (val.length < 8) {
-                setFieldError("telefono", isEs ? "El teléfono debe contener solo dígitos (mínimo 8 dígitos)." : "Phone number must contain digits only (minimum 8 digits).");
+                setFieldError("telefono", tr("auth.validation.phone_min", "El teléfono debe contener solo dígitos (mínimo 8 dígitos).", "Phone number must contain digits only (minimum 8 digits)."), "auth.validation.phone_min");
                 return false;
             }
             clearFieldError("telefono");
@@ -188,13 +229,13 @@ document.addEventListener("DOMContentLoaded", function() {
             if (!input) return true;
             const val = (input.value || "").trim();
             if (!val) {
-                setFieldError("correoPersonal", isEs ? "El correo electrónico es obligatorio." : "Email is required.");
+                setFieldError("correoPersonal", tr("auth.validation.email_required", "El correo electrónico es obligatorio.", "Email is required."), "auth.validation.email_required");
                 return false;
             }
             // Standard email format requiring @ and a valid domain
             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             if (!emailRegex.test(val)) {
-                setFieldError("correoPersonal", isEs ? "Ingresa un correo electrónico válido (ej. usuario@dominio.com)." : "Enter a valid email address (e.g. user@domain.com).");
+                setFieldError("correoPersonal", tr("auth.validation.email_invalid", "Ingresa un correo electrónico válido (ej. usuario@dominio.com).", "Enter a valid email address (e.g. user@domain.com)."), "auth.validation.email_invalid");
                 return false;
             }
             clearFieldError("correoPersonal");
@@ -206,11 +247,11 @@ document.addEventListener("DOMContentLoaded", function() {
             if (!input) return true;
             const val = (input.value || "").trim();
             if (!val) {
-                setFieldError("correo", isEs ? "El correo institucional es obligatorio." : "Institutional email is required.");
+                setFieldError("correo", tr("auth.validation.inst_email_required", "El correo institucional es obligatorio.", "Institutional email is required."), "auth.validation.inst_email_required");
                 return false;
             }
             if (!val.toLowerCase().endsWith("@uamv.edu.ni")) {
-                setFieldError("correo", isEs ? "Usa tu correo institucional (@uamv.edu.ni)." : "Use your institutional email (@uamv.edu.ni).");
+                setFieldError("correo", tr("auth.validation.inst_email_domain", "Usa tu correo institucional (@uamv.edu.ni).", "Use your institutional email (@uamv.edu.ni)."), "auth.validation.inst_email_domain");
                 return false;
             }
             clearFieldError("correo");
@@ -222,11 +263,11 @@ document.addEventListener("DOMContentLoaded", function() {
             if (!input) return true;
             const val = input.value || "";
             if (!val) {
-                setFieldError("password", isEs ? "La contraseña es obligatoria." : "Password is required.");
+                setFieldError("password", tr("auth.validation.password_required", "La contraseña es obligatoria.", "Password is required."), "auth.validation.password_required");
                 return false;
             }
             if (val.length < 6) {
-                setFieldError("password", isEs ? "La contraseña debe tener al menos 6 caracteres." : "Password must be at least 6 characters.");
+                setFieldError("password", tr("auth.validation.password_min", "La contraseña debe tener al menos 6 caracteres.", "Password must be at least 6 characters."), "auth.validation.password_min");
                 return false;
             }
             clearFieldError("password");
@@ -238,11 +279,11 @@ document.addEventListener("DOMContentLoaded", function() {
             if (!input) return true;
             const val = (input.value || "").trim();
             if (!val) {
-                setFieldError("cif", isEs ? "El CIF es obligatorio." : "CIF is required.");
+                setFieldError("cif", tr("auth.validation.cif_required", "El CIF es obligatorio.", "CIF is required."), "auth.validation.cif_required");
                 return false;
             }
             if (!/^\d{8}$/.test(val)) {
-                setFieldError("cif", isEs ? "El CIF debe tener exactamente 8 dígitos." : "CIF must be exactly 8 digits.");
+                setFieldError("cif", tr("auth.validation.cif_invalid", "El CIF debe tener exactamente 8 dígitos.", "CIF must be exactly 8 digits."), "auth.validation.cif_invalid");
                 return false;
             }
             clearFieldError("cif");
@@ -250,6 +291,34 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         return true;
+    }
+
+    // Re-translate any active inline validation messages or alerts when switching language
+    window.addEventListener("jaguarLanguageChanged", function() {
+        updateFacultyFromCareer();
+        form.querySelectorAll('[aria-invalid="true"]').forEach((invalidInput) => {
+            if (invalidInput.id) {
+                const errEl = document.getElementById(invalidInput.id + "-error");
+                if (errEl && errEl.dataset.errorKey) {
+                    validateField(invalidInput.id);
+                }
+            }
+        });
+        if (activeAlertState && alertBox && !alertBox.classList.contains("hidden")) {
+            showAlert(
+                tr(activeAlertState.key, activeAlertState.es, activeAlertState.en),
+                activeAlertState.isSuccess,
+                activeAlertState
+            );
+        }
+    });
+
+    if (careerSelect) {
+        careerSelect.addEventListener("change", function() {
+            updateFacultyFromCareer();
+            validateField("carrera");
+        });
+        updateFacultyFromCareer();
     }
 
     // Attach real-time validation and input filters
@@ -312,7 +381,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const fieldsToValidate = currentRol === "visitante"
             ? ["nombre", "cedula", "telefono", "correoPersonal"]
             : (currentRol === "estudiante"
-                ? ["nombre", "correo", "password", "cif"]
+                ? ["nombre", "correo", "password", "cif", "carrera"]
                 : ["nombre", "correo", "password", "cedula"]);
 
         for (const fId of fieldsToValidate) {
@@ -325,7 +394,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (!isValid && firstInvalid) {
             firstInvalid.focus();
-            showAlert(isEs ? "Por favor completa y corrige todos los campos requeridos." : "Please complete and correct all required fields.", false);
+            showAlert(
+                tr("auth.fix_required_fields", "Por favor completa y corrige todos los campos requeridos.", "Please complete and correct all required fields."),
+                false,
+                { key: "auth.fix_required_fields", es: "Por favor completa y corrige todos los campos requeridos.", en: "Please complete and correct all required fields." }
+            );
         }
 
         return isValid;
@@ -334,6 +407,7 @@ document.addEventListener("DOMContentLoaded", function() {
     form.addEventListener("submit", async function(e) {
         e.preventDefault();
         alertBox.classList.add("hidden");
+        activeAlertState = null;
 
         // Enforce required-field and field-specific validation before submission
         if (!validateAllFields()) {
@@ -341,8 +415,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         submitBtn.disabled = true;
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<span class="inline-block animate-spin mr-1">↻</span> {{ "Procesando..." if es else "Processing..." }}';
+        submitBtn.innerHTML = `<span class="inline-block animate-spin mr-1">↻</span> ${tr("auth.processing", "Procesando...", "Processing...")}`;
 
         const formData = new FormData(form);
         const payload = {
@@ -365,13 +438,22 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             const data = await res.json();
             if (data.success) {
-                showAlert(data.message || '{{ "Registro completado exitosamente." if es else "Registration successful." }}', true);
+                if (draftHandle) draftHandle.clear();
+                showAlert(
+                    data.message || tr("auth.signup_success", "Registro completado exitosamente.", "Registration successful."),
+                    true,
+                    data.message ? null : { key: "auth.signup_success", es: "Registro completado exitosamente.", en: "Registration successful." }
+                );
                 setTimeout(() => {
                     window.location.href = data.redirect || "/lost-found-object/catalogo";
                 }, 800);
             } else {
-                const errMsg = data.error || '{{ "Error al procesar registro." if es else "Error registering user." }}';
-                showAlert(errMsg, false);
+                const errMsg = data.error || tr("auth.signup_error", "Error al procesar registro.", "Error registering user.");
+                showAlert(
+                    errMsg,
+                    false,
+                    data.error ? null : { key: "auth.signup_error", es: "Error al procesar registro.", en: "Error registering user." }
+                );
                 
                 // Map backend errors to field-level highlights
                 if (data.field) {
@@ -391,13 +473,15 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 }
                 
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
+                resetSubmitButton();
             }
         } catch (err) {
-            showAlert('{{ "Error de conexión con el servidor." if es else "Network connection error." }}', false);
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
+            showAlert(
+                tr("auth.network_error", "Error de conexión con el servidor.", "Network connection error."),
+                false,
+                { key: "auth.network_error", es: "Error de conexión con el servidor.", en: "Network connection error." }
+            );
+            resetSubmitButton();
         }
     });
 });

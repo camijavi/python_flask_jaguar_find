@@ -160,9 +160,9 @@
 
             <div class="flex items-center gap-3">
                 <!-- Language Switcher -->
-                <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs font-bold">
-                    <a href="{{ url_for('setLanguage', lang='spa') }}" class="px-2 py-0.5 rounded-md {% if current_language == 'spa' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500{% endif %}">ES</a>
-                    <a href="{{ url_for('setLanguage', lang='eng') }}" class="px-2 py-0.5 rounded-md {% if current_language == 'eng' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500{% endif %}">EN</a>
+                <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs font-bold" role="group" aria-label="{{ t('nav.language', default='Language') }}" data-i18n-aria-label="nav.language">
+                    <a href="{{ url_for('setLanguage', lang='spa') }}" data-lang-switch="spa" aria-pressed="{{ 'true' if current_language == 'spa' else 'false' }}" {% if current_language == 'spa' %}aria-current="true"{% endif %} title="{{ t('nav.switch_to_es', default='Cambiar a Español') }}" data-i18n-title="nav.switch_to_es" class="px-2 py-0.5 rounded-md transition-all {% if current_language == 'spa' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}">ES</a>
+                    <a href="{{ url_for('setLanguage', lang='eng') }}" data-lang-switch="eng" aria-pressed="{{ 'true' if current_language == 'eng' else 'false' }}" {% if current_language == 'eng' %}aria-current="true"{% endif %} title="{{ t('nav.switch_to_en', default='Switch to English') }}" data-i18n-title="nav.switch_to_en" class="px-2 py-0.5 rounded-md transition-all {% if current_language == 'eng' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}">EN</a>
                 </div>
 
                 <!-- Live Map Shortcut -->
@@ -178,6 +178,16 @@
             {% block admin_content %}{% endblock %}
         </main>
     </div>
+
+    <!-- Client-side i18n & Form Draft Persistence -->
+    <script>
+        window.APP_CONFIG = window.APP_CONFIG || {
+            currentLang: "{{ current_language or 'spa' }}"
+        };
+        window.APP_TRANSLATIONS = {{ (i18n_dict or {})|tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/formDraftManager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/i18nManager.js') }}"></script>
 
     <!-- Script for mobile drawer toggling -->
     <script>

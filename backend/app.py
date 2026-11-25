@@ -144,31 +144,40 @@ def createApp(configClass=Config) -> Flask:
         session.pop("user", None)
         return redirect(url_for("renderMapScreen"))
 
+    def _normalizeLang(lang: str) -> str:
+        lower = str(lang or "").strip().lower()
+        return "spa" if (lower.startswith("sp") or lower.startswith("es")) else "eng"
+
     @app.route("/set-language/<lang>", methods=["GET", "POST"])
     def setLanguage(lang: str):
-        """Web route to switch language and redirect user back to previous page."""
-        cleanLang = "spa" if str(lang).lower().startswith("sp") else "eng"
+        """Web route fallback to switch language and redirect user back to previous page."""
+        cleanLang = _normalizeLang(lang)
         session["idioma"] = cleanLang
         session["lang"] = cleanLang
+        nextUrl = request.args.get("next", "")
+        if nextUrl and nextUrl.startswith("/") and not nextUrl.startswith("//"):
+            return redirect(nextUrl)
         referrer = request.referrer or url_for("renderMapScreen")
         return redirect(referrer)
 
     @app.route("/api/i18n/set-language/<lang>", methods=["GET", "POST"])
     def apiSetLanguage(lang: str):
-        """API route to dynamically update language in user session."""
-        cleanLang = "spa" if str(lang).lower().startswith("sp") else "eng"
+        """API route to dynamically update language in user session and return translations."""
+        cleanLang = _normalizeLang(lang)
         session["idioma"] = cleanLang
         session["lang"] = cleanLang
+        i18nMgr = I18nManager.getInstance()
         return jsonify({
             "success": True,
             "language": cleanLang,
+            "translations": i18nMgr.translations.get(cleanLang, {}),
             "message": f"Language switched to {cleanLang}."
         }), 200
 
     @app.route("/api/i18n/translations/<lang>", methods=["GET"])
     def apiGetTranslations(lang: str):
         """Returns translation dictionary for client-side JavaScript rendering."""
-        cleanLang = "spa" if str(lang).lower().startswith("sp") else "eng"
+        cleanLang = _normalizeLang(lang)
         i18nMgr = I18nManager.getInstance()
         return jsonify({
             "success": True,

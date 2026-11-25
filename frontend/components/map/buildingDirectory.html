@@ -15,13 +15,13 @@ Interactive search filter & click-to-focus on 2D map.
         <div class="flex items-center justify-between mb-2.5">
             <h3 class="text-sm font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
                 <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                <span>Directorio Oficial de Edificios</span>
+                <span data-i18n="map.directory_title">{{ t('map.directory_title', default='Directorio Oficial de Edificios') }}</span>
             </h3>
             <div class="flex items-center gap-1.5">
                 <span id="directoryCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
                     16 Edificios
                 </span>
-                <button id="btnCloseDirectorySidebar" type="button" class="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" title="{{ t('nav.close_menu', default='Cerrar menú') }}" aria-label="Close">
+                <button id="btnCloseDirectorySidebar" type="button" class="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" title="{{ t('nav.close_menu', default='Cerrar menú') }}" data-i18n-title="nav.close_menu" aria-label="Close">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -34,7 +34,8 @@ Interactive search filter & click-to-focus on 2D map.
             </div>
             <input type="text" 
                    id="directorySearchInput" 
-                   placeholder="Filtrar edificio, aula, oficina o piso..." 
+                   placeholder="{{ t('map.directory_search_placeholder', default='Filtrar edificio, aula, oficina o piso...') }}" 
+                   data-i18n-placeholder="map.directory_search_placeholder"
                    class="w-full pl-9 pr-3 py-1.5 bg-slate-50 hover:bg-white focus:bg-white text-xs font-medium text-slate-800 placeholder-slate-400 rounded-lg border border-slate-200 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/20 transition-all outline-hidden">
         </div>
     </div>

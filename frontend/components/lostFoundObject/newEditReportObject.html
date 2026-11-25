@@ -257,6 +257,27 @@ Features:
     const photoHidden = document.getElementById("reportPhotoUrl");
     const btnRemovePhoto = document.getElementById("btnRemovePhoto");
 
+    let reportDraftHandle = null;
+    function initReportDraft() {
+        if (!reportDraftHandle && form && window.JaguarFormDrafts) {
+            reportDraftHandle = window.JaguarFormDrafts.registerForm(form, {
+                draftKey: "reportObject",
+                includeHiddenFields: ["reportLocationNode"],
+                onRestore: (fields) => {
+                    if (fields && fields.reportLocationNode) {
+                        setSelectLocationValue(fields.reportLocationNode, fields.reportLocationNode);
+                    }
+                },
+            });
+        }
+        return reportDraftHandle;
+    }
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initReportDraft);
+    } else {
+        initReportDraft();
+    }
+
     function setSelectLocationValue(nodeId, fallbackLabel) {
         if (!locationSelect || !nodeId) return;
         const hasOption = Array.from(locationSelect.options).some(opt => opt.value === nodeId);
@@ -335,6 +356,7 @@ Features:
         modal.classList.add("hidden");
         document.body.classList.remove("overflow-hidden");
         form.reset();
+        if (reportDraftHandle) reportDraftHandle.clear();
         detectedNodeId = "";
         detectedLocationName = "";
         openedWithPreselectedLocation = false;
@@ -666,6 +688,7 @@ Features:
                 const data = await res.json();
 
                 if (data.success) {
+                    if (reportDraftHandle) reportDraftHandle.clear();
                     formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
                     formAlert.textContent = "Objeto reportado con éxito. Se ha añadido al catálogo del campus.";
                     formAlert.classList.remove("hidden");

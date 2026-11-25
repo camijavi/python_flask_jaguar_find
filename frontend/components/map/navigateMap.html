@@ -297,13 +297,15 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/>
                 </svg>
             </div>
-            <span class="text-xs font-bold text-slate-800">{{ t('map.plan_route', default='Planificar Ruta') }}</span>
+            <span class="text-xs font-bold text-slate-800" data-i18n="map.plan_route">{{ t('map.plan_route', default='Planificar Ruta') }}</span>
         </div>
         <!-- Collapse / Hide arrow button -->
         <button id="btnCollapseBottomSheet" type="button" 
                 class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" 
                 title="{{ t('map.close', default='Ocultar panel') }}"
-                aria-label="{{ t('map.close', default='Ocultar panel') }}">
+                data-i18n-title="map.close"
+                aria-label="{{ t('map.close', default='Ocultar panel') }}"
+                data-i18n-aria-label="map.close">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
             </svg>
@@ -323,10 +325,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2a10 10 0 100 20 10 10 0 000-20zm3.5 6.5l-2 5-5 2 2-5 5-2z"></path></svg>
                 </div>
                 <div>
-                    <h2 class="text-sm font-bold text-slate-900 leading-tight">
+                    <h2 class="text-sm font-bold text-slate-900 leading-tight" data-i18n="map.title">
                         {{ t('map.title', default='Navegador del Campus UAM') }}
                     </h2>
-                    <p class="text-[11px] text-slate-500">
+                    <p class="text-[11px] text-slate-500" data-i18n="map.subtitle">
                         {{ t('map.subtitle', default='Find optimal pedestrian walking routes') }}
                     </p>
                 </div>
@@ -335,16 +337,18 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Action Buttons (Reset & Close Sidebar) -->
             <div class="flex items-center gap-1.5">
                 <!-- Reset Button -->
-                <button id="btnResetNavigation" type="button" class="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-rose-600 font-medium px-2 py-1 rounded transition-colors hidden" title="{{ t('map.clear_route', default='Clear Route') }}">
+                <button id="btnResetNavigation" type="button" class="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-rose-600 font-medium px-2 py-1 rounded transition-colors hidden" title="{{ t('map.clear_route', default='Clear Route') }}" data-i18n-title="map.clear_route">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    <span>{{ t('map.clear_route', default='Clear') }}</span>
+                    <span data-i18n="map.clear_route">{{ t('map.clear_route', default='Clear') }}</span>
                 </button>
 
                 <!-- Close Sidebar Menu Button -->
                 <button id="btnCloseNavigateSidebar" type="button" 
                         class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" 
                         title="{{ t('nav.close_menu', default='Cerrar menú lateral') }}" 
-                        aria-label="{{ t('nav.close_menu', default='Cerrar menú lateral') }}">
+                        data-i18n-title="nav.close_menu"
+                        aria-label="{{ t('nav.close_menu', default='Cerrar menú lateral') }}"
+                        data-i18n-aria-label="nav.close_menu">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -360,7 +364,8 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Mobile Back Arrow Button (<) as seen on Google Maps (Bottom Sheet only) -->
             <button id="btnMobileBack" type="button" 
                     class="navmap-bottom-sheet-only lg:hidden p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors shrink-0 cursor-pointer" 
-                    title="Cerrar barra de navegación">
+                    title="{{ t('map.close_nav_bar', default='Cerrar barra de navegación') }}"
+                    data-i18n-title="map.close_nav_bar">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
             </button>
 
@@ -387,16 +392,17 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <div class="navmap-sidebar-only hidden lg:flex items-center justify-between mb-1.5">
                         <label for="originInput" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100 inline-block"></span>
-                            {{ t('map.where_am_i', default='Where are you?') }}
+                            <span data-i18n="map.where_am_i">{{ t('map.where_am_i', default='Where are you?') }}</span>
                         </label>
                         
                         <button id="btnGetGps" type="button" 
                                 class="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100/80 px-2.5 py-1 rounded-md transition-all active:scale-95 cursor-pointer"
-                                title="{{ t('map.use_gps', default='Use my current location') }}">
+                                title="{{ t('map.use_gps', default='Use my current location') }}"
+                                data-i18n-title="map.use_gps">
                             <span id="gpsIcon" class="flex items-center">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </span>
-                            <span id="gpsBtnText">{{ t('map.get_gps', default='Get via GPS') }}</span>
+                            <span id="gpsBtnText" data-i18n="map.get_gps">{{ t('map.get_gps', default='Get via GPS') }}</span>
                             <span id="gpsSpinner" class="hidden">
                                 <svg class="w-3.5 h-3.5 animate-spin text-brand-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </span>
@@ -413,10 +419,11 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                                id="originInput" 
                                autocomplete="off"
                                placeholder="{{ t('map.where_am_i_placeholder', default='Tu ubicación o buscar...') }}" 
+                               data-i18n-placeholder="map.where_am_i_placeholder"
                                class="w-full pl-3 lg:pl-9 pr-14 lg:pr-8 py-2 bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all outline-hidden">
                         
                         <!-- Mobile GPS quick button inside origin input (Bottom Sheet only) -->
-                        <button id="btnMobileGps" type="button" class="navmap-bottom-sheet-only lg:hidden absolute inset-y-0 right-7 pr-1 flex items-center text-brand-600 hover:text-brand-800 cursor-pointer" title="{{ t('map.use_gps', default='Use my current location') }}">
+                        <button id="btnMobileGps" type="button" class="navmap-bottom-sheet-only lg:hidden absolute inset-y-0 right-7 pr-1 flex items-center text-brand-600 hover:text-brand-800 cursor-pointer" title="{{ t('map.use_gps', default='Use my current location') }}" data-i18n-title="map.use_gps">
                             <svg id="mobileGpsIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             <svg id="mobileGpsSpinner" class="w-4 h-4 animate-spin text-brand-600 hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         </button>
@@ -447,10 +454,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                                 </div>
                             </div>
                             <div class="flex items-center gap-0.5 shrink-0">
-                                <button id="btnRefreshGpsPanel" type="button" class="text-slate-400 hover:text-brand-600 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.gps.retry', default='Reintentar GPS') }}">
+                                <button id="btnRefreshGpsPanel" type="button" class="text-slate-400 hover:text-brand-600 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.gps.retry', default='Reintentar GPS') }}" data-i18n-title="map.gps.retry">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                                 </button>
-                                <button id="btnCloseGpsDisambiguation" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.close', default='Cerrar') }}">
+                                <button id="btnCloseGpsDisambiguation" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.close', default='Cerrar') }}" data-i18n-title="map.close">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                 </button>
                             </div>
@@ -469,7 +476,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                             </div>
                             <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
                                 <span id="gpsEstimatedAccuracyMeta" class="text-[10px] text-slate-500 font-medium"></span>
-                                <button id="btnToggleGpsManualList" type="button" class="text-[10.5px] font-bold text-brand-700 hover:text-brand-900 underline underline-offset-2 cursor-pointer">
+                                <button id="btnToggleGpsManualList" type="button" data-i18n="map.gps.change_spot" class="text-[10.5px] font-bold text-brand-700 hover:text-brand-900 underline underline-offset-2 cursor-pointer">
                                     {{ t('map.gps.change_spot', default='Cambiar ubicación') }}
                                 </button>
                             </div>
@@ -479,11 +486,11 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                         <div id="gpsErrorActions" class="hidden flex flex-wrap items-center gap-1.5">
                             <button id="btnGpsErrorRetry" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                <span>{{ t('map.gps.retry', default='Reintentar GPS') }}</span>
+                                <span data-i18n="map.gps.retry">{{ t('map.gps.retry', default='Reintentar GPS') }}</span>
                             </button>
                             <button id="btnGpsManualPick" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-[11px] transition-colors cursor-pointer">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10"/></svg>
-                                <span>{{ t('map.gps.select_manually', default='Elegir manualmente') }}</span>
+                                <span data-i18n="map.gps.select_manually">{{ t('map.gps.select_manually', default='Elegir manualmente') }}</span>
                             </button>
                         </div>
 
@@ -506,6 +513,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                                    id="gpsLocationFilterInput"
                                    autocomplete="off"
                                    placeholder="{{ t('map.gps.filter_locations_placeholder', default='Filtrar aula, baño, oficina...') }}"
+                                   data-i18n-placeholder="map.gps.filter_locations_placeholder"
                                    class="hidden w-full px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] text-slate-800 placeholder-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-hidden">
                             <div id="gpsLocationsList" class="max-h-44 overflow-y-auto space-y-1 pr-0.5 scrollbar-thin"></div>
                         </div>
@@ -519,9 +527,9 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                 <!-- Sidebar Swap & Accessibility Row (Desktop & Mobile Sidebar) -->
                 <div class="navmap-sidebar-only hidden lg:flex items-center justify-between py-0.5">
                     <!-- Swap Origin / Destination -->
-                    <button id="btnSwapLocations" type="button" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-600 hover:bg-slate-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer" title="{{ t('map.swap', default='Swap locations') }}">
+                    <button id="btnSwapLocations" type="button" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-600 hover:bg-slate-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer" title="{{ t('map.swap', default='Swap locations') }}" data-i18n-title="map.swap">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
-                        <span>{{ t('map.swap', default='Swap') }}</span>
+                        <span data-i18n="map.swap">{{ t('map.swap', default='Swap') }}</span>
                     </button>
 
                     <!-- Wheelchair Accessibility Toggle -->
@@ -529,7 +537,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                         <input type="checkbox" id="accessibleToggle" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
                         <span class="inline-flex items-center gap-1">
                             <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                            <span>{{ t('map.accessible_route', default='Wheelchair accessible') }}</span>
+                            <span data-i18n="map.accessible_route">{{ t('map.accessible_route', default='Wheelchair accessible') }}</span>
                         </span>
                     </label>
                 </div>
@@ -540,9 +548,9 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <div class="navmap-sidebar-only hidden lg:flex items-center justify-between mb-1.5">
                         <label for="destinationInput" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-rose-500 ring-4 ring-rose-100 inline-block"></span>
-                            {{ t('map.where_to_go', default='Where to?') }}
+                            <span data-i18n="map.where_to_go">{{ t('map.where_to_go', default='Where to?') }}</span>
                         </label>
-                        <span class="text-[11px] text-slate-400">
+                        <span class="text-[11px] text-slate-400" data-i18n="map.direct_search">
                             {{ t('map.direct_search', default='Search directly or pick category') }}
                         </span>
                     </div>
@@ -557,6 +565,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                                id="destinationInput" 
                                autocomplete="off"
                                placeholder="{{ t('map.where_to_go_placeholder', default='Aula, oficina, laboratorio, servicio...') }}" 
+                               data-i18n-placeholder="map.where_to_go_placeholder"
                                class="w-full pl-3 lg:pl-9 pr-8 py-2 bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all outline-hidden">
                         
                         <!-- Clear destination input button -->
@@ -574,7 +583,8 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Mobile Swap Button on the right (Google Maps ⇅ icon, Bottom Sheet only) -->
             <button id="btnMobileSwap" type="button" 
                     class="navmap-bottom-sheet-only lg:hidden p-2 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition-all self-center shrink-0 cursor-pointer" 
-                    title="{{ t('map.swap', default='Swap locations') }}">
+                    title="{{ t('map.swap', default='Swap locations') }}"
+                    data-i18n-title="map.swap">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
             </button>
         </div>
@@ -587,49 +597,49 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin text-xs" id="categoryChipsContainer">
                 
                 <!-- Walking mode pill (Active Light-Theme Sky-Blue mode indicator) -->
-                <button type="button" id="btnModeWalking" class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-sky-500 text-white shadow-xs inline-flex items-center gap-1.5 shrink-0" title="{{ t('map.standard_route', default='Ruta peatonal óptima') }}">
+                <button type="button" id="btnModeWalking" class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-sky-500 text-white shadow-xs inline-flex items-center gap-1.5 shrink-0" title="{{ t('map.standard_route', default='Ruta peatonal óptima') }}" data-i18n-title="map.standard_route">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 10l2 2 2-2m-2 2v6m-4 2l4-2 4 2"></path></svg>
-                    <span>{{ t('map.mode_walking', default='A pie') }}</span>
+                    <span data-i18n="map.mode_walking">{{ t('map.mode_walking', default='A pie') }}</span>
                 </button>
 
                 <!-- Wheelchair mode pill (Interactive toggle pill for mobile & desktop) -->
-                <button type="button" id="btnModeWheelchair" class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 inline-flex items-center gap-1.5 shrink-0 cursor-pointer" title="{{ t('map.accessible_route', default='Wheelchair accessible') }}">
+                <button type="button" id="btnModeWheelchair" class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 inline-flex items-center gap-1.5 shrink-0 cursor-pointer" title="{{ t('map.accessible_route', default='Wheelchair accessible') }}" data-i18n-title="map.accessible_route">
                     <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                    <span id="modeWheelchairText">{{ t('map.mode_accessible', default='Accesible') }}</span>
+                    <span id="modeWheelchairText" data-i18n="map.mode_accessible">{{ t('map.mode_accessible', default='Accesible') }}</span>
                 </button>
 
                 <!-- Category Chips -->
                 <button type="button" data-category="" class="category-chip active whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-sky-500 text-white shadow-2xs inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span>{{ t('map.categories.all', default='All') }}</span>
+                    <span data-i18n="map.categories.all">{{ t('map.categories.all', default='All') }}</span>
                 </button>
                 <button type="button" data-category="drinkingFountain" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <span>{{ t('map.categories.drinking_fountains', default='Bebederos') }}</span>
+                    <span data-i18n="map.categories.drinking_fountains">{{ t('map.categories.drinking_fountains', default='Bebederos') }}</span>
                 </button>
                 <button type="button" data-category="restroom" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    <span>{{ t('map.categories.restrooms', default='Baños') }}</span>
+                    <span data-i18n="map.categories.restrooms">{{ t('map.categories.restrooms', default='Baños') }}</span>
                 </button>
                 <button type="button" data-category="foodArea" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
-                    <span>{{ t('map.categories.food', default='Comida') }}</span>
+                    <span data-i18n="map.categories.food">{{ t('map.categories.food', default='Comida') }}</span>
                 </button>
                 <button type="button" data-category="medicalLab" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>{{ t('map.categories.clinics', default='Medicina') }}</span>
+                    <span data-i18n="map.categories.clinics">{{ t('map.categories.clinics', default='Medicina') }}</span>
                 </button>
                 <button type="button" data-category="dentalLab" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    <span>{{ t('map.categories.dental', default='Odontología') }}</span>
+                    <span data-i18n="map.categories.dental">{{ t('map.categories.dental', default='Odontología') }}</span>
                 </button>
                 <button type="button" data-category="faculty" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-purple-50 text-slate-700 hover:text-purple-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
-                    <span>{{ t('map.categories.admin', default='Facultades') }}</span>
+                    <span data-i18n="map.categories.admin">{{ t('map.categories.admin', default='Facultades') }}</span>
                 </button>
                 <button type="button" data-category="accessibleRamp" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                    <span>{{ t('map.categories.ramps', default='Rampas') }}</span>
+                    <span data-i18n="map.categories.ramps">{{ t('map.categories.ramps', default='Rampas') }}</span>
                 </button>
             </div>
         </div>
@@ -642,7 +652,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     class="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 hover:from-sky-600 hover:via-blue-600 hover:to-sky-700 text-white font-bold text-xs shadow-md shadow-sky-500/25 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer">
                 <!-- Navigation Route Arrow Icon -->
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                <span>{{ t('map.calculate_route', default='Find Optimal Route') }}</span>
+                <span data-i18n="map.calculate_route">{{ t('map.calculate_route', default='Find Optimal Route') }}</span>
             </button>
         </div>
 
@@ -659,7 +669,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
      class="fixed bottom-[72px] inset-x-2.5 sm:inset-x-6 max-w-lg mx-auto z-40 bg-white rounded-2xl shadow-[0_10px_34px_rgba(15,23,42,0.18)] border border-slate-200/90 p-3.5 pointer-events-auto gmaps-slide-up lg:static lg:inset-auto lg:max-w-none lg:mt-3 lg:bg-white lg:rounded-2xl lg:shadow-md lg:border lg:border-slate-200/80 lg:p-4.5 hidden">
     
     <!-- Summary Metrics Banner (Tap to re-expand search/planner on mobile) -->
-    <div id="routeSummaryBanner" class="p-3 bg-brand-50/80 border border-brand-100 rounded-xl flex items-center justify-between mb-2 shadow-2xs cursor-pointer lg:cursor-default" title="Toca para editar ruta">
+    <div id="routeSummaryBanner" class="p-3 bg-brand-50/80 border border-brand-100 rounded-xl flex items-center justify-between mb-2 shadow-2xs cursor-pointer lg:cursor-default" title="{{ t('map.tap_edit_route', default='Toca para editar ruta') }}" data-i18n-title="map.tap_edit_route">
         <div class="flex items-center gap-2.5 min-w-0">
             <div class="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
                 <!-- Walking Pedestrian Icon -->
@@ -673,7 +683,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                 </div>
                 <span id="routeAccessibilityBadge" class="text-[10px] font-semibold text-emerald-700 flex items-center gap-1 mt-0.5">
                     <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                    <span>{{ t('map.accessible_route', default='Accessible Route') }}</span>
+                    <span data-i18n="map.accessible_route">{{ t('map.accessible_route', default='Accessible Route') }}</span>
                 </span>
             </div>
         </div>
@@ -683,15 +693,17 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Mobile Steps Toggle Button ("Pasos", Bottom Sheet floating card only) -->
             <button id="btnToggleMobileSteps" type="button" 
                     class="navmap-bottom-sheet-only lg:hidden inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white border border-brand-200 hover:bg-brand-50 text-brand-800 font-bold text-xs transition-colors shadow-2xs cursor-pointer"
-                    title="Ver lista de pasos">
-                <span>Pasos</span>
+                    title="{{ t('map.view_steps', default='Ver lista de pasos') }}"
+                    data-i18n-title="map.view_steps">
+                <span data-i18n="map.steps_label">{{ t('map.steps_label', default='Pasos') }}</span>
                 <span id="stepsCountBadge" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-brand-100 text-brand-800">0</span>
             </button>
 
             <!-- Voice TTS Button -->
             <button id="btnVoiceDirections" type="button" 
                     class="p-1.5 rounded-lg bg-white border border-brand-200 hover:bg-brand-50 text-brand-700 transition-colors shadow-2xs cursor-pointer"
-                    title="{{ t('map.listen_directions', default='Listen to voice directions') }}">
+                    title="{{ t('map.listen_directions', default='Listen to voice directions') }}"
+                    data-i18n-title="map.listen_directions">
                 <span id="voiceIconContainer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
                 </span>
@@ -700,7 +712,8 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Clear / Close Route Button on Mobile -->
             <button id="btnCloseMobileRoute" type="button" 
                     class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" 
-                    title="Cerrar ruta">
+                    title="{{ t('map.close_route', default='Cerrar ruta') }}"
+                    data-i18n-title="map.close_route">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
@@ -709,7 +722,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
     <!-- Step-by-Step Directions List (Collapsible on mobile; visible on desktop) -->
     <div id="routeStepsWrapper" class="hidden lg:block pt-1">
         <div class="flex items-center justify-between mb-1.5">
-            <h4 class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+            <h4 class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500" data-i18n="map.steps">
                 {{ t('map.steps', default='Step-by-step directions') }}
             </h4>
         </div>
@@ -798,6 +811,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const destinationInput = document.getElementById("destinationInput");
     const destinationSuggestions = document.getElementById("destinationSuggestions");
     const btnClearDestination = document.getElementById("btnClearDestination");
+    const directorySearchInput = document.getElementById("directorySearchInput");
 
     const categoryChips = document.querySelectorAll(".category-chip");
     const btnSwap = document.getElementById("btnSwapLocations");
@@ -814,6 +828,117 @@ document.addEventListener("DOMContentLoaded", function() {
     const btnVoice = document.getElementById("btnVoiceDirections");
     const voiceIconContainer = document.getElementById("voiceIconContainer");
     const voiceBtnText = document.getElementById("voiceBtnText");
+
+    // ------------------------------------------------------------------------
+    // Scoped sessionStorage Draft Persistence for Navigation Form & Directory
+    // ------------------------------------------------------------------------
+    function syncWheelchairPillVisual(isChecked) {
+        if (!btnModeWheelchair) return;
+        if (isChecked) {
+            btnModeWheelchair.classList.remove("bg-slate-100", "text-slate-700");
+            btnModeWheelchair.classList.add("bg-teal-700", "text-white", "font-bold");
+        } else {
+            btnModeWheelchair.classList.remove("bg-teal-700", "text-white", "font-bold");
+            btnModeWheelchair.classList.add("bg-slate-100", "text-slate-700");
+        }
+    }
+
+    function syncCategoryChipVisual(category) {
+        categoryChips.forEach(c => {
+            const matches = (c.getAttribute("data-category") || "") === (category || "");
+            if (matches) {
+                c.classList.remove("bg-slate-100", "text-slate-700");
+                c.classList.add("bg-sky-500", "text-white");
+            } else {
+                c.classList.remove("bg-sky-500", "text-white");
+                c.classList.add("bg-slate-100", "text-slate-700");
+            }
+        });
+    }
+
+    let navDraftDirty = false;
+
+    const navDraftHandle = window.JaguarFormDrafts
+        ? window.JaguarFormDrafts.registerCustom("mapNavigation", {
+            read: () => {
+                if (!navDraftDirty) return null;
+                const originValue = originInput ? originInput.value : "";
+                const destinationValue = destinationInput ? destinationInput.value : "";
+                const accessibleOnly = Boolean(accessibleToggle && accessibleToggle.checked);
+                const selectedCategory = state.selectedCategory || "";
+                const directoryQuery = directorySearchInput ? directorySearchInput.value : "";
+                if (!originValue && !destinationValue && !accessibleOnly && !selectedCategory && !directoryQuery) {
+                    return null;
+                }
+                return {
+                    originValue,
+                    originNodeId: state.originNodeId || null,
+                    originPlaceId: state.originPlaceId || null,
+                    usedGpsOrigin: Boolean(state.usedGpsOrigin),
+                    destinationValue,
+                    destinationNodeId: state.destinationNodeId || null,
+                    destinationPlaceId: state.destinationPlaceId || null,
+                    accessibleOnly,
+                    selectedCategory,
+                    directoryQuery,
+                    updatedAt: Date.now(),
+                };
+            },
+            restore: (draft) => {
+                if (!draft || typeof draft !== "object") return;
+                navDraftDirty = true;
+                if (originInput && draft.originValue) {
+                    originInput.value = draft.originValue;
+                    state.originQuery = draft.originValue;
+                    state.originNodeId = draft.originNodeId || null;
+                    state.originPlaceId = draft.originPlaceId || null;
+                    state.usedGpsOrigin = Boolean(draft.usedGpsOrigin);
+                    if (btnClearOrigin) btnClearOrigin.classList.remove("hidden");
+                }
+                if (destinationInput && draft.destinationValue) {
+                    destinationInput.value = draft.destinationValue;
+                    state.destinationQuery = draft.destinationValue;
+                    state.destinationNodeId = draft.destinationNodeId || null;
+                    state.destinationPlaceId = draft.destinationPlaceId || null;
+                    window.currentSelectedDestination = {
+                        placeId: state.destinationPlaceId,
+                        title: state.destinationQuery,
+                        nodeId: state.destinationNodeId,
+                    };
+                    if (btnClearDestination) btnClearDestination.classList.remove("hidden");
+                }
+                if (accessibleToggle && typeof draft.accessibleOnly === "boolean") {
+                    accessibleToggle.checked = draft.accessibleOnly;
+                    state.accessibleOnly = draft.accessibleOnly;
+                    syncWheelchairPillVisual(draft.accessibleOnly);
+                }
+                if (typeof draft.selectedCategory === "string" && draft.selectedCategory) {
+                    state.selectedCategory = draft.selectedCategory;
+                    syncCategoryChipVisual(draft.selectedCategory);
+                }
+                if (directorySearchInput && draft.directoryQuery) {
+                    directorySearchInput.value = draft.directoryQuery;
+                    setTimeout(() => {
+                        directorySearchInput.dispatchEvent(new Event("input"));
+                    }, 0);
+                }
+            },
+        })
+        : null;
+
+    function saveNavDraft() {
+        navDraftDirty = true;
+        if (navDraftHandle) navDraftHandle.save();
+    }
+
+    function clearNavDraft() {
+        navDraftDirty = false;
+        if (navDraftHandle) navDraftHandle.clear();
+    }
+
+    if (directorySearchInput) {
+        directorySearchInput.addEventListener("input", saveNavDraft);
+    }
 
     // ------------------------------------------------------------------------
     // Mobile Bottom Sheet Controller (Open, Close, Directions Button Toggle)
@@ -998,12 +1123,13 @@ document.addEventListener("DOMContentLoaded", function() {
             const matchKw = (place.keywords || []).some(k => k.toLowerCase().includes(clean));
 
             if (!clean || matchName || matchNotes || matchKw) {
+                const floorWord = window.t('map.floor', 'Piso');
                 results.push({
                     type: "place",
                     id: place.placeId,
                     targetNodeId: place.parentBuildingId,
                     title: place.name,
-                    subtitle: `${place.parentBuildingId} • Piso ${place.floorLevel} • ${place.locationNotes || ''}`,
+                    subtitle: `${place.parentBuildingId} • ${floorWord} ${place.floorLevel} • ${place.locationNotes || ''}`,
                     category: place.category,
                     iconSvg: getCategorySvg(place.category)
                 });
@@ -1012,6 +1138,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // 2. Match macro nodes (buildings, gates, parking)
         if (!categoryFilter) {
+            const floorWord = window.t('map.floor', 'Piso');
             for (const node of state.allNodes) {
                 const matchNodeName = (node.name || "").toLowerCase().includes(clean);
                 const matchNodeId = (node.nodeId || "").toLowerCase().includes(clean);
@@ -1021,7 +1148,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         id: node.nodeId,
                         targetNodeId: node.nodeId,
                         title: node.name,
-                        subtitle: `${window.t('map.title', 'Edificio / Entrada')} (Piso ${node.floorLevel})`,
+                        subtitle: `${window.t('map.title', 'Edificio / Entrada')} (${floorWord} ${node.floorLevel})`,
                         category: node.category,
                         iconSvg: `<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>`
                     });
@@ -1094,6 +1221,7 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originNodeId = null;
         state.originPlaceId = null;
         state.usedGpsOrigin = false;
+        saveNavDraft();
 
         if (val.trim().length > 0) {
             const matches = getMatches(val);
@@ -1104,6 +1232,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 state.originPlaceId = selected.id;
                 state.usedGpsOrigin = false;
                 btnClearOrigin.classList.remove("hidden");
+                saveNavDraft();
             });
         } else {
             originSuggestions.classList.add("hidden");
@@ -1196,6 +1325,7 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originPlaceId = selection.nodeId || selection.placeId || selection.buildingId;
         state.usedGpsOrigin = options.fromGps !== false;
         btnClearOrigin.classList.remove("hidden");
+        saveNavDraft();
 
         if (options.renderConfirmedCard) {
             gpsUiState.manualExpanded = false;
@@ -1765,6 +1895,7 @@ document.addEventListener("DOMContentLoaded", function() {
         btnClearOrigin.classList.add("hidden");
         originSuggestions.classList.add("hidden");
         if (gpsDisambiguationBar) gpsDisambiguationBar.classList.add("hidden");
+        saveNavDraft();
     });
 
     if (btnCloseGpsDisambiguation && gpsDisambiguationBar) {
@@ -1872,15 +2003,10 @@ document.addEventListener("DOMContentLoaded", function() {
     // 5. Category Pills Direct Selection
     categoryChips.forEach(chip => {
         chip.addEventListener("click", function() {
-            categoryChips.forEach(c => {
-                c.classList.remove("bg-sky-500", "text-white");
-                c.classList.add("bg-slate-100", "text-slate-700");
-            });
-            this.classList.remove("bg-slate-100", "text-slate-700");
-            this.classList.add("bg-sky-500", "text-white");
-
             const category = this.getAttribute("data-category");
             state.selectedCategory = category;
+            syncCategoryChipVisual(category);
+            saveNavDraft();
 
             // Direct search: immediately show matches for this category in the dropdown!
             const matches = getMatches(destinationInput.value, category);
@@ -1895,6 +2021,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     nodeId: selected.targetNodeId
                 };
                 btnClearDestination.classList.remove("hidden");
+                saveNavDraft();
             });
         });
     });
@@ -1907,6 +2034,7 @@ document.addEventListener("DOMContentLoaded", function() {
         state.destinationNodeId = null;
         state.destinationPlaceId = null;
         window.currentSelectedDestination = { placeId: null, title: val, nodeId: null };
+        saveNavDraft();
 
         const matches = getMatches(val, state.selectedCategory);
         renderSuggestionsList(destinationSuggestions, matches, (selected) => {
@@ -1920,6 +2048,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 nodeId: selected.targetNodeId
             };
             btnClearDestination.classList.remove("hidden");
+            saveNavDraft();
         });
     });
 
@@ -1936,6 +2065,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 nodeId: selected.targetNodeId
             };
             btnClearDestination.classList.remove("hidden");
+            saveNavDraft();
         });
     });
 
@@ -1947,6 +2077,7 @@ document.addEventListener("DOMContentLoaded", function() {
         window.currentSelectedDestination = null;
         btnClearDestination.classList.add("hidden");
         destinationSuggestions.classList.add("hidden");
+        saveNavDraft();
     });
 
     // Close dropdowns on outside click
@@ -1983,6 +2114,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         btnClearOrigin.classList.toggle("hidden", !originInput.value);
         btnClearDestination.classList.toggle("hidden", !destinationInput.value);
+        saveNavDraft();
 
         if (originInput.value && destinationInput.value) {
             calculateRoute();
@@ -2011,15 +2143,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     accessibleToggle.addEventListener("change", function() {
         state.accessibleOnly = this.checked;
-        if (btnModeWheelchair) {
-            if (this.checked) {
-                btnModeWheelchair.classList.remove("bg-slate-100", "text-slate-700");
-                btnModeWheelchair.classList.add("bg-teal-700", "text-white", "font-bold");
-            } else {
-                btnModeWheelchair.classList.remove("bg-teal-700", "text-white", "font-bold");
-                btnModeWheelchair.classList.add("bg-slate-100", "text-slate-700");
-            }
-        }
+        syncWheelchairPillVisual(this.checked);
+        saveNavDraft();
         if ((state.originPlaceId || state.originNodeId) && (state.destinationPlaceId || state.destinationNodeId)) {
             calculateRoute();
         }
@@ -2079,6 +2204,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 routeData.usedGpsOrigin = Boolean(state.usedGpsOrigin);
                 state.currentRoute = routeData;
                 window.lastJaguarRouteData = routeData;
+                clearNavDraft();
                 displayRouteResults(routeData);
 
                 // On mobile, close sidebar drawer (if open) or collapse planner sheet and keep floating steps tucked away
@@ -2123,7 +2249,10 @@ document.addEventListener("DOMContentLoaded", function() {
             }));
 
         routeDistanceText.textContent = route.humanDuration || `~${route.estimatedWalkingMinutes || 1} ${window.t('map.minutes', 'min')}`;
-        routeMinutesText.textContent = `${stepsList.length} ${stepsList.length === 1 ? "referencia" : "referencias"}`;
+        const refWord = stepsList.length === 1
+            ? window.t('map.reference_singular', 'referencia')
+            : window.t('map.reference_plural', 'referencias');
+        routeMinutesText.textContent = `${stepsList.length} ${refWord}`;
         
         if (route.isAccessibleRoute) {
             routeAccessibilityBadge.innerHTML = `
@@ -2142,6 +2271,7 @@ document.addEventListener("DOMContentLoaded", function() {
         stepsCountBadge.textContent = `${stepsList.length}`;
 
         routeStepsList.innerHTML = "";
+        const floorWord = window.t('map.floor', 'Piso');
         stepsList.forEach((stepObj, idx) => {
             const li = document.createElement("li");
             li.id = `routeStep_${idx}`;
@@ -2150,7 +2280,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 ? "bg-emerald-600"
                 : (stepObj.isIndoor ? "bg-indigo-600" : "bg-brand-600");
             const floorChip = (stepObj.isIndoor && stepObj.floorLevel)
-                ? `<span class="inline-block ml-1 px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-700 font-bold text-[9.5px]">Piso ${stepObj.floorLevel}</span>`
+                ? `<span class="inline-block ml-1 px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-700 font-bold text-[9.5px]">${floorWord} ${stepObj.floorLevel}</span>`
                 : "";
             const headlineHtml = stepObj.headline
                 ? `<div class="text-[10.5px] font-extrabold text-sky-700 leading-tight mb-0.5">${stepObj.headline}${floorChip}</div>`
@@ -2299,8 +2429,21 @@ document.addEventListener("DOMContentLoaded", function() {
             stopAzureSpeech();
         }
 
+        clearNavDraft();
+
         window.dispatchEvent(new CustomEvent("jaguarMapRouteCleared"));
     }
+
+    // Reactive language change: keep all form inputs intact, refresh catalog & active route text
+    window.addEventListener("jaguarLanguageChanged", async function() {
+        await loadCampusCatalog();
+        if (gpsDisambiguationBar && !gpsDisambiguationBar.classList.contains("hidden") && gpsUiState.lastMatch) {
+            renderGpsDetectionResult(gpsUiState.lastMatch, gpsUiState.lastCoords);
+        }
+        if (state.currentRoute && (state.originPlaceId || state.originNodeId || originInput.value.trim()) && (state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim())) {
+            calculateRoute();
+        }
+    });
 
     btnReset.addEventListener("click", resetNavigation);
     if (btnCloseMobileRoute) {
