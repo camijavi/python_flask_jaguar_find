@@ -58,6 +58,7 @@ class GlobalGpsMatcher:
         """
         from backend.subgraphs import getBuildingSubgraph
         from backend.data.placesCatalog import PLACES_CATALOG
+        from backend.data.campusLocalization import getLocalizedPlaceName
 
         macroNode = self.macroGraph.getNode(buildingId)
         sg = getBuildingSubgraph(buildingId)
@@ -66,7 +67,7 @@ class GlobalGpsMatcher:
         buildingName = (
             macroNode.getName(lang)
             if macroNode
-            else (sg.name if sg else buildingId)
+            else (sg.getName(lang) if sg else buildingId)
         )
 
         if sg and sg.floors:
@@ -78,12 +79,14 @@ class GlobalGpsMatcher:
 
         locations: List[Dict[str, Any]] = []
         seenKeys = set()
+        orderMap: Dict[int, int] = {}
 
         def _appendLocation(entry: Dict[str, Any]) -> None:
             key = (_normKey(entry["name"]), int(entry["floorLevel"]))
             if key in seenKeys:
                 return
             seenKeys.add(key)
+            orderMap[id(entry)] = len(locations)
             locations.append(entry)
 
         # 1. All indoor nodes from the building's subgraph (classrooms, offices, labs, restrooms, etc.)
@@ -129,7 +132,7 @@ class GlobalGpsMatcher:
                 _appendLocation({
                     "nodeId": place.get("placeId"),
                     "placeId": place.get("placeId"),
-                    "name": place.get("name"),
+                    "name": getLocalizedPlaceName(place, lang),
                     "buildingId": buildingId,
                     "buildingName": buildingName,
                     "floorLevel": int(place.get("floorLevel", 1) or 1),
@@ -200,14 +203,15 @@ class GlobalGpsMatcher:
                 "isRecommended": True,
             })
 
-        # Sort locations by floor, then proximity (or alphabetically when no GPS coords)
+        # Sort locations by floor, then proximity when GPS coordinates are provided,
+        # strictly preserving the building's defined left-to-right order (buildings.txt)
+        # when GPS coordinates are absent or distances tie.
         def _sortKey(item: Dict[str, Any]):
             d = item["distanceMeters"]
-            return (
-                item["floorLevel"],
-                d if d is not None else float("inf"),
-                _normKey(item["name"]),
-            )
+            orderIdx = orderMap.get(id(item), 0)
+            if d is not None:
+                return (item["floorLevel"], d, orderIdx)
+            return (item["floorLevel"], orderIdx)
 
         locations.sort(key=_sortKey)
 
@@ -297,7 +301,7 @@ class GlobalGpsMatcher:
         # ------------------------------------------------------------------
         for buildingId, sg in subgraphs.items():
             macroNode = self.macroGraph.getNode(sg.macroNodeId)
-            buildingName = macroNode.getName(lang) if macroNode else sg.name
+            buildingName = macroNode.getName(lang) if macroNode else sg.getName(lang)
             for node in sg.getAllNodes():
                 if not node.latitude or not node.longitude:
                     continue

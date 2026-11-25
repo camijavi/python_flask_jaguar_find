@@ -22,6 +22,11 @@ from backend.graph.directedGraph import DirectedEdge, DirectedGraph, Node, Verte
 from backend.graph.dijkstraRouter import DijkstraRouter
 from backend.graph.geoUtils import CampusGeoUtils
 from backend.i18n import t, normalize_language
+from backend.data.campusLocalization import (
+    getIndoorNodeNames,
+    getLocalizedSubgraphName,
+    getLocalizedSubgraphDescription,
+)
 
 
 def calcIndoorDistance(
@@ -79,6 +84,14 @@ class BuildingSubgraph:
         self.router = DijkstraRouter(self.graph)
         self.roomAliases: Dict[str, str] = {}
 
+    def getName(self, lang: str = "spa") -> str:
+        """Returns the localized building subgraph display name."""
+        return getLocalizedSubgraphName(self.buildingId, self.name, lang=lang)
+
+    def getDescription(self, lang: str = "spa") -> str:
+        """Returns the localized building subgraph description."""
+        return getLocalizedSubgraphDescription(self.buildingId, self.description, lang=lang)
+
     def registerRoomAlias(self, alias: str, targetNodeId: str) -> None:
         """Maps an alternative room query, code, or alias to a target node ID."""
         self.roomAliases[alias] = targetNodeId
@@ -86,10 +99,17 @@ class BuildingSubgraph:
     def addNode(self, node: Node) -> Node:
         """
         Adds an internal room, stairwell, restroom, annex, or POI node.
-        Automatically links `node.buildingId` to `self.macroNodeId` when omitted.
+        Automatically links `node.buildingId` to `self.macroNodeId` when omitted
+        and attaches bilingual (Spanish/English) localized node names.
         """
         if not node.buildingId:
             node.buildingId = self.macroNodeId
+        if not node.landmarkNameSpa or not node.landmarkNameEng:
+            spaName, engName = getIndoorNodeNames(node.nodeId, node.name)
+            if not node.landmarkNameSpa:
+                node.landmarkNameSpa = spaName
+            if not node.landmarkNameEng:
+                node.landmarkNameEng = engName
         return self.graph.addNode(node)
 
     # ------------------------------------------------------------------
@@ -267,11 +287,14 @@ class BuildingSubgraph:
             if _normalize(nid) == clean:
                 return nid
 
-        # 2. Check room number or name match
+        # 2. Check room number or bilingual name match
         for nid, node in self.graph.nodes.items():
-            nameNorm = _normalize(node.name)
-            if clean in nameNorm or nameNorm in clean:
-                return nid
+            for candidateName in (node.name, node.landmarkNameSpa, node.landmarkNameEng):
+                if not candidateName:
+                    continue
+                nameNorm = _normalize(candidateName)
+                if clean in nameNorm or nameNorm in clean:
+                    return nid
 
         return None
 
@@ -336,7 +359,7 @@ class BuildingSubgraph:
         return {
             "success": True,
             "buildingId": self.buildingId,
-            "buildingName": self.name,
+            "buildingName": self.getName(activeLang),
             "origin": {
                 "nodeId": originId,
                 "name": originNode.getName(lang),
@@ -378,12 +401,12 @@ class BuildingSubgraph:
         metrics = self.graph.getGraphSummary()
         return {
             "buildingId": self.buildingId,
-            "name": self.name,
+            "name": self.getName(lang),
             "code": self.code,
             "floors": self.floors,
             "macroNodeId": self.macroNodeId,
             "entranceNodeIds": self.entranceNodeIds,
-            "description": self.description,
+            "description": self.getDescription(lang),
             "nodesCount": len(nodesList),
             "edgesCount": metrics["directedEdgeCount"],
             "density": metrics["density"],

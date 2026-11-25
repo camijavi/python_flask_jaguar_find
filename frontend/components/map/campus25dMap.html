@@ -16,11 +16,11 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
 <div id="campus25dModeControls" class="waze-mode-pill absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-md p-1 rounded-full border border-slate-200/90 shadow-lg shadow-slate-900/10 transition-all duration-300">
     <!-- 2D / 2.5D Segmented Switcher -->
     <div class="flex items-center bg-slate-100 p-0.5 rounded-full text-[11px] font-extrabold text-slate-700">
-        <button id="btnMode2d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-full active transition-all cursor-pointer" title="{{ t('map.hud25d.mode_2d_title') }}" data-i18n-title="map.hud25d.mode_2d_title">
-            2D
+        <button id="btnMode2d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-full active transition-all cursor-pointer" title="{{ t('map.hud25d.mode_2d_title') }}" data-i18n="map.hud25d.mode_2d" data-i18n-title="map.hud25d.mode_2d_title">
+            {{ t('map.hud25d.mode_2d') }}
         </button>
-        <button id="btnMode25d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-full text-slate-600 hover:text-slate-900 transition-all cursor-pointer" title="{{ t('map.hud25d.mode_25d_title') }}" data-i18n-title="map.hud25d.mode_25d_title">
-            2.5D
+        <button id="btnMode25d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-full text-slate-600 hover:text-slate-900 transition-all cursor-pointer" title="{{ t('map.hud25d.mode_25d_title') }}" data-i18n="map.hud25d.mode_25d" data-i18n-title="map.hud25d.mode_25d_title">
+            {{ t('map.hud25d.mode_25d') }}
         </button>
     </div>
 
@@ -48,7 +48,7 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
     <div id="liveCompassControlGroup" class="hidden items-center border-l border-slate-200 pl-1">
         <button id="btnLiveCompass" type="button" class="px-2 py-1 rounded-full text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="{{ t('map.hud25d.mode_live_title') }}" data-i18n-title="map.hud25d.mode_live_title">
             <span id="liveCompassDot" class="w-2 h-2 rounded-full bg-slate-300"></span>
-            <span id="labelLiveCompass">{{ t('map.hud25d.mode_live') }}</span>
+            <span id="labelLiveCompass" data-i18n="map.hud25d.mode_live">{{ t('map.hud25d.mode_live') }}</span>
         </button>
     </div>
 
@@ -76,28 +76,28 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
         <!-- Action Headline + Human Landmark Direction (Zero Meters / Zero Cardinals) -->
         <div class="flex-1 min-w-0">
             <div class="flex items-center gap-1.5 flex-wrap">
-                <span id="tbtStepDistance" class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">{{ t('map.hud25d.default_headline') }}</span>
+                <span id="tbtStepDistance" class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight" data-i18n="map.hud25d.default_headline">{{ t('map.hud25d.default_headline') }}</span>
                 <span id="tbtStepCounter" class="text-[10.5px] font-extrabold text-sky-700 bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full truncate">{{ t('map.hud25d.step_counter', current=1, total=1) }}</span>
                 <button id="btnTbtLiveGps" type="button" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200 transition-colors cursor-pointer" title="{{ t('map.hud25d.live_gps_title') }}" data-i18n-title="map.hud25d.live_gps_title">
                     <span id="tbtLiveGpsDot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                    <span id="labelTbtLiveGps">{{ t('map.hud25d.gps_label') }}</span>
+                    <span id="labelTbtLiveGps" data-i18n="map.hud25d.gps_label">{{ t('map.hud25d.gps_label') }}</span>
                 </button>
             </div>
-            <p id="tbtStepInstruction" class="text-[12.5px] sm:text-[13px] font-semibold text-slate-700 leading-snug line-clamp-3 mt-1">
+            <p id="tbtStepInstruction" class="text-[12.5px] sm:text-[13px] font-semibold text-slate-700 leading-snug line-clamp-3 mt-1" data-i18n="map.hud25d.default_instruction">
                 {{ t('map.hud25d.default_instruction') }}
             </p>
             <div id="tbtOrientationCue" class="hidden items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 rounded-lg px-2 py-0.5 mt-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="tbtOrientationCueText">{{ t('map.hud25d.default_orientation') }}</span>
+                <span id="tbtOrientationCueText" data-i18n="map.hud25d.default_orientation">{{ t('map.hud25d.default_orientation') }}</span>
             </div>
-            <div id="tbtNextPreview" class="text-[11px] text-slate-500 font-medium truncate mt-0.5 hidden">
+            <div id="tbtNextPreview" class="text-[11px] text-slate-500 font-medium truncate mt-0.5 hidden" data-i18n="map.hud25d.default_next_step">
                 {{ t('map.hud25d.default_next_step') }}
             </div>
             <!-- Quick Human Landmark Confirm Row -->
             <div id="tbtConfirmRow" class="mt-2 flex items-center gap-1.5">
                 <button id="btnTbtConfirmStep" type="button" class="flex-1 py-1 px-2.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-extrabold text-[11px] flex items-center justify-center gap-1 transition-colors cursor-pointer">
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    <span id="labelTbtConfirmStep">{{ t('map.hud25d.btn_arrived_next') }}</span>
+                    <span id="labelTbtConfirmStep" data-i18n="map.hud25d.btn_arrived_next">{{ t('map.hud25d.btn_arrived_next') }}</span>
                 </button>
             </div>
         </div>
@@ -121,8 +121,8 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
     <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 64 64" fill="none">
         <circle cx="32" cy="32" r="27.5" stroke="#38bdf8" stroke-opacity="0.78" stroke-width="2.2" stroke-dasharray="2.2 4.2" />
     </svg>
-    <span id="wazeDialValue" class="text-base sm:text-lg font-black leading-none tracking-tight text-sky-700">2D</span>
-    <span id="wazeDialUnit" class="text-[9px] font-extrabold text-teal-600 uppercase tracking-wider mt-0.5">{{ t('map.hud25d.speed_label_map') }}</span>
+    <span id="wazeDialValue" class="text-[8px] sm:text-[9px] font-black leading-none tracking-tight text-sky-700 text-center px-1" data-i18n="map.hud25d.mode_2d">{{ t('map.hud25d.mode_2d') }}</span>
+    <span id="wazeDialUnit" class="text-[9px] font-extrabold text-teal-600 uppercase tracking-wider mt-0.5" data-i18n="map.hud25d.speed_label_map">{{ t('map.hud25d.speed_label_map') }}</span>
 </button>
 
 <!-- 4. Bottom-Right JaguarFind Vibrant Sky-Cyan / Coral Circular Action FAB -->
@@ -149,7 +149,7 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
             </button>
             <button id="btnTbtPlaySimulation" type="button" class="h-9 px-2.5 sm:px-3 rounded-xl bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 text-white font-extrabold text-[11px] sm:text-xs flex items-center gap-1 shadow-sm shadow-sky-400/35 transition-colors cursor-pointer" title="{{ t('map.hud25d.tray_simulate_title') }}" data-i18n-title="map.hud25d.tray_simulate_title">
                 <svg id="iconSimPlay" class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                <span id="labelSimPlay">{{ t('map.hud25d.tray_simulate') }}</span>
+                <span id="labelSimPlay" data-i18n="map.hud25d.tray_simulate">{{ t('map.hud25d.tray_simulate') }}</span>
             </button>
             <button id="btnTbtNextStep" type="button" class="w-8 h-9 sm:w-9 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-extrabold text-xs flex items-center justify-center transition-colors cursor-pointer" title="{{ t('map.hud25d.tray_next') }}" data-i18n-title="map.hud25d.tray_next" aria-label="{{ t('map.hud25d.tray_next') }}" data-i18n-aria-label="map.hud25d.tray_next">
                 &#9654;
@@ -208,10 +208,10 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
 
         <!-- Center Slot: Arrival Time / Title + Sub-Meta -->
         <div id="wazeBottomCenter" class="flex-1 min-w-0 px-3 text-center cursor-pointer select-none">
-            <div id="wazeEtaTime" class="text-[20px] sm:text-[22px] font-black text-slate-900 tracking-tight leading-tight truncate">
+            <div id="wazeEtaTime" class="text-[20px] sm:text-[22px] font-black text-slate-900 tracking-tight leading-tight truncate" data-i18n="map.campus_pill">
                 {{ t('map.campus_pill') }}
             </div>
-            <div id="wazeTripMeta" class="text-[11.5px] sm:text-xs font-bold text-sky-600 truncate mt-0.5">
+            <div id="wazeTripMeta" class="text-[11.5px] sm:text-xs font-bold text-sky-600 truncate mt-0.5" data-i18n="map.hud25d.dock_prompt">
                 {{ t('map.hud25d.dock_prompt') }}
             </div>
         </div>

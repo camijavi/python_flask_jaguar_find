@@ -13,8 +13,6 @@
 * **Integrantes del Equipo:**
  * Br. Camila Javiera Navarro Centeno (Estructuras de Datos y Algoritmos)
  * Br. Francis Alejandra Solórzano Morales (Backend y Persistencia)
- * Br. James Santiago Fernandez Obregon (Frontend y Experiencia de Usuario)
- * Br. Elias Abraham Solis Guevara (Panel Administrativo, Códigos QR e Integración)
 * **Estructura de Datos Núcleo:** Grafo Ponderado, Dirigido y No Completo con Algoritmo de Dijkstra ($O((V+E)\log V)$)
 * **Internacionalización (i18n):** Bilingüe Español e Inglés mediante diccionarios JSON en carpeta `languages/` (`spa.json` y `eng.json`)
 * **Narración por Voz (TTS):** Web Speech API nativa del navegador en JavaScript (gratuita, sin latencia de servidor)
@@ -115,8 +113,6 @@ flowchart TD
 * **Team Members:**
  * Br. Camila Javiera Navarro Centeno (Data Structures and Algorithms)
  * Br. Francis Alejandra Solórzano Morales (Backend and Persistence)
- * Br. James Santiago Fernandez Obregon (Frontend and User Experience)
- * Br. Elias Abraham Solis Guevara (Admin Panel, QR Codes, and Integration)
 * **Core Data Structure:** Weighted, Directed, and Non-Complete Graph with Dijkstra's Algorithm ($O((V+E)\log V)$)
 * **Internationalization (i18n):** Bilingual Spanish and English support via JSON dictionaries in `languages/` (`spa.json` and `eng.json`)
 * **Voice Narration (TTS):** Browser-native Web Speech API in JavaScript (free, zero server latency)

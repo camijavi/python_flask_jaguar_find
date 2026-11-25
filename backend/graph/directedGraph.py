@@ -18,7 +18,7 @@ from typing import Dict, List, Optional, Union
 
 from .graphCombined import Graph, Vertex
 
-from .i18n import t, I18nManager
+from .i18n import t, I18nManager, normalize_language
 
 
 class DirectedEdge:
@@ -113,11 +113,12 @@ class Node(Vertex):
 
     def getName(self, lang: str = "eng") -> str:
         """Returns localized node name, falling back to default self.name."""
-        if lang == "spa" and self.landmarkNameSpa:
+        activeLang = normalize_language(lang)
+        if activeLang == "spa" and self.landmarkNameSpa:
             return self.landmarkNameSpa
-        if lang == "eng" and self.landmarkNameEng:
+        if activeLang == "eng" and self.landmarkNameEng:
             return self.landmarkNameEng
-        return t(f"nodes.{self.nodeId}", lang=lang, default=self.name)
+        return t(f"nodes.{self.nodeId}", lang=activeLang, default=self.name)
 
     def getAccessNotice(self, lang: str = "eng") -> Optional[str]:
         """Returns localized access notice, falling back to self.accessNotice."""

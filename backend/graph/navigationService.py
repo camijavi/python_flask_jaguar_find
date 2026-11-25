@@ -34,16 +34,27 @@ from .pedestrianWalkwayGraph import (
     BUILDING_PORTALS,
     WALKWAY_LANDMARKS,
 )
-from .i18n import t
-from data.placesCatalog import PLACES_CATALOG
+from .i18n import t, normalize_language
+from backend.data.placesCatalog import PLACES_CATALOG
+from backend.data.campusLocalization import (
+    getLocalizedPlaceName,
+    getLocalizedPlaceNotes,
+    getPlaceBilingualNames,
+)
 
 
 def _normalizeQuery(text: str) -> str:
-    """Lowercases and strips diacritics so Spanish/English queries match reliably."""
+    """Lowercases, strips diacritics, and collapses whitespace reliably."""
     if not text:
         return ""
     decomposed = unicodedata.normalize("NFD", str(text).strip().lower())
-    return "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
+    stripped = "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
+    return " ".join(stripped.split())
+
+
+def _compactQuery(text: str) -> str:
+    """Strips spaces, hyphens, and underscores for separator-tolerant matching."""
+    return _normalizeQuery(text).replace(" ", "").replace("-", "").replace("_", "")
 
 
 class NavigationService:
@@ -77,19 +88,27 @@ class NavigationService:
 
         raw = str(queryText).strip()
         cleaned = _normalizeQuery(raw)
+        activeLang = normalize_language(lang)
 
-        # 1. Direct match with a macro nodeId or exact building/zone name
+        # 1. Direct match with a macro nodeId or exact building/zone name (in either language)
         for nodeId, node in self.graph.nodes.items():
-            if cleaned in (_normalizeQuery(nodeId), _normalizeQuery(node.name), _normalizeQuery(node.getName(lang))):
+            macroNames = (
+                _normalizeQuery(nodeId),
+                _normalizeQuery(node.name),
+                _normalizeQuery(node.getName(activeLang)),
+                _normalizeQuery(node.getName("spa")),
+                _normalizeQuery(node.getName("eng")),
+            )
+            if cleaned in macroNames:
                 return {
                     "targetNodeId": node.nodeId,
                     "placeId": node.nodeId,
                     "subgraphNodeId": None,
                     "walkwayNodeId": MACRO_TO_MICRO_NODE.get(node.nodeId),
-                    "displayName": node.getName(lang),
+                    "displayName": node.getName(activeLang),
                     "category": node.category,
                     "floorLevel": node.floorLevel,
-                    "locationNotes": t("navigation.main_building", lang=lang),
+                    "locationNotes": t("navigation.main_building", lang=activeLang),
                     "isSubPlace": False,
                 }
 
@@ -102,17 +121,44 @@ class NavigationService:
                 "placeId": wNode.nodeId,
                 "subgraphNodeId": None,
                 "walkwayNodeId": wNode.nodeId,
-                "displayName": wNode.getName(lang),
+                "displayName": wNode.getName(activeLang),
                 "category": wNode.category,
                 "floorLevel": wNode.floorLevel,
                 "locationNotes": "",
                 "isSubPlace": False,
             }
 
-        # 3. Exact nodeId or registered alias match across all 18 building subgraphs
+        # 3. Exact match in PLACES_CATALOG by placeId or bilingual name (e.g. 'Aula B-210' / 'Classroom B-210')
+        compactCleaned = _compactQuery(raw)
+        for place in PLACES_CATALOG:
+            bilingualNames = getPlaceBilingualNames(place)
+            if (
+                _normalizeQuery(place["placeId"]) == cleaned
+                or _compactQuery(place["placeId"]) == compactCleaned
+                or any(_normalizeQuery(n) == cleaned or _compactQuery(n) == compactCleaned for n in bilingualNames)
+            ):
+                sgNodeId = self._resolveSubgraphNode(
+                    place["parentBuildingId"],
+                    place["placeId"],
+                    place["name"],
+                    *bilingualNames,
+                    *place.get("keywords", []),
+                )
+                return {
+                    "targetNodeId": place["parentBuildingId"],
+                    "placeId": place["placeId"],
+                    "subgraphNodeId": sgNodeId,
+                    "walkwayNodeId": MACRO_TO_MICRO_NODE.get(place["parentBuildingId"]),
+                    "displayName": getLocalizedPlaceName(place, activeLang),
+                    "category": place["category"],
+                    "floorLevel": place["floorLevel"],
+                    "locationNotes": getLocalizedPlaceNotes(place, activeLang),
+                    "isSubPlace": True,
+                }
+
+        # 4. Exact nodeId or registered alias match across all 18 building subgraphs
         from backend.subgraphs import getAllBuildingSubgraphs
         subgraphs = getAllBuildingSubgraphs()
-        compactCleaned = cleaned.replace(" ", "").replace("-", "").replace("_", "")
         for buildingId, sg in subgraphs.items():
             # Exact node ID
             if raw in sg.graph.nodes:
@@ -122,15 +168,15 @@ class NavigationService:
                     "placeId": sNode.nodeId,
                     "subgraphNodeId": sNode.nodeId,
                     "walkwayNodeId": MACRO_TO_MICRO_NODE.get(sg.macroNodeId),
-                    "displayName": sNode.name,
+                    "displayName": sNode.getName(activeLang),
                     "category": sNode.category,
                     "floorLevel": sNode.floorLevel,
-                    "locationNotes": t("navigation.building_floor_note", lang=lang, building=t(f"nodes.{sg.macroNodeId}", lang=lang, default=sg.name), floor=sNode.floorLevel),
+                    "locationNotes": t("navigation.building_floor_note", lang=activeLang, building=t(f"nodes.{sg.macroNodeId}", lang=activeLang, default=sg.getName(activeLang)), floor=sNode.floorLevel),
                     "isSubPlace": True,
                 }
             # Exact registered alias
             for alias, targetRoomId in sg.roomAliases.items():
-                aliasCompact = _normalizeQuery(alias).replace(" ", "").replace("-", "").replace("_", "")
+                aliasCompact = _compactQuery(alias)
                 if aliasCompact == compactCleaned and targetRoomId in sg.graph.nodes:
                     sNode = sg.graph.nodes[targetRoomId]
                     return {
@@ -138,38 +184,30 @@ class NavigationService:
                         "placeId": sNode.nodeId,
                         "subgraphNodeId": sNode.nodeId,
                         "walkwayNodeId": MACRO_TO_MICRO_NODE.get(sg.macroNodeId),
-                        "displayName": sNode.name,
+                        "displayName": sNode.getName(activeLang),
                         "category": sNode.category,
                         "floorLevel": sNode.floorLevel,
-                        "locationNotes": t("navigation.building_floor_note", lang=lang, building=t(f"nodes.{sg.macroNodeId}", lang=lang, default=sg.name), floor=sNode.floorLevel),
+                        "locationNotes": t("navigation.building_floor_note", lang=activeLang, building=t(f"nodes.{sg.macroNodeId}", lang=activeLang, default=sg.getName(activeLang)), floor=sNode.floorLevel),
                         "isSubPlace": True,
                     }
 
-        # 4. Check PLACES_CATALOG for exact placeId/name first, then best keyword match
+        # 5. Check PLACES_CATALOG for best keyword/bilingual name match (separator- and whitespace-tolerant)
         bestMatch = None
         bestScore = 0
         for place in PLACES_CATALOG:
-            if _normalizeQuery(place["placeId"]) == cleaned or _normalizeQuery(place["name"]) == cleaned:
-                sgNodeId = self._resolveSubgraphNode(
-                    place["parentBuildingId"],
-                    place["placeId"],
-                    place["name"],
-                    *place.get("keywords", []),
-                )
-                return {
-                    "targetNodeId": place["parentBuildingId"],
-                    "placeId": place["placeId"],
-                    "subgraphNodeId": sgNodeId,
-                    "walkwayNodeId": MACRO_TO_MICRO_NODE.get(place["parentBuildingId"]),
-                    "displayName": place["name"],
-                    "category": place["category"],
-                    "floorLevel": place["floorLevel"],
-                    "locationNotes": place["locationNotes"],
-                    "isSubPlace": True,
-                }
-            for kw in place["keywords"]:
+            searchTerms = list(place.get("keywords", [])) + getPlaceBilingualNames(place)
+            for kw in searchTerms:
                 kwNorm = _normalizeQuery(kw)
-                if kwNorm and (kwNorm in cleaned or (len(cleaned) >= 4 and cleaned in kwNorm)) and len(kwNorm) > bestScore:
+                kwCompact = _compactQuery(kw)
+                if (
+                    kwNorm
+                    and (
+                        kwNorm in cleaned
+                        or kwCompact == compactCleaned
+                        or (len(cleaned) >= 4 and cleaned in kwNorm)
+                    )
+                    and len(kwNorm) > bestScore
+                ):
                     bestScore = len(kwNorm)
                     bestMatch = place
 
@@ -178,6 +216,7 @@ class NavigationService:
                 bestMatch["parentBuildingId"],
                 bestMatch["placeId"],
                 bestMatch["name"],
+                *getPlaceBilingualNames(bestMatch),
                 *bestMatch.get("keywords", []),
             )
             return {
@@ -185,14 +224,14 @@ class NavigationService:
                 "placeId": bestMatch["placeId"],
                 "subgraphNodeId": sgNodeId,
                 "walkwayNodeId": MACRO_TO_MICRO_NODE.get(bestMatch["parentBuildingId"]),
-                "displayName": bestMatch["name"],
+                "displayName": getLocalizedPlaceName(bestMatch, activeLang),
                 "category": bestMatch["category"],
                 "floorLevel": bestMatch["floorLevel"],
-                "locationNotes": bestMatch["locationNotes"],
+                "locationNotes": getLocalizedPlaceNotes(bestMatch, activeLang),
                 "isSubPlace": True,
             }
 
-        # 5. Partial room name match inside building subgraphs
+        # 5b. Partial room name match inside building subgraphs
         if len(compactCleaned) >= 3:
             for buildingId, sg in subgraphs.items():
                 foundRoom = sg.resolveRoomQuery(raw)
@@ -203,29 +242,30 @@ class NavigationService:
                         "placeId": sNode.nodeId,
                         "subgraphNodeId": sNode.nodeId,
                         "walkwayNodeId": MACRO_TO_MICRO_NODE.get(sg.macroNodeId),
-                        "displayName": sNode.name,
+                        "displayName": sNode.getName(activeLang),
                         "category": sNode.category,
                         "floorLevel": sNode.floorLevel,
-                        "locationNotes": t("navigation.building_floor_note", lang=lang, building=t(f"nodes.{sg.macroNodeId}", lang=lang, default=sg.name), floor=sNode.floorLevel),
+                        "locationNotes": t("navigation.building_floor_note", lang=activeLang, building=t(f"nodes.{sg.macroNodeId}", lang=activeLang, default=sg.getName(activeLang)), floor=sNode.floorLevel),
                         "isSubPlace": True,
                     }
 
-        # 6. Fallback to building/zone search by letter or name
+        # 6. Fallback to building/zone search by letter or bilingual name
         for nodeId, node in self.graph.nodes.items():
             nodeNorm = _normalizeQuery(nodeId)
-            engNorm = _normalizeQuery(node.name)
-            locNorm = _normalizeQuery(node.getName(lang))
-            if (nodeNorm in cleaned or engNorm in cleaned or locNorm in cleaned
-                    or (len(cleaned) >= 4 and (cleaned in engNorm or cleaned in locNorm))):
+            engNorm = _normalizeQuery(node.getName("eng"))
+            spaNorm = _normalizeQuery(node.getName("spa"))
+            locNorm = _normalizeQuery(node.getName(activeLang))
+            if (nodeNorm in cleaned or engNorm in cleaned or spaNorm in cleaned or locNorm in cleaned
+                    or (len(cleaned) >= 4 and (cleaned in engNorm or cleaned in spaNorm or cleaned in locNorm))):
                 return {
                     "targetNodeId": nodeId,
                     "placeId": nodeId,
                     "subgraphNodeId": None,
                     "walkwayNodeId": MACRO_TO_MICRO_NODE.get(nodeId),
-                    "displayName": node.getName(lang),
+                    "displayName": node.getName(activeLang),
                     "category": node.category,
                     "floorLevel": node.floorLevel,
-                    "locationNotes": t("navigation.main_building", lang=lang),
+                    "locationNotes": t("navigation.main_building", lang=activeLang),
                     "isSubPlace": False,
                 }
 

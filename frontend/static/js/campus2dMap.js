@@ -98,12 +98,12 @@ document.addEventListener("DOMContentLoaded", function () {
         { id: "buildingH",       letter: "H",   badgeClass: "badge-green",   badgeBg: "#15803d", anchor: { x: 602, y: 383 }, floorKeys: ["f1", "f2"] },
         { id: "buildingI",       letter: "I",   badgeClass: "badge-navy",    badgeBg: "#1e3a8a", anchor: { x: 653, y: 724 }, floorKeys: ["f1"] },
         { id: "buildingJ",       letter: "J",   badgeClass: "badge-cyan",    badgeBg: "#0284c7", anchor: { x: 297, y: 287 }, floorKeys: ["f1"] },
-        { id: "buildingK",       letter: "K",   badgeClass: "badge-amber",   badgeBg: "#b45309", anchor: { x: 293, y: 598 }, floorKeys: ["f1"] },
+        { id: "buildingK",       letter: "K",   badgeClass: "badge-amber",   badgeBg: "#b45309", anchor: { x: 293, y: 598 }, floorKeys: ["f1", "f2"] },
         { id: "buildingL",       letter: "L",   badgeClass: "badge-cyan",    badgeBg: "#0284c7", anchor: { x: 842, y: 502 }, floorKeys: ["f1"] },
-        { id: "buildingM",       letter: "M",   badgeClass: "badge-teal",    badgeBg: "#0f766e", anchor: { x: 597, y: 460 }, floorKeys: ["f1", "f2"] },
+        { id: "buildingM",       letter: "M",   badgeClass: "badge-teal",    badgeBg: "#0f766e", anchor: { x: 597, y: 460 }, floorKeys: ["f1", "f2", "f3"] },
         { id: "buildingN",       letter: "N",   badgeClass: "badge-magenta", badgeBg: "#be185d", anchor: { x: 350, y: 217 }, floorKeys: ["f1", "f2"] },
         { id: "buildingO",       letter: "O",   badgeClass: "badge-amber",   badgeBg: "#b45309", anchor: { x: 510, y: 200 }, floorKeys: ["f1", "f2"] },
-        { id: "buildingP",       letter: "P",   badgeClass: "badge-maroon",  badgeBg: "#881337", anchor: { x: 360, y: 104 }, floorKeys: ["f1", "f2", "f3"] },
+        { id: "buildingP",       letter: "P",   badgeClass: "badge-maroon",  badgeBg: "#881337", anchor: { x: 360, y: 104 }, floorKeys: ["f1", "f2", "f3", "f4", "f5"] },
         { id: "mainParking",     letter: "P",   badgeClass: "badge-navy",    badgeBg: "#0f172a", anchor: { x: 274, y: 766 }, floorKeys: ["f1"] },
         { id: "chilamatesPlaza", letter: "CH",  badgeClass: "badge-green",   badgeBg: "#15803d", anchor: { x: 225, y: 287 }, floorKeys: ["f1"] },
         { id: "sportsZone",      letter: "DEP", badgeClass: "badge-green",   badgeBg: "#15803d", anchor: { x: 762, y: 357 }, floorKeys: ["f1"] },
@@ -582,10 +582,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnSetOrigin) {
         btnSetOrigin.addEventListener("click", () => {
             if (!activeSelectedBuilding) return;
-            const originInput = document.getElementById("originInput");
-            if (originInput) {
-                originInput.value = activeSelectedBuilding.name;
-                originInput.dispatchEvent(new Event("input"));
+            const nodeId = activeSelectedBuilding.id || activeSelectedBuilding.nodeId;
+            if (typeof window.setJaguarNavigationOrigin === "function" && nodeId) {
+                window.setJaguarNavigationOrigin(nodeId, activeSelectedBuilding.name);
+            } else {
+                const originInput = document.getElementById("originInput");
+                if (originInput) {
+                    originInput.value = activeSelectedBuilding.name;
+                    originInput.dispatchEvent(new Event("input"));
+                }
             }
             if (window.innerWidth < 1024 && typeof window.openMobileBottomSheet === "function") {
                 window.openMobileBottomSheet();
@@ -602,10 +607,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnSetDest) {
         btnSetDest.addEventListener("click", () => {
             if (!activeSelectedBuilding) return;
-            const destInput = document.getElementById("destinationInput");
-            if (destInput) {
-                destInput.value = activeSelectedBuilding.name;
-                destInput.dispatchEvent(new Event("input"));
+            const nodeId = activeSelectedBuilding.id || activeSelectedBuilding.nodeId;
+            if (typeof window.setJaguarNavigationDestination === "function" && nodeId) {
+                window.setJaguarNavigationDestination(nodeId, activeSelectedBuilding.name);
+            } else {
+                const destInput = document.getElementById("destinationInput");
+                if (destInput) {
+                    destInput.value = activeSelectedBuilding.name;
+                    destInput.dispatchEvent(new Event("input"));
+                }
             }
             if (window.innerWidth < 1024 && typeof window.openMobileBottomSheet === "function") {
                 window.openMobileBottomSheet();
@@ -694,28 +704,47 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    if (dirSearchInput) {
-        dirSearchInput.addEventListener("input", () => {
-            const q = dirSearchInput.value.toLowerCase().trim();
-            const cards = document.querySelectorAll(".directory-card");
-            let visibleCount = 0;
+    function filterDirectoryCards() {
+        if (!dirSearchInput) return;
+        const rawQuery = dirSearchInput.value || "";
+        const q = rawQuery.toLowerCase().trim();
+        const cards = document.querySelectorAll(".directory-card");
+        const indexedPlaces = Array.isArray(window.jaguarCampusPlaces) ? window.jaguarCampusPlaces : [];
+        let visibleCount = 0;
 
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                if (!q || text.includes(q)) {
-                    card.style.display = "block";
-                    visibleCount++;
-                } else {
-                    card.style.display = "none";
-                }
-            });
-
-            updateDirectoryCountBadge(visibleCount);
+        cards.forEach(card => {
+            const text = card.textContent || "";
+            const bldgId = card.getAttribute("data-bldg") || "";
+            const matched = (window.JaguarCampusSearch && typeof window.JaguarCampusSearch.matchesDirectoryCard === "function")
+                ? window.JaguarCampusSearch.matchesDirectoryCard(text, bldgId, rawQuery, indexedPlaces)
+                : (!q || text.toLowerCase().includes(q));
+            if (matched) {
+                card.style.display = "block";
+                visibleCount++;
+            } else {
+                card.style.display = "none";
+            }
         });
+
+        updateDirectoryCountBadge(visibleCount);
     }
 
+    if (dirSearchInput) {
+        dirSearchInput.addEventListener("input", filterDirectoryCards);
+    }
+
+    window.addEventListener("jaguarCatalogLoaded", function () {
+        if (dirSearchInput && dirSearchInput.value.trim()) {
+            filterDirectoryCards();
+        }
+    });
+
     window.addEventListener("jaguarLanguageChanged", function () {
-        updateDirectoryCountBadge();
+        if (dirSearchInput && dirSearchInput.value.trim()) {
+            filterDirectoryCards();
+        } else {
+            updateDirectoryCountBadge();
+        }
         if (activeSelectedBuilding && bldgPopover && !bldgPopover.classList.contains("hidden")) {
             const freshData = CAMPUS_BUILDINGS[activeSelectedBuilding.id] || activeSelectedBuilding;
             showBuildingPopover(freshData, freshData.anchor || activeSelectedBuilding.anchor);

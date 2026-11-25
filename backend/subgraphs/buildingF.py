@@ -3,8 +3,8 @@ buildingF.py
 ================================================================================
 BUILDING F (FCAE, FMDCC & POSGRADOS) SUBGRAPH / CHILD GRAPH
 ================================================================================
-Single-floor indoor child graph built from official UAM field GPS measurements
-(coordenadas.txt) and room directory (buildings.txt).
+Single-floor indoor child graph built strictly from official UAM room directory
+(buildings.txt) and field GPS measurements (coordenadas.txt).
 Weighted, Directed, Non-Complete Graph G = (V, E, W).
 ================================================================================
 """
@@ -24,24 +24,18 @@ def buildBuildingFSubgraph() -> BuildingSubgraph:
         floors=[1],
         macroNodeId="buildingF",
         entranceNodeIds=["f_ramp_teachers_map", "f_ramp_fcae", "f_ramp_to_i"],
-        description="Edificio F: Facultad de Ciencias Administrativas y Económicas (FCAE), Marketing y Diseño (FMDCC), Posgrados y Salón de Profesores."
+        description="Edificio F: Salón de Profesores, Dirección de Posgrados y Educación Continua, FCAE y FMDCC."
     )
 
+    # =========================================================================
+    # FLOOR 1 (PLANTA ÚNICA) — Exact order from buildings.txt
+    # =========================================================================
     subgraph.addNode(Node(
-        nodeId="f_ramp_teachers_map",
-        name="Rampa al Salón de Profesores y Mapa UAM (Edificio F)",
-        category=CampusCategory.ACCESSIBLE_RAMP,
+        nodeId="f_teachers_lounge",
+        name="Salón de Profesores (Edificio F)",
+        category=CampusCategory.FACULTY,
         xPercent=49.5, yPercent=65.5,
         latitude=12.108908, longitude=-86.257390,
-        floorLevel=1, isOutdoorAccessPoint=True,
-        portalKind="ramp", buildingId="buildingF"
-    ))
-    subgraph.addNode(Node(
-        nodeId="f_fcae_fmdcc",
-        name="Facultad de Ciencias Administrativas (FCAE) y Marketing, Diseño y Comunicación (FMDCC)",
-        category=CampusCategory.FACULTY,
-        xPercent=50.3, yPercent=66.4,
-        latitude=12.108938, longitude=-86.257431,
         floorLevel=1, isOutdoorAccessPoint=False,
         buildingId="buildingF"
     ))
@@ -55,22 +49,41 @@ def buildBuildingFSubgraph() -> BuildingSubgraph:
         buildingId="buildingF"
     ))
     subgraph.addNode(Node(
-        nodeId="f_ramp_to_i",
-        name="Rampa y Escaleras hacia Edificio I",
-        category=CampusCategory.ACCESSIBLE_RAMP,
-        xPercent=51.5, yPercent=67.0,
-        latitude=12.108939, longitude=-86.257347,
-        floorLevel=1, isOutdoorAccessPoint=True,
-        portalKind="ramp", buildingId="buildingF"
+        nodeId="f_fcae",
+        name="Facultad de Ciencias Administrativas y Económicas (FCAE)",
+        category=CampusCategory.FACULTY,
+        xPercent=50.3, yPercent=66.4,
+        latitude=12.108938, longitude=-86.257431,
+        floorLevel=1, isOutdoorAccessPoint=False,
+        buildingId="buildingF"
     ))
     subgraph.addNode(Node(
-        nodeId="f_fcae_south_hall",
-        name="Pasillo Sur FCAE / FMDCC",
+        nodeId="f_fmdcc",
+        name="Facultad de Marketing, Diseño y Ciencias de la Comunicación (FMDCC)",
         category=CampusCategory.FACULTY,
         xPercent=51.0, yPercent=69.5,
         latitude=12.109078, longitude=-86.257563,
         floorLevel=1, isOutdoorAccessPoint=False,
         buildingId="buildingF"
+    ))
+    # Supplementary access & ramp nodes from coordenadas.txt
+    subgraph.addNode(Node(
+        nodeId="f_ramp_teachers_map",
+        name="Escaleras, Rampa al Salón de Profesores y Mapa UAM (Edificio F)",
+        category=CampusCategory.ACCESSIBLE_RAMP,
+        xPercent=49.3, yPercent=65.3,
+        latitude=12.108908, longitude=-86.257390,
+        floorLevel=1, isOutdoorAccessPoint=True,
+        portalKind="ramp", buildingId="buildingF"
+    ))
+    subgraph.addNode(Node(
+        nodeId="f_ramp_to_i",
+        name="Escaleras y Rampa hacia Edificio I",
+        category=CampusCategory.ACCESSIBLE_RAMP,
+        xPercent=51.5, yPercent=67.0,
+        latitude=12.108939, longitude=-86.257347,
+        floorLevel=1, isOutdoorAccessPoint=True,
+        portalKind="ramp", buildingId="buildingF"
     ))
     subgraph.addNode(Node(
         nodeId="f_ramp_fcae",
@@ -92,23 +105,27 @@ def buildBuildingFSubgraph() -> BuildingSubgraph:
     ))
 
     edges = [
-        ("f_ramp_teachers_map", "f_fcae_fmdcc"),
-        ("f_ramp_teachers_map", "f_posgrados"),
-        ("f_fcae_fmdcc", "f_posgrados"),
+        ("f_ramp_teachers_map", "f_teachers_lounge"),
+        ("f_teachers_lounge", "f_posgrados"),
+        ("f_posgrados", "f_fcae"),
         ("f_posgrados", "f_ramp_to_i"),
-        ("f_fcae_fmdcc", "f_fcae_south_hall"),
-        ("f_fcae_south_hall", "f_ramp_fcae"),
-        ("f_fcae_south_hall", "f_vida_estudiantil_link"),
+        ("f_fcae", "f_fmdcc"),
+        ("f_fmdcc", "f_ramp_fcae"),
+        ("f_fmdcc", "f_vida_estudiantil_link"),
     ]
     for u, v in edges:
         nU, nV = subgraph.getNode(u), subgraph.getNode(v)
         subgraph.addBidirectionalCorridor(u, v, _calcDist(nU.latitude, nU.longitude, nV.latitude, nV.longitude), isAccessible=True)
 
     aliases = {
-        "facultyBusinessF": "f_fcae_fmdcc", "fcae": "f_fcae_fmdcc", "administracion": "f_fcae_fmdcc", "economia": "f_fcae_fmdcc",
-        "facultyMarketingF": "f_fcae_fmdcc", "fmdcc": "f_fcae_fmdcc", "marketing": "f_fcae_fmdcc", "diseno": "f_fcae_fmdcc",
-        "postgraduateDirectorateF": "f_posgrados", "posgrados": "f_posgrados", "educacion continua": "f_posgrados",
-        "salon de profesores": "f_ramp_teachers_map", "rampa fcae": "f_ramp_fcae",
+        "teachersLoungeF": "f_teachers_lounge", "salon de profesores": "f_teachers_lounge",
+        "postgraduateDirectorateF": "f_posgrados", "posgrados": "f_posgrados",
+        "educacion continua": "f_posgrados", "direccion de posgrados y educacion continua": "f_posgrados",
+        "facultyBusinessF": "f_fcae", "fcae": "f_fcae", "administracion": "f_fcae", "economia": "f_fcae",
+        "f_fcae_fmdcc": "f_fcae",
+        "facultyMarketingF": "f_fmdcc", "fmdcc": "f_fmdcc", "marketing": "f_fmdcc", "diseno": "f_fmdcc",
+        "comunicacion": "f_fmdcc", "f_fcae_south_hall": "f_fmdcc",
+        "rampa fcae": "f_ramp_fcae",
     }
     for alias, nid in aliases.items():
         subgraph.registerRoomAlias(alias, nid)

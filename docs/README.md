@@ -26,7 +26,7 @@ Each file has its title in **English** and contains the full information in both
  * **EN:** Lost & Found management, institutional authentication (`@uamv.edu.ni`), user roles (Student with double degree support, Collaborator, Admin with delegation panel), 3-state custody lifecycle, anti-fraud secret rule, and SQLite3 schema.
 
 4. **[TEAM_PLANNING.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/TEAM_PLANNING.md)**
- * **ES:** Organización del equipo (Camila, Francis, James y Elias), paquetes de trabajo, matriz RACI y cronograma de desarrollo día a día de 12 días en formato tabular y diagrama de flujo.
+ * **ES:** Organización del equipo (Camila y Francis), paquetes de trabajo, matriz RACI y cronograma de desarrollo día a día de 12 días en formato tabular y diagrama de flujo.
  * **EN:** Team role allocation, WBS work packages, RACI matrix, and 12-day day-by-day development roadmap.
 
 5. **[GRAPH_MAPPING_RULES.md](file:///Users/camijavi/Projects/python/python_flask_jaguar_find/docs/GRAPH_MAPPING_RULES.md)**

@@ -21,7 +21,7 @@ def runGraphTestSuite():
     # 1a. Standard Pedestrian Route in English (Default Internal Representation)
     print("\n[TEST 1A] Calculating Pedestrian Route in English (lang='eng'):")
     print("  Origin: mainParking (Main Parking)")
-    print("  Destination: 'B103' (Classroom B-103)")
+    print("  Destination: 'B103' (Classroom B103)")
     resEng = globalNavigationService.calculateRoute("mainParking", "B103", lang="eng")
     if resEng["success"]:
         print(f"  [OK] Success! Path: {' -> '.join(resEng['pathNodeIds'])}")
@@ -35,7 +35,7 @@ def runGraphTestSuite():
     # 1b. Standard Pedestrian Route in Spanish (via languages/spa.json)
     print("\n[TEST 1B] Calculating Pedestrian Route in Spanish (lang='spa'):")
     print("  Origin: mainParking (Parqueo Principal)")
-    print("  Destination: 'B103' (Aula B-103)")
+    print("  Destination: 'B103' (Aula B103)")
     resSpa = globalNavigationService.calculateRoute("mainParking", "B103", lang="spa")
     if resSpa["success"]:
         print(f"  [OK] Success! Path: {' -> '.join(resSpa['pathNodeIds'])}")
@@ -156,7 +156,7 @@ def runGraphTestSuite():
 
     # 6a. Single-Floor Indoor Route (P101 -> P108)
     resF1 = sgP.calculateIndoorRoute("p_room_101", "p_room_108", accessibleOnly=False, lang="spa")
-    print(f"\n  • 6a. Route Floor 1 (P-101 -> P-108):")
+    print(f"\n  • 6a. Route Floor 1 (P101 -> P108):")
     print(f"     Path: {' -> '.join(resF1['pathNodeIds'])}")
     print(f"     Distance: {resF1['totalDistanceMeters']}m (~{resF1['estimatedWalkingMinutes']} min)")
     assert resF1["success"] is True, "Test 6a Failed: Expected successful route P101 -> P108"
@@ -164,7 +164,7 @@ def runGraphTestSuite():
 
     # 6b. Multi-Floor Vertical Route (P101 -> P205 via East Stairs)
     resF2 = sgP.calculateIndoorRoute("p_room_101", "p_room_205", accessibleOnly=False, lang="spa")
-    print(f"\n  • 6b. Route Floor 1 -> Floor 2 (P-101 -> P-205 via Escaleras Este):")
+    print(f"\n  • 6b. Route Floor 1 -> Floor 2 (P101 -> P205 via Escaleras Este):")
     print(f"     Path: {' -> '.join(resF2['pathNodeIds'])}")
     print(f"     Floors crossed: {resF2['floorsCrossed']}")
     print(f"     Distance: {resF2['totalDistanceMeters']}m")
@@ -172,14 +172,15 @@ def runGraphTestSuite():
     assert resF2["floorsCrossed"] == [1, 2], "Test 6b Failed: Expected floors [1, 2]"
     assert "p_stairs_f1_east" in resF2["pathNodeIds"] and "p_stairs_f2_east" in resF2["pathNodeIds"]
 
-    # 6c. Multi-Floor Route to Top Floor (P101 -> P306 via Stairs)
-    resF3 = sgP.calculateIndoorRoute("p_room_101", "p_room_306", accessibleOnly=False, lang="spa")
-    print(f"\n  • 6c. Route Floor 1 -> Floor 3 (P-101 -> P-306):")
+    # 6c. Multi-Floor Route to Top Floor (P101 -> P308 via Stairs)
+    resF3 = sgP.calculateIndoorRoute("p_room_101", "p_room_308", accessibleOnly=False, lang="spa")
+    print(f"\n  • 6c. Route Floor 1 -> Floor 3 (P101 -> P308):")
     print(f"     Path: {' -> '.join(resF3['pathNodeIds'])}")
     print(f"     Floors crossed: {resF3['floorsCrossed']}")
     print(f"     Distance: {resF3['totalDistanceMeters']}m")
-    assert resF3["success"] is True, "Test 6c Failed: Expected successful route P101 -> P306"
+    assert resF3["success"] is True, "Test 6c Failed: Expected successful route P101 -> P308"
     assert resF3["floorsCrossed"] == [1, 2, 3], "Test 6c Failed: Expected floors [1, 2, 3]"
+    assert sgP.graph.nodes["p_room_308"].latitude == 12.107435 and sgP.graph.nodes["p_room_308"].longitude == -86.257136
 
     # 6d. Accessible Route Verification
     # Ramp from parking to Floor 1: Accessible
@@ -235,36 +236,36 @@ def runGraphTestSuite():
     sgJ = getBuildingSubgraph("buildingJ")
     assert sgJ is not None, "Test 8 Failed: Building J subgraph not found."
     nodesJ = sgJ.getAllNodes()
-    assert len(nodesJ) == 5, f"Test 8 Failed: Expected 5 nodes in Building J, got {len(nodesJ)}"
+    assert len(nodesJ) == 6, f"Test 8 Failed: Expected 6 nodes in Building J, got {len(nodesJ)}"
     print(f"  [OK] Building J Loaded: {sgJ.name} ({len(nodesJ)} nodes on Floor 1)")
     for n in nodesJ:
         print(f"     • {n.nodeId}: {n.name} [{n.latitude}, {n.longitude}]")
 
-    # 8a. Indoor Route: Entrada -> Lab J-101
+    # 8a. Indoor Route: Entrada -> Lab J101
     resJ1 = sgJ.calculateIndoorRoute("j_entrance", "j_lab_101", lang="spa")
     assert resJ1["success"] is True, f"Test 8a Failed: {resJ1}"
-    print(f"\n  • 8a. Route Entrada -> Lab J-101:")
+    print(f"\n  • 8a. Route Entrada -> Lab J101:")
     print(f"     Path: {' -> '.join(resJ1['pathNodeIds'])}")
     print(f"     Distance: {resJ1['totalDistanceMeters']}m")
 
-    # 8b. Indoor Route: Lab J-101 -> Lab J-102
+    # 8b. Indoor Route: Lab J101 -> Lab J102
     resJ2 = sgJ.calculateIndoorRoute("j_lab_101", "j_lab_102", lang="spa")
     assert resJ2["success"] is True, f"Test 8b Failed: {resJ2}"
-    print(f"\n  • 8b. Route Lab J-101 -> Lab J-102:")
+    print(f"\n  • 8b. Route Lab J101 -> Lab J102:")
     print(f"     Path: {' -> '.join(resJ2['pathNodeIds'])}")
     print(f"     Distance: {resJ2['totalDistanceMeters']}m")
 
-    # 8c. Indoor Route: Lab J-102 -> Baños Hombres
+    # 8c. Indoor Route: Lab J102 -> Baños Hombres
     resJ3 = sgJ.calculateIndoorRoute("j102", "hombres", lang="spa")
     assert resJ3["success"] is True, f"Test 8c Failed: {resJ3}"
-    print(f"\n  • 8c. Route Lab J-102 -> Baños Hombres:")
+    print(f"\n  • 8c. Route Lab J102 -> Baños Hombres:")
     print(f"     Path: {' -> '.join(resJ3['pathNodeIds'])}")
     print(f"     Distance: {resJ3['totalDistanceMeters']}m")
 
-    # 8d. Indoor Route: Lab J-101 -> Baños Mujeres
+    # 8d. Indoor Route: Lab J101 -> Baños Mujeres
     resJ4 = sgJ.calculateIndoorRoute("j101", "mujeres", lang="spa")
     assert resJ4["success"] is True, f"Test 8d Failed: {resJ4}"
-    print(f"\n  • 8d. Route Lab J-101 -> Baños Mujeres:")
+    print(f"\n  • 8d. Route Lab J101 -> Baños Mujeres:")
     print(f"     Path: {' -> '.join(resJ4['pathNodeIds'])}")
     print(f"     Distance: {resJ4['totalDistanceMeters']}m")
 
@@ -364,21 +365,29 @@ def runGraphTestSuite():
     print(f"     Floors crossed: {resC3['floorsCrossed']}")
     print(f"     Distance: {resC3['totalDistanceMeters']}m")
 
-    # 10d. Multi-floor Route: Caja UAM (Piso 1) -> Estudio Audiovisual A-301 (Piso 3)
-    resC4 = sgC.calculateIndoorRoute("caja", "a-301", lang="spa")
+    # 10d. Multi-floor Route: Caja UAM (Piso 1) -> Aula C305 (Piso 3)
+    resC4 = sgC.calculateIndoorRoute("caja", "c305", lang="spa")
     assert resC4["success"] is True, f"Test 10d Failed: {resC4}"
     assert resC4["floorsCrossed"] == [1, 2, 3], f"Test 10d Failed floors: {resC4['floorsCrossed']}"
-    print(f"\n  • 10d. Multi-floor Route (Piso 1 -> Piso 3: Caja UAM -> Estudio A-301):")
+    print(f"\n  • 10d. Multi-floor Route (Piso 1 -> Piso 3: Caja UAM -> Aula C305):")
     print(f"     Path: {' -> '.join(resC4['pathNodeIds'])}")
     print(f"     Floors crossed: {resC4['floorsCrossed']}")
     print(f"     Distance: {resC4['totalDistanceMeters']}m")
 
-    # 10e. Floor 3 Route: Estudio A-301 -> Coordinación de Compras C-306 -> Aula C-310
-    resC5 = sgC.calculateIndoorRoute("a301", "c310", lang="spa")
+    # 10e. Floor 3 Route: Aula C301 -> Coordinación de Compras C306 -> Aula C310
+    resC5 = sgC.calculateIndoorRoute("c301", "c310", lang="spa")
     assert resC5["success"] is True, f"Test 10e Failed: {resC5}"
-    print(f"\n  • 10e. Route Floor 3 (Estudio A-301 -> Aula C-310):")
+    print(f"\n  • 10e. Route Floor 3 (Aula C301 -> Aula C310):")
     print(f"     Path: {' -> '.join(resC5['pathNodeIds'])}")
     print(f"     Distance: {resC5['totalDistanceMeters']}m")
+
+    # 10f. Building A Floor 3 DPA (A301) properly belongs to Building A, NOT Building C
+    sgA = getBuildingSubgraph("buildingA")
+    assert sgC.resolveRoomQuery("a301") is None, "A301 must not resolve inside Building C"
+    assert sgA.resolveRoomQuery("a301") == "a_dpa_301", "A301 must resolve inside Building A Floor 3"
+    resA3 = sgA.calculateIndoorRoute("a101", "set de radio", lang="spa")
+    assert resA3["success"] is True and resA3["floorsCrossed"] == [1, 2, 3], f"Test 10f Failed: {resA3}"
+    print(f"  [OK] 10f. A301 / DPA strictly mapped to Building A Floor 3 ({' -> '.join(resA3['pathNodeIds'])})")
 
     # -------------------------------------------------------------------------
     # 11. Formal Graph Properties: All 18 Building Subgraphs + Pedestrian Walkways
@@ -463,10 +472,10 @@ def runGraphTestSuite():
     # -------------------------------------------------------------------------
     print("\n[TEST 13] Global GPS Matching (Field Coordinates + Multi-Floor Disambiguation):")
     gpsCases = [
-        ("Aula C-103", 12.108527, -86.256908, "buildingC", True),
-        ("Salón P-205", 12.107492, -86.257090, "buildingP", True),
+        ("Aula C103", 12.108527, -86.256908, "buildingC", True),
+        ("Aula P205", 12.107492, -86.257090, "buildingP", True),
         ("Biblioteca Central", 12.109547, -86.257996, "buildingI", False),
-        ("Auditorio M-101", 12.108452, -86.257566, "buildingM", True),
+        ("Auditorio M101", 12.108452, -86.257566, "buildingM", True),
         ("Jaguar Gym", 12.109309, -86.258508, "jaguarCenter", False),
         ("Edificio N", 12.107871, -86.256967, "buildingN", True),
         ("DIE (Edificio E)", 12.109312, -86.257369, "buildingE", True),
@@ -553,6 +562,58 @@ def runGraphTestSuite():
         f"  [OK] All {inv['totalBackendGraphs']} backend graphs verified on graphCombined.py "
         f"(|V|={inv['totals']['vertices']}, |E_dir|={inv['totals']['directedEdges']}, 100% neigh<->outgoingEdges synced)."
     )
+
+    # -------------------------------------------------------------------------
+    # 15. Reference File Alignment (buildings.txt & coordenadas.txt)
+    # -------------------------------------------------------------------------
+    print("\n[TEST 15] Reference File Alignment (Nomenclature, Ordering & Floor Mappings):")
+    from backend.data.placesCatalog import PLACES_CATALOG
+    from backend.data.campusLocalization import PLACE_TRANSLATIONS, INDOOR_NODE_TRANSLATIONS, SUBGRAPH_TRANSLATIONS
+    from backend.services.placeSearchService import buildIndexedPlaces, searchPlaces
+
+    hyphenRoomRe = re.compile(r"\b[A-Z]-[1-5]\d{2}\b")
+    for p in PLACES_CATALOG:
+        assert not hyphenRoomRe.search(p["name"]), f"Hyphenated room code in PLACES_CATALOG name: {p['name']}"
+    for pid, tr in PLACE_TRANSLATIONS.items():
+        for field, val in tr.items():
+            assert not hyphenRoomRe.search(val), f"Hyphenated room code in PLACE_TRANSLATIONS[{pid}].{field}: {val}"
+    for nid, (spaName, engName) in INDOOR_NODE_TRANSLATIONS.items():
+        assert not hyphenRoomRe.search(spaName), f"Hyphenated room code in INDOOR_NODE_TRANSLATIONS[{nid}] spa: {spaName}"
+        assert not hyphenRoomRe.search(engName), f"Hyphenated room code in INDOOR_NODE_TRANSLATIONS[{nid}] eng: {engName}"
+    for bid, tr in SUBGRAPH_TRANSLATIONS.items():
+        for field, val in tr.items():
+            assert not hyphenRoomRe.search(val), f"Hyphenated room code in SUBGRAPH_TRANSLATIONS[{bid}].{field}: {val}"
+    for bid, sg in allSubgraphs.items():
+        for node in sg.getAllNodes():
+            assert not hyphenRoomRe.search(node.name), f"Hyphenated room code in {bid}.{node.nodeId}: {node.name}"
+
+    # Verify exact left-to-right ordering of Building B, Building C, Building H, Building P
+    sgB = getBuildingSubgraph("buildingB")
+    bF1RoomIds = [n.nodeId for n in sgB.getNodesByFloor(1) if n.nodeId.startswith("b_room_")]
+    bF2RoomIds = [n.nodeId for n in sgB.getNodesByFloor(2) if n.nodeId.startswith("b_room_")]
+    assert bF1RoomIds == [f"b_room_{n}" for n in range(101, 110)], f"B F1 order mismatch: {bF1RoomIds}"
+    assert bF2RoomIds == [f"b_room_{n}" for n in range(201, 211)], f"B F2 order mismatch: {bF2RoomIds}"
+
+    sgH = getBuildingSubgraph("buildingH")
+    assert sgH.graph.nodes["h_lab_coord_necroteca"].floorLevel == 1, "Necroteca / Lab Supervision must be on Floor 1 per buildings.txt"
+    hF1LabIds = [n.nodeId for n in sgH.getNodesByFloor(1) if n.nodeId.startswith("h_lab_1")]
+    hF2LabIds = [n.nodeId for n in sgH.getNodesByFloor(2) if n.nodeId.startswith("h_lab_2")]
+    assert hF1LabIds == [f"h_lab_{n}" for n in range(101, 108)], f"H F1 order mismatch: {hF1LabIds}"
+    assert hF2LabIds == [f"h_lab_{n}" for n in range(201, 208)], f"H F2 order mismatch: {hF2LabIds}"
+
+    sgE = getBuildingSubgraph("buildingE")
+    assert sgE.graph.nodes["e_psychology"].floorLevel == 2, "Oficina Psicología must be on Building E Floor 2"
+    assert sgE.graph.nodes["e_lab_clinico"].floorLevel == 2, "Laboratorio Clínico must be on Building E Floor 2"
+
+    pF3RoomIds = [n.nodeId for n in sgP.getNodesByFloor(3) if n.nodeId.startswith("p_room_")]
+    assert pF3RoomIds == [f"p_room_{n}" for n in range(301, 309)], f"P F3 order mismatch: {pF3RoomIds}"
+
+    # Verify hyphen-tolerant search still works for users who type "B-103" or "P-308"
+    indexed = buildIndexedPlaces("spa")
+    for q, expectedId in [("B103", "classroomB103"), ("B-103", "classroomB103"), ("P308", "classroomP308"), ("P-308", "classroomP308"), ("C305", "classroomC305")]:
+        hits = searchPlaces(indexed, query=q)
+        assert hits and hits[0]["placeId"] == expectedId, f"Search failed for {q}: got {[h['placeId'] for h in hits[:3]]}"
+    print("  [OK] Zero hyphenated room names, exact left-to-right ordering, and floor/coordinate mappings verified.")
 
     print("\n" + "=" * 80)
     print("  ALL GRAPH, WALKWAY, HUMAN-INSTRUCTION, GPS & SUBGRAPH TESTS PASSED!")
