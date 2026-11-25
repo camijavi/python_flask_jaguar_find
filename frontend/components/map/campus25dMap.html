@@ -16,47 +16,47 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
 <div id="campus25dModeControls" class="waze-mode-pill absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-md p-1 rounded-full border border-slate-200/90 shadow-lg shadow-slate-900/10 transition-all duration-300">
     <!-- 2D / 2.5D Segmented Switcher -->
     <div class="flex items-center bg-slate-100 p-0.5 rounded-full text-[11px] font-extrabold text-slate-700">
-        <button id="btnMode2d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-full active transition-all cursor-pointer" title="Vista estándar 2D (Plano Cenital)">
+        <button id="btnMode2d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-full active transition-all cursor-pointer" title="{{ t('map.hud25d.mode_2d_title') }}" data-i18n-title="map.hud25d.mode_2d_title">
             2D
         </button>
-        <button id="btnMode25d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-full text-slate-600 hover:text-slate-900 transition-all cursor-pointer" title="Vista 2.5D Perspectiva JaguarFind">
+        <button id="btnMode25d" type="button" class="mode-pill-btn px-2.5 py-1 rounded-full text-slate-600 hover:text-slate-900 transition-all cursor-pointer" title="{{ t('map.hud25d.mode_25d_title') }}" data-i18n-title="map.hud25d.mode_25d_title">
             2.5D
         </button>
     </div>
 
     <!-- Pitch / Tilt Angle Selector (Visible in 2.5D Mode) -->
     <div id="pitchControlGroup" class="hidden items-center border-l border-slate-200 pl-1 pr-0.5 gap-0.5">
-        <button id="btnPitch45" type="button" class="px-2 py-1 rounded-full text-[11px] font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 transition-colors cursor-pointer" title="Inclinación 45°">
+        <button id="btnPitch45" type="button" class="px-2 py-1 rounded-full text-[11px] font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 transition-colors cursor-pointer" title="{{ t('map.hud25d.pitch_45_title') }}" data-i18n-title="map.hud25d.pitch_45_title">
             45°
         </button>
-        <button id="btnPitch52" type="button" class="px-2 py-1 rounded-full text-[11px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer" title="Inclinación 52° (Inmersiva)">
+        <button id="btnPitch52" type="button" class="px-2 py-1 rounded-full text-[11px] font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer" title="{{ t('map.hud25d.pitch_52_title') }}" data-i18n-title="map.hud25d.pitch_52_title">
             52°
         </button>
     </div>
 
     <!-- Heading Mode Toggle (Heading-Up vs South-Up) -->
     <div id="headingControlGroup" class="hidden items-center border-l border-slate-200 pl-1">
-        <button id="btnToggleHeadingUp" type="button" class="p-1.5 rounded-full text-slate-600 hover:bg-slate-100 hover:text-sky-600 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Alternar orientación: Rumbo al frente o Fijo">
+        <button id="btnToggleHeadingUp" type="button" class="p-1.5 rounded-full text-slate-600 hover:bg-slate-100 hover:text-sky-600 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="{{ t('map.hud25d.mode_heading_title') }}" data-i18n-title="map.hud25d.mode_heading_title">
             <svg id="iconHeadingMode" class="w-3.5 h-3.5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <polygon points="12 2 19 21 12 17 5 21 12 2" stroke-width="2" stroke-linejoin="round"/>
             </svg>
-            <span id="labelHeadingMode" class="hidden md:inline">Rumbo</span>
+            <span id="labelHeadingMode" class="hidden md:inline" data-i18n="map.hud25d.mode_heading">{{ t('map.hud25d.mode_heading') }}</span>
         </button>
     </div>
 
     <!-- Live Phone Compass + GPS 2.5D Rotation Toggle -->
     <div id="liveCompassControlGroup" class="hidden items-center border-l border-slate-200 pl-1">
-        <button id="btnLiveCompass" type="button" class="px-2 py-1 rounded-full text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Rotar mapa 2.5D en vivo con brújula y GPS del teléfono">
+        <button id="btnLiveCompass" type="button" class="px-2 py-1 rounded-full text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="{{ t('map.hud25d.mode_live_title') }}" data-i18n-title="map.hud25d.mode_live_title">
             <span id="liveCompassDot" class="w-2 h-2 rounded-full bg-slate-300"></span>
-            <span id="labelLiveCompass">En vivo</span>
+            <span id="labelLiveCompass">{{ t('map.hud25d.mode_live') }}</span>
         </button>
     </div>
 
     <!-- Parking Lots Visibility Highlight Toggle (Visible in 2.5D Mode) -->
     <div id="parkingControlGroup" class="hidden items-center border-l border-slate-200 pl-1">
-        <button id="btnToggleParkingHighlight" type="button" class="px-1.5 py-1 rounded-full text-slate-600 hover:bg-slate-100 hover:text-sky-600 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="Resaltar parqueos en vista 2.5D">
+        <button id="btnToggleParkingHighlight" type="button" class="px-1.5 py-1 rounded-full text-slate-600 hover:bg-slate-100 hover:text-sky-600 transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer" title="{{ t('map.hud25d.mode_parking_title') }}" data-i18n-title="map.hud25d.mode_parking_title">
             <span class="w-4 h-4 rounded-full bg-sky-500 text-white text-[9.5px] font-black flex items-center justify-center leading-none">P</span>
-            <span class="hidden md:inline">Parqueos</span>
+            <span class="hidden md:inline" data-i18n="map.hud25d.mode_parking">{{ t('map.hud25d.mode_parking') }}</span>
         </button>
     </div>
 </div>
@@ -76,34 +76,34 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
         <!-- Action Headline + Human Landmark Direction (Zero Meters / Zero Cardinals) -->
         <div class="flex-1 min-w-0">
             <div class="flex items-center gap-1.5 flex-wrap">
-                <span id="tbtStepDistance" class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">Sigue recto</span>
-                <span id="tbtStepCounter" class="text-[10.5px] font-extrabold text-sky-700 bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full truncate">Referencia 1 de 1</span>
-                <button id="btnTbtLiveGps" type="button" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200 transition-colors cursor-pointer" title="Activar seguimiento GPS y brújula en vivo">
+                <span id="tbtStepDistance" class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">{{ t('map.hud25d.default_headline') }}</span>
+                <span id="tbtStepCounter" class="text-[10.5px] font-extrabold text-sky-700 bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full truncate">{{ t('map.hud25d.step_counter', current=1, total=1) }}</span>
+                <button id="btnTbtLiveGps" type="button" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200 transition-colors cursor-pointer" title="{{ t('map.hud25d.live_gps_title') }}" data-i18n-title="map.hud25d.live_gps_title">
                     <span id="tbtLiveGpsDot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                    <span id="labelTbtLiveGps">GPS</span>
+                    <span id="labelTbtLiveGps">{{ t('map.hud25d.gps_label') }}</span>
                 </button>
             </div>
             <p id="tbtStepInstruction" class="text-[12.5px] sm:text-[13px] font-semibold text-slate-700 leading-snug line-clamp-3 mt-1">
-                Inicia tu recorrido hacia el destino.
+                {{ t('map.hud25d.default_instruction') }}
             </p>
             <div id="tbtOrientationCue" class="hidden items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 rounded-lg px-2 py-0.5 mt-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="tbtOrientationCueText">Orientado hacia tu siguiente referencia</span>
+                <span id="tbtOrientationCueText">{{ t('map.hud25d.default_orientation') }}</span>
             </div>
             <div id="tbtNextPreview" class="text-[11px] text-slate-500 font-medium truncate mt-0.5 hidden">
-                Luego continúa recto
+                {{ t('map.hud25d.default_next_step') }}
             </div>
-            <!-- Quick Human Landmark Confirm Row ("Ya llegué aquí") -->
+            <!-- Quick Human Landmark Confirm Row -->
             <div id="tbtConfirmRow" class="mt-2 flex items-center gap-1.5">
                 <button id="btnTbtConfirmStep" type="button" class="flex-1 py-1 px-2.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-extrabold text-[11px] flex items-center justify-center gap-1 transition-colors cursor-pointer">
                     <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    <span id="labelTbtConfirmStep">Ya llegué aquí • Siguiente</span>
+                    <span id="labelTbtConfirmStep">{{ t('map.hud25d.btn_arrived_next') }}</span>
                 </button>
             </div>
         </div>
 
         <!-- Subtle Light-Theme Close Banner Button -->
-        <button id="btnCloseTbtBanner" type="button" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl hover:bg-slate-100 transition-colors shrink-0 cursor-pointer self-start" title="Ocultar barra de indicaciones">
+        <button id="btnCloseTbtBanner" type="button" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl hover:bg-slate-100 transition-colors shrink-0 cursor-pointer self-start" title="{{ t('map.hud25d.hide_banner_title') }}" data-i18n-title="map.hud25d.hide_banner_title" aria-label="{{ t('map.hud25d.hide_banner_title') }}" data-i18n-aria-label="map.hud25d.hide_banner_title">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -114,19 +114,24 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
 <!-- 3. Bottom-Left JaguarFind Light-Theme Circular Gauge / Mode Dial -->
 <button id="wazeSpeedDial" type="button"
         class="waze-speed-dial absolute bottom-[78px] left-3 sm:bottom-[84px] sm:left-4 lg:bottom-4 lg:left-5 z-20 w-[58px] h-[58px] sm:w-16 sm:h-16 rounded-full flex flex-col items-center justify-center text-sky-700 pointer-events-auto cursor-pointer transition-[transform,box-shadow,bottom] duration-200"
-        title="Alternar vista 2D / 2.5D JaguarFind">
+        title="{{ t('map.hud25d.toggle_2d_25d_title') }}"
+        data-i18n-title="map.hud25d.toggle_2d_25d_title"
+        aria-label="{{ t('map.hud25d.toggle_2d_25d_title') }}"
+        data-i18n-aria-label="map.hud25d.toggle_2d_25d_title">
     <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 64 64" fill="none">
         <circle cx="32" cy="32" r="27.5" stroke="#38bdf8" stroke-opacity="0.78" stroke-width="2.2" stroke-dasharray="2.2 4.2" />
     </svg>
     <span id="wazeDialValue" class="text-base sm:text-lg font-black leading-none tracking-tight text-sky-700">2D</span>
-    <span id="wazeDialUnit" class="text-[9px] font-extrabold text-teal-600 uppercase tracking-wider mt-0.5">mapa</span>
+    <span id="wazeDialUnit" class="text-[9px] font-extrabold text-teal-600 uppercase tracking-wider mt-0.5">{{ t('map.hud25d.speed_label_map') }}</span>
 </button>
 
 <!-- 4. Bottom-Right JaguarFind Vibrant Sky-Cyan / Coral Circular Action FAB -->
 <button id="wazeOrangeFab" type="button"
         class="waze-orange-fab absolute bottom-[78px] right-3 sm:bottom-[84px] sm:right-4 lg:bottom-4 lg:right-5 z-20 w-[56px] h-[56px] sm:w-[60px] sm:h-[60px] rounded-full flex items-center justify-center text-white pointer-events-auto cursor-pointer transition-[transform,box-shadow,bottom] duration-200"
-        title="Planificar ruta / Centrar navegación"
-        aria-label="Planificar ruta o centrar navegación">
+        title="{{ t('map.hud25d.fab_plan_or_center') }}"
+        data-i18n-title="map.hud25d.fab_plan_or_center"
+        aria-label="{{ t('map.hud25d.fab_plan_or_center') }}"
+        data-i18n-aria-label="map.hud25d.fab_plan_or_center">
     <span class="w-9 h-9 rounded-full bg-white/25 flex items-center justify-center">
         <svg id="wazeOrangeFabIcon" class="w-6 h-6 text-white drop-shadow-xs" fill="currentColor" viewBox="0 0 24 24">
             <path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/>
@@ -139,21 +144,21 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
     <div class="flex items-center justify-between gap-1">
         <!-- Step Playback Group -->
         <div class="flex items-center gap-1 shrink-0">
-            <button id="btnTbtPrevStep" type="button" class="w-8 h-9 sm:w-9 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-extrabold text-xs flex items-center justify-center transition-colors cursor-pointer" title="Paso anterior">
+            <button id="btnTbtPrevStep" type="button" class="w-8 h-9 sm:w-9 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-extrabold text-xs flex items-center justify-center transition-colors cursor-pointer" title="{{ t('map.hud25d.tray_prev') }}" data-i18n-title="map.hud25d.tray_prev" aria-label="{{ t('map.hud25d.tray_prev') }}" data-i18n-aria-label="map.hud25d.tray_prev">
                 &#9664;
             </button>
-            <button id="btnTbtPlaySimulation" type="button" class="h-9 px-2.5 sm:px-3 rounded-xl bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 text-white font-extrabold text-[11px] sm:text-xs flex items-center gap-1 shadow-sm shadow-sky-400/35 transition-colors cursor-pointer" title="Simular recorrido paso a paso">
+            <button id="btnTbtPlaySimulation" type="button" class="h-9 px-2.5 sm:px-3 rounded-xl bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 text-white font-extrabold text-[11px] sm:text-xs flex items-center gap-1 shadow-sm shadow-sky-400/35 transition-colors cursor-pointer" title="{{ t('map.hud25d.tray_simulate_title') }}" data-i18n-title="map.hud25d.tray_simulate_title">
                 <svg id="iconSimPlay" class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                <span id="labelSimPlay">Simular</span>
+                <span id="labelSimPlay">{{ t('map.hud25d.tray_simulate') }}</span>
             </button>
-            <button id="btnTbtNextStep" type="button" class="w-8 h-9 sm:w-9 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-extrabold text-xs flex items-center justify-center transition-colors cursor-pointer" title="Siguiente paso">
+            <button id="btnTbtNextStep" type="button" class="w-8 h-9 sm:w-9 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 font-extrabold text-xs flex items-center justify-center transition-colors cursor-pointer" title="{{ t('map.hud25d.tray_next') }}" data-i18n-title="map.hud25d.tray_next" aria-label="{{ t('map.hud25d.tray_next') }}" data-i18n-aria-label="map.hud25d.tray_next">
                 &#9654;
             </button>
         </div>
 
         <!-- Camera & Route Utility Group -->
         <div class="flex items-center gap-1 shrink-0">
-            <button id="btnWazeRecenter" type="button" class="h-9 px-2 sm:px-2.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer" title="Centrar en cursor">
+            <button id="btnWazeRecenter" type="button" class="h-9 px-2 sm:px-2.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer" title="{{ t('map.hud25d.tray_center_title') }}" data-i18n-title="map.hud25d.tray_center_title">
                 <svg class="w-4 h-4 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="7" stroke-width="2"></circle>
                     <line x1="12" y1="2" x2="12" y2="5" stroke-width="2"></line>
@@ -161,21 +166,21 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
                     <line x1="2" y1="12" x2="5" y2="12" stroke-width="2"></line>
                     <line x1="19" y1="12" x2="22" y2="12" stroke-width="2"></line>
                 </svg>
-                <span class="hidden sm:inline">Centrar</span>
+                <span class="hidden sm:inline" data-i18n="map.hud25d.tray_center">{{ t('map.hud25d.tray_center') }}</span>
             </button>
-            <button id="btnWazeOverview" type="button" class="h-9 px-2 sm:px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer" title="Vista General">
+            <button id="btnWazeOverview" type="button" class="h-9 px-2 sm:px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer" title="{{ t('map.hud25d.tray_overview_title') }}" data-i18n-title="map.hud25d.tray_overview_title">
                 <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                 </svg>
-                <span class="hidden sm:inline">General</span>
+                <span class="hidden sm:inline" data-i18n="map.hud25d.tray_overview">{{ t('map.hud25d.tray_overview') }}</span>
             </button>
-            <button id="btnWazeOpenSteps" type="button" class="lg:hidden h-9 px-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200/80 font-bold text-[11px] flex items-center gap-1 transition-colors cursor-pointer" title="Ver lista de pasos">
+            <button id="btnWazeOpenSteps" type="button" class="lg:hidden h-9 px-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200/80 font-bold text-[11px] flex items-center gap-1 transition-colors cursor-pointer" title="{{ t('map.view_steps') }}" data-i18n-title="map.view_steps">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10"/></svg>
-                <span>Pasos</span>
+                <span data-i18n="map.hud25d.tray_steps">{{ t('map.hud25d.tray_steps') }}</span>
             </button>
-            <button id="btnWazeClearRoute" type="button" class="hidden h-9 px-2 sm:px-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 font-bold text-xs items-center gap-1 transition-colors cursor-pointer" title="Finalizar ruta">
+            <button id="btnWazeClearRoute" type="button" class="hidden h-9 px-2 sm:px-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 font-bold text-xs items-center gap-1 transition-colors cursor-pointer" title="{{ t('map.hud25d.tray_exit_title') }}" data-i18n-title="map.hud25d.tray_exit_title">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
-                <span class="hidden sm:inline">Salir</span>
+                <span class="hidden sm:inline" data-i18n="map.hud25d.tray_exit">{{ t('map.hud25d.tray_exit') }}</span>
             </button>
         </div>
     </div>
@@ -192,8 +197,10 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
         <!-- Left Slot: JaguarFind Light-Theme Search Button -->
         <button id="btnWazeSearch" type="button"
                 class="w-14 sm:w-16 h-full flex items-center justify-center bg-sky-50/70 text-sky-600 hover:text-sky-700 hover:bg-sky-100/80 border-r border-sky-100 transition-colors shrink-0 cursor-pointer"
-                title="Buscar destino o planificar ruta"
-                aria-label="Buscar destino">
+                title="{{ t('map.hud25d.dock_search_title') }}"
+                data-i18n-title="map.hud25d.dock_search_title"
+                aria-label="{{ t('map.hud25d.dock_search_aria') }}"
+                data-i18n-aria-label="map.hud25d.dock_search_aria">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M21 21l-5.2-5.2m1.7-4.8a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
             </svg>
@@ -202,10 +209,10 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
         <!-- Center Slot: Arrival Time / Title + Sub-Meta -->
         <div id="wazeBottomCenter" class="flex-1 min-w-0 px-3 text-center cursor-pointer select-none">
             <div id="wazeEtaTime" class="text-[20px] sm:text-[22px] font-black text-slate-900 tracking-tight leading-tight truncate">
-                Campus UAM
+                {{ t('map.campus_pill') }}
             </div>
             <div id="wazeTripMeta" class="text-[11.5px] sm:text-xs font-bold text-sky-600 truncate mt-0.5">
-                ¿A dónde vas? • Toca para buscar
+                {{ t('map.hud25d.dock_prompt') }}
             </div>
         </div>
 
@@ -213,8 +220,10 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
         <div class="flex items-center gap-2 pr-3 sm:pr-3.5 shrink-0">
             <button id="btnWazeAudio" type="button"
                     class="w-9 h-9 rounded-full flex items-center justify-center text-sky-600 hover:text-sky-700 hover:bg-sky-50 transition-colors cursor-pointer"
-                    title="Escuchar indicaciones por voz"
-                    aria-label="Indicaciones por voz">
+                    title="{{ t('map.listen_directions') }}"
+                    data-i18n-title="map.listen_directions"
+                    aria-label="{{ t('map.hud25d.dock_audio_title') }}"
+                    data-i18n-aria-label="map.hud25d.dock_audio_title">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.1" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
                 </svg>
@@ -222,8 +231,10 @@ Responsive Light-Themed Navigation Cockpit across mobile, tablet, and desktop:
 
             <button id="btnWazeExpandTray" type="button"
                     class="waze-expand-tray-btn w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 via-sky-500 to-blue-600 text-white shadow-md shadow-sky-400/35 flex items-center justify-center transition-[transform,filter,box-shadow] duration-200 cursor-pointer"
-                    title="Controles de navegación"
-                    aria-label="Controles de navegación"
+                    title="{{ t('map.hud25d.dock_controls_title') }}"
+                    data-i18n-title="map.hud25d.dock_controls_title"
+                    aria-label="{{ t('map.hud25d.dock_controls_title') }}"
+                    data-i18n-aria-label="map.hud25d.dock_controls_title"
                     aria-expanded="false">
                 <svg id="wazeExpandChevron" class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.8" d="M5 15l7-7 7 7"/>

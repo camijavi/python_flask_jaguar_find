@@ -3,13 +3,7 @@
 NEW / EDIT REPORT OBJECT MODAL DIALOG (newEditReportObject.html)
 ================================================================================
 Interactive dialog for reporting lost or found objects on UAM campus.
-Features:
-- Automated GPS coordinate detection matching against campus graph & subgraphs
-- Disambiguation banner: "¿El objeto estaba en el Edificio X, Salón Y?"
-- Manual searchable campus dropdown fallback
-- Image preview uploader (DataURL base64)
-- Anti-fraud secret verification detail field
-- Full responsive styling matching the JaguarFind teal/ocean design system
+Fully localized (ES / EN) with reactive DOM & JS updates via JaguarI18n.
 ================================================================================
 -->
 
@@ -23,11 +17,11 @@ Features:
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <div>
-                    <h2 class="text-lg font-extrabold text-slate-900 leading-tight">Reportar Objeto Perdido</h2>
-                    <p class="text-xs text-slate-500">Publica un objeto extraviado o encontrado en el campus</p>
+                    <h2 class="text-lg font-extrabold text-slate-900 leading-tight" data-i18n="lost_found.report.modal_title">{{ t('lost_found.report.modal_title') }}</h2>
+                    <p class="text-xs text-slate-500" data-i18n="lost_found.report.modal_subtitle">{{ t('lost_found.report.modal_subtitle') }}</p>
                 </div>
             </div>
-            <button id="btnCloseReportModal" type="button" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer">
+            <button id="btnCloseReportModal" type="button" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer" aria-label="{{ t('common.close') }}" data-i18n-aria-label="common.close">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
@@ -42,20 +36,20 @@ Features:
                         <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
                     </span>
                     <div class="flex-1">
-                        <p id="gpsStatusText" class="font-bold text-brand-900 leading-snug">
-                            Consultando ubicación en el campus...
+                        <p id="gpsStatusText" class="font-bold text-brand-900 leading-snug" data-i18n="lost_found.report.gps_checking">
+                            {{ t('lost_found.report.gps_checking') }}
                         </p>
-                        <p id="gpsSubText" class="text-brand-700 mt-0.5">
-                            Permite el acceso a ubicación para detectar el edificio o aula automáticamente.
+                        <p id="gpsSubText" class="text-brand-700 mt-0.5" data-i18n="lost_found.report.gps_permission_hint">
+                            {{ t('lost_found.report.gps_permission_hint') }}
                         </p>
 
                         <!-- Action Buttons after match -->
                         <div id="gpsConfirmationButtons" class="mt-2.5 hidden flex flex-wrap items-center gap-2">
                             <button id="btnConfirmGpsLocation" type="button" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-[11px] shadow-xs active:scale-95 transition-all cursor-pointer">
-                                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>Sí, usar esta ubicación</span>
+                                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg><span data-i18n="lost_found.report.gps_confirm_btn">{{ t('lost_found.report.gps_confirm_btn') }}</span></span>
                             </button>
                             <button id="btnManualDropdownToggle" type="button" class="px-3 py-1.5 rounded-lg bg-white border border-brand-300 hover:bg-brand-100 text-brand-800 font-bold text-[11px] transition-all cursor-pointer">
-                                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>No, elegir otro edificio</span>
+                                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg><span data-i18n="lost_found.report.gps_choose_other_btn">{{ t('lost_found.report.gps_choose_other_btn') }}</span></span>
                             </button>
                         </div>
 
@@ -68,11 +62,11 @@ Features:
                         <!-- Nearby Ambiguous Building Chips -->
                         <div id="gpsNearbyCandidates" class="mt-2 hidden flex flex-wrap items-center gap-1.5"></div>
 
-                        <!-- Retry GPS Button (Shown on timeout / error / manual fallback) -->
+                        <!-- Retry GPS Button -->
                         <div id="gpsRetryRow" class="mt-2 hidden">
                             <button id="btnRetryReportGps" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-brand-200 hover:bg-brand-100 text-brand-700 font-bold text-[11px] transition-colors cursor-pointer">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                <span>Reintentar detección GPS</span>
+                                <span data-i18n="lost_found.report.gps_retry_btn">{{ t('lost_found.report.gps_retry_btn') }}</span>
                             </button>
                         </div>
                     </div>
@@ -89,10 +83,11 @@ Features:
                 <!-- Item Name -->
                 <div>
                     <label for="reportItemName" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                        Nombre del Objeto <span class="text-rose-500">*</span>
+                        <span data-i18n="lost_found.report.item_name_label">{{ t('lost_found.report.item_name_label') }}</span> <span class="text-rose-500">*</span>
                     </label>
                     <input type="text" id="reportItemName" name="itemName" required
-                           placeholder="Ej. Calculadora Casio fx-991LA, Termo Yeti Azul, Carnet CIF..."
+                           placeholder="{{ t('lost_found.report.item_name_placeholder') }}"
+                           data-i18n-placeholder="lost_found.report.item_name_placeholder"
                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-hidden transition">
                 </div>
 
@@ -101,57 +96,57 @@ Features:
                     <!-- Category -->
                     <div>
                         <label for="reportCategory" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                            Categoría <span class="text-rose-500">*</span>
+                            <span data-i18n="lost_found.report.category_label">{{ t('lost_found.report.category_label') }}</span> <span class="text-rose-500">*</span>
                         </label>
                         <select id="reportCategory" name="category" required
                                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-hidden transition">
-                            <option value="electronics">Electrónica / Dispositivos</option>
-                            <option value="documents">Documentos / Carnet UAM</option>
-                            <option value="personalItems">Artículos Personales / Termos</option>
-                            <option value="clothing">Ropa / Accesorios</option>
-                            <option value="other">Otro artículo</option>
+                            <option value="electronics" data-i18n="lost_found.cat_electronics">{{ t('lost_found.cat_electronics') }}</option>
+                            <option value="documents" data-i18n="lost_found.cat_documents">{{ t('lost_found.cat_documents') }}</option>
+                            <option value="personalItems" data-i18n="lost_found.cat_personal">{{ t('lost_found.cat_personal') }}</option>
+                            <option value="clothing" data-i18n="lost_found.cat_clothing">{{ t('lost_found.cat_clothing') }}</option>
+                            <option value="other" data-i18n="lost_found.cat_other">{{ t('lost_found.cat_other') }}</option>
                         </select>
                     </div>
 
                     <!-- Campus Location (Manual Dropdown) -->
                     <div id="manualLocationContainer">
                         <label for="reportLocationSelect" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                            Ubicación en el Campus <span class="text-rose-500">*</span>
+                            <span data-i18n="lost_found.report.location_label">{{ t('lost_found.report.location_label') }}</span> <span class="text-rose-500">*</span>
                         </label>
                         <select id="reportLocationSelect" required
                                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-hidden transition">
-                            <option value="" disabled selected>Selecciona un edificio o lugar...</option>
-                            <optgroup label="Edificios Principales">
-                                <option value="buildingA">Edificio A (Atención al Estudiante CAE / Recepción)</option>
-                                <option value="buildingB">Edificio B (Aulas B-101 a B-106 / Farmacia)</option>
-                                <option value="buildingC">Edificio C (Laboratorios MAC & Cómputo / Caja)</option>
-                                <option value="buildingD">Edificio D (Laboratorios de Odontología Digital)</option>
-                                <option value="buildingE">Edificio E (Facultad de Medicina & Simuladores)</option>
-                                <option value="buildingF">Edificio F (Facultad de Ciencias Económicas)</option>
-                                <option value="buildingG">Edificio G (Facultad de Derecho & Auditorio Central)</option>
-                                <option value="buildingH">Edificio H (Aulas de Pregrado & Posgrado)</option>
-                                <option value="buildingI">Edificio I (Rectoría & Biblioteca Central)</option>
-                                <option value="buildingJ">Edificio J (Laboratorios Multiuso Odontología)</option>
-                                <option value="buildingK">Edificio K (Cafetería Central / Jaguar Corner)</option>
-                                <option value="buildingL">Edificio L (Salones Ejecutivos)</option>
-                                <option value="buildingM">Edificio M (Aulas y Posgrados)</option>
-                                <option value="buildingN">Edificio N (Clínicas Odontológicas UAM)</option>
-                                <option value="buildingO">Edificio O (Facultad de Ingeniería FIA / Robótica)</option>
-                                <option value="buildingP">Edificio P (Observatorio Copérnico)</option>
+                            <option value="" disabled selected data-i18n="lost_found.report.location_placeholder">{{ t('lost_found.report.location_placeholder') }}</option>
+                            <optgroup label="{{ t('lost_found.optgroup_main_buildings') }}" data-i18n-label="lost_found.optgroup_main_buildings">
+                                <option value="buildingA" data-i18n="nodes.buildingA">{{ t('nodes.buildingA') }}</option>
+                                <option value="buildingB" data-i18n="nodes.buildingB">{{ t('nodes.buildingB') }}</option>
+                                <option value="buildingC" data-i18n="nodes.buildingC">{{ t('nodes.buildingC') }}</option>
+                                <option value="buildingD" data-i18n="nodes.buildingD">{{ t('nodes.buildingD') }}</option>
+                                <option value="buildingE" data-i18n="nodes.buildingE">{{ t('nodes.buildingE') }}</option>
+                                <option value="buildingF" data-i18n="nodes.buildingF">{{ t('nodes.buildingF') }}</option>
+                                <option value="buildingG" data-i18n="nodes.buildingG">{{ t('nodes.buildingG') }}</option>
+                                <option value="buildingH" data-i18n="nodes.buildingH">{{ t('nodes.buildingH') }}</option>
+                                <option value="buildingI" data-i18n="nodes.buildingI">{{ t('nodes.buildingI') }}</option>
+                                <option value="buildingJ" data-i18n="nodes.buildingJ">{{ t('nodes.buildingJ') }}</option>
+                                <option value="buildingK" data-i18n="nodes.buildingK">{{ t('nodes.buildingK') }}</option>
+                                <option value="buildingL" data-i18n="nodes.buildingL">{{ t('nodes.buildingL') }}</option>
+                                <option value="buildingM" data-i18n="nodes.buildingM">{{ t('nodes.buildingM') }}</option>
+                                <option value="buildingN" data-i18n="nodes.buildingN">{{ t('nodes.buildingN') }}</option>
+                                <option value="buildingO" data-i18n="nodes.buildingO">{{ t('nodes.buildingO') }}</option>
+                                <option value="buildingP" data-i18n="nodes.buildingP">{{ t('nodes.buildingP') }}</option>
                             </optgroup>
-                            <optgroup label="Áreas Deportivas & Exteriores">
-                                <option value="jaguarCenter">Complejo Jaguar Center (Polideportivo)</option>
-                                <option value="jaguarGym">Jaguar Gym (Gimnasio Universitario)</option>
-                                <option value="physiotherapy">Edificio de Fisioterapia</option>
-                                <option value="sportsZone">Campos Deportivos (Estadio de Béisbol &amp; Cancha Fútbol)</option>
-                                <option value="chilamatesPlaza">Plaza Chilamates (Kioscos &amp; Fast Point)</option>
-                                <option value="jaguarJungle">Jaguar Jungle (Área Verde &amp; Sendero)</option>
-                                <option value="miRanchito">Mi Ranchito (Pabellón &amp; Comidas)</option>
-                                <option value="labDigitalFia">Lab Digital FIA</option>
-                                <option value="areaDeMesas">Área de Mesas (Terraza Exterior)</option>
-                                <option value="mainParking">Parqueo Principal &amp; Caseta Sur</option>
-                                <option value="northeastGate">Segundo Acceso (Camino Estadio Jaguar)</option>
-                                <option value="northGate">Tercer Acceso (Portón Copérnico)</option>
+                            <optgroup label="{{ t('lost_found.optgroup_sports_outdoor') }}" data-i18n-label="lost_found.optgroup_sports_outdoor">
+                                <option value="jaguarCenter" data-i18n="nodes.jaguarCenter">{{ t('nodes.jaguarCenter') }}</option>
+                                <option value="jaguarGym" data-i18n="nodes.jaguarGym">{{ t('nodes.jaguarGym') }}</option>
+                                <option value="physiotherapy" data-i18n="nodes.physiotherapy">{{ t('nodes.physiotherapy') }}</option>
+                                <option value="sportsZone" data-i18n="nodes.sportsZone">{{ t('nodes.sportsZone') }}</option>
+                                <option value="chilamatesPlaza" data-i18n="nodes.chilamatesPlaza">{{ t('nodes.chilamatesPlaza') }}</option>
+                                <option value="jaguarJungle" data-i18n="nodes.jaguarJungle">{{ t('nodes.jaguarJungle') }}</option>
+                                <option value="miRanchito" data-i18n="nodes.miRanchito">{{ t('nodes.miRanchito') }}</option>
+                                <option value="labDigitalFia" data-i18n="nodes.labDigitalFia">{{ t('nodes.labDigitalFia') }}</option>
+                                <option value="areaDeMesas" data-i18n="nodes.areaDeMesas">{{ t('nodes.areaDeMesas') }}</option>
+                                <option value="mainParking" data-i18n="nodes.mainParking">{{ t('nodes.mainParking') }}</option>
+                                <option value="northeastGate" data-i18n="nodes.northeastGate">{{ t('nodes.northeastGate') }}</option>
+                                <option value="northGate" data-i18n="nodes.northGate">{{ t('nodes.northGate') }}</option>
                             </optgroup>
                         </select>
                     </div>
@@ -160,10 +155,11 @@ Features:
                 <!-- Description -->
                 <div>
                     <label for="reportDescription" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                        Descripción Pública <span class="text-rose-500">*</span>
+                        <span data-i18n="lost_found.report.description_label">{{ t('lost_found.report.description_label') }}</span> <span class="text-rose-500">*</span>
                     </label>
                     <textarea id="reportDescription" name="description" rows="2" required
-                              placeholder="Indica color, marca o circunstancias donde fue encontrado o extraviado..."
+                              placeholder="{{ t('lost_found.report.description_placeholder') }}"
+                              data-i18n-placeholder="lost_found.report.description_placeholder"
                               class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-hidden transition"></textarea>
                 </div>
 
@@ -171,32 +167,33 @@ Features:
                 <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
                     <label for="reportSecretDetail" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                         <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg>
-                        <span>Detalle Secreto / Pregunta Antifraude (Privado)</span>
+                        <span data-i18n="lost_found.report.antifraud_title">{{ t('lost_found.report.antifraud_title') }}</span>
                     </label>
-                    <p class="text-[11px] text-slate-500 mb-2">
-                        Un detalle que solo el dueño real conoce (ej. "calcomanía en la parte trasera", "nombre grabado"). No se mostrará en el catálogo público y servirá a los administradores para verificar a quien lo reclame.
+                    <p class="text-[11px] text-slate-500 mb-2" data-i18n="lost_found.report.antifraud_desc">
+                        {{ t('lost_found.report.antifraud_desc') }}
                     </p>
                     <input type="text" id="reportSecretDetail" name="secretDetail"
-                           placeholder="Ej. Tiene una calcomanía del Jaguar en la esquina inferior izquierda"
+                           placeholder="{{ t('lost_found.report.antifraud_placeholder') }}"
+                           data-i18n-placeholder="lost_found.report.antifraud_placeholder"
                            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:border-brand-500 focus:ring-3 focus:ring-brand-500/15 focus:outline-hidden transition">
                 </div>
 
                 <!-- Photo Uploader with Instant Preview -->
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                        Foto del Objeto (Opcional)
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5" data-i18n="lost_found.report.photo_label">
+                        {{ t('lost_found.report.photo_label') }}
                     </label>
                     <div class="flex items-center gap-4">
                         <label for="reportPhotoInput" class="flex-1 flex flex-col items-center justify-center p-4 border-2 border-dashed border-slate-200 hover:border-brand-400 rounded-2xl cursor-pointer bg-slate-50 hover:bg-brand-50/40 transition-colors">
                             <svg class="w-6 h-6 text-slate-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <span class="text-xs font-semibold text-slate-600">Subir imagen o tomar foto</span>
-                            <span class="text-[10px] text-slate-400">PNG, JPG, WEBP hasta 5MB</span>
+                            <span class="text-xs font-semibold text-slate-600" data-i18n="lost_found.report.photo_drop_prompt">{{ t('lost_found.report.photo_drop_prompt') }}</span>
+                            <span class="text-[10px] text-slate-400" data-i18n="lost_found.report.photo_formats_hint">{{ t('lost_found.report.photo_formats_hint') }}</span>
                             <input type="file" id="reportPhotoInput" accept="image/*" class="hidden">
                         </label>
                         <div id="reportPhotoPreviewContainer" class="w-20 h-20 rounded-2xl border border-slate-200 bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 relative">
-                            <span id="reportPhotoPlaceholder" class="text-[10px] text-slate-400 font-semibold">Sin foto</span>
-                            <img id="reportPhotoImg" src="" alt="Vista previa" class="w-full h-full object-cover hidden">
-                            <button id="btnRemovePhoto" type="button" class="hidden absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-xs font-bold" title="Eliminar foto">&times;</button>
+                            <span id="reportPhotoPlaceholder" class="text-[10px] text-slate-400 font-semibold" data-i18n="lost_found.report.photo_no_photo">{{ t('lost_found.report.photo_no_photo') }}</span>
+                            <img id="reportPhotoImg" src="" alt="{{ t('lost_found.report.photo_preview_alt') }}" data-i18n-alt="lost_found.report.photo_preview_alt" class="w-full h-full object-cover hidden">
+                            <button id="btnRemovePhoto" type="button" class="hidden absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-xs font-bold" title="{{ t('lost_found.report.photo_remove') }}" data-i18n-title="lost_found.report.photo_remove" aria-label="{{ t('lost_found.report.photo_remove') }}" data-i18n-aria-label="lost_found.report.photo_remove">&times;</button>
                         </div>
                     </div>
                 </div>
@@ -205,12 +202,12 @@ Features:
                 <div id="reportFormAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
 
                 <div class="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
-                    <button id="btnCancelReport" type="button" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold transition">
-                        Cancelar
+                    <button id="btnCancelReport" type="button" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold transition" data-i18n="lost_found.report.btn_cancel">
+                        {{ t('lost_found.report.btn_cancel') }}
                     </button>
                     <button id="btnSubmitReport" type="submit" class="px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-white text-xs font-bold shadow-md shadow-brand-500/25 transition flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        <span>Publicar Reporte</span>
+                        <span data-i18n="lost_found.report.btn_submit">{{ t('lost_found.report.btn_submit') }}</span>
                     </button>
                 </div>
             </form>
@@ -226,6 +223,8 @@ Features:
     let detectedLocationName = "";
     let detectedCoords = null;
     let openedWithPreselectedLocation = false;
+    let lastGpsResult = null;
+    let isLocationConfirmed = false;
 
     const modal = document.getElementById("reportObjectModal");
     const btnClose = document.getElementById("btnCloseReportModal");
@@ -256,6 +255,17 @@ Features:
     const photoPlaceholder = document.getElementById("reportPhotoPlaceholder");
     const photoHidden = document.getElementById("reportPhotoUrl");
     const btnRemovePhoto = document.getElementById("btnRemovePhoto");
+
+    function tr(key, params) {
+        return window.t ? window.t(key, undefined, params) : key;
+    }
+
+    function getCurrentLang() {
+        if (window.JaguarI18n && typeof window.JaguarI18n.getLang === "function") {
+            return window.JaguarI18n.getLang();
+        }
+        return (window.APP_CONFIG && window.APP_CONFIG.currentLang) || "eng";
+    }
 
     let reportDraftHandle = null;
     function initReportDraft() {
@@ -319,12 +329,22 @@ Features:
     function formatDetectedLocationLabel(nearest) {
         const bName = (nearest && nearest.buildingName ? String(nearest.buildingName) : "").trim();
         const nName = (nearest && nearest.nodeName ? String(nearest.nodeName) : "").trim();
-        if (!bName) return nName || "Campus UAM";
+        if (!bName) return nName || tr("map.campus_pill");
         if (!nName || nName.toLowerCase() === bName.toLowerCase() || bName.toLowerCase().includes(nName.toLowerCase())) {
             return bName;
         }
         const shortBuilding = bName.split("(")[0].trim();
         return `${shortBuilding} (${nName})`;
+    }
+
+    function showConfirmedLocationBanner(label) {
+        isLocationConfirmed = true;
+        setGpsIconState("success");
+        gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> ${escapeHtml(tr("lost_found.report.gps_confirmed_prefix"))} <strong>${escapeHtml(label)}</strong></span>`;
+        gpsSubText.textContent = tr("lost_found.report.gps_ready_sub");
+        gpsConfirmationButtons.classList.add("hidden");
+        if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
+        if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
     }
 
     // Open Modal Function
@@ -335,6 +355,8 @@ Features:
 
         detectedNodeId = "";
         detectedLocationName = "";
+        lastGpsResult = null;
+        isLocationConfirmed = false;
         clearGpsCoords();
         if (gpsNearbyCandidates) {
             gpsNearbyCandidates.innerHTML = "";
@@ -347,7 +369,6 @@ Features:
             setSelectLocationValue(preselectedLocation, preselectedLocation);
         }
 
-        // Trigger GPS match
         detectCampusLocation();
     };
 
@@ -359,6 +380,8 @@ Features:
         if (reportDraftHandle) reportDraftHandle.clear();
         detectedNodeId = "";
         detectedLocationName = "";
+        lastGpsResult = null;
+        isLocationConfirmed = false;
         openedWithPreselectedLocation = false;
         clearGpsCoords();
         if (locationHidden) locationHidden.value = "";
@@ -406,14 +429,10 @@ Features:
                 btn.innerHTML = `<span class="truncate">${escapeHtml(loc.name)}</span>${distTxt}`;
                 btn.addEventListener("click", () => {
                     detectedNodeId = loc.buildingId || detectedNodeId;
-                    detectedLocationName = `${(loc.buildingName || "").split("(")[0].trim()} — ${loc.name} (Piso ${loc.floorLevel || activeFloor})`;
+                    const flLabel = tr("lost_found.report.floor_label", { floor: loc.floorLevel || activeFloor });
+                    detectedLocationName = `${(loc.buildingName || "").split("(")[0].trim()} — ${loc.name} (${flLabel})`;
                     setSelectLocationValue(detectedNodeId, detectedLocationName);
-                    setGpsIconState("success");
-                    gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${escapeHtml(detectedLocationName)}</strong></span>`;
-                    gpsSubText.textContent = "Ubicación del campus lista para publicar el reporte.";
-                    gpsConfirmationButtons.classList.add("hidden");
-                    reportGpsFloorAndRooms.classList.add("hidden");
-                    if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
+                    showConfirmedLocationBanner(detectedLocationName);
                 });
                 reportGpsRoomsList.appendChild(btn);
             });
@@ -429,7 +448,7 @@ Features:
                     b.className = Number(fl) === Number(activeFloor)
                         ? "px-2 py-0.5 rounded-md bg-brand-600 text-white font-bold text-[10.5px] cursor-pointer"
                         : "px-2 py-0.5 rounded-md bg-white hover:bg-brand-100 text-brand-800 border border-brand-200 font-bold text-[10.5px] cursor-pointer";
-                    b.textContent = `Piso ${fl} (${count})`;
+                    b.textContent = tr("lost_found.report.floor_count", { floor: fl, count });
                     b.addEventListener("click", () => {
                         activeFloor = fl;
                         renderFloorBtns();
@@ -447,14 +466,18 @@ Features:
 
     function applyReportGpsResult(result) {
         if (!result) return;
+        lastGpsResult = result;
 
         if (!result.ok) {
             clearGpsCoords();
             if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
             const err = result.error || {};
-            const msg = err.description || "No se pudo obtener tu ubicación. Selecciona el edificio manualmente:";
+            const localizedErr = (window.JaguarGpsDetector && err.code && typeof window.JaguarGpsDetector.getErrorCopy === "function")
+                ? window.JaguarGpsDetector.getErrorCopy(err.code)
+                : err;
+            const msg = localizedErr.description || tr("lost_found.report.gps_manual_prompt");
             fallbackManualLocation(msg, {
-                title: err.title || "Selección Manual de Ubicación",
+                title: localizedErr.title || tr("lost_found.report.gps_manual_title"),
                 showRetry: err.retryable !== false,
             });
             return;
@@ -464,7 +487,7 @@ Features:
         const coords = result.coords || {};
         if (!nearest || !(nearest.nearestNodeId || nearest.buildingName || nearest.nodeName)) {
             clearGpsCoords();
-            fallbackManualLocation("Ubicación aproximada no identificada. Por favor selecciona el edificio:", { showRetry: true });
+            fallbackManualLocation(tr("lost_found.report.gps_unidentified"), { showRetry: true });
             return;
         }
 
@@ -482,20 +505,20 @@ Features:
         const isHighConf = nearest.confidence === "high" && !nearest.needsManualFallback;
         const floorInfo = nearest.floorDetection || {};
         const headerLabel = isHighConf
-            ? (window.JaguarGpsDetector ? window.JaguarGpsDetector.tr("map.gps.where_i_think_you_are", "Dónde creo que estás", "Where I think you are") : "Dónde creo que estás")
-            : (nearest.needsFloorSelection ? "Edificio detectado (selecciona piso/aula)" : "Ubicación aproximada detectada");
+            ? tr("map.gps.where_i_think_you_are")
+            : (nearest.needsFloorSelection ? tr("lost_found.report.gps_building_choose_floor") : tr("lost_found.report.gps_approx_detected"));
 
         const distM = Math.round(nearest.distanceMeters || 0);
         setGpsIconState("success");
         gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1 flex-wrap'><svg class='w-3.5 h-3.5 text-emerald-600 inline shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'/><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'/></svg><span>${escapeHtml(headerLabel)}: <strong>${escapeHtml(detectedLocationName)}</strong></span></span>`;
 
         if (nearest.needsFloorSelection) {
-            gpsSubText.textContent = "La altitud GPS es imprecisa en interiores. Elige el piso o aula exacta abajo, o confirma el edificio:";
+            gpsSubText.textContent = tr("lost_found.report.gps_indoor_floor_hint");
         } else if (openedWithPreselectedLocation) {
-            gpsSubText.textContent = `Aproximadamente a ${distM}m de tu posición actual. Confirma si deseas usar esta ubicación GPS.`;
+            gpsSubText.textContent = tr("lost_found.report.gps_preselected_hint", { dist: distM });
         } else {
-            const flTxt = floorInfo.detectedFloor ? ` • Piso ${floorInfo.detectedFloor}` : "";
-            gpsSubText.textContent = `Seleccionado automáticamente (~${distM}m${flTxt}). Confirma o elige otro edificio si fue en otro lugar.`;
+            const flTxt = floorInfo.detectedFloor ? ` • ${tr("lost_found.report.floor_label", { floor: floorInfo.detectedFloor })}` : "";
+            gpsSubText.textContent = tr("lost_found.report.gps_auto_selected_hint", { dist: distM, floor: flTxt });
         }
 
         gpsConfirmationButtons.classList.remove("hidden");
@@ -508,7 +531,7 @@ Features:
                 .filter(c => c && c.buildingId && c.buildingId !== detectedNodeId)
                 .slice(0, 2);
             if ((nearest.isAmbiguous || nearest.needsManualFallback) && altCandidates.length > 0) {
-                gpsNearbyCandidates.innerHTML = `<span class="text-[10px] font-semibold text-slate-500">¿O estabas en:</span>`;
+                gpsNearbyCandidates.innerHTML = `<span class="text-[10px] font-semibold text-slate-500">${escapeHtml(tr("lost_found.report.gps_or_were_you_at"))}</span>`;
                 altCandidates.forEach(cand => {
                     const chip = document.createElement("button");
                     chip.type = "button";
@@ -519,10 +542,7 @@ Features:
                         detectedNodeId = cand.buildingId;
                         detectedLocationName = cand.buildingName || cand.name || cand.buildingId;
                         setSelectLocationValue(detectedNodeId, detectedLocationName);
-                        gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${escapeHtml(detectedLocationName)}</strong></span>`;
-                        gpsConfirmationButtons.classList.add("hidden");
-                        gpsNearbyCandidates.classList.add("hidden");
-                        if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
+                        showConfirmedLocationBanner(detectedLocationName);
                     });
                     gpsNearbyCandidates.appendChild(chip);
                 });
@@ -534,31 +554,30 @@ Features:
         }
     }
 
-    // Geolocation detection and campus nearest-gps resolution via shared JaguarGpsDetector
     async function detectCampusLocation(forceFresh = false) {
         setGpsIconState("loading");
-        gpsStatusText.textContent = "Detectando coordenadas del campus...";
-        gpsSubText.textContent = "Obteniendo posición GPS para asociar el edificio más cercano...";
+        gpsStatusText.textContent = tr("lost_found.report.gps_detecting_coords");
+        gpsSubText.textContent = tr("lost_found.report.gps_acquiring_sub");
         gpsConfirmationButtons.classList.add("hidden");
         if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
         if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
         if (gpsRetryRow) gpsRetryRow.classList.add("hidden");
 
         if (!window.JaguarGpsDetector) {
-            fallbackManualLocation("Servicio de geolocalización no disponible.", { showRetry: false });
+            fallbackManualLocation(tr("lost_found.report.gps_service_unavailable"), { showRetry: false });
             return;
         }
 
         const result = await window.JaguarGpsDetector.detectCampusLocation({
             forceFresh,
             reuseFreshLive: !forceFresh,
-            lang: (window.APP_CONFIG && window.APP_CONFIG.currentLang) || "spa",
+            lang: getCurrentLang(),
             onStatusChange: (statusKey) => {
                 if (statusKey === "requesting_permission") {
-                    gpsStatusText.textContent = "Solicitando permiso de ubicación...";
+                    gpsStatusText.textContent = tr("map.gps.requesting_permission");
                 } else if (statusKey === "retrying_network") {
-                    gpsStatusText.textContent = "Señal GPS débil en interiores...";
-                    gpsSubText.textContent = "Reintentando con ubicación por Wi-Fi / red...";
+                    gpsStatusText.textContent = tr("lost_found.report.gps_weak_signal");
+                    gpsSubText.textContent = tr("lost_found.report.gps_retrying_wifi");
                 }
             },
         });
@@ -567,7 +586,7 @@ Features:
 
     function fallbackManualLocation(msg, options = {}) {
         setGpsIconState("manual");
-        gpsStatusText.textContent = options.title || "Selección Manual de Ubicación";
+        gpsStatusText.textContent = options.title || tr("lost_found.report.gps_manual_title");
         gpsSubText.textContent = msg;
         gpsConfirmationButtons.classList.add("hidden");
         if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
@@ -580,13 +599,21 @@ Features:
         }
     }
 
+    window.addEventListener("jaguarLanguageChanged", () => {
+        if (!modal || modal.classList.contains("hidden")) return;
+        if (isLocationConfirmed && detectedLocationName) {
+            showConfirmedLocationBanner(detectedLocationName);
+        } else if (lastGpsResult) {
+            applyReportGpsResult(lastGpsResult);
+        }
+    });
+
     if (btnRetryReportGps) {
         btnRetryReportGps.addEventListener("click", () => {
             detectCampusLocation(true);
         });
     }
 
-    // Confirmation buttons
     if (btnConfirmGps) {
         btnConfirmGps.addEventListener("click", () => {
             setSelectLocationValue(detectedNodeId, detectedLocationName);
@@ -594,12 +621,7 @@ Features:
                 if (latInput) latInput.value = detectedCoords.lat;
                 if (lngInput) lngInput.value = detectedCoords.lng;
             }
-            setGpsIconState("success");
-            gpsStatusText.innerHTML = `<span class='inline-flex items-center gap-1'><svg class='w-3.5 h-3.5 text-emerald-600 inline' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M5 13l4 4L19 7'/></svg> Ubicación confirmada: <strong>${escapeHtml(detectedLocationName)}</strong></span>`;
-            gpsSubText.textContent = "Ubicación del campus lista para publicar el reporte.";
-            gpsConfirmationButtons.classList.add("hidden");
-            if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
-            if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
+            showConfirmedLocationBanner(detectedLocationName);
         });
     }
 
@@ -607,7 +629,7 @@ Features:
         btnManualToggle.addEventListener("click", () => {
             clearGpsCoords();
             locationSelect.focus();
-            gpsSubText.textContent = "Por favor selecciona el edificio correspondiente:";
+            gpsSubText.textContent = tr("lost_found.report.gps_select_building_prompt");
             gpsConfirmationButtons.classList.add("hidden");
             if (reportGpsFloorAndRooms) reportGpsFloorAndRooms.classList.add("hidden");
             if (gpsNearbyCandidates) gpsNearbyCandidates.classList.add("hidden");
@@ -617,21 +639,19 @@ Features:
     if (locationSelect) {
         locationSelect.addEventListener("change", (e) => {
             locationHidden.value = e.target.value;
-            // If user manually switches to a different building than the GPS match, don't submit mismatched GPS coords
             if (e.target.value !== detectedNodeId) {
                 clearGpsCoords();
             }
         });
     }
 
-    // Photo preview handling (FileReader)
     if (photoInput) {
         photoInput.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
             if (file.size > 5 * 1024 * 1024) {
-                alert("La imagen excede el límite de 5MB.");
+                alert(tr("lost_found.report.photo_too_large"));
                 return;
             }
 
@@ -660,7 +680,11 @@ Features:
         btnRemovePhoto.addEventListener("click", clearPhotoPreview);
     }
 
-    // Form submission
+    function resetSubmitButton() {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span data-i18n="lost_found.report.btn_submit">${escapeHtml(tr("lost_found.report.btn_submit"))}</span>`;
+    }
+
     if (form) {
         form.addEventListener("submit", async function(e) {
             e.preventDefault();
@@ -669,14 +693,13 @@ Features:
             const loc = locationHidden.value || locationSelect.value;
             if (!loc) {
                 formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                formAlert.textContent = "Debes seleccionar o confirmar la ubicación en el campus.";
+                formAlert.textContent = tr("lost_found.report.err_select_location");
                 formAlert.classList.remove("hidden");
                 return;
             }
 
             submitBtn.disabled = true;
-            const originalHtml = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span class="inline-block animate-spin mr-1">↻</span> Guardando...';
+            submitBtn.innerHTML = `<span class="inline-block animate-spin mr-1">↻</span> ${escapeHtml(tr("lost_found.report.btn_submitting"))}`;
 
             const payload = {
                 itemName: document.getElementById("reportItemName").value.trim(),
@@ -700,34 +723,29 @@ Features:
                 if (data.success) {
                     if (reportDraftHandle) reportDraftHandle.clear();
                     formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                    formAlert.textContent = "Objeto reportado con éxito. Se ha añadido al catálogo del campus.";
+                    formAlert.textContent = tr("lost_found.report.success_created");
                     formAlert.classList.remove("hidden");
 
-                    // Dispatch custom event for catalog and map refresh
                     window.dispatchEvent(new CustomEvent("lostObjectReported", { detail: data }));
 
                     setTimeout(() => {
                         window.closeReportObjectDialog();
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalHtml;
-                        // Reload if on catalog screen
+                        resetSubmitButton();
                         if (window.location.pathname.includes("/catalogo") || window.location.pathname.includes("/catalog") || window.location.pathname.includes("/items")) {
                             window.location.reload();
                         }
                     }, 1000);
                 } else {
                     formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                    formAlert.textContent = (data.error || "Ocurrió un error al guardar el reporte.");
+                    formAlert.textContent = data.error || tr("lost_found.report.err_submit_failed");
                     formAlert.classList.remove("hidden");
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalHtml;
+                    resetSubmitButton();
                 }
             } catch (err) {
                 formAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                formAlert.textContent = "Error de conexión con el servidor.";
+                formAlert.textContent = tr("lost_found.report.err_network");
                 formAlert.classList.remove("hidden");
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalHtml;
+                resetSubmitButton();
             }
         });
     }

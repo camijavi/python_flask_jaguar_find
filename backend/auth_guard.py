@@ -15,11 +15,11 @@ from functools import wraps
 from typing import Any, Callable, Dict, Optional
 from urllib.parse import quote
 from flask import session, request, redirect, url_for, jsonify
-from backend.i18n import get_current_language
+from backend.i18n import get_current_language, t
 
 
 def L(esText: str, enText: str) -> str:
-    """Returns bilingual text according to current user session language."""
+    """Backward-compatible helper returning text for current session language."""
     lang = get_current_language()
     return enText if str(lang).lower().startswith("en") else esText
 
@@ -50,7 +50,7 @@ def login_required(view_func: Callable) -> Callable:
             if request.path.startswith("/api/") or request.is_json:
                 return jsonify({
                     "success": False,
-                    "error": L("Se requiere iniciar sesión.", "Authentication required.")
+                    "error": t("auth.errors.login_required")
                 }), 401
             nextTarget = request.full_path.rstrip("?")
             return redirect("/auth?next=" + quote(nextTarget, safe="/"))
@@ -70,7 +70,7 @@ def admin_required(view_func: Callable) -> Callable:
             if request.path.startswith("/api/") or request.is_json:
                 return jsonify({
                     "success": False,
-                    "error": L("Se requieren privilegios de administrador.", "Administrator privileges required.")
+                    "error": t("auth.errors.admin_required")
                 }), 403
             nextTarget = request.full_path.rstrip("?")
             return redirect("/admin/adminsignin?next=" + quote(nextTarget, safe="/"))

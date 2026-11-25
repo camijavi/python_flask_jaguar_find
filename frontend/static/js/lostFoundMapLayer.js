@@ -40,22 +40,11 @@
             .replace(/'/g, "&#39;");
     }
 
-    function tr(key, fallbackEs, fallbackEn, params) {
-        const isEs = window.JaguarI18n
-            ? window.JaguarI18n.isSpanish()
-            : !(window.APP_CONFIG && String(window.APP_CONFIG.currentLang || "").toLowerCase().startsWith("en"));
-        const fallback = isEs ? fallbackEs : fallbackEn;
+    function tr(key, params) {
         if (typeof window.t === "function") {
-            return window.t(key, fallback, params);
+            return window.t(key, undefined, params);
         }
-        if (params && typeof fallback === "string") {
-            let out = fallback;
-            for (const [k, v] of Object.entries(params)) {
-                out = out.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
-            }
-            return out;
-        }
-        return fallback;
+        return key;
     }
 
     function getNodeDisplayName(nodeId, fallbackName) {
@@ -67,10 +56,10 @@
     }
 
     function getLocalizedStateLabel(stateId, fallbackName) {
-        if (stateId === 1) return tr("lost_found.state_reported", "Reportado", "Reported");
-        if (stateId === 2) return tr("lost_found.state_custody", "En Custodia (Edif. A)", "In Custody (Bldg. A)");
-        if (stateId === 3) return tr("lost_found.state_claimed", "Entregado / Reclamado", "Claimed / Delivered");
-        return fallbackName || tr("lost_found.state_reported", "Reportado", "Reported");
+        if (stateId === 1) return tr("lost_found.state_reported");
+        if (stateId === 2) return tr("lost_found.state_custody");
+        if (stateId === 3) return tr("lost_found.state_claimed");
+        return fallbackName || tr("lost_found.state_reported");
     }
 
     function buildCatalogBuildingUrl(buildingId) {
@@ -276,7 +265,9 @@
                     marker.className = "waze-lost-pin-25d absolute pointer-events-auto cursor-pointer transition-transform hover:scale-115";
                     marker.style.display = "none";
                     marker.setAttribute("data-node-id", pin.locationNodeId);
-                    marker.title = `${pin.itemsCount} objeto(s) reportado(s) en ${pin.locationName || pin.locationNodeId}`;
+                    const tooltipKey = pin.itemsCount === 1 ? "lost_found.pin_tooltip_singular" : "lost_found.pin_tooltip_plural";
+                    const tooltipLocation = getNodeDisplayName(pin.locationNodeId, pin.locationName || pin.locationNodeId);
+                    marker.title = tr(tooltipKey, { count: pin.itemsCount, location: tooltipLocation });
 
                     marker.innerHTML = `
                         <div class="relative flex flex-col items-center">
@@ -395,11 +386,9 @@
         const resolvedNodeName = getNodeDisplayName(pin.locationNodeId, pin.locationName || pin.locationNodeId);
         pinNodeName.textContent = resolvedNodeName;
         const countKey = pin.itemsCount === 1 ? "lost_found.map_pin_items_singular" : "lost_found.map_pin_items_plural";
-        const countFallbackEs = `${pin.itemsCount} objeto${pin.itemsCount === 1 ? '' : 's'} extraviado${pin.itemsCount === 1 ? '' : 's'} o en custodia`;
-        const countFallbackEn = `${pin.itemsCount} lost or in-custody item${pin.itemsCount === 1 ? '' : 's'}`;
-        pinCountSub.textContent = tr(countKey, countFallbackEs, countFallbackEn, { count: pin.itemsCount });
+        pinCountSub.textContent = tr(countKey, { count: pin.itemsCount });
 
-        const detailBtnLabel = tr("lost_found.view_details", "Ver detalle", "View details");
+        const detailBtnLabel = tr("lost_found.view_details");
 
         pinItemsList.innerHTML = "";
         (pin.items || []).forEach(item => {
@@ -446,7 +435,7 @@
 
         if (btnViewCatalog) {
             btnViewCatalog.href = buildCatalogBuildingUrl(pin.locationNodeId);
-            btnViewCatalog.textContent = tr("lost_found.view_in_catalog", "Ver en Catálogo", "View in Catalog");
+            btnViewCatalog.textContent = tr("lost_found.view_in_catalog");
         }
 
         if (btnFocus25d) {
@@ -500,6 +489,9 @@
 
     window.addEventListener("lostObjectReported", fetchAndRenderPins);
     window.addEventListener("jaguarLanguageChanged", () => {
+        if (activePinsData.length > 0) {
+            renderPins();
+        }
         if (selectedPin && popover && !popover.classList.contains("hidden")) {
             showPinPopover(selectedPin);
         }

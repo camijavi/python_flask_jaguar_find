@@ -1,9 +1,12 @@
 {% extends "screens/admin/adminBase.html" %}
 {% from "components/auth/authMacros.html" import passwordVisibilityToggle with context %}
 
-{% block title %}Gestión de Usuarios · JaguarFind{% endblock %}
-{% block header_title %}Directorio y Control de Usuarios{% endblock %}
-{% block header_subtitle %}Administración de cuentas, asignación de roles institucionales, cambio de contraseñas y bajas{% endblock %}
+{% block title_attrs %} data-i18n="admin.page_title_users"{% endblock %}
+{% block title %}{{ t('admin.page_title_users') }}{% endblock %}
+{% block header_title_attrs %} data-i18n="admin.users_title"{% endblock %}
+{% block header_title %}{{ t('admin.users_title') }}{% endblock %}
+{% block header_subtitle_attrs %} data-i18n="admin.users_subtitle"{% endblock %}
+{% block header_subtitle %}{{ t('admin.users_subtitle') }}{% endblock %}
 
 {% block admin_content %}
 <div class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
@@ -16,24 +19,24 @@
             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </span>
-            <input type="text" id="userSearchInput" placeholder="Buscar por nombre, CIF, cédula o correo..."
+            <input type="text" id="userSearchInput" placeholder="{{ t('admin.users_search_placeholder') }}" data-i18n-placeholder="admin.users_search_placeholder"
                    class="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-brand-500 focus:outline-hidden transition">
         </div>
 
         <!-- Role Filter & Actions -->
         <div class="flex items-center gap-2">
             <select id="userRoleFilter" class="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-hidden">
-                <option value="">Todos los roles</option>
-                <option value="1">Estudiantes</option>
-                <option value="2">Colaboradores</option>
-                <option value="3">Visitantes</option>
-                <option value="4">Administradores</option>
+                <option value="" data-i18n="admin.filter_all_roles">{{ t('admin.filter_all_roles') }}</option>
+                <option value="1" data-i18n="admin.filter_students">{{ t('admin.filter_students') }}</option>
+                <option value="2" data-i18n="admin.filter_collaborators">{{ t('admin.filter_collaborators') }}</option>
+                <option value="3" data-i18n="admin.filter_visitors">{{ t('admin.filter_visitors') }}</option>
+                <option value="4" data-i18n="admin.filter_admins">{{ t('admin.filter_admins') }}</option>
             </select>
 
             <button id="btnOpenCreateUserModal" type="button"
                     class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-xs shadow-md shadow-brand-500/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                <span>Nuevo Usuario</span>
+                <span data-i18n="admin.btn_new_user">{{ t('admin.btn_new_user') }}</span>
             </button>
         </div>
     </div>
@@ -41,25 +44,25 @@
     <!-- Users Table Container -->
     <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span id="userCountIndicator" class="font-bold text-slate-700">Cargando usuarios...</span>
-            <span>UAM · Sistema de Control de Identidad</span>
+            <span id="userCountIndicator" class="font-bold text-slate-700" data-i18n="admin.loading_users">{{ t('admin.loading_users') }}</span>
+            <span data-i18n="admin.identity_control_subtitle">{{ t('admin.identity_control_subtitle') }}</span>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
                     <tr class="bg-slate-50/80 text-slate-500 font-bold uppercase text-[10px] tracking-wider border-b border-slate-100">
-                        <th class="py-3 px-4">Usuario</th>
-                        <th class="py-3 px-4">Rol Asignado</th>
-                        <th class="py-3 px-4">Identificación (CIF / Cédula)</th>
-                        <th class="py-3 px-4">Contacto</th>
-                        <th class="py-3 px-4">Estado</th>
-                        <th class="py-3 px-4 text-right">Acciones Administrativas</th>
+                        <th class="py-3 px-4" data-i18n="admin.col_user">{{ t('admin.col_user') }}</th>
+                        <th class="py-3 px-4" data-i18n="admin.col_role">{{ t('admin.col_role') }}</th>
+                        <th class="py-3 px-4" data-i18n="admin.col_id_doc">{{ t('admin.col_id_doc') }}</th>
+                        <th class="py-3 px-4" data-i18n="admin.col_contact">{{ t('admin.col_contact') }}</th>
+                        <th class="py-3 px-4" data-i18n="admin.col_account_status">{{ t('admin.col_account_status') }}</th>
+                        <th class="py-3 px-4 text-right" data-i18n="admin.col_admin_actions">{{ t('admin.col_admin_actions') }}</th>
                     </tr>
                 </thead>
                 <tbody id="usersTableBody" class="divide-y divide-slate-100">
                     <tr>
-                        <td colspan="6" class="py-12 text-center text-slate-400">Cargando directorio de usuarios...</td>
+                        <td colspan="6" class="py-12 text-center text-slate-400" data-i18n="admin.loading_users">{{ t('admin.loading_users') }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -72,56 +75,56 @@
 <div id="createUserModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div class="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-            <h3 class="text-sm font-black text-slate-900">Registrar Nuevo Usuario</h3>
-            <button onclick="document.getElementById('createUserModal').classList.add('hidden')" type="button" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+            <h3 class="text-sm font-black text-slate-900" data-i18n="admin.modal_create_title">{{ t('admin.modal_create_title') }}</h3>
+            <button onclick="document.getElementById('createUserModal').classList.add('hidden')" type="button" class="text-slate-400 hover:text-slate-600 text-lg" aria-label="{{ t('common.close') }}" data-i18n-aria-label="common.close">&times;</button>
         </div>
         <form id="createUserForm" class="p-6 space-y-3.5">
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Rol Institucional *</label>
+                <label class="block text-xs font-bold uppercase text-slate-500 mb-1" data-i18n="admin.field_role">{{ t('admin.field_role') }}</label>
                 <select id="createRoleSelect" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold">
-                    <option value="1">Estudiante (Requiere CIF 8 dígitos)</option>
-                    <option value="2">Colaborador (Docente / Administrativo con Cédula)</option>
-                    <option value="3">Visitante (Requiere Cédula y Teléfono)</option>
-                    <option value="4">Administrador CAE (Requiere Correo y Contraseña)</option>
+                    <option value="1" data-i18n="admin.role_opt_student">{{ t('admin.role_opt_student') }}</option>
+                    <option value="2" data-i18n="admin.role_opt_collaborator">{{ t('admin.role_opt_collaborator') }}</option>
+                    <option value="3" data-i18n="admin.role_opt_visitor">{{ t('admin.role_opt_visitor') }}</option>
+                    <option value="4" data-i18n="admin.role_opt_admin">{{ t('admin.role_opt_admin') }}</option>
                 </select>
             </div>
 
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nombre Completo *</label>
-                <input type="text" id="createFullName" required placeholder="Ej. Ana Sofía Morales"
+                <label class="block text-xs font-bold uppercase text-slate-500 mb-1" data-i18n="admin.field_full_name">{{ t('admin.field_full_name') }}</label>
+                <input type="text" id="createFullName" required placeholder="{{ t('admin.field_full_name_placeholder') }}" data-i18n-placeholder="admin.field_full_name_placeholder"
                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div id="fieldCifGroup">
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Número CIF (8 dígitos)</label>
-                    <input type="text" id="createCif" placeholder="22019999" maxlength="8"
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1" data-i18n="admin.field_cif">{{ t('admin.field_cif') }}</label>
+                    <input type="text" id="createCif" placeholder="{{ t('admin.field_cif_placeholder') }}" data-i18n-placeholder="admin.field_cif_placeholder" maxlength="8"
                            class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500">
                 </div>
                 <div id="fieldGovIdGroup">
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cédula de Identidad</label>
-                    <input type="text" id="createGovId" placeholder="001-000000-0000A"
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1" data-i18n="admin.field_cedula">{{ t('admin.field_cedula') }}</label>
+                    <input type="text" id="createGovId" placeholder="{{ t('admin.field_cedula_placeholder') }}" data-i18n-placeholder="admin.field_cedula_placeholder"
                            class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500">
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Correo Electrónico</label>
-                    <input type="email" id="createEmail" placeholder="usuario@uamv.edu.ni"
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1" data-i18n="admin.field_email">{{ t('admin.field_email') }}</label>
+                    <input type="email" id="createEmail" placeholder="{{ t('admin.field_email_placeholder') }}" data-i18n-placeholder="admin.field_email_placeholder"
                            class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Número de Teléfono</label>
-                    <input type="tel" id="createPhone" placeholder="+505 8888 0000"
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1" data-i18n="admin.field_phone">{{ t('admin.field_phone') }}</label>
+                    <input type="tel" id="createPhone" placeholder="{{ t('admin.field_phone_placeholder') }}" data-i18n-placeholder="admin.field_phone_placeholder"
                            class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500">
                 </div>
             </div>
 
             <div id="fieldPasswordGroup">
-                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Contraseña Inicial</label>
+                <label class="block text-xs font-bold uppercase text-slate-500 mb-1" data-i18n="admin.field_password">{{ t('admin.field_password') }}</label>
                 <div class="relative">
-                    <input type="password" id="createPassword" placeholder="Mínimo 6 caracteres" minlength="6"
+                    <input type="password" id="createPassword" placeholder="{{ t('admin.field_password_placeholder') }}" data-i18n-placeholder="admin.field_password_placeholder" minlength="6"
                            class="w-full px-3 pr-12 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500">
                     {{ passwordVisibilityToggle('createPassword') }}
                 </div>
@@ -130,8 +133,8 @@
             <div id="createUserAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
 
             <div class="pt-2 flex justify-end gap-2 border-t border-slate-100">
-                <button onclick="document.getElementById('createUserModal').classList.add('hidden')" type="button" class="px-4 py-2 rounded-xl border text-xs font-bold text-slate-600">Cancelar</button>
-                <button type="submit" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-sm">Crear Cuenta</button>
+                <button onclick="document.getElementById('createUserModal').classList.add('hidden')" type="button" class="px-4 py-2 rounded-xl border text-xs font-bold text-slate-600" data-i18n="common.cancel">{{ t('common.cancel') }}</button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-sm" data-i18n="admin.btn_create_user">{{ t('admin.btn_create_user') }}</button>
             </div>
         </form>
     </div>
@@ -141,27 +144,27 @@
 <div id="resetPasswordModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div class="w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-            <h3 class="text-sm font-black text-slate-900">Cambiar Contraseña</h3>
-            <button onclick="document.getElementById('resetPasswordModal').classList.add('hidden')" type="button" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+            <h3 class="text-sm font-black text-slate-900" data-i18n="admin.modal_reset_title">{{ t('admin.modal_reset_title') }}</h3>
+            <button onclick="document.getElementById('resetPasswordModal').classList.add('hidden')" type="button" class="text-slate-400 hover:text-slate-600 text-lg" aria-label="{{ t('common.close') }}" data-i18n-aria-label="common.close">&times;</button>
         </div>
         <form id="resetPasswordForm" class="p-6 space-y-4">
             <input type="hidden" id="resetUserId" value="">
             <div>
-                <p class="text-xs text-slate-500">Usuario:</p>
+                <p class="text-xs text-slate-500" data-i18n="admin.modal_reset_for">{{ t('admin.modal_reset_for') }}</p>
                 <p id="resetUserFullName" class="text-xs font-bold text-slate-800"></p>
             </div>
             <div>
-                <label for="resetNewPassword" class="block text-xs font-bold uppercase text-slate-500 mb-1">Nueva Contraseña *</label>
+                <label for="resetNewPassword" class="block text-xs font-bold uppercase text-slate-500 mb-1" data-i18n="admin.field_new_password">{{ t('admin.field_new_password') }}</label>
                 <div class="relative">
-                    <input type="password" id="resetNewPassword" required minlength="6" placeholder="Mínimo 6 caracteres"
+                    <input type="password" id="resetNewPassword" required minlength="6" placeholder="{{ t('admin.field_password_placeholder') }}" data-i18n-placeholder="admin.field_password_placeholder"
                            class="w-full px-3 pr-12 py-2 rounded-xl border border-slate-200 text-xs focus:border-brand-500">
                     {{ passwordVisibilityToggle('resetNewPassword') }}
                 </div>
             </div>
             <div id="resetPasswordAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
             <div class="pt-2 flex justify-end gap-2">
-                <button onclick="document.getElementById('resetPasswordModal').classList.add('hidden')" type="button" class="px-3 py-1.5 rounded-lg border text-xs font-bold">Cancelar</button>
-                <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold">Actualizar Contraseña</button>
+                <button onclick="document.getElementById('resetPasswordModal').classList.add('hidden')" type="button" class="px-3 py-1.5 rounded-lg border text-xs font-bold" data-i18n="common.cancel">{{ t('common.cancel') }}</button>
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold" data-i18n="admin.btn_save_password">{{ t('admin.btn_save_password') }}</button>
             </div>
         </form>
     </div>
@@ -171,28 +174,28 @@
 <div id="changeRoleModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div class="w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-            <h3 class="text-sm font-black text-slate-900">Asignar Rol de Usuario</h3>
-            <button onclick="document.getElementById('changeRoleModal').classList.add('hidden')" type="button" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+            <h3 class="text-sm font-black text-slate-900" data-i18n="admin.modal_role_title">{{ t('admin.modal_role_title') }}</h3>
+            <button onclick="document.getElementById('changeRoleModal').classList.add('hidden')" type="button" class="text-slate-400 hover:text-slate-600 text-lg" aria-label="{{ t('common.close') }}" data-i18n-aria-label="common.close">&times;</button>
         </div>
         <form id="changeRoleForm" class="p-6 space-y-4">
             <input type="hidden" id="roleUserId" value="">
             <div>
-                <p class="text-xs text-slate-500">Usuario:</p>
+                <p class="text-xs text-slate-500" data-i18n="admin.modal_role_for">{{ t('admin.modal_role_for') }}</p>
                 <p id="roleUserFullName" class="text-xs font-bold text-slate-800"></p>
             </div>
             <div>
-                <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nuevo Rol *</label>
+                <label class="block text-xs font-bold uppercase text-slate-500 mb-1" data-i18n="admin.field_new_role">{{ t('admin.field_new_role') }}</label>
                 <select id="roleSelectOption" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold">
-                    <option value="1">Estudiante</option>
-                    <option value="2">Colaborador</option>
-                    <option value="3">Visitante</option>
-                    <option value="4">Administrador CAE</option>
+                    <option value="1" data-i18n="auth.role_student">{{ t('auth.role_student') }}</option>
+                    <option value="2" data-i18n="auth.role_collaborator">{{ t('auth.role_collaborator') }}</option>
+                    <option value="3" data-i18n="auth.role_visitor_short">{{ t('auth.role_visitor_short') }}</option>
+                    <option value="4" data-i18n="admin.admin_cae_short">{{ t('admin.admin_cae_short') }}</option>
                 </select>
             </div>
             <div id="changeRoleAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
             <div class="pt-2 flex justify-end gap-2">
-                <button onclick="document.getElementById('changeRoleModal').classList.add('hidden')" type="button" class="px-3 py-1.5 rounded-lg border text-xs font-bold">Cancelar</button>
-                <button type="submit" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold">Guardar Rol</button>
+                <button onclick="document.getElementById('changeRoleModal').classList.add('hidden')" type="button" class="px-3 py-1.5 rounded-lg border text-xs font-bold" data-i18n="common.cancel">{{ t('common.cancel') }}</button>
+                <button type="submit" class="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold" data-i18n="admin.btn_save_role">{{ t('admin.btn_save_role') }}</button>
             </div>
         </form>
     </div>
@@ -210,6 +213,19 @@ document.addEventListener("DOMContentLoaded", function() {
     const roleFilter = document.getElementById("userRoleFilter");
     const btnOpenCreate = document.getElementById("btnOpenCreateUserModal");
 
+    function tr(key, params) {
+        return window.t ? window.t(key, undefined, params) : key;
+    }
+
+    function escapeHtml(text) {
+        return String(text || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
     async function loadUsers() {
         try {
             const res = await fetch("/api/admin/users");
@@ -219,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 renderUsersTable();
             }
         } catch (e) {
-            tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-rose-500">Error al cargar usuarios.</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-rose-500">${escapeHtml(tr("admin.err_load_users"))}</td></tr>`;
         }
     }
 
@@ -227,25 +243,25 @@ document.addEventListener("DOMContentLoaded", function() {
         if (userTypeId === 1) {
             return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-brand-50 text-brand-700 border border-brand-200">
                 <svg class="w-3 h-3 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422A12.08 12.08 0 0121 17.5M12 14L5.84 10.578A12.08 12.08 0 003 17.5M12 14v7"/></svg>
-                <span>Estudiante</span>
+                <span>${escapeHtml(tr("auth.role_student"))}</span>
             </span>`;
         } else if (userTypeId === 2) {
             return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-ocean-50 text-ocean-700 border border-ocean-200">
                 <svg class="w-3 h-3 text-ocean-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                <span>Colaborador</span>
+                <span>${escapeHtml(tr("auth.role_collaborator"))}</span>
             </span>`;
         } else if (userTypeId === 3) {
             return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
                 <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a3 3 0 11-6 0 3 3 0 016 0zM4 20a8 8 0 0116 0M17 11l2 2 3-3"/></svg>
-                <span>Visitante</span>
+                <span>${escapeHtml(tr("auth.role_visitor_short"))}</span>
             </span>`;
         } else if (userTypeId === 4) {
             return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-900 text-white">
                 <svg class="w-3 h-3 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg>
-                <span>Admin CAE</span>
+                <span>${escapeHtml(tr("admin.admin_cae_short"))}</span>
             </span>`;
         }
-        return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100">${userTypeName}</span>`;
+        return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100">${escapeHtml(userTypeName)}</span>`;
     }
 
     function renderUsersTable() {
@@ -255,77 +271,82 @@ document.addEventListener("DOMContentLoaded", function() {
         const filtered = allUsers.filter(u => {
             if (role && u.UserTypeId != role) return false;
             if (q) {
-                const name = (u.FullName || '').toLowerCase();
-                const cif = (u.CIF || '').toLowerCase();
-                const gov = (u.GovermentId || '').toLowerCase();
-                const email = (u.Email || '').toLowerCase();
-                const uname = (u.UserName || '').toLowerCase();
+                const name = (u.FullName || "").toLowerCase();
+                const cif = (u.CIF || "").toLowerCase();
+                const gov = (u.GovermentId || "").toLowerCase();
+                const email = (u.Email || "").toLowerCase();
+                const uname = (u.UserName || "").toLowerCase();
                 return name.includes(q) || cif.includes(q) || gov.includes(q) || email.includes(q) || uname.includes(q);
             }
             return true;
         });
 
-        countIndicator.textContent = `${filtered.length} usuario${filtered.length === 1 ? '' : 's'} registrado${filtered.length === 1 ? '' : 's'}`;
+        const countKey = filtered.length === 1 ? "admin.users_shown_singular" : "admin.users_shown_plural";
+        countIndicator.textContent = tr(countKey, { count: filtered.length });
         tbody.innerHTML = "";
 
         if (filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-slate-400">No se encontraron usuarios coincidentes.</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center text-slate-400">${escapeHtml(tr("admin.no_users_found"))}</td></tr>`;
             return;
         }
 
         filtered.forEach(u => {
-            const tr = document.createElement("tr");
-            tr.className = "hover:bg-slate-50/80 transition-colors";
+            const row = document.createElement("tr");
+            row.className = "hover:bg-slate-50/80 transition-colors";
 
             const isActive = u.IsActive !== 0;
-            const statusHtml = isActive 
-                ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Activo</span>'
-                : '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Dado de Baja</span>';
+            const statusHtml = isActive
+                ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>${escapeHtml(tr("admin.status_active"))}</span>`
+                : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>${escapeHtml(tr("admin.status_inactive"))}</span>`;
 
-            const idDoc = u.CIF ? `CIF: ${u.CIF}` : (u.GovermentId ? `Cédula: ${u.GovermentId}` : (u.Email || '-'));
+            const idDoc = u.CIF
+                ? `${tr("admin.id_cif_prefix")}: ${u.CIF}`
+                : (u.GovermentId ? `${tr("admin.id_cedula_prefix")}: ${u.GovermentId}` : (u.Email || "-"));
             const contact = [u.Email, u.PhoneNumber].filter(Boolean).join(" · ") || "-";
+            const safeNameAttr = String(u.FullName || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 
-            tr.innerHTML = `
+            row.innerHTML = `
                 <td class="py-3 px-4">
                     <div class="flex items-center gap-2.5">
                         <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 font-extrabold flex items-center justify-center text-xs shrink-0">
-                            ${(u.FullName || 'U')[0].toUpperCase()}
+                            ${escapeHtml((u.FullName || "U")[0].toUpperCase())}
                         </div>
                         <div>
-                            <span class="font-bold text-slate-900 block">${u.FullName}</span>
-                            <span class="text-[10px] text-slate-400 font-mono">${u.UserName ? '@' + u.UserName : 'ID #' + u.Id}</span>
+                            <span class="font-bold text-slate-900 block">${escapeHtml(u.FullName)}</span>
+                            <span class="text-[10px] text-slate-400 font-mono">${escapeHtml(u.UserName ? "@" + u.UserName : "ID #" + u.Id)}</span>
                         </div>
                     </div>
                 </td>
                 <td class="py-3 px-4">${getRoleBadge(u.UserTypeId, u.UserTypeName)}</td>
-                <td class="py-3 px-4 font-mono text-[11px] text-slate-600">${idDoc}</td>
-                <td class="py-3 px-4 text-slate-500 text-[11px]">${contact}</td>
+                <td class="py-3 px-4 font-mono text-[11px] text-slate-600">${escapeHtml(idDoc)}</td>
+                <td class="py-3 px-4 text-slate-500 text-[11px]">${escapeHtml(contact)}</td>
                 <td class="py-3 px-4">${statusHtml}</td>
                 <td class="py-3 px-4 text-right">
                     <div class="inline-flex items-center gap-1">
-                        <button onclick="window.openResetPasswordModal(${u.Id}, '${u.FullName.replace(/'/g, "\\'")}')" 
-                                type="button" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition" title="Cambiar Contraseña">
+                        <button onclick="window.openResetPasswordModal(${u.Id}, '${safeNameAttr}')"
+                                type="button" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition" title="${escapeHtml(tr("admin.btn_reset_pass"))}">
                             <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
                         </button>
-                        <button onclick="window.openChangeRoleModal(${u.Id}, '${u.FullName.replace(/'/g, "\\'")}', ${u.UserTypeId})" 
-                                type="button" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition" title="Cambiar Rol">
+                        <button onclick="window.openChangeRoleModal(${u.Id}, '${safeNameAttr}', ${u.UserTypeId})"
+                                type="button" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition" title="${escapeHtml(tr("admin.btn_change_role"))}">
                             <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         </button>
-                        <button onclick="window.toggleUserStatus(${u.Id}, ${isActive ? 'false' : 'true'}, '${u.FullName.replace(/'/g, "\\'")}')" 
-                                type="button" class="p-1.5 rounded-lg ${isActive ? 'text-rose-500 hover:bg-rose-50' : 'text-emerald-600 hover:bg-emerald-50'} transition" 
-                                title="${isActive ? 'Dar de baja cuenta' : 'Reactivar cuenta'}">
+                        <button onclick="window.toggleUserStatus(${u.Id}, ${isActive ? "false" : "true"}, '${safeNameAttr}')"
+                                type="button" class="p-1.5 rounded-lg ${isActive ? "text-rose-500 hover:bg-rose-50" : "text-emerald-600 hover:bg-emerald-50"} transition"
+                                title="${escapeHtml(isActive ? tr("admin.btn_deactivate") : tr("admin.btn_activate"))}">
                             ${isActive ? '<svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>' : '<svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'}
                         </button>
+                    </div>
                 </td>
             `;
-            tbody.appendChild(tr);
+            tbody.appendChild(row);
         });
     }
 
     searchInput.addEventListener("input", renderUsersTable);
     roleFilter.addEventListener("change", renderUsersTable);
+    window.addEventListener("jaguarLanguageChanged", renderUsersTable);
 
-    // Initial Load
     loadUsers();
 
     // CREATE USER LOGIC
@@ -359,7 +380,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = await res.json();
             if (data.success) {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                alertBox.textContent = "Usuario registrado correctamente.";
+                alertBox.textContent = data.message || tr("admin.msg_user_created");
                 alertBox.classList.remove("hidden");
                 setTimeout(() => {
                     document.getElementById("createUserModal").classList.add("hidden");
@@ -368,12 +389,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 }, 800);
             } else {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                alertBox.textContent = (data.error || "Error al crear usuario.");
+                alertBox.textContent = data.error || tr("admin.err_operation_failed");
                 alertBox.classList.remove("hidden");
             }
         } catch (err) {
             alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-            alertBox.textContent = "Error de conexión.";
+            alertBox.textContent = tr("common.network_error");
             alertBox.classList.remove("hidden");
         }
     });
@@ -402,19 +423,19 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = await res.json();
             if (data.success) {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                alertBox.textContent = "Contraseña actualizada exitosamente.";
+                alertBox.textContent = data.message || tr("admin.msg_password_updated");
                 alertBox.classList.remove("hidden");
                 setTimeout(() => {
                     document.getElementById("resetPasswordModal").classList.add("hidden");
                 }, 800);
             } else {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                alertBox.textContent = (data.error || "Error al actualizar contraseña.");
+                alertBox.textContent = data.error || tr("admin.err_operation_failed");
                 alertBox.classList.remove("hidden");
             }
         } catch (err) {
             alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-            alertBox.textContent = "Error de conexión.";
+            alertBox.textContent = tr("common.network_error");
             alertBox.classList.remove("hidden");
         }
     });
@@ -443,7 +464,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const data = await res.json();
             if (data.success) {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                alertBox.textContent = "Rol actualizado exitosamente.";
+                alertBox.textContent = data.message || tr("admin.msg_role_updated");
                 alertBox.classList.remove("hidden");
                 setTimeout(() => {
                     document.getElementById("changeRoleModal").classList.add("hidden");
@@ -451,20 +472,20 @@ document.addEventListener("DOMContentLoaded", function() {
                 }, 800);
             } else {
                 alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                alertBox.textContent = (data.error || "Error al cambiar rol.");
+                alertBox.textContent = data.error || tr("admin.err_operation_failed");
                 alertBox.classList.remove("hidden");
             }
         } catch (err) {
             alertBox.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-            alertBox.textContent = "Error de conexión.";
+            alertBox.textContent = tr("common.network_error");
             alertBox.classList.remove("hidden");
         }
     });
 
-    // TOGGLE USER STATUS (DAR DE BAJA / ACTIVAR)
+    // TOGGLE USER STATUS (DEACTIVATE / REACTIVATE)
     window.toggleUserStatus = async function(id, newStatus, name) {
-        const actionText = newStatus ? "reactivar" : "dar de baja";
-        if (!confirm(`¿Estás seguro de que deseas ${actionText} la cuenta de ${name}?`)) {
+        const confirmKey = newStatus ? "admin.confirm_activate" : "admin.confirm_deactivate";
+        if (!confirm(tr(confirmKey, { name }))) {
             return;
         }
 
@@ -478,10 +499,10 @@ document.addEventListener("DOMContentLoaded", function() {
             if (data.success) {
                 loadUsers();
             } else {
-                alert(data.error || "Error al actualizar estado.");
+                alert(data.error || tr("admin.err_operation_failed"));
             }
         } catch (e) {
-            alert("Error de conexión");
+            alert(tr("common.network_error"));
         }
     };
 });

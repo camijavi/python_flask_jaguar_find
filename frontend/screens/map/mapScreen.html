@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}JaguarFind{% endblock %}
+{% block title %}{{ t('app.name') }}{% endblock %}
 
 {% block head %}
 <!-- Official 2D Campus Map Stylesheet -->
@@ -30,25 +30,27 @@
             
             <div class="w-full min-w-0 lg:min-w-[300px] max-w-full space-y-2 pb-4">
                 <!-- Sleek Responsive 3-Tab Segmented Switcher (Visible on both desktop & mobile sidebar menu) -->
-                <div id="sidebarSwitcher" role="tablist" aria-label="{{ t('nav.toggle_menu', default='Menú de navegación') }}" data-i18n-aria-label="nav.toggle_menu" class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 text-[10.5px] sm:text-[11px] font-semibold">
+                <div id="sidebarSwitcher" role="tablist" aria-label="{{ t('nav.toggle_menu') }}" data-i18n-aria-label="nav.toggle_menu" class="grid {{ 'grid-cols-3' if session.get('user') else 'grid-cols-2' }} gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 text-[10.5px] sm:text-[11px] font-semibold">
                     <button id="sidebarTabNav" type="button" role="tab" aria-selected="true" aria-controls="sidebarPanelNav" class="min-w-0 py-1.5 px-1 sm:px-2 rounded-lg bg-white text-slate-900 shadow-xs flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer">
                         <!-- Directions Waypoint SVG -->
                         <svg class="sidebar-tab-icon w-3.5 h-3.5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                        <span class="truncate max-w-full" data-i18n="map.tabs.navigation">{{ t('map.tabs.navigation', default='Navegación') }}</span>
+                        <span class="truncate max-w-full" data-i18n="map.tabs.navigation">{{ t('map.tabs.navigation') }}</span>
                     </button>
                     <button id="sidebarTabDir" type="button" role="tab" aria-selected="false" aria-controls="sidebarPanelDir" class="min-w-0 py-1.5 px-1 sm:px-2 rounded-lg text-slate-600 hover:text-slate-900 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer">
                         <!-- Directory Office SVG -->
                         <svg class="sidebar-tab-icon w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        <span class="truncate max-w-full" data-i18n="map.tabs.directory">{{ t('map.tabs.directory', default='Directorio UAM') }}</span>
+                        <span class="truncate max-w-full" data-i18n="map.tabs.directory">{{ t('map.tabs.directory') }}</span>
                     </button>
+                    {% if session.get('user') %}
                     <button id="sidebarTabCatalog" type="button" role="tab" aria-selected="false" aria-controls="sidebarPanelCatalog" class="min-w-0 py-1.5 px-1 sm:px-2 rounded-lg text-slate-600 hover:text-slate-900 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer">
                         <!-- Lost & Found Catalog SVG + live count badge -->
                         <span class="relative inline-flex items-center justify-center shrink-0">
                             <svg class="sidebar-tab-icon w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                             <span id="sidebarTabCatalogBadge" class="hidden absolute -top-1.5 -right-2 min-w-[14px] h-[14px] px-0.5 rounded-full bg-amber-500 text-white text-[8.5px] font-black leading-none flex items-center justify-center ring-1 ring-white">0</span>
                         </span>
-                        <span class="truncate max-w-full" data-i18n="map.tabs.lost_found">{{ t('map.tabs.lost_found', default='Objetos Perdidos') }}</span>
+                        <span class="truncate max-w-full" data-i18n="map.tabs.lost_found">{{ t('map.tabs.lost_found') }}</span>
                     </button>
+                    {% endif %}
                 </div>
 
                 <!-- Desktop Slot: Tab Panel 1: navigateMap Component -->
@@ -63,10 +65,12 @@
                     {% include "components/map/buildingDirectory.html" %}
                 </div>
 
+                {% if session.get('user') %}
                 <!-- Tab Panel 3: sidebarLostFoundCatalog Component (Lost & Found Objects Catalog Cards) -->
                 <div id="sidebarPanelCatalog" role="tabpanel" aria-labelledby="sidebarTabCatalog" class="w-full hidden">
                     {% include "components/map/sidebarLostFoundCatalog.html" %}
                 </div>
+                {% endif %}
             </div>
 
         </div>
@@ -197,7 +201,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function setSidebarActiveTab(tabName) {
-        const activeTab = (tabName === "dir" || tabName === "catalog") ? tabName : "nav";
+        const activeTab = tabName === "catalog" && !tabCatalog
+            ? "nav"
+            : (tabName === "dir" || tabName === "catalog") ? tabName : "nav";
         const isNavActive = (activeTab === "nav");
         const isDirActive = (activeTab === "dir");
         const isCatalogActive = (activeTab === "catalog");

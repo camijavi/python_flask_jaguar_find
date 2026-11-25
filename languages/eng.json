@@ -3,7 +3,10 @@
   "app": {
     "name": "JaguarFind",
     "subtitle": "Campus Orientation & Lost and Found Management System",
-    "institution": "Universidad Americana (UAM)"
+    "institution": "Universidad Americana (UAM)",
+    "page_title_default": "JaguarFind — Campus Orientation & Lost and Found",
+    "logo_alt": "JaguarFind Logo",
+    "language_switched": "Language switched to {lang}"
   },
   "nav": {
     "home": "Home",
@@ -13,17 +16,25 @@
     "login": "Sign In",
     "signup": "Sign Up",
     "admin": "Admin Panel",
+    "admin_panel_short": "Admin Panel",
+    "admin_short": "Admin",
     "logout": "Sign Out",
+    "exit": "Sign out",
     "language": "Language",
+    "switch_to_es": "Switch to Spanish",
+    "switch_to_en": "Switch to English",
     "toggle_menu": "Toggle Navigation Menu",
-    "close_menu": "Close Navigation Menu"
+    "close_menu": "Close Navigation Menu",
+    "admin_nav_home": "Home",
+    "admin_nav_users": "Users",
+    "admin_nav_maps": "Maps",
+    "admin_nav_toggle": "Open or close menu"
   },
   "map": {
     "title": "UAM Campus Navigator",
     "where_am_i": "Where are you?",
     "where_am_i_placeholder": "Use GPS or pick a location...",
     "use_gps": "Use my current location",
-    "outside_campus": "You are outside the UAM campus. The main entrance has been set as your starting point.",
     "where_to_go": "Where do you want to go?",
     "where_to_go_placeholder": "Type a classroom, restroom, lab, faculty, or service...",
     "calculate_route": "Find Optimal Route",
@@ -42,7 +53,44 @@
       "food": "Food & Cafeterias",
       "clinics": "Clinics & Health",
       "sports": "Sports & Gym",
-      "admin": "Services & Faculties"
+      "admin": "Services & Faculties",
+      "drinking_fountains": "Drinking Fountains",
+      "dental": "Dentistry",
+      "ramps": "Ramps"
+    },
+    "get_gps": "Get via GPS",
+    "select_category": "Select category or search directly",
+    "search_matches": "Possible matches",
+    "no_matches": "No matching locations found",
+    "searching": "Searching campus locations...",
+    "clear_route": "Clear Route",
+    "voice_start": "Start Voice Guidance",
+    "voice_stop": "Stop Voice",
+    "floor": "Floor",
+    "direct_search": "Search location or classroom...",
+    "subtitle": "Find optimal pedestrian walking routes",
+    "plan_route": "Plan Route",
+    "directions": "Directions",
+    "mode_walking": "Walking",
+    "mode_accessible": "Accessible",
+    "standard_route": "Standard Pedestrian Route",
+    "steps_count": "steps",
+    "steps_label": "Steps",
+    "close": "Close",
+    "close_route": "Close route",
+    "close_nav_bar": "Close navigation bar",
+    "tap_edit_route": "Tap to edit route",
+    "view_steps": "View step list",
+    "missing_inputs": "Please enter your origin and destination.",
+    "error": "An error occurred while calculating the route.",
+    "reference_singular": "landmark",
+    "reference_plural": "landmarks",
+    "directory_title": "Official Building Directory",
+    "directory_search_placeholder": "Filter building, room, office, or floor...",
+    "tabs": {
+      "navigation": "Navigation",
+      "directory": "UAM Directory",
+      "lost_found": "Lost & Found"
     },
     "gps": {
       "where_i_think_you_are": "Where I think you are",
@@ -88,7 +136,459 @@
       "err_network_desc": "A network error occurred while matching your building. Retry or select manually.",
       "loading_building_locations": "Loading building locations...",
       "no_filtered_locations": "No locations match that filter."
-    }
+    },
+    "compass_orientation": "Campus orientation • Click to center and reorient",
+    "building_entry_subtitle": "Building / Entrance",
+    "speech_error": "Could not play voice guidance with Azure Speech.",
+    "buildings_count_singular": "{count} Building",
+    "buildings_count_plural": "{count} Buildings",
+    "campus_pill": "UAM Campus",
+    "initial_duration": "~1 min",
+    "initial_refs": "0 landmarks",
+    "toolbar": {
+      "zoom_in": "Zoom In",
+      "zoom_out": "Zoom Out",
+      "center_map": "Center Map",
+      "toggle_25d": "Toggle 2.5D Perspective View",
+      "toggle_walkways": "Show / Hide Campus Pedestrian Walkways",
+      "toggle_lost_pins": "Show / Hide Lost & Found Items Layer",
+      "open_directory": "Open Building Directory",
+      "fullscreen": "Fullscreen",
+      "exit_25d": "Back to 2D Map",
+      "toggle_emergency": "Meeting Points & Evacuation Routes"
+    },
+    "walkways_legend": {
+      "ground_p1": "Walkway F1",
+      "bridge_2p": "Bridge 2F",
+      "door": "Door",
+      "blocked": "Blocked",
+      "badge_2p": "2F"
+    },
+    "popover": {
+      "set_origin": "Origin",
+      "go_here": "Go here",
+      "report_item": "Report",
+      "focus_25d_title": "View in 2.5D Perspective",
+      "close_title": "Close",
+      "report_item_title": "Report lost item in this building"
+    },
+    "hud25d": {
+      "mode_2d": "2D",
+      "mode_2d_title": "Standard 2D View",
+      "mode_heading": "Heading",
+      "mode_heading_title": "Toggle orientation: Heading-Up or Fixed",
+      "mode_live": "Live",
+      "mode_live_title": "Rotate 2.5D map live with phone compass and GPS",
+      "mode_parking": "Parking",
+      "default_headline": "Continue straight",
+      "step_counter": "Landmark {current} of {total}",
+      "default_instruction": "Start your route toward the destination.",
+      "default_orientation": "Facing your next landmark",
+      "default_next_step": "Then continue straight",
+      "btn_arrived_next": "I'm here • Next",
+      "btn_arrived_next_to": "I'm here • Go to {landmark}",
+      "hide_banner_title": "Hide directions bar",
+      "show_banner_title": "Show directions bar",
+      "speed_label_map": "map",
+      "speed_label_view": "view",
+      "tray_prev": "Prev step",
+      "tray_simulate": "Simulate",
+      "tray_pause": "Pause",
+      "tray_next": "Next step",
+      "tray_center": "Center",
+      "tray_overview": "Overview",
+      "tray_steps": "Steps",
+      "tray_exit": "Exit",
+      "dock_prompt": "Where to? • Tap to search",
+      "dock_audio_title": "Voice guidance",
+      "dock_controls_title": "Navigation controls",
+      "dock_focus_subtitle": "2.5D View",
+      "dock_focus_hint": "Tap «Go here» to start JaguarFind navigation",
+      "dest_pin_label": "Goal",
+      "arrived_short": "Arrived",
+      "arrived_headline": "You have arrived",
+      "arrived_destination": "Destination reached",
+      "end_short": "end",
+      "live_badge": "Live",
+      "gps_active": "GPS active",
+      "next_prefix": "Then: {text}",
+      "cue_aligned": "Well aligned! Walk straight ahead.",
+      "cue_slight_right": "Bear slightly right to align.",
+      "cue_turn_right": "Turn right toward the path.",
+      "cue_slight_left": "Bear slightly left to align.",
+      "cue_turn_left": "Turn left toward the path.",
+      "cue_turn_around": "Turn around to follow the path.",
+      "mode_25d_title": "2.5D Perspective View JaguarFind",
+      "pitch_45_title": "45° Tilt",
+      "pitch_52_title": "52° Tilt (Immersive)",
+      "mode_parking_title": "Highlight parking lots in 2.5D view",
+      "live_gps_title": "Enable live GPS & compass tracking",
+      "toggle_2d_25d_title": "Toggle 2D / 2.5D JaguarFind view",
+      "fab_plan_or_center": "Plan route / Center navigation",
+      "unit_min": "min",
+      "gps_label": "GPS",
+      "gps_searching": "GPS...",
+      "tray_simulate_title": "Simulate route step by step",
+      "tray_center_title": "Center on cursor",
+      "tray_overview_title": "Route overview",
+      "tray_exit_title": "End route",
+      "dock_search_title": "Search destination or plan route",
+      "dock_search_aria": "Search destination",
+      "step_fallback_advance": "Proceed toward {name}",
+      "next_point_default": "the next landmark"
+    },
+    "category_labels": {
+      "classroom": "Classrooms",
+      "drinkingFountain": "Drinking Fountains",
+      "medicalLab": "Medical Laboratories",
+      "dentalLab": "Dental Laboratories",
+      "faculty": "UAM Faculties & Deaneries",
+      "foodArea": "Dining & Cafeterias",
+      "parkingLot": "Parking Lots & Gates",
+      "restroom": "Restrooms",
+      "accessibleRamp": "Accessible Ramps",
+      "administrative": "Administrative Services",
+      "sports": "Sports & Gymnasium",
+      "auditorium": "Auditoriums & Events",
+      "stairs": "Stairs & Vertical Access"
+    },
+    "buildings": {
+      "buildingA": {
+        "name": "Building A • Student Services",
+        "badge": "3 Floors",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Accounting, CAE (Student Care Center), Admissions, Academic Records, Collections, Finance, ATMs."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "Administrative Directorate, Academic Logistics, IT (TIC), Marketing & Advertising, HR & Talent."
+          },
+          "f3": {
+            "label": "Floor 3",
+            "rooms": "Audiovisual Production (DPA), Cyclorama Recording Set, Sound Studio, Master Control, Radio Set."
+          }
+        }
+      },
+      "buildingB": {
+        "name": "Building B • Classrooms & Pharmacy",
+        "badge": "2 Floors",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Commercial Module 1 (Pharmacy), Classrooms B101 - B109, Men's / Women's Restrooms, Jaguar Shop."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "Classrooms B201 - B210."
+          }
+        }
+      },
+      "buildingC": {
+        "name": "Building C • Computing & Treasury",
+        "badge": "3 Floors",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Auditoriums C101 & C109, Classrooms C102-C106, UAM Cashier / Treasury C105, MAC Lab C107, ACAI-Erasmus+ Lab (C108), Accessible Ramp."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "Computer Labs C201, C202, C204, C205, MAC Lab C203, Storage C206, Men's / Women's Restrooms, Classrooms C209-C211."
+          },
+          "f3": {
+            "label": "Floor 3",
+            "rooms": "Audiovisual Studio A-301, Classrooms C301-C304, Procurement Coordination C306, Classrooms C307-C310."
+          }
+        }
+      },
+      "buildingD": {
+        "name": "Building D • Digital Dentistry",
+        "badge": "1 Floor",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Classroom D102, CAM-CAM Digital Dentistry Lab, Customer Service Office, Meeting Room."
+          }
+        }
+      },
+      "buildingE": {
+        "name": "Building E • Faculty of Medicine",
+        "badge": "2 Floors",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "UAM Medical Clinics, Cardiology Center, Medicine Deanery, Inclusive Restrooms, Student Life (DVE), Innovation (DIE)."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "Medical Clinical Skills Simulators Laboratory."
+          }
+        }
+      },
+      "buildingF": {
+        "name": "Building F • Business & Economics (FCAE)",
+        "badge": "1 Floor",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "FCAE Deanery, FMDCC Deanery, Postgraduate & Continuing Education, Classrooms F101-F104, Events Hall."
+          }
+        }
+      },
+      "buildingG": {
+        "name": "Building G • Law & Central Auditorium",
+        "badge": "2 Floors",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Faculty of Legal Sciences (FCJP), Mediation Center, Language Center, UAM College, International Relations, Accessible Ramp."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "Rubén Darío Central Auditorium, Mock Trial Courtroom."
+          }
+        }
+      },
+      "buildingH": {
+        "name": "Building H • Medical Laboratories",
+        "badge": "2 Floors",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Basic Sciences Labs H101 - H107, Lab Coordination, Chemical Storage, Men's / Women's Restrooms."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "Medical Research & Anatomy Labs H201 - H207, Practice Operating Room, Lab Supervision."
+          }
+        }
+      },
+      "buildingI": {
+        "name": "Building I • Rectorate & Central Library",
+        "badge": "1 Floor",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Rectorate, Vice Presidency, General Management, General Secretariat, Academic Directorate, UAM Central Library."
+          }
+        }
+      },
+      "buildingJ": {
+        "name": "Building J • Dentistry Laboratories",
+        "badge": "1 Floor",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Preclinical Dental Simulation Labs J-101 & J-102, Instrument Depot, Men's & Women's Restrooms."
+          }
+        }
+      },
+      "buildingK": {
+        "name": "Building K • Cafeteria & Central Plaza",
+        "badge": "1 Floor",
+        "floors": {
+          "f1": {
+            "label": "Central Plaza",
+            "rooms": "Rubén Darío Plaza, Central Cafeteria, Jaguar Corner, Food Kiosks, Covered Terraces, Banpro / BAC ATMs."
+          }
+        }
+      },
+      "buildingL": {
+        "name": "Building L • Culture & Bleachers",
+        "badge": "1 Floor",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Music & Dance Rehearsal Room, Jaguar Auditorium, Sports Complex Bleachers Access, Sports Offices."
+          }
+        }
+      },
+      "buildingM": {
+        "name": "Building M • Classrooms & Graduate Studies",
+        "badge": "2 Floors",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Undergraduate Classrooms M101 - M108, Master's & Specialties Coordination."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "Executive Classrooms M201 - M208, Researchers Coworking Room."
+          }
+        }
+      },
+      "buildingN": {
+        "name": "Building N • Dental Clinics",
+        "badge": "2 Floors",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Patient Reception, Triage Module, Undergraduate & Postgraduate Dental Clinics, Dental Operating Rooms, Sterilization."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "Faculty of Dentistry (FODO) Reception."
+          }
+        }
+      },
+      "buildingO": {
+        "name": "Building O • Engineering & Architecture (FIA)",
+        "badge": "2 Floors",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "FIA Deanery (O-101), Soils Lab (O-102), Materials Lab (O-104), Fluids, Risk Management (O-105), North Annex."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "CIAR (AI & Robotics), Networks Lab (O-201), Tutoring Room, Classrooms O201 - O208, CAD / BIM Labs."
+          }
+        }
+      },
+      "buildingP": {
+        "name": "Building P • Copernicus & Observatory",
+        "badge": "5 Floors",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Classrooms P-101 to P-108, Parking Ramp, Restrooms & Drinking Fountain F1."
+          },
+          "f2": {
+            "label": "Floor 2",
+            "rooms": "Classrooms P-201 to P-208, Central Restrooms & Drinking Fountains F2."
+          },
+          "f3": {
+            "label": "Floors 3–5",
+            "rooms": "Classrooms P-301 to P-306, Hall P-401 (F4), Copernicus Astronomical Observatory (F5)."
+          }
+        }
+      },
+      "mainParking": {
+        "name": "Main Entrance & South Parking",
+        "badge": "Main Gate",
+        "floors": {
+          "f1": {
+            "label": "Outdoor",
+            "rooms": "South Security Gatehouse, Student & Faculty Parking Bays, Main Pedestrian Ramp toward Building K."
+          }
+        }
+      },
+      "chilamatesPlaza": {
+        "name": "Chilamates Plaza (Kiosks & Fast Food)",
+        "badge": "Outdoor Plaza",
+        "floors": {
+          "f1": {
+            "label": "Plaza",
+            "rooms": "Fast Food Kiosks, Coffee Spots, Outdoor Seating Tables, Student Recreation Area."
+          }
+        }
+      },
+      "sportsZone": {
+        "name": "Sports Complex & Stadiums",
+        "badge": "East Campus",
+        "floors": {
+          "f1": {
+            "label": "Facilities",
+            "rooms": "Baseball Stadium, Regulation Grass Soccer Field, Jaguar Center, Tennis Courts, Bleachers."
+          }
+        }
+      },
+      "jaguarCenter": {
+        "name": "Jaguar Center (Sports Complex)",
+        "badge": "1 Floor",
+        "floors": {
+          "f1": {
+            "label": "Floor 1",
+            "rooms": "Indoor Basketball & Volleyball Courts, Main Bleachers, Sports Complex Entrance."
+          }
+        }
+      },
+      "jaguarGym": {
+        "name": "Jaguar Gym",
+        "badge": "Gymnasium",
+        "floors": {
+          "f1": {
+            "label": "Facilities",
+            "rooms": "Weights area, cardio machines, functional training & locker rooms (next to Jaguar Gym Parking)."
+          }
+        }
+      },
+      "physiotherapy": {
+        "name": "Physiotherapy • Rehab Clinic",
+        "badge": "Health & Sports",
+        "floors": {
+          "f1": {
+            "label": "Services",
+            "rooms": "Physiotherapy clinic, physical rehabilitation & sports therapy (north of Jaguar Gym)."
+          }
+        }
+      },
+      "jaguarJungle": {
+        "name": "Jaguar Jungle • Central Garden",
+        "badge": "Green Area",
+        "floors": {
+          "f1": {
+            "label": "Connection",
+            "rooms": "Natural shaded area with pedestrian paths connecting Building O, Mi Ranchito, Lab Digital FIA, Building H & Main Avenue."
+          }
+        }
+      },
+      "miRanchito": {
+        "name": "Mi Ranchito • Rest Pavilion",
+        "badge": "Recreation",
+        "floors": {
+          "f1": {
+            "label": "Location",
+            "rooms": "Outdoor dining & rest pavilion next to Jaguar Jungle, Building N & Lab Digital FIA."
+          }
+        }
+      },
+      "labDigitalFia": {
+        "name": "Lab Digital FIA",
+        "badge": "Laboratory",
+        "floors": {
+          "f1": {
+            "label": "Location",
+            "rooms": "Engineering & Architecture Digital Lab, next to Building N, Mi Ranchito & Outdoor Tables Area."
+          }
+        }
+      },
+      "areaDeMesas": {
+        "name": "Outdoor Tables Area • Terrace",
+        "badge": "Study Area",
+        "floors": {
+          "f1": {
+            "label": "Location",
+            "rooms": "Shaded outdoor study & dining tables between Lab Digital FIA, Central Parking & Building C."
+          }
+        }
+      },
+      "northeastGate": {
+        "name": "Second Access • Jaguar Stadium Road",
+        "badge": "Vehicle Gate",
+        "floors": {
+          "f1": {
+            "label": "Connection",
+            "rooms": "Second Access (Jaguar Stadium Road) toward Baseball Stadium, Sports Parking & Building O."
+          }
+        },
+        "pin_code": "2nd"
+      },
+      "northGate": {
+        "name": "Third Access • Copernicus Gate",
+        "badge": "Vehicle Gate",
+        "floors": {
+          "f1": {
+            "label": "Connection",
+            "rooms": "Third Access Gatehouse next to Building P (Copernicus), Weather Station & West Main Avenue."
+          }
+        },
+        "pin_code": "3rd"
+      }
+    },
+    "compass_aria": "Campus orientation"
   },
   "auth": {
     "sign_in_title": "Institutional Sign-In",
@@ -109,9 +609,174 @@
     "login_button": "Log In",
     "signup_button": "Complete Registration",
     "role_visitor": "Visitor (Parents, Patients, External)",
+    "role_visitor_short": "Visitor",
     "visitor_login_tab": "Visitor Access (Passwordless)",
     "visitor_login_desc": "Access directly with your Email and National ID",
-    "visitor_retention_note": "Temporary accounts automatically purged after 6 months of inactivity"
+    "visitor_retention_note": "Temporary accounts automatically purged after 6 months of inactivity",
+    "login_page_title": "Lost & Found · JaguarFind",
+    "login_subtitle": "Sign in or sign up to manage lost objects",
+    "sign_up_cta": "Sign up",
+    "sign_in_cta": "Sign in",
+    "select_role_title": "Select your role",
+    "select_role_page_title": "Select your role · JaguarFind",
+    "choose_signin": "Choose how you want to sign in",
+    "choose_signup": "Choose how you want to sign up",
+    "role_student_desc": "With your @uamv.edu.ni email and CIF",
+    "role_collaborator_desc": "Teachers, administrative and general services staff",
+    "role_visitor_desc": "No password, just email and national ID",
+    "continue_cta": "Continue",
+    "back": "Back",
+    "sign_in_heading": "Sign in",
+    "sign_in_page_title": "Sign in · JaguarFind",
+    "sign_up_heading": "Create account",
+    "sign_up_page_title": "Create account · JaguarFind",
+    "visitor_identifier_label": "Registered ID or Phone",
+    "visitor_identifier_placeholder": "National ID or Phone",
+    "collaborator_identifier_label": "Government ID or Email",
+    "collaborator_identifier_placeholder": "ID or email",
+    "student_identifier_label": "CIF number or Email",
+    "student_identifier_placeholder": "8-digit CIF or email",
+    "password_label": "Password",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "submit_sign_in": "Sign in",
+    "submit_sign_up": "Sign up",
+    "change_role": "Change role",
+    "create_account_link": "Create account",
+    "already_have_account": "Already have an account? Sign in",
+    "cae_admin_access": "CAE Administrative Access",
+    "admin_page_title": "CAE Admin Sign In · JaguarFind",
+    "admin_portal_heading": "Admin Portal",
+    "admin_portal_subtitle": "CAE Centralized Management Building A",
+    "admin_identifier_label": "Admin Email or Username",
+    "admin_submit": "Enter Dashboard",
+    "back_to_general_access": "Back to general access",
+    "full_name_label": "Full name",
+    "full_name_placeholder": "John Doe",
+    "national_id_label": "National ID",
+    "phone_label": "Phone Number",
+    "personal_email_label": "Email",
+    "institutional_email_label": "Institutional email",
+    "cif_label": "CIF number",
+    "cif_placeholder": "8 digits",
+    "career_label": "Degree program",
+    "faculty_label": "Faculty",
+    "faculties": {
+      "FIA": "Engineering & Architecture",
+      "FODO": "Dentistry",
+      "FCM": "Medical Sciences",
+      "FCE": "Economic & Administrative Sciences",
+      "FCJ": "Legal Sciences"
+    },
+    "verifying": "Verifying...",
+    "processing": "Processing...",
+    "authenticating": "Authenticating...",
+    "signin_success": "Signed in successfully.",
+    "invalid_credentials": "Invalid credentials.",
+    "network_error": "Network connection error.",
+    "signup_success": "Registration successful.",
+    "signup_error": "Error registering user.",
+    "fix_required_fields": "Please complete and correct all required fields.",
+    "admin_access_granted": "Access granted.",
+    "admin_no_privileges": "This account does not have admin privileges.",
+    "admin_invalid_credentials": "Invalid admin credentials.",
+    "connection_error": "Connection error.",
+    "validation": {
+      "name_required": "Full name is required.",
+      "name_min": "Full name must be at least 2 characters.",
+      "cedula_required": "National ID is required.",
+      "cedula_length": "National ID must be between 14 and 16 characters.",
+      "cedula_invalid": "Invalid National ID format. Expected format: 001-000000-0000A.",
+      "phone_required": "Phone number is required.",
+      "phone_min": "Phone number must contain digits only (minimum 8 digits).",
+      "email_required": "Email is required.",
+      "email_invalid": "Enter a valid email address (e.g. user@domain.com).",
+      "inst_email_required": "Institutional email is required.",
+      "inst_email_domain": "Use your institutional email (@uamv.edu.ni).",
+      "password_required": "Password is required.",
+      "password_min": "Password must be at least 6 characters.",
+      "cif_required": "CIF is required.",
+      "cif_invalid": "CIF must be exactly 8 digits.",
+      "career_required": "Please select your degree program.",
+      "faculty_required": "Faculty is required.",
+      "visitor_phone_letters": "Phone number must contain digits only (no letters).",
+      "visitor_email_example": "Enter a valid email address (e.g. name@domain.com)."
+    },
+    "select_career": "Select your major",
+    "majors": {
+      "systems_engineering": "Systems Engineering",
+      "industrial_engineering": "Industrial Engineering",
+      "civil_engineering": "Civil Engineering",
+      "architecture": "Architecture",
+      "medicine": "Medicine",
+      "psychology": "Psychology",
+      "nutrition": "Nutrition",
+      "law": "Law",
+      "diplomacy": "Diplomacy and International Relations",
+      "business_admin": "Business Administration",
+      "accounting_finance": "Accounting and Finance",
+      "business_economics": "Business Economics",
+      "international_business": "International Business",
+      "marketing_advertising": "Marketing and Advertising",
+      "design_visual_comm": "Design and Visual Communication",
+      "comm_pr": "Communication and Public Relations",
+      "uam_college": "UAM College"
+    },
+    "faculties_full": {
+      "FIA": "Faculty of Engineering and Architecture",
+      "FCM": "Faculty of Medical Sciences",
+      "FCJ": "Faculty of Legal Sciences, Humanities, and International Relations",
+      "FCAE": "Faculty of Administrative and Economic Sciences",
+      "FMDCC": "Faculty of Marketing, Design, and Communication Sciences",
+      "UAM_COLLEGE": "UAM College"
+    },
+    "errors": {
+      "login_required": "Authentication required. Please sign in.",
+      "admin_required": "Administrator privileges are required for this action.",
+      "invalid_user_type": "Invalid user type specified.",
+      "full_name_required": "Full name is required.",
+      "full_name_min": "Full name must be at least 2 characters.",
+      "cif_required_digits": "Students must provide an 8-digit CIF number.",
+      "institutional_email_required": "Use your institutional email (@uamv.edu.ni).",
+      "password_min": "Password must be at least 6 characters.",
+      "cedula_required": "National ID (Cédula) is required.",
+      "cedula_length": "National ID must be between 14 and 16 characters.",
+      "cedula_invalid_format": "Invalid National ID format. Expected: 001-000000-0000A.",
+      "phone_required": "Phone number is required for visitors.",
+      "phone_no_letters": "Phone number must contain digits only (no letters).",
+      "phone_min_digits": "Phone number must have at least 8 digits.",
+      "email_required": "Email address is required.",
+      "email_invalid": "Enter a valid email address.",
+      "admin_email_password_required": "Administrators require email and password (minimum 6 characters).",
+      "duplicate_identity": "A user with that CIF, National ID, email, or username is already registered.",
+      "registration_failed": "Registration error: {detail}",
+      "identifier_required": "Enter your identifier (CIF, National ID, Email, or Phone).",
+      "account_not_found": "No registered account was found with those credentials.",
+      "account_inactive": "This account has been deactivated. Contact CAE Administration.",
+      "role_mismatch": "This account does not match the selected role. Please choose your correct role.",
+      "admin_password_required": "Password is required for administrator access.",
+      "admin_invalid_credentials": "Invalid administrator email or password.",
+      "password_required": "Please enter your password.",
+      "invalid_password": "Incorrect password.",
+      "login_error": "Error signing in.",
+      "invalid_credentials": "Invalid credentials.",
+      "admin_cannot_self_register": "Administrator accounts cannot be self-registered.",
+      "account_not_found_identifier": "No active user found with identifier: '{identifier}'.",
+      "username_taken": "Username '{userName}' is already in use.",
+      "duplicate_cif": "A user with this CIF already exists.",
+      "duplicate_cedula": "A user with this National ID already exists.",
+      "duplicate_email": "A user with this email already exists.",
+      "duplicate_username": "This username is already taken.",
+      "constraint_violation": "The provided data does not satisfy the role requirements.",
+      "user_retrieval_failed": "Failed to retrieve created user."
+    },
+    "messages": {
+      "account_created": "Account registered successfully. Welcome to JaguarFind!",
+      "welcome_back": "Welcome back, {name}.",
+      "signed_out": "Signed out successfully."
+    },
+    "personal_email_placeholder": "email@example.com",
+    "institutional_email_placeholder": "user@uamv.edu.ni"
   },
   "lost_found": {
     "title": "Lost & Found Management — Building A",
@@ -120,7 +785,208 @@
     "status_reported": "Reported (En route to Building A)",
     "status_custody": "In Custody (Verified at Building A)",
     "status_returned": "Returned to Owner (Archived)",
-    "hidden_validator_hint": "Private detail visible only for verification at claim"
+    "hidden_validator_hint": "Private detail visible only for verification at claim",
+    "catalog_title": "Lost & Found Catalog",
+    "catalog_page_title": "Lost & Found Catalog · JaguarFind",
+    "catalog_subtitle": "Search lost or found items across UAM campus. Central custody at Building A.",
+    "report_item": "Report Item",
+    "catalog_search_placeholder": "Search by item name, description or building...",
+    "all_categories": "All categories",
+    "cat_electronics": "Electronics",
+    "cat_documents": "Documents / ID",
+    "cat_personal": "Personal Items",
+    "cat_clothing": "Clothing",
+    "cat_other": "Other",
+    "all_statuses": "All statuses",
+    "state_reported": "Reported",
+    "state_custody": "In Custody (Bldg. A)",
+    "state_claimed": "Claimed / Delivered",
+    "loading_items": "Loading items...",
+    "cae_office": "CAE Office: Building A - Ground Floor",
+    "loading_catalog": "Loading items catalog...",
+    "no_items_found": "No items found",
+    "no_items_hint": "Try adjusting your filters or report a new lost object.",
+    "admin_mode": "Admin Mode",
+    "items_found_singular": "{count} item found",
+    "items_found_plural": "{count} items found",
+    "view_details": "View details",
+    "view_in_catalog": "View in Catalog",
+    "view_building_catalog": "View lost items in this building",
+    "report_here": "+ Report Here",
+    "all_buildings": "All buildings",
+    "filtered_by_building": "Filtered by building:",
+    "clear_building_filter": "View all items",
+    "clear_filters": "Clear filters",
+    "view_on_map_25d": "View on 2.5D Map",
+    "edit_ticket_state": "Edit Ticket Status",
+    "antifraud_badge": "Anti-fraud",
+    "detail_modal_title": "Item Details",
+    "detail_location": "Location",
+    "detail_category": "Category",
+    "detail_reported_on": "Reported on",
+    "detail_reported_by": "Reported by",
+    "detail_resolved_on": "Delivered on",
+    "detail_description": "Description",
+    "detail_secret_title": "Secret Detail (Anti-Fraud Verification)",
+    "detail_secret_protected": "This item has a private verification detail that will be checked in person at CAE (Building A).",
+    "detail_custody_reported": "Recently reported on campus. If it belongs to you, submit a claim or visit Building A (CAE).",
+    "detail_custody_in_custody": "Safely held in custody at Building A (CAE Office - Ground Floor). Present your UAM ID or national ID to collect it.",
+    "detail_custody_claimed": "This item has already been verified and returned to its owner.",
+    "detail_filter_building": "More from this building",
+    "detail_claim_button": "Claim this item",
+    "detail_claim_name": "Full name",
+    "detail_claim_contact": "Contact email or phone",
+    "detail_claim_secret": "Describe an identifying detail (optional)",
+    "detail_claim_submit": "Submit claim request",
+    "detail_claim_cancel": "Cancel",
+    "detail_claim_submitting": "Submitting...",
+    "detail_not_found_title": "Item not found",
+    "detail_not_found_desc": "We couldn't find the requested report or it was removed.",
+    "detail_back_to_catalog": "Back to catalog",
+    "detail_loading": "Loading item details...",
+    "detail_copy_link": "Copy link",
+    "detail_link_copied": "Link copied!",
+    "detail_no_photo": "No photo attached",
+    "close": "Close",
+    "map_pin_items_singular": "{count} lost or in-custody item",
+    "map_pin_items_plural": "{count} lost or in-custody items",
+    "sidebar_catalog_title": "Lost & Found Catalog",
+    "sidebar_search_placeholder": "Search item, description, or building...",
+    "sidebar_open_full_catalog": "Open full catalog",
+    "sidebar_locate_on_map": "Locate on map",
+    "sidebar_load_error": "Could not load items.",
+    "sidebar_retry": "Retry",
+    "sidebar_refresh": "Refresh catalog",
+    "sidebar_items_short_singular": "{count} item",
+    "sidebar_items_short_plural": "{count} items",
+    "sidebar_building_all_short": "All buildings",
+    "sidebar_cat_all_short": "Category",
+    "sidebar_state_all_short": "Status",
+    "admin_update_state_title": "Update Custody Status",
+    "admin_item_label": "Item:",
+    "admin_new_state_label": "New Status *",
+    "admin_save_state": "Save Status",
+    "admin_state_opt_1": "1: Reported (Found on campus)",
+    "admin_state_opt_2": "2: In Custody (Stored at Building A - CAE)",
+    "admin_state_opt_3": "3: Claimed / Returned to owner",
+    "optgroup_main_buildings": "Main Buildings (A - P)",
+    "optgroup_sports_outdoor": "Sports Areas, Plazas & Gates",
+    "pin_tooltip_singular": "{count} reported item in {location}",
+    "pin_tooltip_plural": "{count} reported items in {location}",
+    "state_update_error": "Error updating item status.",
+    "state_update_success": "Status updated successfully.",
+    "claim_error": "Could not register your claim request.",
+    "claim_network_error": "Network connection error.",
+    "claim_required_fields": "Please provide your full name and contact info.",
+    "claim_success": "Claim request registered for Ticket #{itemId}. Please visit CAE (Building A - Ground Floor) with your ID to verify ownership.",
+    "report": {
+      "modal_title": "Report Lost / Found Object",
+      "modal_subtitle": "Publish a lost or found item on UAM campus",
+      "gps_banner_title": "Auto-locate via Campus GPS?",
+      "gps_banner_desc": "Detects your nearest building automatically",
+      "gps_detect_btn": "Detect GPS",
+      "gps_locating": "Locating...",
+      "gps_detected_short": "Detected!",
+      "gps_detected_banner": "GPS Location: {building} ({node})",
+      "gps_detected_banner_simple": "GPS Location: {building}",
+      "gps_outside_campus": "Your GPS appears outside UAM campus. Please select the building manually.",
+      "gps_permission_denied": "Location permission denied. Select the building manually.",
+      "gps_unavailable": "Location unavailable. Select the building manually.",
+      "gps_timeout": "GPS request timed out. Select the building manually.",
+      "gps_unsupported": "Your browser does not support GPS geolocation. Select the building manually.",
+      "gps_error": "Could not match your GPS location. Select the building manually.",
+      "floor_label": "Floor {floor}",
+      "item_name_label": "Item Name",
+      "item_name_placeholder": "e.g. Casio fx-991LA Calculator, Blue Yeti Bottle, CIF ID...",
+      "category_label": "Category",
+      "location_label": "Campus Location",
+      "location_placeholder": "Select a building or place...",
+      "exact_spot_label": "Specific Room / Area (Optional)",
+      "exact_spot_placeholder": "e.g. Room B-103, 2nd floor hallway, terrace table...",
+      "description_label": "Public Description",
+      "description_placeholder": "Indicate color, brand, or where it was found or lost...",
+      "antifraud_title": "Secret Detail / Anti-Fraud Question (Private)",
+      "antifraud_desc": "A detail only the real owner knows (e.g. 'sticker on the back', 'engraved name'). It will not be shown in the public catalog and helps admins verify claimants.",
+      "antifraud_placeholder": "e.g. Has a Jaguar sticker on the bottom-left corner",
+      "photo_label": "Item Photo (Optional)",
+      "photo_drop_prompt": "Upload image or take a photo",
+      "photo_formats_hint": "PNG, JPG, WEBP up to 5MB",
+      "photo_remove": "Remove photo",
+      "photo_invalid_type": "Only image files (PNG, JPG, WEBP) are allowed.",
+      "photo_too_large": "Image exceeds the 5MB limit.",
+      "photo_read_error": "Could not read the selected image.",
+      "btn_cancel": "Cancel",
+      "btn_submit": "Publish Report",
+      "btn_submitting": "Saving...",
+      "err_required_fields": "Please fill out item name, building/zone, and public description.",
+      "err_submit_failed": "An error occurred while saving the report.",
+      "err_network": "Network connection error.",
+      "success_created": "Object reported successfully. It has been added to the campus catalog.",
+      "gps_checking": "Checking campus location...",
+      "gps_permission_hint": "Allow location access to detect your building or classroom automatically.",
+      "gps_confirm_btn": "Yes, use this location",
+      "gps_choose_other_btn": "No, choose another building",
+      "gps_retry_btn": "Retry GPS detection",
+      "gps_confirmed_prefix": "Location confirmed:",
+      "gps_ready_sub": "Campus location ready to publish the report.",
+      "gps_manual_title": "Manual Location Selection",
+      "gps_manual_prompt": "Could not acquire your location. Please select the building manually:",
+      "gps_unidentified": "Approximate location not identified. Please select the building:",
+      "gps_building_choose_floor": "Building detected (select floor/room)",
+      "gps_approx_detected": "Approximate location detected",
+      "gps_indoor_floor_hint": "GPS altitude is imprecise indoors. Pick the exact floor or room below, or confirm the building:",
+      "gps_preselected_hint": "Approximately {dist}m from your current position. Confirm if you want to use this GPS location.",
+      "gps_auto_selected_hint": "Auto-selected (~{dist}m{floor}). Confirm or choose another building if it was elsewhere.",
+      "gps_or_were_you_at": "Or were you at:",
+      "gps_detecting_coords": "Detecting campus coordinates...",
+      "gps_acquiring_sub": "Acquiring GPS position to match the nearest building...",
+      "gps_service_unavailable": "Geolocation service is unavailable.",
+      "gps_weak_signal": "Weak GPS signal indoors...",
+      "gps_retrying_wifi": "Retrying with Wi-Fi / network positioning...",
+      "gps_select_building_prompt": "Please select the corresponding building:",
+      "floor_count": "Floor {floor} ({count})",
+      "photo_no_photo": "No photo",
+      "photo_preview_alt": "Preview",
+      "err_select_location": "You must select or confirm the campus location."
+    },
+    "card": {
+      "reported_label": "Reported",
+      "custody_label": "In Custody",
+      "claimed_label": "Claimed",
+      "view_details": "View details",
+      "no_image": "No image"
+    },
+    "uploader": {
+      "label": "Attach Photo",
+      "prompt": "Click to upload or drag and drop",
+      "hint": "PNG, JPG or WEBP (Max. 5 MB)",
+      "remove": "Remove image",
+      "invalid_type": "Please select a valid image file.",
+      "too_large": "Image must be smaller than 5 MB.",
+      "page_title": "Photo Uploader · JaguarFind",
+      "heading": "Photo of Found Object",
+      "choose_image": "Choose an image:",
+      "no_image": "No image",
+      "preview_alt": "Preview",
+      "upload_btn": "Upload"
+    },
+    "api": {
+      "missing_required_fields": "Item name, location, and description are required.",
+      "invalid_state": "Invalid status ID. Must be 1 (Reported), 2 (In Custody), or 3 (Claimed).",
+      "item_not_found": "Lost item not found.",
+      "report_created": "Lost & found report created successfully.",
+      "state_updated": "Custody status updated successfully.",
+      "claim_missing_fields": "Please provide your full name and contact information.",
+      "claim_already_claimed": "This item has already been claimed and returned to its owner.",
+      "claim_registered": "Claim request registered for Ticket #{itemId}. Visit CAE (Building A - Ground Floor) with your ID to verify ownership.",
+      "report_error": "Error creating report.",
+      "update_error": "Error updating status.",
+      "item_name_required": "Item name is required.",
+      "location_required": "Location (campus building) is required.",
+      "description_required": "Description is required.",
+      "location_outside_campus": "The selected location is outside the UAM campus perimeter.",
+      "invalid_gps_coords": "Invalid GPS location coordinates."
+    }
   },
   "nodes": {
     "mainParking": "Main Parking & South Gate",
@@ -153,7 +1019,10 @@
     "northGate": "Third Access (Copernicus Gate)"
   },
   "access_notices": {
-    "buildingN": "Clinics Reception. Access to clinical areas and operating rooms requires sterile uniform and faculty authorization."
+    "buildingN": "Clinics Reception. Access to clinical areas and operating rooms requires sterile uniform and faculty authorization.",
+    "n_reception": "Dental Clinics Reception (Building N). Entry to clinical cubicles, operating rooms, sterilization, and radiology requires sterile uniform and faculty authorization.",
+    "n_fodo_f2_reception": "Dental Clinics Reception (Building N). Entry to clinical cubicles, operating rooms, sterilization, and radiology requires sterile uniform and faculty authorization.",
+    "h_lab_coord_necroteca": "Medical Laboratories & Necropsy Area. Requires lab coat and faculty authorization."
   },
   "walkways": {
     "mainParking_buildingK": "Walk 65m straight from Main Entrance towards Central Cafeteria (Building K).",
@@ -278,6 +1147,271 @@
     "no_route_found": "No walkable pedestrian route found between both locations with the requested restrictions.",
     "subplace_location": "Building location: {name} (Floor {floor}) - {notes}",
     "main_building": "Main building.",
-    "destination_reached": "Destination reached."
+    "destination_reached": "Destination reached.",
+    "time_already_here": "You are already here",
+    "time_very_close": "Very close (< 1 min)",
+    "time_walking_min": "~{minutes} min walk",
+    "conjunction_and": " and ",
+    "floor_label": "Floor {floor}",
+    "building_floor_note": "{building} (Floor {floor})",
+    "no_route_accessible_hint": "No wheelchair-accessible route was found between both locations.",
+    "indoor_origin_not_found": "Origin location '{query}' was not found in {building}.",
+    "indoor_dest_not_found": "Destination '{query}' was not found in {building}.",
+    "indoor_no_route": "No walkable indoor route found with the requested accessibility restrictions.",
+    "indoor_stairs_up_default": "Go up the stairs to the next floor.",
+    "indoor_stairs_down_default": "Go down the stairs to the lower floor.",
+    "headlines": {
+      "start": "Start route",
+      "straight": "Continue straight",
+      "slight_right": "Keep right",
+      "right": "Turn right",
+      "slight_left": "Keep left",
+      "left": "Turn left",
+      "uturn": "Turn around",
+      "crosswalk": "Cross the crosswalk",
+      "skybridge": "2nd-floor skybridge",
+      "stairs_up": "Go up the stairs",
+      "stairs_down": "Go down the stairs",
+      "stairs": "Use the stairs",
+      "ramp": "Take the accessible ramp",
+      "enter": "Enter building",
+      "exit": "Exit outside",
+      "arrive": "You arrived",
+      "indoor_location": "Indoor location",
+      "access_notice": "Access notice"
+    },
+    "steps": {
+      "already_at_place": "You are already at {dest}.",
+      "pass_clause": ", passing {passed},",
+      "via_indoor": " through the indoor corridor",
+      "starting_point_default": "your starting point",
+      "anchor_prefix": "At {anchor}, ",
+      "skybridge": "Cross the 2nd-floor covered skybridge toward {target}.",
+      "crosswalk": "Cross the pedestrian crosswalk toward {target}.",
+      "stairs": "Take the stairs and continue toward {target}.",
+      "ramp": "Follow the accessible ramp{pass_tail} toward {target}.",
+      "enter_anchor": "Enter through {anchor} and follow the corridor{pass_tail} toward {target}.",
+      "enter_generic": "Enter the building and follow the hallway{pass_tail} toward {target}.",
+      "exit_anchor": "Exit through {anchor} and head{pass_tail} toward {target}.",
+      "exit_generic": "Exit onto the outdoor walkway{pass_tail} toward {target}.",
+      "first_indoor": "From {origin}, follow the corridor{pass_tail} toward {target}.",
+      "first_outdoor": "From {origin}, follow the pedestrian walkway{pass_tail} toward {target}.",
+      "turn_right": "{anchor_prefix}turn right{via_tail}{pass_tail} toward {target}.",
+      "turn_slight_right": "{anchor_prefix}keep slightly right{via_tail}{pass_tail} toward {target}.",
+      "turn_left": "{anchor_prefix}turn left{via_tail}{pass_tail} toward {target}.",
+      "turn_slight_left": "{anchor_prefix}keep slightly left{via_tail}{pass_tail} toward {target}.",
+      "turn_uturn": "{anchor_prefix}turn around and head{pass_tail} toward {target}.",
+      "continue_straight": "{anchor_prefix}continue straight{via_tail}{pass_tail} toward {target}.",
+      "indoor_enter_at_door": "Upon entering {building}, you will find {room} right by the entrance (Floor {floor}).",
+      "indoor_already_here": "You are already at {room} (Floor {floor}).",
+      "indoor_stairs_up": "Go up the stairs in {building} to Floor {floor}.",
+      "indoor_stairs_down": "Go down the stairs in {building} to Floor {floor}.",
+      "indoor_exit_run": "Inside {building} (Floor {floor}), head from {start} toward the exit ({end}).",
+      "indoor_ramp": "Use the accessible ramp in {building} (Floor {floor}) toward {end}.",
+      "indoor_entry_direct": "Inside {building} (Floor {floor}), head from {start} toward {end}.",
+      "indoor_floor_direct": "On Floor {floor}, head toward {end}.",
+      "indoor_hallway_pass": "Follow the Floor {floor} hallway passing {passed} until you reach {end}.",
+      "indoor_hallway_range": "Follow the Floor {floor} hallway past {first} through {last} to reach {end}.",
+      "indoor_arrived": "You have arrived at {room} (Floor {floor}).",
+      "indoor_subplace_hint": "Inside the building, head to {name} (Floor {floor}) — {notes}."
+    },
+    "upper_floor_stairs_only": "{dest} is on Floor {floor} and currently only has stair access."
+  },
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "delete": "Delete",
+    "edit": "Edit",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "loading": "Loading...",
+    "unknown": "Unknown",
+    "search": "Search",
+    "all": "All",
+    "back": "Back",
+    "confirm": "Confirm",
+    "error_generic": "An unexpected error occurred.",
+    "network_error": "Network connection error."
+  },
+  "api": {
+    "not_found": "Requested API endpoint not found.",
+    "internal_error": "An internal server error occurred.",
+    "speech_text_required": "Text is required.",
+    "speech_text_too_long": "Text must not exceed 2000 characters.",
+    "speech_not_configured": "Azure Speech service is not configured on this server.",
+    "speech_service_error": "Azure Speech synthesis failed.",
+    "map_origin_dest_required": "Both 'origin' and 'destination' parameters are required.",
+    "map_lat_lng_required": "Both 'lat' and 'lng' query parameters are required.",
+    "map_invalid_coords": "Coordinates 'lat' and 'lng' must be valid numbers.",
+    "map_building_not_found": "Building '{buildingId}' was not found.",
+    "map_subgraph_not_found": "Subgraph for building '{buildingId}' was not found.",
+    "map_outside_campus": "Your GPS position appears to be outside the UAM campus perimeter.",
+    "map_floor_label": "Floor {floor}",
+    "map_floor_note": "Floor {floor} · {building}",
+    "map_main_building_note": "Main building.",
+    "speech_unavailable": "Azure Speech synthesis is unavailable.",
+    "map_node_not_found": "Campus node '{nodeId}' not found."
+  },
+  "admin": {
+    "panel_title": "CAE Admin Panel",
+    "page_title_suffix": "CAE Admin Panel · JaguarFind",
+    "dashboard_title": "Custody & Reports Dashboard",
+    "dashboard_subtitle": "Real-time monitoring of lost items, Building A custody, and returns",
+    "items_title": "Lost & Found Catalog & Custody",
+    "items_subtitle": "Ticket editing, secret detail audit, and status updates (Reported → In Custody → Claimed)",
+    "users_title": "User Directory & Access Control",
+    "users_subtitle": "Account administration, institutional roles, password resets, and deactivation",
+    "nav_dashboard": "Dashboard",
+    "nav_catalog": "Items Catalog",
+    "nav_users": "Users",
+    "nav_general": "General Navigation",
+    "nav_map": "UAM Map",
+    "view_map": "View Map",
+    "cae_office_short": "CAE Building A",
+    "logout_title": "Sign Out",
+    "kpi_total": "Total Reports",
+    "kpi_reported": "Reported",
+    "kpi_custody": "In CAE Custody",
+    "kpi_claimed": "Returned",
+    "kpi_users": "Registered Users",
+    "recent_reports_title": "Recent Reported Items",
+    "recent_reports_subtitle": "Tickets requiring custody verification or handover",
+    "view_full_catalog": "View all →",
+    "col_id": "ID",
+    "col_item": "Item",
+    "col_location": "Location",
+    "col_status": "Current Status",
+    "col_date": "Date",
+    "col_actions": "Quick Action",
+    "loading_records": "Loading recent tickets...",
+    "no_records": "No items registered yet.",
+    "action_status": "Change Status",
+    "cae_notice_title": "Physical Custody Center: Building A (CAE)",
+    "cae_notice_body": "Students must present their UAM ID or National ID and answer the private anti-fraud detail to collect their belongings.",
+    "categories_title": "Breakdown by Category",
+    "users_summary_title": "User Directory",
+    "users_summary_subtitle": "Students, collaborators, and visitors with active accounts registered in JaguarFind.",
+    "users_count_singular": "{count} user",
+    "users_count_plural": "{count} users",
+    "manage_users": "Manage Accounts →",
+    "modal_state_title": "Change Custody Status",
+    "modal_state_item": "Item:",
+    "modal_state_label": "New Custody Status *",
+    "modal_state_save": "Update",
+    "state_updated_ok": "Status updated successfully.",
+    "state_update_err": "Could not update ticket status.",
+    "users_search_placeholder": "Search by name, CIF, National ID, or email...",
+    "filter_all_roles": "All roles",
+    "btn_new_user": "New User",
+    "col_user": "User",
+    "col_role": "Assigned Role",
+    "col_credentials": "Identifier / Contact",
+    "col_account_status": "Status",
+    "loading_users": "Loading user directory...",
+    "no_users_found": "No matching users found.",
+    "users_shown_singular": "{count} registered user",
+    "users_shown_plural": "{count} registered users",
+    "status_active": "Active",
+    "status_inactive": "Deactivated",
+    "btn_reset_pass": "Change Password",
+    "btn_change_role": "Change Role",
+    "btn_deactivate": "Deactivate account",
+    "btn_activate": "Reactivate account",
+    "confirm_deactivate": "Are you sure you want to deactivate the account for {name}?",
+    "confirm_activate": "Are you sure you want to reactivate the account for {name}?",
+    "modal_create_title": "Register New User",
+    "modal_create_subtitle": "Register a student, collaborator, visitor, or administrator",
+    "field_role": "Institutional Role *",
+    "field_full_name": "Full Name *",
+    "field_full_name_placeholder": "e.g. Jane Doe",
+    "field_username": "Username (Optional)",
+    "field_username_placeholder": "e.g. jane.doe",
+    "field_email": "Email Address",
+    "field_email_placeholder": "user@uamv.edu.ni",
+    "field_cif": "CIF Number (8 digits)",
+    "field_cif_placeholder": "22019845",
+    "field_cedula": "National ID (Cédula)",
+    "field_cedula_placeholder": "001-000000-0000A",
+    "field_phone": "Phone Number",
+    "field_phone_placeholder": "+505 8888 0000",
+    "field_password": "Initial Password",
+    "field_password_placeholder": "Minimum 6 characters",
+    "btn_create_user": "Create Account",
+    "modal_reset_title": "Change Password",
+    "modal_reset_for": "User:",
+    "field_new_password": "New Password *",
+    "btn_save_password": "Update Password",
+    "modal_role_title": "Assign User Role",
+    "modal_role_for": "User:",
+    "field_new_role": "New Role *",
+    "btn_save_role": "Save Role",
+    "msg_user_created": "User registered successfully.",
+    "msg_password_updated": "Password updated successfully.",
+    "msg_role_updated": "Role updated successfully.",
+    "msg_status_updated": "User account status updated.",
+    "err_load_users": "Error loading users.",
+    "err_operation_failed": "Operation failed.",
+    "api": {
+      "admin_required": "Administrator access required.",
+      "invalid_user_type": "Invalid user type.",
+      "full_name_required": "Full name is required.",
+      "cif_required": "Students require an 8-digit CIF number.",
+      "cedula_required": "National ID (Cédula) is required.",
+      "cedula_invalid": "Invalid National ID format (expected 001-000000-0000A).",
+      "phone_required": "Phone number is required for visitors.",
+      "phone_no_letters": "Phone number must contain digits only (no letters).",
+      "phone_min_digits": "Phone number must have at least 8 digits.",
+      "email_required": "Email address is required.",
+      "email_invalid": "Enter a valid email address.",
+      "admin_credentials_required": "Administrators require email and password (min. 6 characters).",
+      "duplicate_user": "A user with that CIF, National ID, email, or username already exists.",
+      "user_created": "User created successfully.",
+      "user_not_found": "User not found.",
+      "password_min": "New password must be at least 6 characters.",
+      "password_updated": "Password updated successfully.",
+      "cannot_deactivate_self": "You cannot deactivate your own active administrator account.",
+      "status_updated": "User status updated successfully.",
+      "invalid_role": "Invalid role selected.",
+      "role_updated": "User role updated successfully.",
+      "item_not_found": "Lost item not found.",
+      "invalid_state": "Invalid status ID.",
+      "state_updated": "Item custody status updated successfully.",
+      "item_state_updated": "Item #{itemId} status updated to '{state}'.",
+      "state_update_failed": "Failed to update item status.",
+      "user_password_updated_for": "Password for user #{userId} ({name}) updated successfully.",
+      "password_update_failed": "Failed to update user password.",
+      "user_activated_for": "Account for {name} has been activated.",
+      "user_deactivated_for": "Account for {name} has been deactivated.",
+      "status_update_failed": "Failed to update user status.",
+      "role_constraint_violation": "Role identity constraint not met.",
+      "role_update_failed": "Failed to update user role.",
+      "role_updated_for": "Role for {name} updated to '{role}'."
+    },
+    "page_title_dashboard": "Admin Dashboard · JaguarFind",
+    "page_title_items": "Lost & Found Management · JaguarFind",
+    "page_title_users": "User Management · JaguarFind",
+    "admin_cae_short": "Admin CAE",
+    "kpi_total_sub": "all time",
+    "kpi_reported_sub": "pending intake",
+    "kpi_custody_sub": "at Building A",
+    "kpi_claimed_sub": "resolved",
+    "col_admin_actions": "Admin Actions",
+    "manage_custody": "Manage Custody",
+    "calculating_ratios": "Calculating breakdown...",
+    "filter_students": "Students",
+    "filter_collaborators": "Collaborators",
+    "filter_visitors": "Visitors",
+    "filter_admins": "Administrators",
+    "identity_control_subtitle": "UAM · Identity Control System",
+    "col_id_doc": "Identification (CIF / National ID)",
+    "col_contact": "Contact",
+    "id_cif_prefix": "CIF",
+    "id_cedula_prefix": "ID",
+    "role_opt_student": "Student (Requires 8-digit CIF)",
+    "role_opt_collaborator": "Collaborator (Faculty / Staff with National ID)",
+    "role_opt_visitor": "Visitor (Requires National ID & Phone)",
+    "role_opt_admin": "CAE Administrator (Requires Email & Password)"
   }
 }

@@ -20,7 +20,7 @@ from backend.database import (
 )
 from backend.graph.navigationService import globalNavigationService
 from backend.graph.geoUtils import CampusGeoUtils
-from backend.i18n import get_current_language
+from backend.i18n import get_current_language, t
 
 lostFoundObjectController = Blueprint(
     "lostFoundObjectController",
@@ -29,10 +29,17 @@ lostFoundObjectController = Blueprint(
 )
 
 STATE_BADGES = {
-    1: {"color": "amber", "label": "Reportado"},
-    2: {"color": "blue", "label": "En Custodia (Edif. A)"},
-    3: {"color": "emerald", "label": "Entregado / Reclamado"},
+    1: {"color": "amber", "labelKey": "lost_found.state_reported"},
+    2: {"color": "blue", "labelKey": "lost_found.state_custody"},
+    3: {"color": "emerald", "labelKey": "lost_found.state_claimed"},
 }
+
+
+def _getStateBadgeMeta(stateId: int, lang: Optional[str] = None) -> Dict[str, str]:
+    meta = STATE_BADGES.get(stateId)
+    if not meta:
+        return {"color": "gray", "label": t("common.unknown", lang=lang)}
+    return {"color": meta["color"], "label": t(meta["labelKey"], lang=lang)}
 
 
 def _resolveLocationName(locationId: str, lang: Optional[str] = None) -> str:
@@ -62,9 +69,9 @@ def _maskSecretDetail(item: Dict[str, Any], currentUserId: Optional[int], isAdmi
     sanitized["hasSignature"] = bool(sanitized.get("Signature"))
     sanitized["locationName"] = _resolveLocationName(sanitized.get("Location", ""))
 
-    # Attach badge color and label metadata
+    # Attach badge color and localized label metadata
     stateId = sanitized.get("LostObjectStateId", 1)
-    badgeMeta = STATE_BADGES.get(stateId, {"color": "gray", "label": "Desconocido"})
+    badgeMeta = _getStateBadgeMeta(stateId)
     sanitized["badgeColor"] = badgeMeta["color"]
     sanitized["badgeLabel"] = badgeMeta["label"]
 
@@ -140,7 +147,7 @@ def getItemDetail(itemId: int):
     if not item:
         return jsonify({
             "success": False,
-            "error": f"Lost object report with ID #{itemId} was not found."
+            "error": t("lost_found.api.item_not_found")
         }), 404
 
     currentUser = session.get("user")
@@ -181,11 +188,11 @@ def reportItem():
     photoUrl = payload.get("photoUrl")
 
     if not itemName:
-        return jsonify({"success": False, "error": "ItemName is required."}), 400
+        return jsonify({"success": False, "error": t("lost_found.api.item_name_required")}), 400
     if not location:
-        return jsonify({"success": False, "error": "Location (campus node) is required."}), 400
+        return jsonify({"success": False, "error": t("lost_found.api.location_required")}), 400
     if not description:
-        return jsonify({"success": False, "error": "Description is required."}), 400
+        return jsonify({"success": False, "error": t("lost_found.api.description_required")}), 400
 
     # Validate coordinates against campus perimeter (if GPS or coordinate pair is provided)
     lat = payload.get("latitude")
@@ -197,12 +204,12 @@ def reportItem():
             if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=30.0):
                 return jsonify({
                     "success": False,
-                    "error": "La ubicación seleccionada está fuera del perímetro del campus UAM."
+                    "error": t("lost_found.api.location_outside_campus")
                 }), 400
         except (ValueError, TypeError):
             return jsonify({
                 "success": False,
-                "error": "Coordenadas GPS de ubicación inválidas."
+                "error": t("lost_found.api.invalid_gps_coords")
             }), 400
     elif "," in location:
         parts = [p.strip() for p in location.split(",")]
@@ -213,7 +220,7 @@ def reportItem():
                 if not CampusGeoUtils.isWithinCampusPerimeter(latF, lngF, bufferMeters=30.0):
                     return jsonify({
                         "success": False,
-                        "error": "La ubicación indicada está fuera del perímetro del campus UAM."
+                        "error": t("lost_found.api.location_outside_campus")
                     }), 400
             except ValueError:
                 pass
@@ -241,12 +248,12 @@ def reportItem():
             signature=signature.strip() if signature else None,
             photoUrl=photoUrl.strip() if photoUrl else None,
         )
-    except Exception as err:
-        return jsonify({"success": False, "error": str(err)}), 500
+    except Exception:
+        return jsonify({"success": False, "error": t("lost_found.api.report_error")}), 500
 
     return jsonify({
         "success": True,
-        "message": "Lost object report successfully submitted.",
+        "message": t("lost_found.api.report_created"),
         "id": newId,
     }), 201
 
@@ -259,12 +266,12 @@ def claimItem(itemId: int):
     """
     item = getLostObjectById(itemId)
     if not item:
-        return jsonify({"success": False, "error": f"Item #{itemId} not found."}), 404
+        return jsonify({"success": False, "error": t("lost_found.api.item_not_found")}), 404
 
     if item.get("LostObjectStateId") == 3:
         return jsonify({
             "success": False,
-            "error": "This item has already been claimed and delivered to its owner."
+            "error": t("lost_found.api.claim_already_claimed")
         }), 400
 
     payload = request.get_json(silent=True) or request.form.to_dict() or {}
@@ -275,7 +282,7 @@ def claimItem(itemId: int):
     if not claimantName or not contact:
         return jsonify({
             "success": False,
-            "error": "Both claimantName and contact information are required."
+            "error": t("lost_found.api.claim_missing_fields")
         }), 400
 
     actualSecret = (item.get("SecretDetail") or "").strip().lower()
@@ -283,10 +290,7 @@ def claimItem(itemId: int):
 
     return jsonify({
         "success": True,
-        "message": (
-            "Your claim request has been registered. Please present your identification "
-            "at Building A (Student Services CAE / Lost & Found Custody) to complete handover."
-        ),
+        "message": t("lost_found.api.claim_registered", itemId=itemId),
         "itemId": itemId,
         "claimStatus": "pending_admin_review",
         "secretVerificationMatch": matchesSecret,
@@ -361,7 +365,7 @@ def getStates():
     results = []
     for s in states:
         sId = s["Id"]
-        badge = STATE_BADGES.get(sId, {"color": "gray", "label": s["Name"]})
+        badge = _getStateBadgeMeta(sId)
         results.append({
             "id": sId,
             "name": s["Name"],

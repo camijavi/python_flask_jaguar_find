@@ -11,17 +11,41 @@
 // 1. ENUMS & CONSTANTS
 // =============================================================================
 
+function translateContractKey(key) {
+    if (typeof window !== "undefined" && typeof window.t === "function") {
+        return window.t(key);
+    }
+    return key;
+}
+
+const USER_TYPE_LABEL_KEYS = Object.freeze({
+    1: "auth.role_student",
+    2: "auth.role_collaborator",
+    3: "auth.role_visitor_short",
+    4: "auth.role_admin"
+});
+
+const LOST_OBJECT_STATE_LABEL_KEYS = Object.freeze({
+    1: "lost_found.state_reported",
+    2: "lost_found.state_custody",
+    3: "lost_found.state_claimed"
+});
+
 export const UserType = Object.freeze({
     STUDENT: 1,
     COLLABORATOR: 2,
     VISITOR: 3,
     ADMIN: 4,
 
-    labels: {
-        1: "Estudiante",
-        2: "Colaborador",
-        3: "Visitante",
-        4: "Administrador"
+    labelKeys: USER_TYPE_LABEL_KEYS,
+    getLabel: (id) => translateContractKey(USER_TYPE_LABEL_KEYS[id] || "common.unknown"),
+    get labels() {
+        return {
+            1: translateContractKey(USER_TYPE_LABEL_KEYS[1]),
+            2: translateContractKey(USER_TYPE_LABEL_KEYS[2]),
+            3: translateContractKey(USER_TYPE_LABEL_KEYS[3]),
+            4: translateContractKey(USER_TYPE_LABEL_KEYS[4])
+        };
     }
 });
 
@@ -30,10 +54,14 @@ export const LostObjectState = Object.freeze({
     IN_CUSTODY: 2,  // Safely stored at Building A (CAE)
     CLAIMED: 3,     // Returned to rightful owner
 
-    labels: {
-        1: "Reportado",
-        2: "En Custodia (Edif. A)",
-        3: "Entregado / Reclamado"
+    labelKeys: LOST_OBJECT_STATE_LABEL_KEYS,
+    getLabel: (id) => translateContractKey(LOST_OBJECT_STATE_LABEL_KEYS[id] || "common.unknown"),
+    get labels() {
+        return {
+            1: translateContractKey(LOST_OBJECT_STATE_LABEL_KEYS[1]),
+            2: translateContractKey(LOST_OBJECT_STATE_LABEL_KEYS[2]),
+            3: translateContractKey(LOST_OBJECT_STATE_LABEL_KEYS[3])
+        };
     },
 
     badgeColors: {

@@ -571,45 +571,45 @@
     // 3. Key Doors / Portals & Non-Passable Wall Barriers
     // ----------------------------------------------------------------------------
     const PORTALS = [
-        { x: 310, y: 435, kind: "door",     note: "Puerta Este Edificio A" },
-        { x: 336, y: 435, kind: "door",     note: "Puerta Oeste Edificio A" },
-        { x: 323, y: 400, kind: "corridor", note: "Pasillo Sur (hacia Cruce / Chilamates) Edificio A" },
-        { x: 323, y: 470, kind: "corridor", note: "Pasillo Norte (hacia Edificio K / B) Edificio A" },
-        { x: 338, y: 411, kind: "corridor", note: "Acceso Este Edificio C" },
-        { x: 564, y: 411, kind: "corridor", note: "Acceso Oeste Edificio C" },
-        { x: 606, y: 414, kind: "door",     note: "Acceso Principal Edificio M" },
-        { x: 645, y: 444, kind: "door",     note: "Partición Media Oeste Edificio M" },
-        { x: 598, y: 438, kind: "stairs",   note: "Escaleras Este Edificio M" },
-        { x: 346, y: 498, kind: "door",     note: "Acceso Norte Edificio K (desde pasillo techado B-K)" },
-        { x: 382, y: 536, kind: "door",     note: "Acceso Cafetería Edificio K" },
-        { x: 582, y: 509, kind: "door",     note: "Acceso Este Edificio G" },
-        { x: 612, y: 486, kind: "door",     note: "Acceso Sur Edificio G" },
-        { x: 640, y: 354, kind: "door",     note: "Acceso Sur Edificio H (desde Jaguar Jungle)" },
-        { x: 618, y: 384, kind: "door",     note: "Acceso Norte Edificio H" },
-        { x: 616, y: 592, kind: "door",     note: "Acceso Edificio F" },
-        { x: 750, y: 623, kind: "door",     note: "Acceso Patio Interno Edificio I" },
-        { x: 540, y: 296, kind: "door",     note: "Acceso Este Mi Ranchito" },
-        { x: 555, y: 282, kind: "door",     note: "Acceso Norte Mi Ranchito" },
-        { x: 523, y: 328, kind: "door",     note: "Acceso Lab Digital FIA" },
-        { x: 568, y: 194, kind: "door",     note: "Acceso Oeste Edificio O" },
-        { x: 858, y: 576, kind: "door",     note: "Acceso Sur-Este Jaguar Center" },
-        { x: 936, y: 576, kind: "door",     note: "Acceso Sur-Oeste Jaguar Center" },
-        { x: 952, y: 612, kind: "door",     note: "Acceso Lateral Jaguar Center / Edificio L" },
-        { x: 969, y: 704, kind: "door",     note: "Acceso Principal Jaguar Gym" }
+        { x: 310, y: 435, kind: "door",     id: "buildingA_east_door" },
+        { x: 336, y: 435, kind: "door",     id: "buildingA_west_door" },
+        { x: 323, y: 400, kind: "corridor", id: "buildingA_south_corridor" },
+        { x: 323, y: 470, kind: "corridor", id: "buildingA_north_corridor" },
+        { x: 338, y: 411, kind: "corridor", id: "buildingC_east_access" },
+        { x: 564, y: 411, kind: "corridor", id: "buildingC_west_access" },
+        { x: 606, y: 414, kind: "door",     id: "buildingM_main_access" },
+        { x: 645, y: 444, kind: "door",     id: "buildingM_west_partition" },
+        { x: 598, y: 438, kind: "stairs",   id: "buildingM_east_stairs" },
+        { x: 346, y: 498, kind: "door",     id: "buildingK_north_access" },
+        { x: 382, y: 536, kind: "door",     id: "buildingK_cafeteria_access" },
+        { x: 582, y: 509, kind: "door",     id: "buildingG_east_access" },
+        { x: 612, y: 486, kind: "door",     id: "buildingG_south_access" },
+        { x: 640, y: 354, kind: "door",     id: "buildingH_south_access" },
+        { x: 618, y: 384, kind: "door",     id: "buildingH_north_access" },
+        { x: 616, y: 592, kind: "door",     id: "buildingF_access" },
+        { x: 750, y: 623, kind: "door",     id: "buildingI_courtyard_access" },
+        { x: 540, y: 296, kind: "door",     id: "miRanchito_east_access" },
+        { x: 555, y: 282, kind: "door",     id: "miRanchito_north_access" },
+        { x: 523, y: 328, kind: "door",     id: "labDigitalFia_access" },
+        { x: 568, y: 194, kind: "door",     id: "buildingO_west_access" },
+        { x: 858, y: 576, kind: "door",     id: "jaguarCenter_se_access" },
+        { x: 936, y: 576, kind: "door",     id: "jaguarCenter_sw_access" },
+        { x: 952, y: 612, kind: "door",     id: "jaguarCenter_side_access" },
+        { x: 969, y: 704, kind: "door",     id: "jaguarGym_main_access" }
     ];
 
     // Explicitly blocked walls / non-passable boundaries (positioned cleanly clear of building badges)
     const BARRIERS = [
-        { x: 429, y: 435, reason: "Paso bloqueado lado izquierdo anexo B-C" },
-        { x: 412, y: 397, reason: "Muro norte Edificio C (sin salida directa al parqueo)" },
-        { x: 598, y: 438, reason: "Caja de escaleras Este Edificio M (sin cruce horizontal)" },
-        { x: 444, y: 274, reason: "Acceso restringido Clínicas Edificio N (solo personal de odontología)" }
+        { x: 429, y: 435, id: "barrier_annex_bc_left" },
+        { x: 412, y: 397, id: "barrier_buildingC_north_wall" },
+        { x: 598, y: 438, id: "barrier_buildingM_east_stairs" },
+        { x: 444, y: 274, id: "barrier_buildingN_restricted_clinics" }
     ];
 
-    // 2nd-Floor Covered Connectors (rendered with compact "2P" pill)
+    // 2nd-Floor Covered Connectors (rendered with localized compact floor pill)
     const LEVEL2_BADGES = [
-        { x: 530, y: 485, label: "2P" }, // Covered skybridge B <-> E
-        { x: 444, y: 435, label: "2P" }  // Central B <-> C annex (1F divider + 2F bridge)
+        { x: 530, y: 485, key: "map.walkways_legend.badge_2p" }, // Covered skybridge B <-> E
+        { x: 444, y: 435, key: "map.walkways_legend.badge_2p" }  // Central B <-> C annex (1F divider + 2F bridge)
     ];
 
     // Mapping from Macro Graph Node IDs -> Real Walkable Entrance Micro-Nodes
@@ -829,7 +829,7 @@
             }, portalsGroup);
         }
 
-        // Draw compact 2nd-floor covered bridge badges ("2P")
+        // Draw compact 2nd-floor covered bridge badges
         const level2BadgesGroup = el("g", { id: "walkwaysLevel2BadgesGroup" }, layer);
         for (const b of LEVEL2_BADGES) {
             const g = el("g", {}, level2BadgesGroup);
@@ -840,13 +840,14 @@
             const txt = el("text", {
                 x: b.x, y: b.y + 0.3,
                 fill: "#ffffff",
+                "data-walkway-badge": b.key,
                 "font-family": "'Plus Jakarta Sans', system-ui, sans-serif",
                 "font-size": 7.2,
                 "font-weight": 800,
                 "text-anchor": "middle",
                 "dominant-baseline": "central"
             }, g);
-            txt.textContent = b.label;
+            txt.textContent = typeof window.t === "function" ? window.t(b.key) : "";
         }
 
         // Draw non-passable wall / blocked access X markers
@@ -908,6 +909,14 @@
     };
     window.resolveMicroCampusRoute = resolveMicroCampusRoute;
     window.renderCampusWalkwaysLayer = renderCampusWalkwaysLayer;
+
+    window.addEventListener("jaguarLanguageChanged", () => {
+        if (typeof window.t !== "function") return;
+        document.querySelectorAll("[data-walkway-badge]").forEach((node) => {
+            const key = node.getAttribute("data-walkway-badge");
+            if (key) node.textContent = window.t(key);
+        });
+    });
 
     if (document.getElementById("pedestrianWalkwaysLayer")) {
         renderCampusWalkwaysLayer();

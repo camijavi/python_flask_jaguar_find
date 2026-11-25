@@ -130,6 +130,53 @@
     transform-origin: 0px 0px;
 }
 
+/* Map toolbar labels on hover and keyboard focus */
+#mapRightToolbar button[aria-label] {
+    position: relative;
+}
+#mapRightToolbar button[aria-label]::before,
+#mapRightToolbar button[aria-label]::after {
+    position: absolute;
+    z-index: 40;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    pointer-events: none;
+}
+#mapRightToolbar button[aria-label]::after {
+    content: attr(aria-label);
+    top: 50%;
+    right: calc(100% + 9px);
+    transform: translateY(-50%);
+    width: max-content;
+    max-width: 220px;
+    padding: 6px 9px;
+    border-radius: 8px;
+    background: #0f172a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: center;
+    white-space: normal;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+}
+#mapRightToolbar button[aria-label]::before {
+    content: "";
+    top: 50%;
+    right: calc(100% + 1px);
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-left-color: #0f172a;
+}
+#mapRightToolbar button[aria-label]:hover::before,
+#mapRightToolbar button[aria-label]:hover::after,
+#mapRightToolbar button[aria-label]:focus-visible::before,
+#mapRightToolbar button[aria-label]:focus-visible::after {
+    opacity: 1;
+    visibility: visible;
+}
+
 /* Directory Sidebar Cards */
 .directory-card {
     transition: all 0.2s ease;

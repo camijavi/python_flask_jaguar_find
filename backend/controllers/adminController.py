@@ -29,9 +29,23 @@ from backend.database import (
     getUserByUsername,
     getUserByIdentifier,
 )
-from backend.auth_guard import L, admin_required
+from backend.auth_guard import admin_required
+from backend.i18n import t
 
 adminController = Blueprint("adminController", __name__, url_prefix="/api/admin")
+
+STATE_I18N_KEYS = {
+    1: "lost_found.state_reported",
+    2: "lost_found.state_custody",
+    3: "lost_found.state_claimed",
+}
+
+ROLE_I18N_KEYS = {
+    1: "auth.role_student",
+    2: "auth.role_collaborator",
+    3: "auth.role_visitor_short",
+    4: "auth.role_admin",
+}
 
 
 def _requireAdmin():
@@ -71,21 +85,21 @@ def updateItemState(itemId: int):
     if not item:
         return jsonify({
             "success": False,
-            "error": f"Item #{itemId} was not found."
+            "error": t("admin.api.item_not_found")
         }), 404
 
     payload = request.get_json(silent=True) or request.form.to_dict() or {}
     stateIdRaw = payload.get("stateId") or payload.get("lostObjectStateId")
 
     if stateIdRaw is None:
-        return jsonify({"success": False, "error": "'stateId' is required."}), 400
+        return jsonify({"success": False, "error": t("admin.api.invalid_state")}), 400
 
     try:
         newStateId = int(stateIdRaw)
         if newStateId not in (1, 2, 3):
             raise ValueError()
     except (ValueError, TypeError):
-        return jsonify({"success": False, "error": "stateId must be an integer (1, 2, or 3)."}), 400
+        return jsonify({"success": False, "error": t("admin.api.invalid_state")}), 400
 
     currentUser = session.get("user")
     resolvedBy = payload.get("resolvedByAdminId")
@@ -104,12 +118,13 @@ def updateItemState(itemId: int):
     )
 
     if not success:
-        return jsonify({"success": False, "error": "Failed to update item state."}), 500
+        return jsonify({"success": False, "error": t("admin.api.state_update_failed")}), 500
 
     updatedItem = getLostObjectById(itemId)
+    localizedState = t(STATE_I18N_KEYS.get(newStateId, "common.unknown"))
     return jsonify({
         "success": True,
-        "message": f"Estado del objeto #{itemId} actualizado a '{updatedItem.get('StateName')}'.",
+        "message": t("admin.api.item_state_updated", itemId=itemId, state=localizedState),
         "item": updatedItem,
     }), 200
 
@@ -142,7 +157,7 @@ def createNewUser():
     try:
         userTypeId = int(payload.get("userTypeId", 1))
     except (ValueError, TypeError):
-        return jsonify({"success": False, "error": "userTypeId must be an integer (1-4)."}), 400
+        return jsonify({"success": False, "error": t("admin.api.invalid_user_type")}), 400
 
     fullName = (payload.get("fullName") or payload.get("nombre") or "").strip()
     userName = (payload.get("userName") or "").strip() or None
@@ -153,38 +168,40 @@ def createNewUser():
     password = payload.get("password") or None
 
     if not fullName:
-        return jsonify({"success": False, "error": "El nombre completo es obligatorio."}), 400
+        return jsonify({"success": False, "error": t("admin.api.full_name_required")}), 400
 
     if userTypeId == 1 and not cif:
-        return jsonify({"success": False, "error": "El CIF de 8 dígitos es obligatorio para estudiantes."}), 400
+        return jsonify({"success": False, "error": t("admin.api.cif_required")}), 400
     if userTypeId == 2:
         if not govermentId:
-            return jsonify({"success": False, "error": "La cédula de identidad es obligatoria para colaboradores."}), 400
+            return jsonify({"success": False, "error": t("admin.api.cedula_required")}), 400
         if not MIN_CEDULA_LENGTH <= len(govermentId) <= MAX_CEDULA_LENGTH or not re.fullmatch(r"^\d{3}-?\d{6}-?\d{4}[A-Za-z]$", govermentId):
-            return jsonify({"success": False, "error": "Formato de cédula inválido. Debe ser: 001-000000-0000A."}), 400
+            return jsonify({"success": False, "error": t("admin.api.cedula_invalid")}), 400
         cleanGov = govermentId.replace("-", "").upper()
         govermentId = f"{cleanGov[:3]}-{cleanGov[3:9]}-{cleanGov[9:13]}{cleanGov[13]}"
     if userTypeId == 3:
         if not govermentId:
-            return jsonify({"success": False, "error": "La cédula de identidad es obligatoria para visitantes."}), 400
+            return jsonify({"success": False, "error": t("admin.api.cedula_required")}), 400
         if not MIN_CEDULA_LENGTH <= len(govermentId) <= MAX_CEDULA_LENGTH or not re.fullmatch(r"^\d{3}-?\d{6}-?\d{4}[A-Za-z]$", govermentId):
-            return jsonify({"success": False, "error": "Formato de cédula inválido. Debe ser: 001-000000-0000A."}), 400
+            return jsonify({"success": False, "error": t("admin.api.cedula_invalid")}), 400
         cleanGov = govermentId.replace("-", "").upper()
         govermentId = f"{cleanGov[:3]}-{cleanGov[3:9]}-{cleanGov[9:13]}{cleanGov[13]}"
 
         if not phoneNumber:
-            return jsonify({"success": False, "error": "El número de teléfono es obligatorio para visitantes."}), 400
+            return jsonify({"success": False, "error": t("admin.api.phone_required")}), 400
+        if re.search(r"[a-zA-Z]", phoneNumber):
+            return jsonify({"success": False, "error": t("admin.api.phone_no_letters")}), 400
         cleanPhone = re.sub(r"\D", "", phoneNumber)
         if not cleanPhone or len(cleanPhone) < 7:
-            return jsonify({"success": False, "error": "El número de teléfono debe contener solo dígitos (mínimo 8 dígitos)."}), 400
+            return jsonify({"success": False, "error": t("admin.api.phone_min_digits")}), 400
         phoneNumber = cleanPhone
 
         if not email:
-            return jsonify({"success": False, "error": "El correo electrónico es obligatorio para visitantes."}), 400
+            return jsonify({"success": False, "error": t("admin.api.email_required")}), 400
         if not re.fullmatch(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
-            return jsonify({"success": False, "error": "Ingresa un correo electrónico válido con '@' y un dominio válido."}), 400
+            return jsonify({"success": False, "error": t("admin.api.email_invalid")}), 400
     if userTypeId == 4 and (not email or not password):
-        return jsonify({"success": False, "error": "Correo institucional y contraseña requeridos para administradores."}), 400
+        return jsonify({"success": False, "error": t("admin.api.admin_credentials_required")}), 400
 
     try:
         newUserId = createUser(
@@ -197,15 +214,15 @@ def createNewUser():
             email=email,
             password=password,
         )
-    except sqlite3.IntegrityError as err:
-        return jsonify({"success": False, "error": f"Conflicto de unicidad en base de datos: {str(err)}"}), 409
-    except Exception as err:
-        return jsonify({"success": False, "error": str(err)}), 500
+    except sqlite3.IntegrityError:
+        return jsonify({"success": False, "error": t("admin.api.duplicate_user")}), 409
+    except Exception:
+        return jsonify({"success": False, "error": t("api.internal_error")}), 500
 
     newUser = getUserById(newUserId)
     return jsonify({
         "success": True,
-        "message": "Usuario creado exitosamente.",
+        "message": t("admin.api.user_created"),
         "user": newUser,
     }), 201
 
@@ -221,21 +238,21 @@ def resetUserPassword(userId: int):
     """
     user = getUserById(userId)
     if not user:
-        return jsonify({"success": False, "error": f"Usuario con ID #{userId} no encontrado."}), 404
+        return jsonify({"success": False, "error": t("admin.api.user_not_found")}), 404
 
     payload = request.get_json(silent=True) or request.form.to_dict() or {}
     newPassword = (payload.get("password") or payload.get("newPassword") or "").strip()
 
     if not newPassword or len(newPassword) < 6:
-        return jsonify({"success": False, "error": "La nueva contraseña debe tener al menos 6 caracteres."}), 400
+        return jsonify({"success": False, "error": t("admin.api.password_min")}), 400
 
     success = updateUserPassword(userId, newPassword)
     if not success:
-        return jsonify({"success": False, "error": "No se pudo actualizar la contraseña."}), 500
+        return jsonify({"success": False, "error": t("admin.api.password_update_failed")}), 500
 
     return jsonify({
         "success": True,
-        "message": f"Contraseña del usuario #{userId} ({user.get('FullName')}) actualizada exitosamente.",
+        "message": t("admin.api.user_password_updated_for", userId=userId, name=user.get("FullName") or ""),
     }), 200
 
 
@@ -250,7 +267,7 @@ def toggleUserActiveStatus(userId: int):
     """
     user = getUserById(userId)
     if not user:
-        return jsonify({"success": False, "error": f"Usuario #{userId} no encontrado."}), 404
+        return jsonify({"success": False, "error": t("admin.api.user_not_found")}), 404
 
     payload = request.get_json(silent=True) or request.form.to_dict() or {}
     if "isActive" in payload:
@@ -261,17 +278,17 @@ def toggleUserActiveStatus(userId: int):
     # Protect main admin from deactivating themselves
     currentAdmin = session.get("user")
     if currentAdmin and currentAdmin.get("Id") == userId and not newStatus:
-        return jsonify({"success": False, "error": "No puedes desactivar tu propia cuenta administradora activa."}), 400
+        return jsonify({"success": False, "error": t("admin.api.cannot_deactivate_self")}), 400
 
     success = updateUserStatus(userId, newStatus)
     if not success:
-        return jsonify({"success": False, "error": "No se pudo actualizar el estado del usuario."}), 500
+        return jsonify({"success": False, "error": t("admin.api.status_update_failed")}), 500
 
-    statusText = "activada" if newStatus else "dada de baja"
+    msgKey = "admin.api.user_activated_for" if newStatus else "admin.api.user_deactivated_for"
     return jsonify({
         "success": True,
         "isActive": newStatus,
-        "message": f"Cuenta de {user.get('FullName')} ha sido {statusText}.",
+        "message": t(msgKey, name=user.get("FullName") or ""),
     }), 200
 
 
@@ -286,7 +303,7 @@ def changeUserRole(userId: int):
     """
     user = getUserById(userId)
     if not user:
-        return jsonify({"success": False, "error": f"Usuario #{userId} no encontrado."}), 404
+        return jsonify({"success": False, "error": t("admin.api.user_not_found")}), 404
 
     payload = request.get_json(silent=True) or request.form.to_dict() or {}
     try:
@@ -294,7 +311,7 @@ def changeUserRole(userId: int):
         if newUserTypeId not in (1, 2, 3, 4):
             raise ValueError()
     except (ValueError, TypeError):
-        return jsonify({"success": False, "error": "userTypeId debe ser un entero entre 1 y 4."}), 400
+        return jsonify({"success": False, "error": t("admin.api.invalid_role")}), 400
 
     cif = payload.get("cif")
     govermentId = payload.get("govermentId") or payload.get("cedula")
@@ -302,15 +319,16 @@ def changeUserRole(userId: int):
 
     try:
         success = updateUserRole(userId, newUserTypeId, cif=cif, govermentId=govermentId, phoneNumber=phoneNumber)
-    except sqlite3.IntegrityError as err:
-        return jsonify({"success": False, "error": f"Restricción de identidad de rol no cumplida: {str(err)}"}), 400
+    except sqlite3.IntegrityError:
+        return jsonify({"success": False, "error": t("admin.api.role_constraint_violation")}), 400
 
     if not success:
-        return jsonify({"success": False, "error": "No se pudo actualizar el rol del usuario."}), 500
+        return jsonify({"success": False, "error": t("admin.api.role_update_failed")}), 500
 
     updatedUser = getUserById(userId)
+    localizedRole = t(ROLE_I18N_KEYS.get(newUserTypeId, "common.unknown"))
     return jsonify({
         "success": True,
-        "message": f"Rol de {user.get('FullName')} actualizado a '{updatedUser.get('UserTypeName')}'.",
+        "message": t("admin.api.role_updated_for", name=user.get("FullName") or "", role=localizedRole),
         "user": updatedUser,
     }), 200

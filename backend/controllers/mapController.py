@@ -22,6 +22,7 @@ from backend.data.campusCategories import CampusCategory, CATEGORY_METADATA
 from backend.data.placesCatalog import PLACES_CATALOG
 from backend.subgraphs import getBuildingSubgraph, getAllBuildingSubgraphs
 from backend.services.azureSpeechService import AzureSpeechService
+from backend.i18n import get_current_language, normalize_language, t
 
 mapController = Blueprint("mapController", __name__, url_prefix="/api/map")
 
@@ -43,14 +44,14 @@ def _getAzureSpeechService() -> AzureSpeechService:
 
 
 def _getPreferredLanguage() -> str:
-    """Detects preferred language from query param, session, or default ('eng')."""
+    """Detects preferred language from query param, JSON payload, session, or default."""
     lang = request.args.get("lang")
     if not lang and request.is_json:
         payload = request.get_json(silent=True) or {}
         lang = payload.get("lang")
     if not lang:
-        lang = session.get("lang", "eng")
-    return "spa" if str(lang).lower().startswith("sp") else "eng"
+        return get_current_language()
+    return normalize_language(lang)
 
 
 @mapController.route("/nodes", methods=["GET"])
@@ -97,7 +98,7 @@ def getCampusNodeDetail(nodeId: str):
     if not node:
         return jsonify({
             "success": False,
-            "error": f"Campus node '{nodeId}' not found."
+            "error": t("api.map_node_not_found", lang=lang, nodeId=nodeId)
         }), 404
 
     # Collect internal sub-rooms from catalog
@@ -134,13 +135,15 @@ def getCategories():
     Returns all campus facility categories with bilingual labels, icon keys,
     and the number of registered places in each category.
     """
+    lang = _getPreferredLanguage()
     categoriesList = []
     for catKey, meta in CATEGORY_METADATA.items():
         matchingCount = sum(1 for p in PLACES_CATALOG if p.get("category") == catKey)
         categoriesList.append({
             "key": catKey,
-            "labelEnglish": meta.get("labelEnglish", catKey),
-            "labelSpanish": meta.get("labelSpanish", catKey),
+            "label": t(f"map.category_labels.{catKey}", lang=lang),
+            "labelEnglish": t(f"map.category_labels.{catKey}", lang="eng"),
+            "labelSpanish": t(f"map.category_labels.{catKey}", lang="spa"),
             "icon": meta.get("icon", "pin"),
             "placesCount": matchingCount,
         })
@@ -169,6 +172,7 @@ def getPlaces():
       - q: free-text search across name, keywords, and location notes
       - floor: integer floor filter (e.g. 1, 2)
     """
+    lang = _getPreferredLanguage()
     categoryFilter = request.args.get("category")
     searchQuery = _normalizeText(request.args.get("q") or "")
     floorFilter = request.args.get("floor")
@@ -179,6 +183,8 @@ def getPlaces():
         for p in combinedPlaces
     }
     for buildingId, sg in getAllBuildingSubgraphs().items():
+        macroNode = globalNavigationService.graph.getNode(sg.macroNodeId)
+        localizedBuilding = macroNode.getName(lang) if macroNode else sg.name
         for node in sg.getAllNodes():
             key = (_normalizeText(sg.macroNodeId), _normalizeText(node.name))
             if key in seenKeys:
@@ -186,15 +192,15 @@ def getPlaces():
             seenKeys.add(key)
             combinedPlaces.append({
                 "placeId": node.nodeId,
-                "name": node.name,
+                "name": node.getName(lang),
                 "category": node.category,
                 "parentBuildingId": sg.macroNodeId,
                 "floorLevel": node.floorLevel,
                 "isAccessible": node.category != CampusCategory.STAIRS,
                 "latitude": node.latitude,
                 "longitude": node.longitude,
-                "locationNotes": f"{sg.name} — Piso {node.floorLevel}",
-                "keywords": [node.nodeId, sg.code, sg.name],
+                "locationNotes": t("api.map_floor_note", lang=lang, floor=node.floorLevel, building=localizedBuilding),
+                "keywords": [node.nodeId, sg.code, sg.name, localizedBuilding],
             })
 
     results = []
@@ -245,16 +251,16 @@ def calculateRoute():
 
     origin = payload.get("origin") or payload.get("originQuery") or payload.get("source")
     destination = payload.get("destination") or payload.get("destinationQuery") or payload.get("target")
+    lang = normalize_language(payload.get("lang")) if payload.get("lang") else _getPreferredLanguage()
 
     if not origin or not destination:
         return jsonify({
             "success": False,
-            "error": "Both 'origin' and 'destination' parameters are required."
+            "error": t("api.map_origin_dest_required", lang=lang)
         }), 400
 
     accessibleRaw = payload.get("accessibleOnly", False)
     accessibleOnly = str(accessibleRaw).lower() in ("true", "1", "yes")
-    lang = payload.get("lang") or _getPreferredLanguage()
 
     routeResult = globalNavigationService.calculateRoute(
         originQuery=str(origin),
@@ -273,12 +279,15 @@ def synthesizeSpeech():
     payload = request.get_json(silent=True) or {}
     text = str(payload.get("text") or "").strip()
     language = str(payload.get("language") or "").strip()
+    activeLang = normalize_language(language) if language else _getPreferredLanguage()
 
     if not text:
-        return jsonify({"success": False, "error": "Text is required."}), 400
+        return jsonify({"success": False, "error": t("api.speech_text_required", lang=activeLang)}), 400
+    if len(text) > 2000:
+        return jsonify({"success": False, "error": t("api.speech_text_too_long", lang=activeLang)}), 400
 
     try:
-        audioData = _getAzureSpeechService().synthesize(text, language)
+        audioData = _getAzureSpeechService().synthesize(text, language or ("es-MX" if activeLang == "spa" else "en-US"))
         return send_file(
             BytesIO(audioData),
             mimetype="audio/wav",
@@ -286,12 +295,13 @@ def synthesizeSpeech():
             download_name="jaguarfind-speech.wav",
         )
     except ValueError as error:
-        return jsonify({"success": False, "error": str(error)}), 400
+        errKey = str(error)
+        return jsonify({"success": False, "error": t(errKey, lang=activeLang, default=errKey)}), 400
     except Exception:
         current_app.logger.exception("Azure Speech synthesis failed")
         return jsonify({
             "success": False,
-            "error": "Azure Speech synthesis is unavailable.",
+            "error": t("api.speech_unavailable", lang=activeLang),
         }), 503
 
 
@@ -329,18 +339,19 @@ def findNearestGpsNode():
     """
     latRaw = request.args.get("lat")
     lngRaw = request.args.get("lng")
+    lang = _getPreferredLanguage()
 
     if not latRaw or not lngRaw:
         return jsonify({
             "success": False,
-            "error": "Both 'lat' and 'lng' query parameters are required."
+            "error": t("api.map_lat_lng_required", lang=lang)
         }), 400
 
     try:
         userLat = float(latRaw)
         userLng = float(lngRaw)
     except (ValueError, TypeError):
-        return jsonify({"success": False, "error": "Invalid floating point lat/lng coordinates."}), 400
+        return jsonify({"success": False, "error": t("api.map_invalid_coords", lang=lang)}), 400
 
     def _parseOptionalFloat(paramName: str):
         raw = request.args.get(paramName)
@@ -388,7 +399,7 @@ def findNearestGpsNode():
         return jsonify({
             "success": False,
             "outsideCampus": True,
-            "message": "Te encuentras fuera del campus de la UAM." if lang == "spa" else "You are outside the UAM campus.",
+            "message": t("api.map_outside_campus", lang=lang),
             "language": lang,
             "userCoordinates": {
                 "lat": userLat,
@@ -455,7 +466,7 @@ def getBuildingLocationsEndpoint(buildingId: str):
     if buildingId not in globalNavigationService.graph.nodes and not getBuildingSubgraph(buildingId):
         return jsonify({
             "success": False,
-            "error": f"Campus building '{buildingId}' not found.",
+            "error": t("api.map_building_not_found", lang=lang, buildingId=buildingId),
         }), 404
 
     floorParam = request.args.get("floor")
@@ -589,7 +600,7 @@ def getBuildingSubgraphDetail(buildingId: str):
     if not sg:
         return jsonify({
             "success": False,
-            "error": f"Child graph for building '{buildingId}' not found."
+            "error": t("api.map_subgraph_not_found", lang=lang, buildingId=buildingId)
         }), 404
 
     floorParam = request.args.get("floor")
@@ -628,22 +639,22 @@ def calculateIndoorRoute(buildingId: str):
 
     origin = payload.get("origin") or payload.get("source")
     destination = payload.get("destination") or payload.get("target")
+    lang = normalize_language(payload.get("lang")) if payload.get("lang") else _getPreferredLanguage()
 
     if not origin or not destination:
         return jsonify({
             "success": False,
-            "error": "Both 'origin' and 'destination' parameters are required."
+            "error": t("api.map_origin_dest_required", lang=lang)
         }), 400
 
     accessibleRaw = payload.get("accessibleOnly", False)
     accessibleOnly = str(accessibleRaw).lower() in ("true", "1", "yes")
-    lang = payload.get("lang") or _getPreferredLanguage()
 
     sg = getBuildingSubgraph(buildingId)
     if not sg:
         return jsonify({
             "success": False,
-            "error": f"Child graph for building '{buildingId}' not found."
+            "error": t("api.map_subgraph_not_found", lang=lang, buildingId=buildingId)
         }), 404
 
     result = sg.calculateIndoorRoute(

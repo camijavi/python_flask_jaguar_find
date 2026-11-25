@@ -35,7 +35,7 @@
         if (global.document && global.document.documentElement && global.document.documentElement.lang) {
             return normalizeLang(global.document.documentElement.lang);
         }
-        return "spa";
+        return "eng";
     }
 
     function isSpanish() {
@@ -46,7 +46,7 @@
         return isSpanish() ? esText : enText;
     }
 
-    function resolveFromDict(dict, keyPath) {
+    function resolveRaw(dict, keyPath) {
         if (!dict || !keyPath) return null;
         const keys = String(keyPath).split(".");
         let curr = dict;
@@ -57,7 +57,17 @@
                 return null;
             }
         }
+        return curr !== undefined ? curr : null;
+    }
+
+    function resolveFromDict(dict, keyPath) {
+        const curr = resolveRaw(dict, keyPath);
         return typeof curr === "string" ? curr : null;
+    }
+
+    function getRaw(keyPath, defaultValue) {
+        const found = resolveRaw(global.APP_TRANSLATIONS, keyPath);
+        return found !== null ? found : (defaultValue !== undefined ? defaultValue : null);
     }
 
     function formatTemplate(text, params) {
@@ -70,10 +80,17 @@
     }
 
     function translate(keyPath, defaultText, params) {
-        if (!keyPath) return formatTemplate(defaultText || "", params);
+        let fallback = defaultText;
+        let fmtParams = params;
+        // Allow calling t("some.key", { count: 3 }) without a hardcoded fallback string
+        if (defaultText && typeof defaultText === "object" && params === undefined) {
+            fmtParams = defaultText;
+            fallback = undefined;
+        }
+        if (!keyPath) return formatTemplate(fallback || "", fmtParams);
         const found = resolveFromDict(global.APP_TRANSLATIONS, keyPath);
-        const raw = found !== null ? found : (defaultText !== undefined && defaultText !== null ? defaultText : keyPath);
-        return formatTemplate(String(raw), params);
+        const raw = found !== null ? found : (fallback !== undefined && fallback !== null ? fallback : keyPath);
+        return formatTemplate(String(raw), fmtParams);
     }
 
     function updateSwitcherControls(activeLang, root) {
@@ -167,6 +184,32 @@
                 const resolved = resolveFromDict(global.APP_TRANSLATIONS, key);
                 if (resolved !== null) {
                     el.setAttribute("aria-label", resolved);
+                }
+            });
+
+            doc.querySelectorAll("[data-i18n-label]").forEach((el) => {
+                const key = el.getAttribute("data-i18n-label");
+                const resolved = resolveFromDict(global.APP_TRANSLATIONS, key);
+                if (resolved !== null) {
+                    el.setAttribute("label", resolved);
+                    if ("label" in el) el.label = resolved;
+                }
+            });
+
+            doc.querySelectorAll("[data-i18n-alt]").forEach((el) => {
+                const key = el.getAttribute("data-i18n-alt");
+                const resolved = resolveFromDict(global.APP_TRANSLATIONS, key);
+                if (resolved !== null) {
+                    el.setAttribute("alt", resolved);
+                }
+            });
+
+            doc.querySelectorAll("[data-i18n-value]").forEach((el) => {
+                const key = el.getAttribute("data-i18n-value");
+                const resolved = resolveFromDict(global.APP_TRANSLATIONS, key);
+                if (resolved !== null) {
+                    el.setAttribute("value", resolved);
+                    if ("value" in el) el.value = resolved;
                 }
             });
         }
@@ -295,6 +338,8 @@
         isSpanish,
         pick,
         t: translate,
+        get: getRaw,
+        resolve: getRaw,
         applyTranslations,
         updateSwitcherControls,
         setLanguage,

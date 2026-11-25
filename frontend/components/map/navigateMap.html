@@ -297,14 +297,14 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/>
                 </svg>
             </div>
-            <span class="text-xs font-bold text-slate-800" data-i18n="map.plan_route">{{ t('map.plan_route', default='Planificar Ruta') }}</span>
+            <span class="text-xs font-bold text-slate-800" data-i18n="map.plan_route">{{ t('map.plan_route') }}</span>
         </div>
         <!-- Collapse / Hide arrow button -->
         <button id="btnCollapseBottomSheet" type="button" 
                 class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" 
-                title="{{ t('map.close', default='Ocultar panel') }}"
+                title="{{ t('map.close') }}"
                 data-i18n-title="map.close"
-                aria-label="{{ t('map.close', default='Ocultar panel') }}"
+                aria-label="{{ t('map.close') }}"
                 data-i18n-aria-label="map.close">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
@@ -326,10 +326,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                 </div>
                 <div>
                     <h2 class="text-sm font-bold text-slate-900 leading-tight" data-i18n="map.title">
-                        {{ t('map.title', default='Navegador del Campus UAM') }}
+                        {{ t('map.title') }}
                     </h2>
                     <p class="text-[11px] text-slate-500" data-i18n="map.subtitle">
-                        {{ t('map.subtitle', default='Find optimal pedestrian walking routes') }}
+                        {{ t('map.subtitle') }}
                     </p>
                 </div>
             </div>
@@ -337,17 +337,17 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Action Buttons (Reset & Close Sidebar) -->
             <div class="flex items-center gap-1.5">
                 <!-- Reset Button -->
-                <button id="btnResetNavigation" type="button" class="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-rose-600 font-medium px-2 py-1 rounded transition-colors hidden" title="{{ t('map.clear_route', default='Clear Route') }}" data-i18n-title="map.clear_route">
+                <button id="btnResetNavigation" type="button" class="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-rose-600 font-medium px-2 py-1 rounded transition-colors hidden" title="{{ t('map.clear_route') }}" data-i18n-title="map.clear_route">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    <span data-i18n="map.clear_route">{{ t('map.clear_route', default='Clear') }}</span>
+                    <span data-i18n="map.clear_route">{{ t('map.clear_route') }}</span>
                 </button>
 
                 <!-- Close Sidebar Menu Button -->
                 <button id="btnCloseNavigateSidebar" type="button" 
                         class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" 
-                        title="{{ t('nav.close_menu', default='Cerrar menú lateral') }}" 
+                        title="{{ t('nav.close_menu') }}" 
                         data-i18n-title="nav.close_menu"
-                        aria-label="{{ t('nav.close_menu', default='Cerrar menú lateral') }}"
+                        aria-label="{{ t('nav.close_menu') }}"
                         data-i18n-aria-label="nav.close_menu">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -364,8 +364,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Mobile Back Arrow Button (<) as seen on Google Maps (Bottom Sheet only) -->
             <button id="btnMobileBack" type="button" 
                     class="navmap-bottom-sheet-only lg:hidden p-1.5 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors shrink-0 cursor-pointer" 
-                    title="{{ t('map.close_nav_bar', default='Cerrar barra de navegación') }}"
-                    data-i18n-title="map.close_nav_bar">
+                    title="{{ t('map.close_nav_bar') }}"
+                    data-i18n-title="map.close_nav_bar"
+                    aria-label="{{ t('map.close_nav_bar') }}"
+                    data-i18n-aria-label="map.close_nav_bar">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
             </button>
 
@@ -392,17 +394,17 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <div class="navmap-sidebar-only hidden lg:flex items-center justify-between mb-1.5">
                         <label for="originInput" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100 inline-block"></span>
-                            <span data-i18n="map.where_am_i">{{ t('map.where_am_i', default='Where are you?') }}</span>
+                            <span data-i18n="map.where_am_i">{{ t('map.where_am_i') }}</span>
                         </label>
                         
                         <button id="btnGetGps" type="button" 
                                 class="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100/80 px-2.5 py-1 rounded-md transition-all active:scale-95 cursor-pointer"
-                                title="{{ t('map.use_gps', default='Use my current location') }}"
+                                title="{{ t('map.use_gps') }}"
                                 data-i18n-title="map.use_gps">
                             <span id="gpsIcon" class="flex items-center">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </span>
-                            <span id="gpsBtnText" data-i18n="map.get_gps">{{ t('map.get_gps', default='Get via GPS') }}</span>
+                            <span id="gpsBtnText" data-i18n="map.get_gps">{{ t('map.get_gps') }}</span>
                             <span id="gpsSpinner" class="hidden">
                                 <svg class="w-3.5 h-3.5 animate-spin text-brand-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </span>
@@ -418,18 +420,18 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                         <input type="text" 
                                id="originInput" 
                                autocomplete="off"
-                               placeholder="{{ t('map.where_am_i_placeholder', default='Tu ubicación o buscar...') }}" 
+                               placeholder="{{ t('map.where_am_i_placeholder') }}" 
                                data-i18n-placeholder="map.where_am_i_placeholder"
                                class="w-full pl-3 lg:pl-9 pr-14 lg:pr-8 py-2 bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all outline-hidden">
                         
                         <!-- Mobile GPS quick button inside origin input (Bottom Sheet only) -->
-                        <button id="btnMobileGps" type="button" class="navmap-bottom-sheet-only lg:hidden absolute inset-y-0 right-7 pr-1 flex items-center text-brand-600 hover:text-brand-800 cursor-pointer" title="{{ t('map.use_gps', default='Use my current location') }}" data-i18n-title="map.use_gps">
+                        <button id="btnMobileGps" type="button" class="navmap-bottom-sheet-only lg:hidden absolute inset-y-0 right-7 pr-1 flex items-center text-brand-600 hover:text-brand-800 cursor-pointer" title="{{ t('map.use_gps') }}" data-i18n-title="map.use_gps" aria-label="{{ t('map.use_gps') }}" data-i18n-aria-label="map.use_gps">
                             <svg id="mobileGpsIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             <svg id="mobileGpsSpinner" class="w-4 h-4 animate-spin text-brand-600 hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         </button>
 
                         <!-- Clear origin input button -->
-                        <button id="btnClearOrigin" type="button" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer">
+                        <button id="btnClearOrigin" type="button" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer" title="{{ t('map.clear_route') }}" data-i18n-title="map.clear_route" aria-label="{{ t('map.clear_route') }}" data-i18n-aria-label="map.clear_route">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
@@ -454,10 +456,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                                 </div>
                             </div>
                             <div class="flex items-center gap-0.5 shrink-0">
-                                <button id="btnRefreshGpsPanel" type="button" class="text-slate-400 hover:text-brand-600 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.gps.retry', default='Reintentar GPS') }}" data-i18n-title="map.gps.retry">
+                                <button id="btnRefreshGpsPanel" type="button" class="text-slate-400 hover:text-brand-600 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.gps.retry') }}" data-i18n-title="map.gps.retry" aria-label="{{ t('map.gps.retry') }}" data-i18n-aria-label="map.gps.retry">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                                 </button>
-                                <button id="btnCloseGpsDisambiguation" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.close', default='Cerrar') }}" data-i18n-title="map.close">
+                                <button id="btnCloseGpsDisambiguation" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-md hover:bg-white/70 transition-colors cursor-pointer" title="{{ t('map.close') }}" data-i18n-title="map.close" aria-label="{{ t('map.close') }}" data-i18n-aria-label="map.close">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                 </button>
                             </div>
@@ -477,7 +479,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                             <div class="flex items-center justify-between gap-2 pt-1 border-t border-slate-100">
                                 <span id="gpsEstimatedAccuracyMeta" class="text-[10px] text-slate-500 font-medium"></span>
                                 <button id="btnToggleGpsManualList" type="button" data-i18n="map.gps.change_spot" class="text-[10.5px] font-bold text-brand-700 hover:text-brand-900 underline underline-offset-2 cursor-pointer">
-                                    {{ t('map.gps.change_spot', default='Cambiar ubicación') }}
+                                    {{ t('map.gps.change_spot') }}
                                 </button>
                             </div>
                         </div>
@@ -486,11 +488,11 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                         <div id="gpsErrorActions" class="hidden flex flex-wrap items-center gap-1.5">
                             <button id="btnGpsErrorRetry" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                <span data-i18n="map.gps.retry">{{ t('map.gps.retry', default='Reintentar GPS') }}</span>
+                                <span data-i18n="map.gps.retry">{{ t('map.gps.retry') }}</span>
                             </button>
                             <button id="btnGpsManualPick" type="button" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-[11px] transition-colors cursor-pointer">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10"/></svg>
-                                <span data-i18n="map.gps.select_manually">{{ t('map.gps.select_manually', default='Elegir manualmente') }}</span>
+                                <span data-i18n="map.gps.select_manually">{{ t('map.gps.select_manually') }}</span>
                             </button>
                         </div>
 
@@ -512,7 +514,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                             <input type="text"
                                    id="gpsLocationFilterInput"
                                    autocomplete="off"
-                                   placeholder="{{ t('map.gps.filter_locations_placeholder', default='Filtrar aula, baño, oficina...') }}"
+                                   placeholder="{{ t('map.gps.filter_locations_placeholder') }}"
                                    data-i18n-placeholder="map.gps.filter_locations_placeholder"
                                    class="hidden w-full px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-[11px] text-slate-800 placeholder-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-hidden">
                             <div id="gpsLocationsList" class="max-h-44 overflow-y-auto space-y-1 pr-0.5 scrollbar-thin"></div>
@@ -527,9 +529,9 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                 <!-- Sidebar Swap & Accessibility Row (Desktop & Mobile Sidebar) -->
                 <div class="navmap-sidebar-only hidden lg:flex items-center justify-between py-0.5">
                     <!-- Swap Origin / Destination -->
-                    <button id="btnSwapLocations" type="button" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-600 hover:bg-slate-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer" title="{{ t('map.swap', default='Swap locations') }}" data-i18n-title="map.swap">
+                    <button id="btnSwapLocations" type="button" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-600 hover:bg-slate-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer" title="{{ t('map.swap') }}" data-i18n-title="map.swap">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
-                        <span data-i18n="map.swap">{{ t('map.swap', default='Swap') }}</span>
+                        <span data-i18n="map.swap">{{ t('map.swap') }}</span>
                     </button>
 
                     <!-- Wheelchair Accessibility Toggle -->
@@ -537,7 +539,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                         <input type="checkbox" id="accessibleToggle" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
                         <span class="inline-flex items-center gap-1">
                             <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                            <span data-i18n="map.accessible_route">{{ t('map.accessible_route', default='Wheelchair accessible') }}</span>
+                            <span data-i18n="map.accessible_route">{{ t('map.accessible_route') }}</span>
                         </span>
                     </label>
                 </div>
@@ -548,10 +550,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     <div class="navmap-sidebar-only hidden lg:flex items-center justify-between mb-1.5">
                         <label for="destinationInput" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-rose-500 ring-4 ring-rose-100 inline-block"></span>
-                            <span data-i18n="map.where_to_go">{{ t('map.where_to_go', default='Where to?') }}</span>
+                            <span data-i18n="map.where_to_go">{{ t('map.where_to_go') }}</span>
                         </label>
                         <span class="text-[11px] text-slate-400" data-i18n="map.direct_search">
-                            {{ t('map.direct_search', default='Search directly or pick category') }}
+                            {{ t('map.direct_search') }}
                         </span>
                     </div>
 
@@ -564,12 +566,12 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                         <input type="text" 
                                id="destinationInput" 
                                autocomplete="off"
-                               placeholder="{{ t('map.where_to_go_placeholder', default='Aula, oficina, laboratorio, servicio...') }}" 
+                               placeholder="{{ t('map.where_to_go_placeholder') }}" 
                                data-i18n-placeholder="map.where_to_go_placeholder"
                                class="w-full pl-3 lg:pl-9 pr-8 py-2 bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all outline-hidden">
                         
                         <!-- Clear destination input button -->
-                        <button id="btnClearDestination" type="button" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer">
+                        <button id="btnClearDestination" type="button" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 hidden cursor-pointer" title="{{ t('map.clear_route') }}" data-i18n-title="map.clear_route" aria-label="{{ t('map.clear_route') }}" data-i18n-aria-label="map.clear_route">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
@@ -583,63 +585,53 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Mobile Swap Button on the right (Google Maps ⇅ icon, Bottom Sheet only) -->
             <button id="btnMobileSwap" type="button" 
                     class="navmap-bottom-sheet-only lg:hidden p-2 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition-all self-center shrink-0 cursor-pointer" 
-                    title="{{ t('map.swap', default='Swap locations') }}"
-                    data-i18n-title="map.swap">
+                    title="{{ t('map.swap') }}"
+                    data-i18n-title="map.swap"
+                    aria-label="{{ t('map.swap') }}"
+                    data-i18n-aria-label="map.swap">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
             </button>
         </div>
 
         <!-- ================================================================== -->
-        <!-- HORIZONTAL MODE & CATEGORY PILLS BAR                               -->
-        <!-- Walking, Accessible, Bebederos, Baños, Comida, etc.            -->
+        <!-- HORIZONTAL CATEGORY PILLS BAR                                    -->
+        <!-- Bebederos, Baños, Comida, etc.                                   -->
         <!-- ================================================================== -->
         <div class="pt-2 border-t border-slate-100">
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin text-xs" id="categoryChipsContainer">
-                
-                <!-- Walking mode pill (Active Light-Theme Sky-Blue mode indicator) -->
-                <button type="button" id="btnModeWalking" class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-sky-500 text-white shadow-xs inline-flex items-center gap-1.5 shrink-0" title="{{ t('map.standard_route', default='Ruta peatonal óptima') }}" data-i18n-title="map.standard_route">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 10l2 2 2-2m-2 2v6m-4 2l4-2 4 2"></path></svg>
-                    <span data-i18n="map.mode_walking">{{ t('map.mode_walking', default='A pie') }}</span>
-                </button>
-
-                <!-- Wheelchair mode pill (Interactive toggle pill for mobile & desktop) -->
-                <button type="button" id="btnModeWheelchair" class="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 inline-flex items-center gap-1.5 shrink-0 cursor-pointer" title="{{ t('map.accessible_route', default='Wheelchair accessible') }}" data-i18n-title="map.accessible_route">
-                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                    <span id="modeWheelchairText" data-i18n="map.mode_accessible">{{ t('map.mode_accessible', default='Accesible') }}</span>
-                </button>
 
                 <!-- Category Chips -->
                 <button type="button" data-category="" class="category-chip active whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-sky-500 text-white shadow-2xs inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                    <span data-i18n="map.categories.all">{{ t('map.categories.all', default='All') }}</span>
+                    <span data-i18n="map.categories.all">{{ t('map.categories.all') }}</span>
                 </button>
                 <button type="button" data-category="drinkingFountain" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <span data-i18n="map.categories.drinking_fountains">{{ t('map.categories.drinking_fountains', default='Bebederos') }}</span>
+                    <span data-i18n="map.categories.drinking_fountains">{{ t('map.categories.drinking_fountains') }}</span>
                 </button>
                 <button type="button" data-category="restroom" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    <span data-i18n="map.categories.restrooms">{{ t('map.categories.restrooms', default='Baños') }}</span>
+                    <span data-i18n="map.categories.restrooms">{{ t('map.categories.restrooms') }}</span>
                 </button>
                 <button type="button" data-category="foodArea" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
-                    <span data-i18n="map.categories.food">{{ t('map.categories.food', default='Comida') }}</span>
+                    <span data-i18n="map.categories.food">{{ t('map.categories.food') }}</span>
                 </button>
                 <button type="button" data-category="medicalLab" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span data-i18n="map.categories.clinics">{{ t('map.categories.clinics', default='Medicina') }}</span>
+                    <span data-i18n="map.categories.clinics">{{ t('map.categories.clinics') }}</span>
                 </button>
                 <button type="button" data-category="dentalLab" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    <span data-i18n="map.categories.dental">{{ t('map.categories.dental', default='Odontología') }}</span>
+                    <span data-i18n="map.categories.dental">{{ t('map.categories.dental') }}</span>
                 </button>
                 <button type="button" data-category="faculty" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-purple-50 text-slate-700 hover:text-purple-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
-                    <span data-i18n="map.categories.admin">{{ t('map.categories.admin', default='Facultades') }}</span>
+                    <span data-i18n="map.categories.admin">{{ t('map.categories.admin') }}</span>
                 </button>
                 <button type="button" data-category="accessibleRamp" class="category-chip whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 border border-slate-200 inline-flex items-center gap-1 shrink-0">
                     <svg class="w-3 h-3 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                    <span data-i18n="map.categories.ramps">{{ t('map.categories.ramps', default='Rampas') }}</span>
+                    <span data-i18n="map.categories.ramps">{{ t('map.categories.ramps') }}</span>
                 </button>
             </div>
         </div>
@@ -652,7 +644,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
                     class="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 hover:from-sky-600 hover:via-blue-600 hover:to-sky-700 text-white font-bold text-xs shadow-md shadow-sky-500/25 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer">
                 <!-- Navigation Route Arrow Icon -->
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                <span data-i18n="map.calculate_route">{{ t('map.calculate_route', default='Find Optimal Route') }}</span>
+                <span data-i18n="map.calculate_route">{{ t('map.calculate_route') }}</span>
             </button>
         </div>
 
@@ -669,7 +661,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
      class="fixed bottom-[72px] inset-x-2.5 sm:inset-x-6 max-w-lg mx-auto z-40 bg-white rounded-2xl shadow-[0_10px_34px_rgba(15,23,42,0.18)] border border-slate-200/90 p-3.5 pointer-events-auto gmaps-slide-up lg:static lg:inset-auto lg:max-w-none lg:mt-3 lg:bg-white lg:rounded-2xl lg:shadow-md lg:border lg:border-slate-200/80 lg:p-4.5 hidden">
     
     <!-- Summary Metrics Banner (Tap to re-expand search/planner on mobile) -->
-    <div id="routeSummaryBanner" class="p-3 bg-brand-50/80 border border-brand-100 rounded-xl flex items-center justify-between mb-2 shadow-2xs cursor-pointer lg:cursor-default" title="{{ t('map.tap_edit_route', default='Toca para editar ruta') }}" data-i18n-title="map.tap_edit_route">
+    <div id="routeSummaryBanner" class="p-3 bg-brand-50/80 border border-brand-100 rounded-xl flex items-center justify-between mb-2 shadow-2xs cursor-pointer lg:cursor-default" title="{{ t('map.tap_edit_route') }}" data-i18n-title="map.tap_edit_route">
         <div class="flex items-center gap-2.5 min-w-0">
             <div class="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
                 <!-- Walking Pedestrian Icon -->
@@ -677,13 +669,13 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             </div>
             <div class="min-w-0">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                    <span id="routeDistanceText" class="text-sm font-extrabold text-brand-900 leading-tight">~1 min</span>
+                    <span id="routeDistanceText" class="text-sm font-extrabold text-brand-900 leading-tight">{{ t('map.initial_duration') }}</span>
                     <span class="text-slate-400 text-xs">•</span>
-                    <span id="routeMinutesText" class="text-xs font-bold text-brand-700">0 referencias</span>
+                    <span id="routeMinutesText" class="text-xs font-bold text-brand-700">{{ t('map.initial_refs') }}</span>
                 </div>
                 <span id="routeAccessibilityBadge" class="text-[10px] font-semibold text-emerald-700 flex items-center gap-1 mt-0.5">
                     <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                    <span data-i18n="map.accessible_route">{{ t('map.accessible_route', default='Accessible Route') }}</span>
+                    <span data-i18n="map.accessible_route">{{ t('map.accessible_route') }}</span>
                 </span>
             </div>
         </div>
@@ -693,17 +685,19 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Mobile Steps Toggle Button ("Pasos", Bottom Sheet floating card only) -->
             <button id="btnToggleMobileSteps" type="button" 
                     class="navmap-bottom-sheet-only lg:hidden inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white border border-brand-200 hover:bg-brand-50 text-brand-800 font-bold text-xs transition-colors shadow-2xs cursor-pointer"
-                    title="{{ t('map.view_steps', default='Ver lista de pasos') }}"
+                    title="{{ t('map.view_steps') }}"
                     data-i18n-title="map.view_steps">
-                <span data-i18n="map.steps_label">{{ t('map.steps_label', default='Pasos') }}</span>
+                <span data-i18n="map.steps_label">{{ t('map.steps_label') }}</span>
                 <span id="stepsCountBadge" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-brand-100 text-brand-800">0</span>
             </button>
 
             <!-- Voice TTS Button -->
             <button id="btnVoiceDirections" type="button" 
                     class="p-1.5 rounded-lg bg-white border border-brand-200 hover:bg-brand-50 text-brand-700 transition-colors shadow-2xs cursor-pointer"
-                    title="{{ t('map.listen_directions', default='Listen to voice directions') }}"
-                    data-i18n-title="map.listen_directions">
+                    title="{{ t('map.listen_directions') }}"
+                    data-i18n-title="map.listen_directions"
+                    aria-label="{{ t('map.listen_directions') }}"
+                    data-i18n-aria-label="map.listen_directions">
                 <span id="voiceIconContainer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
                 </span>
@@ -712,8 +706,10 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
             <!-- Clear / Close Route Button on Mobile -->
             <button id="btnCloseMobileRoute" type="button" 
                     class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" 
-                    title="{{ t('map.close_route', default='Cerrar ruta') }}"
-                    data-i18n-title="map.close_route">
+                    title="{{ t('map.close_route') }}"
+                    data-i18n-title="map.close_route"
+                    aria-label="{{ t('map.close_route') }}"
+                    data-i18n-aria-label="map.close_route">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
@@ -723,7 +719,7 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
     <div id="routeStepsWrapper" class="hidden lg:block pt-1">
         <div class="flex items-center justify-between mb-1.5">
             <h4 class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500" data-i18n="map.steps">
-                {{ t('map.steps', default='Step-by-step directions') }}
+                {{ t('map.steps') }}
             </h4>
         </div>
         
@@ -765,8 +761,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const btnMobileBack = document.getElementById("btnMobileBack");
     const btnMobileSwap = document.getElementById("btnMobileSwap");
     const btnMobileGps = document.getElementById("btnMobileGps");
-    const btnModeWalking = document.getElementById("btnModeWalking");
-    const btnModeWheelchair = document.getElementById("btnModeWheelchair");
     const btnToggleMobileSteps = document.getElementById("btnToggleMobileSteps");
     const routeStepsWrapper = document.getElementById("routeStepsWrapper");
     const btnCloseMobileRoute = document.getElementById("btnCloseMobileRoute");
@@ -832,17 +826,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // ------------------------------------------------------------------------
     // Scoped sessionStorage Draft Persistence for Navigation Form & Directory
     // ------------------------------------------------------------------------
-    function syncWheelchairPillVisual(isChecked) {
-        if (!btnModeWheelchair) return;
-        if (isChecked) {
-            btnModeWheelchair.classList.remove("bg-slate-100", "text-slate-700");
-            btnModeWheelchair.classList.add("bg-teal-700", "text-white", "font-bold");
-        } else {
-            btnModeWheelchair.classList.remove("bg-teal-700", "text-white", "font-bold");
-            btnModeWheelchair.classList.add("bg-slate-100", "text-slate-700");
-        }
-    }
-
     function syncCategoryChipVisual(category) {
         categoryChips.forEach(c => {
             const matches = (c.getAttribute("data-category") || "") === (category || "");
@@ -910,7 +893,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (accessibleToggle && typeof draft.accessibleOnly === "boolean") {
                     accessibleToggle.checked = draft.accessibleOnly;
                     state.accessibleOnly = draft.accessibleOnly;
-                    syncWheelchairPillVisual(draft.accessibleOnly);
                 }
                 if (typeof draft.selectedCategory === "string" && draft.selectedCategory) {
                     state.selectedCategory = draft.selectedCategory;
@@ -1088,13 +1070,33 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    function getCurrentLang() {
+        return (window.APP_CONFIG && window.APP_CONFIG.currentLang) || "eng";
+    }
+
+    function tr(key, params) {
+        if (typeof window.t === "function") {
+            return window.t(key, undefined, params);
+        }
+        return key;
+    }
+
+    function resolveNodeShortName(nodeId) {
+        if (!nodeId) return "";
+        const translated = tr(`nodes.${nodeId}`);
+        if (translated && translated !== `nodes.${nodeId}`) {
+            return translated.split("(")[0].trim();
+        }
+        return nodeId;
+    }
+
     // 1. Initial Data Fetching (Nodes & Places Catalog)
     async function loadCampusCatalog() {
         try {
-            const lang = window.APP_CONFIG.currentLang || "spa";
+            const lang = getCurrentLang();
             const [nodesRes, placesRes] = await Promise.all([
-                fetch(`/api/map/nodes?lang=${lang}`).then(r => r.json()),
-                fetch(`/api/map/places`).then(r => r.json())
+                fetch(`/api/map/nodes?lang=${encodeURIComponent(lang)}`).then(r => r.json()),
+                fetch(`/api/map/places?lang=${encodeURIComponent(lang)}`).then(r => r.json())
             ]);
 
             if (nodesRes.success) {
@@ -1123,13 +1125,14 @@ document.addEventListener("DOMContentLoaded", function() {
             const matchKw = (place.keywords || []).some(k => k.toLowerCase().includes(clean));
 
             if (!clean || matchName || matchNotes || matchKw) {
-                const floorWord = window.t('map.floor', 'Piso');
+                const floorWord = tr('map.floor');
+                const parentLabel = resolveNodeShortName(place.parentBuildingId);
                 results.push({
                     type: "place",
                     id: place.placeId,
                     targetNodeId: place.parentBuildingId,
                     title: place.name,
-                    subtitle: `${place.parentBuildingId} • ${floorWord} ${place.floorLevel} • ${place.locationNotes || ''}`,
+                    subtitle: `${parentLabel} • ${floorWord} ${place.floorLevel}${place.locationNotes ? ` • ${place.locationNotes}` : ''}`,
                     category: place.category,
                     iconSvg: getCategorySvg(place.category)
                 });
@@ -1138,7 +1141,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // 2. Match macro nodes (buildings, gates, parking)
         if (!categoryFilter) {
-            const floorWord = window.t('map.floor', 'Piso');
+            const floorWord = tr('map.floor');
+            const bldgSubtitle = tr('map.building_entry_subtitle');
             for (const node of state.allNodes) {
                 const matchNodeName = (node.name || "").toLowerCase().includes(clean);
                 const matchNodeId = (node.nodeId || "").toLowerCase().includes(clean);
@@ -1148,7 +1152,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         id: node.nodeId,
                         targetNodeId: node.nodeId,
                         title: node.name,
-                        subtitle: `${window.t('map.title', 'Edificio / Entrada')} (${floorWord} ${node.floorLevel})`,
+                        subtitle: `${bldgSubtitle} (${floorWord} ${node.floorLevel})`,
                         category: node.category,
                         iconSvg: `<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>`
                     });
@@ -1181,7 +1185,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!items || items.length === 0) {
             container.innerHTML = `
                 <div class="p-2 text-center text-xs text-slate-400">
-                    ${window.t('map.no_matches', 'No se encontraron ubicaciones')}
+                    ${tr('map.no_matches')}
                 </div>
             `;
             container.classList.remove("hidden");
@@ -1246,6 +1250,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const gpsUiState = {
         lastCoords: null,
         lastMatch: null,
+        lastErrorCode: null,
+        lastCampusEntrances: [],
+        lastConfirmedSelection: null,
+        lastConfirmedSourceKey: null,
+        lastConfirmedSourceParams: null,
+        lastLoadingKey: null,
         activeBuildingId: null,
         activeBuildingName: "",
         activeAvailableFloors: [1],
@@ -1255,20 +1265,6 @@ document.addEventListener("DOMContentLoaded", function() {
         manualExpanded: false,
         filterText: "",
     };
-
-    function gpsTr(key, spaDef, engDef, params) {
-        if (window.JaguarGpsDetector) {
-            return window.JaguarGpsDetector.tr(key, spaDef, engDef, params);
-        }
-        const isSpa = (window.APP_CONFIG && window.APP_CONFIG.currentLang === "spa");
-        let text = isSpa ? spaDef : (engDef || spaDef);
-        if (params) {
-            for (const [k, v] of Object.entries(params)) {
-                text = text.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
-            }
-        }
-        return text;
-    }
 
     function gpsEscape(text) {
         return window.JaguarGpsDetector ? window.JaguarGpsDetector.escapeHtml(text) : String(text || "");
@@ -1313,11 +1309,12 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function applySelectedGpsOrigin(selection, options = {}) {
+        const floorWord = tr("map.floor");
         const displayFloor = selection.floorLevel && (gpsUiState.activeAvailableFloors.length > 1 || options.showFloor)
-            ? ` (${gpsTr("map.floor", "Piso", "Floor")} ${selection.floorLevel})`
+            ? ` (${floorWord} ${selection.floorLevel})`
             : "";
-        const displayName = selection.name || selection.buildingName || "Campus UAM";
-        originInput.value = displayName.includes("Piso") || displayName.includes("Floor")
+        const displayName = selection.name || selection.buildingName || tr("map.campus_pill");
+        originInput.value = displayName.includes(floorWord)
             ? displayName
             : `${displayName}${displayFloor}`;
         state.originQuery = displayName;
@@ -1329,7 +1326,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (options.renderConfirmedCard) {
             gpsUiState.manualExpanded = false;
-            renderConfirmedLocationCard(selection, options.sourceLabel);
+            gpsUiState.lastErrorCode = null;
+            gpsUiState.lastConfirmedSelection = selection;
+            gpsUiState.lastConfirmedSourceKey = options.sourceKey || "map.gps.source_confirmed";
+            gpsUiState.lastConfirmedSourceParams = options.sourceParams || null;
+            renderConfirmedLocationCard(selection, options.sourceKey, options.sourceParams);
         }
 
         if (options.recalculateIfReady && (state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim())) {
@@ -1339,13 +1340,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function renderGpsLoadingState(statusKey) {
         if (!gpsDisambiguationBar) return;
+        gpsUiState.lastLoadingKey = statusKey;
+        gpsUiState.lastErrorCode = null;
+        gpsUiState.lastConfirmedSelection = null;
         setGpsPanelTone("sky");
         gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
 
         const statusLabels = {
-            requesting_permission: gpsTr("map.gps.requesting_permission", "Solicitando permiso de ubicación...", "Requesting location permission..."),
-            retrying_network: gpsTr("map.gps.retrying_network", "Señal GPS débil en interiores. Intentando ubicación por red...", "Weak GPS signal indoors. Trying network positioning..."),
-            locating: gpsTr("map.gps.locating", "Detectando tu edificio vía GPS...", "Detecting your building via GPS..."),
+            requesting_permission: tr("map.gps.requesting_permission"),
+            retrying_network: tr("map.gps.retrying_network"),
+            locating: tr("map.gps.locating"),
         };
         gpsDisambiguationTitle.textContent = statusLabels[statusKey] || statusLabels.locating;
         if (gpsConfidencePill) gpsConfidencePill.classList.add("hidden");
@@ -1361,6 +1365,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function renderGpsErrorState(errorObj, campusEntrances) {
         if (!gpsDisambiguationBar || !errorObj) return;
+        gpsUiState.lastErrorCode = errorObj.code || null;
+        gpsUiState.lastCampusEntrances = Array.isArray(campusEntrances) ? campusEntrances : [];
+        gpsUiState.lastConfirmedSelection = null;
         setGpsPanelTone(errorObj.tone || "amber");
         gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
         gpsDisambiguationTitle.textContent = errorObj.title;
@@ -1398,34 +1405,35 @@ document.addEventListener("DOMContentLoaded", function() {
         gpsDisambiguationBar.classList.remove("hidden");
     }
 
-    function renderConfirmedLocationCard(selection, sourceLabel) {
+    function renderConfirmedLocationCard(selection, sourceKey, sourceParams) {
         if (!gpsDisambiguationBar) return;
         setGpsPanelTone("emerald");
         gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`;
-        gpsDisambiguationTitle.textContent = gpsTr("map.gps.where_i_think_you_are", "Dónde creo que estás", "Where I think you are");
+        gpsDisambiguationTitle.textContent = tr("map.gps.where_i_think_you_are");
 
         if (gpsConfidencePill) {
-            gpsConfidencePill.textContent = sourceLabel || gpsTr("map.gps.source_confirmed", "Confirmado", "Confirmed");
+            const pillTxt = sourceKey ? tr(sourceKey, sourceParams) : tr("map.gps.source_confirmed");
+            gpsConfidencePill.textContent = pillTxt;
             gpsConfidencePill.className = "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200";
         }
         if (gpsPanelSubtitle) gpsPanelSubtitle.classList.add("hidden");
         if (gpsErrorActions) gpsErrorActions.classList.add("hidden");
 
         if (gpsEstimatedCard) {
-            const floorTxt = `${gpsTr("map.floor", "Piso", "Floor")} ${selection.floorLevel || 1}`;
-            const bName = selection.buildingName || gpsUiState.activeBuildingName || "";
+            const floorTxt = `${tr("map.floor")} ${selection.floorLevel || 1}`;
+            const bName = resolveNodeShortName(selection.buildingId) || selection.buildingName || gpsUiState.activeBuildingName || "";
             gpsEstimatedSpotName.textContent = selection.name || bName;
             gpsEstimatedBuildingMeta.textContent = bName && bName !== selection.name
                 ? `${bName.split("(")[0].trim()} • ${floorTxt}`
                 : floorTxt;
             const acc = gpsUiState.lastCoords && typeof gpsUiState.lastCoords.accuracy === "number"
                 ? `GPS ±${Math.round(gpsUiState.lastCoords.accuracy)}m`
-                : gpsTr("map.gps.source_confirmed", "Ubicación confirmada", "Location confirmed");
+                : tr("map.gps.source_confirmed");
             gpsEstimatedAccuracyMeta.textContent = acc;
             if (btnToggleGpsManualList) {
                 btnToggleGpsManualList.textContent = gpsUiState.manualExpanded
-                    ? gpsTr("map.gps.hide_locations", "Ocultar lista", "Hide list")
-                    : gpsTr("map.gps.change_spot", "Cambiar ubicación", "Change spot");
+                    ? tr("map.gps.hide_locations")
+                    : tr("map.gps.change_spot");
             }
             gpsEstimatedCard.classList.remove("hidden");
         }
@@ -1444,12 +1452,12 @@ document.addEventListener("DOMContentLoaded", function() {
             ? gpsUiState.locationsByFloor[floorKey]
             : [];
 
-        const shortB = (gpsUiState.activeBuildingName || gpsUiState.activeBuildingId || "").split("(")[0].trim();
+        const shortB = (resolveNodeShortName(gpsUiState.activeBuildingId) || gpsUiState.activeBuildingName || gpsUiState.activeBuildingId || "").split("(")[0].trim();
         const isMulti = gpsUiState.activeAvailableFloors.length > 1;
         if (gpsFallbackListHeader) {
             gpsFallbackListHeader.textContent = isMulti
-                ? gpsTr("map.gps.all_locations_in_floor", "Ubicaciones disponibles — Piso {floor}", "Available locations — Floor {floor}", { floor: gpsUiState.activeFloor })
-                : gpsTr("map.gps.all_locations_in_building", "Ubicaciones disponibles en {building}", "Available locations in {building}", { building: shortB });
+                ? tr("map.gps.all_locations_in_floor", { floor: gpsUiState.activeFloor })
+                : tr("map.gps.all_locations_in_building", { building: shortB });
         }
 
         if (gpsLocationFilterInput) {
@@ -1472,11 +1480,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
         gpsLocationsList.innerHTML = "";
         if (filtered.length === 0) {
-            gpsLocationsList.innerHTML = `<div class="p-2 text-center text-[11px] text-slate-400">${gpsEscape(gpsTr("map.gps.no_filtered_locations", "Ninguna ubicación coincide con el filtro.", "No locations match that filter."))}</div>`;
+            gpsLocationsList.innerHTML = `<div class="p-2 text-center text-[11px] text-slate-400">${gpsEscape(tr("map.gps.no_filtered_locations"))}</div>`;
             return;
         }
 
-        const nearestBadgeTxt = gpsTr("map.gps.nearest_badge", "Más cercano", "Nearest");
+        const nearestBadgeTxt = tr("map.gps.nearest_badge");
         filtered.forEach((loc) => {
             const btn = document.createElement("button");
             btn.type = "button";
@@ -1517,7 +1525,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         fromGps: Boolean(gpsUiState.lastCoords),
                         showFloor: gpsUiState.activeAvailableFloors.length > 1,
                         renderConfirmedCard: true,
-                        sourceLabel: gpsTr("map.gps.source_confirmed", "Confirmado", "Confirmed"),
+                        sourceKey: "map.gps.source_confirmed",
                         recalculateIfReady: true,
                     }
                 );
@@ -1536,11 +1544,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const defaultFloor = floors[0];
         if (gpsFloorSectionLabel) {
-            gpsFloorSectionLabel.textContent = gpsTr("map.gps.select_floor", "Selecciona tu piso", "Select your floor");
+            gpsFloorSectionLabel.textContent = tr("map.gps.select_floor");
         }
         if (btnUseDefaultFloor) {
             if (showDefaultBtn) {
-                btnUseDefaultFloor.textContent = gpsTr("map.gps.use_default_floor", "Usar Piso {floor} (predeterminado)", "Use Floor {floor} (default)", { floor: defaultFloor });
+                btnUseDefaultFloor.textContent = tr("map.gps.use_default_floor", { floor: defaultFloor });
                 btnUseDefaultFloor.classList.remove("hidden");
             } else {
                 btnUseDefaultFloor.classList.add("hidden");
@@ -1556,7 +1564,7 @@ document.addEventListener("DOMContentLoaded", function() {
             btn.className = isActive
                 ? "px-2.5 py-1 rounded-lg bg-sky-600 text-white border border-sky-600 font-extrabold text-[11px] shadow-2xs transition-colors cursor-pointer inline-flex items-center gap-1"
                 : "px-2.5 py-1 rounded-lg bg-white hover:bg-sky-100 text-sky-900 border border-sky-200 font-bold text-[11px] transition-colors cursor-pointer inline-flex items-center gap-1";
-            btn.innerHTML = `<span>${gpsEscape(gpsTr("map.floor", "Piso", "Floor"))} ${fl}</span><span class="text-[9.5px] opacity-80">(${flList.length})</span>`;
+            btn.innerHTML = `<span>${gpsEscape(tr("map.floor"))} ${fl}</span><span class="text-[9.5px] opacity-80">(${flList.length})</span>`;
 
             btn.addEventListener("click", () => {
                 gpsUiState.activeFloor = fl;
@@ -1589,18 +1597,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
     async function switchManualBuilding(buildingId, fallbackName) {
         if (!buildingId || !window.JaguarGpsDetector) return;
+        gpsUiState.lastErrorCode = null;
+        gpsUiState.lastConfirmedSelection = null;
         if (gpsAllBuildingsGrid) gpsAllBuildingsGrid.classList.add("hidden");
         gpsUiState.showAllBuildings = false;
 
         if (gpsFallbackLocationsSection) gpsFallbackLocationsSection.classList.remove("hidden");
         if (gpsLocationsList) {
-            gpsLocationsList.innerHTML = `<div class="p-2 text-center text-[11px] text-slate-500">${gpsEscape(gpsTr("map.gps.loading_building_locations", "Cargando ubicaciones del edificio...", "Loading building locations..."))}</div>`;
+            gpsLocationsList.innerHTML = `<div class="p-2 text-center text-[11px] text-slate-500">${gpsEscape(tr("map.gps.loading_building_locations"))}</div>`;
         }
 
         try {
             const payload = await window.JaguarGpsDetector.fetchBuildingLocations(buildingId, {
                 coords: gpsUiState.lastCoords,
-                lang: window.APP_CONFIG.currentLang || "spa",
+                lang: getCurrentLang(),
             });
             if (payload && payload.success) {
                 gpsUiState.activeBuildingId = payload.buildingId;
@@ -1611,13 +1621,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 gpsUiState.filterText = "";
                 if (gpsLocationFilterInput) gpsLocationFilterInput.value = "";
 
-                const shortB = gpsUiState.activeBuildingName.split("(")[0].trim();
-                gpsDisambiguationTitle.textContent = gpsTr(
-                    "map.gps.select_location_fallback",
-                    "No pudimos precisar el punto exacto. Selecciona tu ubicación en {building}:",
-                    "Exact spot could not be determined. Choose your location in {building}:",
-                    { building: shortB }
-                );
+                const shortB = (resolveNodeShortName(gpsUiState.activeBuildingId) || gpsUiState.activeBuildingName).split("(")[0].trim();
+                gpsDisambiguationTitle.textContent = tr("map.gps.select_location_fallback", { building: shortB });
                 renderFloorTabs(gpsUiState.activeAvailableFloors, [], gpsUiState.activeAvailableFloors.length > 1);
                 renderLocationsForActiveFloor();
             }
@@ -1632,7 +1637,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const lbl = document.createElement("span");
         lbl.className = "text-[10px] text-slate-500 font-bold mr-1";
-        lbl.textContent = gpsTr("map.gps.other_nearby_buildings", "¿Otro edificio cercano?", "Nearby building instead?");
+        lbl.textContent = tr("map.gps.other_nearby_buildings");
         gpsCandidateButtons.appendChild(lbl);
 
         (candidates || []).forEach((cand) => {
@@ -1644,7 +1649,7 @@ document.addEventListener("DOMContentLoaded", function() {
             btn.className = isActive
                 ? "px-2 py-0.5 rounded-full bg-slate-800 text-white border border-slate-800 font-bold text-[10px] transition-colors cursor-pointer"
                 : "px-2 py-0.5 rounded-full bg-white hover:bg-slate-800 hover:text-white text-slate-700 border border-slate-200 font-semibold text-[10px] transition-colors cursor-pointer";
-            btn.textContent = (cand.buildingName || cand.name || bId).split("(")[0].trim();
+            btn.textContent = (resolveNodeShortName(bId) || cand.buildingName || cand.name || bId).split("(")[0].trim();
             btn.addEventListener("click", () => {
                 switchManualBuilding(bId, cand.buildingName || cand.name);
             });
@@ -1655,7 +1660,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const btnAll = document.createElement("button");
         btnAll.type = "button";
         btnAll.className = "px-2 py-0.5 rounded-full bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 font-bold text-[10px] transition-colors cursor-pointer";
-        btnAll.textContent = gpsTr("map.gps.browse_all_buildings", "Ver todos los edificios", "Browse all buildings");
+        btnAll.textContent = tr("map.gps.browse_all_buildings");
         btnAll.addEventListener("click", () => {
             gpsUiState.showAllBuildings = !gpsUiState.showAllBuildings;
             renderAllBuildingsPicker();
@@ -1686,6 +1691,8 @@ document.addEventListener("DOMContentLoaded", function() {
     function renderGpsDetectionResult(nearest, coords) {
         if (!gpsDisambiguationBar || !nearest) return;
 
+        gpsUiState.lastErrorCode = null;
+        gpsUiState.lastConfirmedSelection = null;
         gpsUiState.lastMatch = nearest;
         gpsUiState.lastCoords = coords || null;
         gpsUiState.activeBuildingId = nearest.nearestNodeId || (nearest.bestMatch && nearest.bestMatch.buildingId) || null;
@@ -1704,7 +1711,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const detectedFloor = floorInfo.detectedFloor != null ? floorInfo.detectedFloor : (floorInfo.defaultFloor || gpsUiState.activeAvailableFloors[0] || 1);
         gpsUiState.activeFloor = detectedFloor;
 
-        const shortB = gpsUiState.activeBuildingName.split("(")[0].trim();
+        const shortB = (resolveNodeShortName(gpsUiState.activeBuildingId) || gpsUiState.activeBuildingName).split("(")[0].trim();
         const altCandidates = (Array.isArray(nearest.topCandidates) ? nearest.topCandidates : []);
 
         if (gpsErrorActions) gpsErrorActions.classList.add("hidden");
@@ -1715,16 +1722,16 @@ document.addEventListener("DOMContentLoaded", function() {
             gpsUiState.manualExpanded = false;
             setGpsPanelTone("emerald");
             gpsPanelBadgeIcon.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`;
-            gpsDisambiguationTitle.textContent = gpsTr("map.gps.where_i_think_you_are", "Dónde creo que estás", "Where I think you are");
+            gpsDisambiguationTitle.textContent = tr("map.gps.where_i_think_you_are");
 
             if (gpsConfidencePill) {
-                let pillText = gpsTr("map.gps.high_confidence", "Alta confianza", "High confidence");
+                let pillText = tr("map.gps.high_confidence");
                 if (floorInfo.source === "beacon") {
-                    pillText = `${gpsTr("map.gps.source_beacon", "Beacon", "Beacon")} • ${pillText}`;
+                    pillText = `${tr("map.gps.source_beacon")} • ${pillText}`;
                 } else if (floorInfo.source === "altitude") {
-                    pillText = `${gpsTr("map.gps.source_altitude", "Altitud", "Altitude")} • ${pillText}`;
+                    pillText = `${tr("map.gps.source_altitude")} • ${pillText}`;
                 } else if (boundaryInfo.isInsideBoundary) {
-                    pillText = gpsTr("map.gps.inside_boundary", "Dentro del edificio", "Inside building");
+                    pillText = tr("map.gps.inside_boundary");
                 }
                 gpsConfidencePill.textContent = pillText;
                 gpsConfidencePill.className = "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200";
@@ -1733,7 +1740,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (gpsPanelSubtitle) gpsPanelSubtitle.classList.add("hidden");
 
             if (gpsEstimatedCard) {
-                const floorTxt = `${gpsTr("map.floor", "Piso", "Floor")} ${detectedFloor}`;
+                const floorTxt = `${tr("map.floor")} ${detectedFloor}`;
                 gpsEstimatedSpotName.textContent = nearest.nodeName || shortB;
                 gpsEstimatedBuildingMeta.textContent = shortB && nearest.nodeName !== nearest.buildingName
                     ? `${shortB} • ${floorTxt}`
@@ -1741,9 +1748,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 const accParts = [];
                 if (coords && typeof coords.accuracy === "number") accParts.push(`GPS ±${Math.round(coords.accuracy)}m`);
                 if (typeof nearest.distanceMeters === "number") accParts.push(`~${Math.round(nearest.distanceMeters)}m`);
-                gpsEstimatedAccuracyMeta.textContent = accParts.join(" • ") || gpsTr("map.gps.high_confidence", "Alta confianza", "High confidence");
+                gpsEstimatedAccuracyMeta.textContent = accParts.join(" • ") || tr("map.gps.high_confidence");
                 if (btnToggleGpsManualList) {
-                    btnToggleGpsManualList.textContent = gpsTr("map.gps.change_spot", "Cambiar ubicación", "Change spot");
+                    btnToggleGpsManualList.textContent = tr("map.gps.change_spot");
                 }
                 gpsEstimatedCard.classList.remove("hidden");
             }
@@ -1769,29 +1776,22 @@ document.addEventListener("DOMContentLoaded", function() {
             : `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`;
 
         if (isMultiFloorPrompt) {
-            gpsDisambiguationTitle.textContent = `${shortB} — ${gpsTr("map.gps.building_detected_choose_floor", "Edificio detectado. ¿En qué piso estás?", "Building detected. Which floor are you on?")}`;
+            gpsDisambiguationTitle.textContent = `${shortB} — ${tr("map.gps.building_detected_choose_floor")}`;
             if (gpsPanelSubtitle) {
-                gpsPanelSubtitle.textContent = gpsTr(
-                    "map.gps.indoor_altitude_hint",
-                    "La altitud GPS no es confiable en interiores. Elige tu piso o usa el Piso 1 por defecto.",
-                    "Browser GPS altitude is unreliable indoors. Pick your floor below or use Floor 1 (default)."
-                );
+                gpsPanelSubtitle.textContent = tr("map.gps.indoor_altitude_hint");
                 gpsPanelSubtitle.classList.remove("hidden");
             }
         } else {
-            gpsDisambiguationTitle.textContent = gpsTr(
-                "map.gps.select_location_fallback",
-                "No pudimos precisar el punto exacto. Selecciona tu ubicación en {building}:",
-                "Exact spot could not be determined. Choose your location in {building}:",
-                { building: shortB || "Campus UAM" }
-            );
+            gpsDisambiguationTitle.textContent = tr("map.gps.select_location_fallback", {
+                building: shortB || tr("map.campus_pill"),
+            });
             if (gpsPanelSubtitle) {
                 const reasonParts = [];
                 if (coords && typeof coords.accuracy === "number") reasonParts.push(`GPS ±${Math.round(coords.accuracy)}m`);
                 if (boundaryInfo.isInsideBoundary) {
-                    reasonParts.push(gpsTr("map.gps.inside_boundary", "Dentro del edificio", "Inside building"));
+                    reasonParts.push(tr("map.gps.inside_boundary"));
                 } else {
-                    reasonParts.push(gpsTr("map.gps.near_boundary", "Cerca del edificio", "Near building"));
+                    reasonParts.push(tr("map.gps.near_boundary"));
                 }
                 gpsPanelSubtitle.textContent = reasonParts.join(" • ");
                 gpsPanelSubtitle.classList.remove("hidden");
@@ -1800,8 +1800,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (gpsConfidencePill) {
             const confLabel = confidence === "low"
-                ? gpsTr("map.gps.low_confidence", "Confianza baja", "Low confidence")
-                : gpsTr("map.gps.medium_confidence", "Confianza media", "Medium confidence");
+                ? tr("map.gps.low_confidence")
+                : tr("map.gps.medium_confidence");
             gpsConfidencePill.textContent = confLabel;
             gpsConfidencePill.className = isMultiFloorPrompt
                 ? "px-1.5 py-0.5 rounded-full text-[9.5px] font-bold bg-sky-100 text-sky-800 border border-sky-200"
@@ -1833,7 +1833,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 floorHint: options.floorHint,
                 beaconId: options.beaconId,
                 beaconFloor: options.beaconFloor,
-                lang: (window.APP_CONFIG && window.APP_CONFIG.currentLang) || "spa",
+                lang: getCurrentLang(),
                 onStatusChange: (statusKey) => renderGpsLoadingState(statusKey),
             });
 
@@ -1924,8 +1924,8 @@ document.addEventListener("DOMContentLoaded", function() {
         btnToggleGpsManualList.addEventListener("click", () => {
             gpsUiState.manualExpanded = !gpsUiState.manualExpanded;
             btnToggleGpsManualList.textContent = gpsUiState.manualExpanded
-                ? gpsTr("map.gps.hide_locations", "Ocultar lista", "Hide list")
-                : gpsTr("map.gps.change_spot", "Cambiar ubicación", "Change spot");
+                ? tr("map.gps.hide_locations")
+                : tr("map.gps.change_spot");
             if (gpsFloorSection) {
                 gpsFloorSection.classList.toggle("hidden", !gpsUiState.manualExpanded || gpsUiState.activeAvailableFloors.length <= 1);
             }
@@ -1966,7 +1966,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     fromGps: true,
                     showFloor: true,
                     renderConfirmedCard: true,
-                    sourceLabel: `${gpsTr("map.floor", "Piso", "Floor")} ${defFloor}`,
+                    sourceKey: "api.map_floor_label",
+                    sourceParams: { floor: defFloor },
                     recalculateIfReady: true,
                 }
             );
@@ -1991,11 +1992,11 @@ document.addEventListener("DOMContentLoaded", function() {
             if (permState === "denied") {
                 btnGetGps.classList.remove("text-brand-600", "bg-brand-50", "hover:bg-brand-100/80");
                 btnGetGps.classList.add("text-rose-700", "bg-rose-50", "hover:bg-rose-100");
-                btnGetGps.title = gpsTr("map.gps.err_permission_denied_title", "Permiso de ubicación denegado", "Location permission denied");
+                btnGetGps.title = tr("map.gps.err_permission_denied_title");
             } else {
                 btnGetGps.classList.remove("text-rose-700", "bg-rose-50", "hover:bg-rose-100");
                 btnGetGps.classList.add("text-brand-600", "bg-brand-50", "hover:bg-brand-100/80");
-                btnGetGps.title = gpsTr("map.use_gps", "Usar mi ubicación actual", "Use my current location");
+                btnGetGps.title = tr("map.use_gps");
             }
         });
     }
@@ -2133,17 +2134,8 @@ document.addEventListener("DOMContentLoaded", function() {
         btnMobileGps.addEventListener("click", () => btnGetGps.click());
     }
 
-    // Mode Bar: Wheelchair accessible toggle pill
-    if (btnModeWheelchair) {
-        btnModeWheelchair.addEventListener("click", () => {
-            accessibleToggle.checked = !accessibleToggle.checked;
-            accessibleToggle.dispatchEvent(new Event("change"));
-        });
-    }
-
     accessibleToggle.addEventListener("change", function() {
         state.accessibleOnly = this.checked;
-        syncWheelchairPillVisual(this.checked);
         saveNavDraft();
         if ((state.originPlaceId || state.originNodeId) && (state.destinationPlaceId || state.destinationNodeId)) {
             calculateRoute();
@@ -2177,12 +2169,12 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         if (!origin || !dest) {
-            alert(window.t('map.missing_inputs', 'Por favor ingresa tu origen y destino.'));
+            alert(tr('map.missing_inputs'));
             return;
         }
 
         const accessibleOnly = accessibleToggle.checked;
-        const lang = window.APP_CONFIG.currentLang || "spa";
+        const lang = getCurrentLang();
 
         btnCalculate.disabled = true;
         btnCalculate.classList.add("opacity-75");
@@ -2222,11 +2214,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Dispatch global event so the interactive SVG map draws the polyline!
                 window.dispatchEvent(new CustomEvent("jaguarMapRouteCalculated", { detail: routeData }));
             } else {
-                alert(routeData.error || window.t('navigation.no_route_found', 'No se encontró una ruta transitable.'));
+                alert(routeData.error || tr('navigation.no_route_found'));
             }
         } catch (err) {
             console.error("Route calculation error:", err);
-            alert(window.t('map.error', 'Ocurrió un error al calcular la ruta.'));
+            alert(tr('map.error'));
         } finally {
             btnCalculate.disabled = false;
             btnCalculate.classList.remove("opacity-75");
@@ -2248,22 +2240,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 isIndoor: false,
             }));
 
-        routeDistanceText.textContent = route.humanDuration || `~${route.estimatedWalkingMinutes || 1} ${window.t('map.minutes', 'min')}`;
+        routeDistanceText.textContent = route.humanDuration || `~${route.estimatedWalkingMinutes || 1} ${tr('map.hud25d.unit_min')}`;
         const refWord = stepsList.length === 1
-            ? window.t('map.reference_singular', 'referencia')
-            : window.t('map.reference_plural', 'referencias');
+            ? tr('map.reference_singular')
+            : tr('map.reference_plural');
         routeMinutesText.textContent = `${stepsList.length} ${refWord}`;
         
         if (route.isAccessibleRoute) {
             routeAccessibilityBadge.innerHTML = `
                 <svg class="w-3 h-3 text-emerald-600 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14a5 5 0 11-10 0 5 5 0 0110 0zM12 6v6l4 2"></path></svg>
-                <span>${window.t('map.accessible_route', 'Ruta 100% Accesible (Rampas)')}</span>
+                <span>${tr('map.accessible_route')}</span>
             `;
             routeAccessibilityBadge.className = "text-[10px] font-semibold text-emerald-700 flex items-center gap-1 mt-0.5";
         } else {
             routeAccessibilityBadge.innerHTML = `
                 <svg class="w-3 h-3 text-slate-500 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 10l2 2 2-2m-2 2v6m-4 2l4-2 4 2"></path></svg>
-                <span>${window.t('map.standard_route', 'Ruta Peatonal por Referencias')}</span>
+                <span>${tr('map.standard_route')}</span>
             `;
             routeAccessibilityBadge.className = "text-[10px] font-semibold text-slate-500 flex items-center gap-1 mt-0.5";
         }
@@ -2271,7 +2263,7 @@ document.addEventListener("DOMContentLoaded", function() {
         stepsCountBadge.textContent = `${stepsList.length}`;
 
         routeStepsList.innerHTML = "";
-        const floorWord = window.t('map.floor', 'Piso');
+        const floorWord = tr('map.floor');
         stepsList.forEach((stepObj, idx) => {
             const li = document.createElement("li");
             li.id = `routeStep_${idx}`;
@@ -2326,7 +2318,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         state.isSpeaking = false;
         voiceIconContainer.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>`;
-        if (voiceBtnText) voiceBtnText.textContent = window.t('map.listen_directions', 'Escuchar');
+        if (voiceBtnText) voiceBtnText.textContent = tr('map.listen_directions');
     }
 
     btnVoice.addEventListener("click", function(e) {
@@ -2341,9 +2333,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         state.isSpeaking = true;
         voiceIconContainer.innerHTML = `<svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" stroke-width="2"></rect></svg>`;
-        if (voiceBtnText) voiceBtnText.textContent = window.t('map.voice_stop', 'Detener');
+        if (voiceBtnText) voiceBtnText.textContent = tr('map.voice_stop');
 
-        const language = window.APP_CONFIG.currentLang === "spa" ? "es-MX" : "en-US";
+        const language = getCurrentLang() === "spa" ? "es-MX" : "en-US";
         const steps = state.currentRoute.stepInstructions;
         let stepIdx = 0;
 
@@ -2383,7 +2375,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 await state.audioElement.play();
             } catch (error) {
                 if (error.name !== "AbortError") {
-                    alert("No se pudo reproducir la guía de voz con Azure Speech.");
+                    alert(tr('map.speech_error'));
                     stopAzureSpeech();
                 }
             }
@@ -2434,11 +2426,62 @@ document.addEventListener("DOMContentLoaded", function() {
         window.dispatchEvent(new CustomEvent("jaguarMapRouteCleared"));
     }
 
-    // Reactive language change: keep all form inputs intact, refresh catalog & active route text
+    // Reactive language change: keep all form inputs intact, refresh catalog, GPS panel & active route text
     window.addEventListener("jaguarLanguageChanged", async function() {
         await loadCampusCatalog();
-        if (gpsDisambiguationBar && !gpsDisambiguationBar.classList.contains("hidden") && gpsUiState.lastMatch) {
-            renderGpsDetectionResult(gpsUiState.lastMatch, gpsUiState.lastCoords);
+
+        if (!state.currentRoute) {
+            if (routeDistanceText) routeDistanceText.textContent = tr("map.initial_duration");
+            if (routeMinutesText) routeMinutesText.textContent = tr("map.initial_refs");
+        }
+        if (voiceBtnText) {
+            voiceBtnText.textContent = state.isSpeaking ? tr("map.voice_stop") : tr("map.listen_directions");
+        }
+        if (gpsDisambiguationBar && !gpsDisambiguationBar.classList.contains("hidden")) {
+            if (gpsUiState.lastErrorCode && window.JaguarGpsDetector) {
+                renderGpsErrorState(
+                    window.JaguarGpsDetector.getErrorCopy(gpsUiState.lastErrorCode),
+                    gpsUiState.lastCampusEntrances
+                );
+            } else if (gpsUiState.lastConfirmedSelection) {
+                renderConfirmedLocationCard(
+                    gpsUiState.lastConfirmedSelection,
+                    gpsUiState.lastConfirmedSourceKey,
+                    gpsUiState.lastConfirmedSourceParams
+                );
+                if (gpsUiState.manualExpanded) {
+                    renderFloorTabs(gpsUiState.activeAvailableFloors, [], false);
+                    renderLocationsForActiveFloor();
+                }
+            } else if (gpsUiState.lastMatch) {
+                renderGpsDetectionResult(gpsUiState.lastMatch, gpsUiState.lastCoords);
+            }
+        }
+        if (originSuggestions && !originSuggestions.classList.contains("hidden") && originInput.value.trim()) {
+            renderSuggestionsList(originSuggestions, getMatches(originInput.value), (selected) => {
+                originInput.value = selected.title;
+                state.originQuery = selected.title;
+                state.originNodeId = selected.targetNodeId;
+                state.originPlaceId = selected.id;
+                state.usedGpsOrigin = false;
+                btnClearOrigin.classList.remove("hidden");
+                saveNavDraft();
+            });
+        }
+        if (destinationSuggestions && !destinationSuggestions.classList.contains("hidden")) {
+            renderSuggestionsList(destinationSuggestions, getMatches(destinationInput.value, state.selectedCategory), (selected) => {
+                destinationInput.value = selected.title;
+                state.destinationQuery = selected.title;
+                state.destinationNodeId = selected.targetNodeId;
+                state.destinationPlaceId = selected.id;
+                window.currentSelectedDestination = {
+                    placeId: selected.id,
+                    title: selected.title,
+                    nodeId: selected.targetNodeId
+                };
+                btnClearDestination.classList.remove("hidden");
+                saveNavDraft();
+            });
         }
         if (state.currentRoute && (state.originPlaceId || state.originNodeId || originInput.value.trim()) && (state.destinationPlaceId || state.destinationNodeId || destinationInput.value.trim())) {
             calculateRoute();

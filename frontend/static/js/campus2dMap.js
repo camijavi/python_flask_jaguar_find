@@ -46,327 +46,82 @@ document.addEventListener("DOMContentLoaded", function () {
     const dirCountBadge = document.getElementById("directoryCountBadge");
 
     // ----------------------------------------------------------------------------
-    // 2. Official Campus Building Metadata & Directory Details
+    // 2. Official Campus Building Metadata & Localized Directory Accessors
     // ----------------------------------------------------------------------------
-    const CAMPUS_BUILDINGS = {
-        "buildingA": {
-            id: "buildingA",
-            letter: "A",
-            name: "Edificio A • Atención al Estudiante",
-            badgeClass: "badge-maroon",
-            badgeBg: "#991b1b",
-            anchor: { x: 250, y: 455 },
-            floors: [
-                { floor: "Piso 1", rooms: "Contabilidad, CAE (Centro de Atención al Estudiante), Admisiones, Registro Académico, Cartera y Cobro, Finanzas, Cajeros Automáticos." },
-                { floor: "Piso 2", rooms: "Dirección Administrativa, Logística Académica, TIC (Tecnología de la Información), Mercadeo y Publicidad, Gestión del Talento y RRHH." },
-                { floor: "Piso 3", rooms: "Dirección de Producción Audiovisual (DPA), Set de Grabación Ciclograma, Estudio de Sonido, Oficinas Auxiliares DPA, Control Máster, Set de Radio." }
-            ]
-        },
-        "buildingB": {
-            id: "buildingB",
-            letter: "B",
-            name: "Edificio B • Aulas & Farmacia",
-            badgeClass: "badge-purple",
-            badgeBg: "#581c87",
-            anchor: { x: 384, y: 500 },
-            floors: [
-                { floor: "Piso 1", rooms: "Módulo Comercial 1, Aulas B101 - B109, SS Hombres / Mujeres, Jaguar Shop." },
-                { floor: "Piso 2", rooms: "Aulas B201 - B210." }
-            ]
-        },
-        "buildingC": {
-            id: "buildingC",
-            letter: "C",
-            name: "Edificio C • Cómputo & Caja UAM",
-            badgeClass: "badge-purple",
-            badgeBg: "#4c1d95",
-            anchor: { x: 384, y: 410 },
-            floors: [
-                { floor: "Piso 1", rooms: "Área de Lavado Uso Común, Auditorio C101, Aulas C102-C104, Caja UAM / Tesorería, Aula C106, Lab MAC C107, Lab Cómputo Acad-Erasmus, Auditorio C109." },
-                { floor: "Piso 2", rooms: "Laboratorios de Computación C201-C205, Laboratorio MAC C203, SS Hombres / Mujeres, Aulas C209-C211." },
-                { floor: "Piso 3", rooms: "Aulas C301-C305, Coordinación de Compras, Aulas C307-C310." }
-            ]
-        },
-        "buildingD": {
-            id: "buildingD",
-            letter: "D",
-            name: "Edificio D • Odontología Digital",
-            badgeClass: "badge-green",
-            badgeBg: "#15803d",
-            anchor: { x: 351, y: 290 },
-            floors: [
-                { floor: "Piso 1", rooms: "Aula D102, Laboratorio de Odontología Digital CAM-CAM, Oficina de Servicio al Cliente, Sala de Reunión." }
-            ]
-        },
-        "buildingE": {
-            id: "buildingE",
-            letter: "E",
-            name: "Edificio E • Facultad de Medicina",
-            badgeClass: "badge-navy",
-            badgeBg: "#1e3a8a",
-            anchor: { x: 458, y: 653 },
-            floors: [
-                { floor: "Piso 1", rooms: "Clínica Médica & Atención al Adolescente, SS Hombres / Mujeres, Centro de Diagnóstico, Decanatura de Medicina, Oficinas de Médicos Especialistas." }
-            ]
-        },
-        "buildingF": {
-            id: "buildingF",
-            letter: "F",
-            name: "Edificio F • FACEE (Ciencias Económicas)",
-            badgeClass: "badge-magenta",
-            badgeBg: "#be185d",
-            anchor: { x: 545, y: 646 },
-            floors: [
-                { floor: "Piso 1", rooms: "Salón de Profesores FACEE, Dirección de Postgrado y Formación Continua, Decanatura FACEE, Aulas F101-F104." }
-            ]
-        },
-        "buildingG": {
-            id: "buildingG",
-            letter: "G",
-            name: "Edificio G • Derecho & Auditorio",
-            badgeClass: "badge-cyan",
-            badgeBg: "#0284c7",
-            anchor: { x: 545, y: 590 },
-            floors: [
-                { floor: "Piso 1", rooms: "Decanatura FCJ, Centro de Mediación, Language Center, UAM College, Dirección de Relaciones Internacionales." },
-                { floor: "Piso 2", rooms: "Auditorio Central Rubén Darío, Sala de Juicios Orales Simulados." }
-            ]
-        },
-        "buildingH": {
-            id: "buildingH",
-            letter: "H",
-            name: "Edificio H • Laboratorios de Medicina",
-            badgeClass: "badge-green",
-            badgeBg: "#15803d",
-            anchor: { x: 602, y: 383 },
-            floors: [
-                { floor: "Piso 1", rooms: "SS Hombres / Mujeres, Laboratorios Multidisciplinarios H101-H103, Coordinación de Laboratorios, Oficina de Sustancias Químicas, Laboratorios H105-H107." },
-                { floor: "Piso 2", rooms: "Laboratorio de Anatomía H201-H207, Quirófano de Práctica, Depósito de Reactivos." }
-            ]
-        },
-        "buildingI": {
-            id: "buildingI",
-            letter: "I",
-            name: "Edificio I • Rectoría & Biblioteca Central",
-            badgeClass: "badge-navy",
-            badgeBg: "#1e3a8a",
-            anchor: { x: 653, y: 724 },
-            floors: [
-                { floor: "Piso 1", rooms: "SS Hombres / Mujeres, Vicepresidencia, Sala de Reunión de Consejo, Dirección Académica, Rectoría, Gerencia General, Secretaría General, Biblioteca Central UAM, Dirección de RR.PP." }
-            ]
-        },
-        "buildingJ": {
-            id: "buildingJ",
-            letter: "J",
-            name: "Edificio J • Laboratorios Odontología",
-            badgeClass: "badge-cyan",
-            badgeBg: "#0284c7",
-            anchor: { x: 297, y: 287 },
-            floors: [
-                { floor: "Piso 1", rooms: "Laboratorio de Simulación y Práctica Preclínica Odontológica J101-J102, Depósito de Instrumental, SS Hombres / Mujeres." }
-            ]
-        },
-        "buildingK": {
-            id: "buildingK",
-            letter: "K",
-            name: "Edificio K • Cafetería Central & Terrazas",
-            badgeClass: "badge-amber",
-            badgeBg: "#b45309",
-            anchor: { x: 293, y: 598 },
-            floors: [
-                { floor: "Piso 1", rooms: "Comedor Estudiantil Central, Kioscos Gourmet, Terrazas Techadas, Cajeros Automáticos Banpro / BAC." }
-            ]
-        },
-        "buildingL": {
-            id: "buildingL",
-            letter: "L",
-            name: "Edificio L • Cultura & Graderías",
-            badgeClass: "badge-cyan",
-            badgeBg: "#0284c7",
-            anchor: { x: 842, y: 502 },
-            floors: [
-                { floor: "Piso 1", rooms: "Sala de Ensayo Musical y Danza, Auditorio Jaguar, Acceso a Graderías del Complejo Deportivo, Oficinas de Deportes." }
-            ]
-        },
-        "buildingM": {
-            id: "buildingM",
-            letter: "M",
-            name: "Edificio M • Aulas & Postgrados",
-            badgeClass: "badge-teal",
-            badgeBg: "#0f766e",
-            anchor: { x: 597, y: 460 },
-            floors: [
-                { floor: "Piso 1", rooms: "Aulas de Grado M101 - M108, Coordinación de Maestrías y Especialidades." },
-                { floor: "Piso 2", rooms: "Aulas Ejecutivas M201 - M208, Sala de Coworking para Investigadores." }
-            ]
-        },
-        "buildingN": {
-            id: "buildingN",
-            letter: "N",
-            name: "Edificio N • Clínicas Odontológicas",
-            badgeClass: "badge-magenta",
-            badgeBg: "#be185d",
-            anchor: { x: 350, y: 217 },
-            floors: [
-                { floor: "Piso 1", rooms: "Recepción de Pacientes, Módulo de Triaje, Clínicas Odontológicas Integrales, Quirófano Ambulatorio, Central de Esterilización." }
-            ]
-        },
-        "buildingO": {
-            id: "buildingO",
-            letter: "O",
-            name: "Edificio O • Facultad de Ingeniería (FIA)",
-            badgeClass: "badge-amber",
-            badgeBg: "#b45309",
-            anchor: { x: 510, y: 200 },
-            floors: [
-                { floor: "Piso 1", rooms: "Decanatura FIA, Laboratorio de Resistencia de Materiales y Suelos, Taller de Maquetería y Diseño Arquitectónico." },
-                { floor: "Piso 2", rooms: "Aulas de Ingeniería O201 - O208, Salas de Cómputo CAD / BIM." }
-            ]
-        },
-        "buildingP": {
-            id: "buildingP",
-            letter: "P",
-            name: "Edificio P • Copérnico & Observatorio",
-            badgeClass: "badge-maroon",
-            badgeBg: "#881337",
-            anchor: { x: 360, y: 104 },
-            floors: [
-                { floor: "Piso 1", rooms: "Aulas P101 - P106, Observatorio Meteorológico UAM, Laboratorio de Física Experimental y Astronomía." }
-            ]
-        },
-        "mainParking": {
-            id: "mainParking",
-            letter: "P",
-            name: "Entrada Principal & Parqueo Sur",
-            badgeClass: "badge-navy",
-            badgeBg: "#0f172a",
-            anchor: { x: 274, y: 766 },
-            floors: [
-                { floor: "Exterior", rooms: "Caseta de Seguridad Sur, Bahías de Parqueo Estudiantil y Docente, Rampa Peatonal Principal hacia Edificio K." }
-            ]
-        },
-        "chilamatesPlaza": {
-            id: "chilamatesPlaza",
-            letter: "CH",
-            name: "Plaza Chilamates (Kioskos & Fast Food)",
-            badgeClass: "badge-green",
-            badgeBg: "#15803d",
-            anchor: { x: 225, y: 287 },
-            floors: [
-                { floor: "Plaza", rooms: "Kioskos de Comida Rápida, Puntos de Café, Mesas al Aire Libre, Espacio de Recreación Estudiantil." }
-            ]
-        },
-        "sportsZone": {
-            id: "sportsZone",
-            letter: "DEP",
-            name: "Canchas Deportivas (Béisbol & Fútbol)",
-            badgeClass: "badge-green",
-            badgeBg: "#15803d",
-            anchor: { x: 762, y: 357 },
-            floors: [
-                { floor: "Campo Abierto", rooms: "Estadio Oficial de Béisbol con Diamante de Tierra, Cancha de Fútbol Reglamentaria de Grama, Pista y Acceso a Camerinos." }
-            ]
-        },
-        "jaguarCenter": {
-            id: "jaguarCenter",
-            letter: "JC",
-            name: "Jaguar Center (Complejo Deportivo)",
-            badgeClass: "badge-amber",
-            badgeBg: "#b45309",
-            anchor: { x: 886, y: 623 },
-            floors: [
-                { floor: "Piso 1", rooms: "Canchas Techadas de Baloncesto / Voleibol, Graderías Principales, Acceso al Complejo Deportivo." }
-            ]
-        },
-        "jaguarGym": {
-            id: "jaguarGym",
-            letter: "JG",
-            name: "Jaguar Gym • Gimnasio Universitario",
-            badgeClass: "badge-teal",
-            badgeBg: "#0f766e",
-            anchor: { x: 955, y: 726 },
-            floors: [
-                { floor: "Piso 1", rooms: "Área de Pesas, Máquinas Cardiovasculares, Entrenamiento Funcional y Vestidores." }
-            ]
-        },
-        "physiotherapy": {
-            id: "physiotherapy",
-            letter: "FT",
-            name: "Fisioterapia • Clínica de Rehabilitación",
-            badgeClass: "badge-cyan",
-            badgeBg: "#0284c7",
-            anchor: { x: 964, y: 677 },
-            floors: [
-                { floor: "Piso 1", rooms: "Clínica de Fisioterapia, Rehabilitación Física y Deportiva, Atención a Estudiantes y Atletas." }
-            ]
-        },
-        "jaguarJungle": {
-            id: "jaguarJungle",
-            letter: "JJ",
-            name: "Jaguar Jungle • Jardín & Conexión Central",
-            badgeClass: "badge-green",
-            badgeBg: "#15803d",
-            anchor: { x: 626, y: 306 },
-            floors: [
-                { floor: "Área Verde & Senderos", rooms: "Zona recreativa natural con senderos peatonales que conectan Edificio O, Mi Ranchito, Lab Digital FIA, Edificio H y la Avenida Principal Interna." }
-            ]
-        },
-        "miRanchito": {
-            id: "miRanchito",
-            letter: "MR",
-            name: "Mi Ranchito • Ranchón Universitario",
-            badgeClass: "badge-amber",
-            badgeBg: "#b45309",
-            anchor: { x: 555, y: 296 },
-            floors: [
-                { floor: "Pabellón Exterior", rooms: "Ranchón de descanso, cafetería y punto de encuentro estudiantil entre Edificio N, Edificio O y Jaguar Jungle." }
-            ]
-        },
-        "labDigitalFia": {
-            id: "labDigitalFia",
-            letter: "FIA",
-            name: "Lab Digital FIA • Laboratorio Digital",
-            badgeClass: "badge-teal",
-            badgeBg: "#0f766e",
-            anchor: { x: 530, y: 328 },
-            floors: [
-                { floor: "Piso 1", rooms: "Laboratorio Digital de la Facultad de Ingeniería y Arquitectura (FIA), junto al Edificio N, Mi Ranchito y Área de Mesas." }
-            ]
-        },
-        "areaDeMesas": {
-            id: "areaDeMesas",
-            letter: "AM",
-            name: "Área de Mesas • Terraza de Estudio",
-            badgeClass: "badge-navy",
-            badgeBg: "#1e3a8a",
-            anchor: { x: 532, y: 366 },
-            floors: [
-                { floor: "Terraza Exterior", rooms: "Mesas techadas y sombreadas para estudio, trabajo grupal y almuerzo entre Lab Digital FIA, Parqueo Central y Edificio C." }
-            ]
-        },
-        "northGate": {
-            id: "northGate",
-            letter: "3°",
-            name: "Tercer Acceso • Third Access (Copérnico)",
-            badgeClass: "badge-navy",
-            badgeBg: "#475569",
-            anchor: { x: 184, y: 74 },
-            floors: [
-                { floor: "Acceso Vehicular y Peatonal", rooms: "Tercer Acceso (Caseta Oeste junto a Estación Meteorológica y Edificio P - Copérnico). Conecta directamente con la Avenida Principal Oeste y Parqueos Oeste." }
-            ]
-        },
-        "northeastGate": {
-            id: "northeastGate",
-            letter: "2°",
-            name: "Segundo Acceso • Camino Estadio Jaguar",
-            badgeClass: "badge-navy",
-            badgeBg: "#0f766e",
-            anchor: { x: 906, y: 14 },
-            floors: [
-                { floor: "Acceso Vehicular y Peatonal", rooms: "Camino Segundo Acceso (Vía Estadio de Béisbol Jaguar). Conecta directamente con el Complejo Deportivo, Parqueo Norte Deportes, Edificio O y vía perimetral norte." }
-            ]
-        }
-    };
+    function resolveBuildingFloors(id, floorKeys) {
+        return floorKeys.map((fk) => ({
+            floor: typeof window.t === "function" ? window.t(`map.buildings.${id}.floors.${fk}.label`) : "",
+            rooms: typeof window.t === "function" ? window.t(`map.buildings.${id}.floors.${fk}.rooms`) : ""
+        }));
+    }
+
+    function createLocalizedBuilding(spec) {
+        const entry = {
+            id: spec.id,
+            badgeClass: spec.badgeClass,
+            badgeBg: spec.badgeBg,
+            anchor: spec.anchor,
+            floorKeys: spec.floorKeys
+        };
+        Object.defineProperty(entry, "letter", {
+            enumerable: true,
+            get() {
+                if (spec.pinCodeKey && typeof window.t === "function") {
+                    return window.t(spec.pinCodeKey);
+                }
+                return spec.letter;
+            }
+        });
+        Object.defineProperty(entry, "name", {
+            enumerable: true,
+            get() {
+                return typeof window.t === "function" ? window.t(`map.buildings.${spec.id}.name`) : spec.id;
+            }
+        });
+        Object.defineProperty(entry, "floors", {
+            enumerable: true,
+            get() {
+                return resolveBuildingFloors(spec.id, spec.floorKeys);
+            }
+        });
+        return entry;
+    }
+
+    const CAMPUS_BUILDING_SPECS = [
+        { id: "buildingA",       letter: "A",   badgeClass: "badge-maroon",  badgeBg: "#991b1b", anchor: { x: 250, y: 455 }, floorKeys: ["f1", "f2", "f3"] },
+        { id: "buildingB",       letter: "B",   badgeClass: "badge-purple",  badgeBg: "#581c87", anchor: { x: 384, y: 500 }, floorKeys: ["f1", "f2"] },
+        { id: "buildingC",       letter: "C",   badgeClass: "badge-purple",  badgeBg: "#4c1d95", anchor: { x: 384, y: 410 }, floorKeys: ["f1", "f2", "f3"] },
+        { id: "buildingD",       letter: "D",   badgeClass: "badge-green",   badgeBg: "#15803d", anchor: { x: 351, y: 290 }, floorKeys: ["f1"] },
+        { id: "buildingE",       letter: "E",   badgeClass: "badge-navy",    badgeBg: "#1e3a8a", anchor: { x: 458, y: 653 }, floorKeys: ["f1", "f2"] },
+        { id: "buildingF",       letter: "F",   badgeClass: "badge-magenta", badgeBg: "#be185d", anchor: { x: 545, y: 646 }, floorKeys: ["f1"] },
+        { id: "buildingG",       letter: "G",   badgeClass: "badge-cyan",    badgeBg: "#0284c7", anchor: { x: 545, y: 590 }, floorKeys: ["f1", "f2"] },
+        { id: "buildingH",       letter: "H",   badgeClass: "badge-green",   badgeBg: "#15803d", anchor: { x: 602, y: 383 }, floorKeys: ["f1", "f2"] },
+        { id: "buildingI",       letter: "I",   badgeClass: "badge-navy",    badgeBg: "#1e3a8a", anchor: { x: 653, y: 724 }, floorKeys: ["f1"] },
+        { id: "buildingJ",       letter: "J",   badgeClass: "badge-cyan",    badgeBg: "#0284c7", anchor: { x: 297, y: 287 }, floorKeys: ["f1"] },
+        { id: "buildingK",       letter: "K",   badgeClass: "badge-amber",   badgeBg: "#b45309", anchor: { x: 293, y: 598 }, floorKeys: ["f1"] },
+        { id: "buildingL",       letter: "L",   badgeClass: "badge-cyan",    badgeBg: "#0284c7", anchor: { x: 842, y: 502 }, floorKeys: ["f1"] },
+        { id: "buildingM",       letter: "M",   badgeClass: "badge-teal",    badgeBg: "#0f766e", anchor: { x: 597, y: 460 }, floorKeys: ["f1", "f2"] },
+        { id: "buildingN",       letter: "N",   badgeClass: "badge-magenta", badgeBg: "#be185d", anchor: { x: 350, y: 217 }, floorKeys: ["f1", "f2"] },
+        { id: "buildingO",       letter: "O",   badgeClass: "badge-amber",   badgeBg: "#b45309", anchor: { x: 510, y: 200 }, floorKeys: ["f1", "f2"] },
+        { id: "buildingP",       letter: "P",   badgeClass: "badge-maroon",  badgeBg: "#881337", anchor: { x: 360, y: 104 }, floorKeys: ["f1", "f2", "f3"] },
+        { id: "mainParking",     letter: "P",   badgeClass: "badge-navy",    badgeBg: "#0f172a", anchor: { x: 274, y: 766 }, floorKeys: ["f1"] },
+        { id: "chilamatesPlaza", letter: "CH",  badgeClass: "badge-green",   badgeBg: "#15803d", anchor: { x: 225, y: 287 }, floorKeys: ["f1"] },
+        { id: "sportsZone",      letter: "DEP", badgeClass: "badge-green",   badgeBg: "#15803d", anchor: { x: 762, y: 357 }, floorKeys: ["f1"] },
+        { id: "jaguarCenter",    letter: "JC",  badgeClass: "badge-amber",   badgeBg: "#b45309", anchor: { x: 886, y: 623 }, floorKeys: ["f1"] },
+        { id: "jaguarGym",       letter: "JG",  badgeClass: "badge-teal",    badgeBg: "#0f766e", anchor: { x: 955, y: 726 }, floorKeys: ["f1"] },
+        { id: "physiotherapy",   letter: "FT",  badgeClass: "badge-cyan",    badgeBg: "#0284c7", anchor: { x: 964, y: 677 }, floorKeys: ["f1"] },
+        { id: "jaguarJungle",    letter: "JJ",  badgeClass: "badge-green",   badgeBg: "#15803d", anchor: { x: 626, y: 306 }, floorKeys: ["f1"] },
+        { id: "miRanchito",      letter: "MR",  badgeClass: "badge-amber",   badgeBg: "#b45309", anchor: { x: 555, y: 296 }, floorKeys: ["f1"] },
+        { id: "labDigitalFia",   letter: "FIA", badgeClass: "badge-teal",    badgeBg: "#0f766e", anchor: { x: 530, y: 328 }, floorKeys: ["f1"] },
+        { id: "areaDeMesas",     letter: "AM",  badgeClass: "badge-navy",    badgeBg: "#1e3a8a", anchor: { x: 532, y: 366 }, floorKeys: ["f1"] },
+        { id: "northGate",       letter: "3",   pinCodeKey: "map.buildings.northGate.pin_code",     badgeClass: "badge-navy", badgeBg: "#475569", anchor: { x: 184, y: 74 }, floorKeys: ["f1"] },
+        { id: "northeastGate",   letter: "2",   pinCodeKey: "map.buildings.northeastGate.pin_code", badgeClass: "badge-navy", badgeBg: "#0f766e", anchor: { x: 906, y: 14 }, floorKeys: ["f1"] }
+    ];
+
+    const CAMPUS_BUILDINGS = {};
+    for (const spec of CAMPUS_BUILDING_SPECS) {
+        CAMPUS_BUILDINGS[spec.id] = createLocalizedBuilding(spec);
+    }
 
     // Sync anchors from single source of truth in campusMapRenderer.js
     if (window.CAMPUS_BUILDING_ANCHORS) {
@@ -927,6 +682,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    function updateDirectoryCountBadge(visibleCount) {
+        if (!dirCountBadge) return;
+        const count = Number.isFinite(visibleCount)
+            ? visibleCount
+            : parseInt(dirCountBadge.dataset.visibleCount || String(document.querySelectorAll(".directory-card").length), 10);
+        dirCountBadge.dataset.visibleCount = String(count);
+        if (typeof window.t === "function") {
+            const key = count === 1 ? "map.buildings_count_singular" : "map.buildings_count_plural";
+            dirCountBadge.textContent = window.t(key, undefined, { count });
+        }
+    }
+
     if (dirSearchInput) {
         dirSearchInput.addEventListener("input", () => {
             const q = dirSearchInput.value.toLowerCase().trim();
@@ -943,11 +710,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            if (dirCountBadge) {
-                dirCountBadge.textContent = `${visibleCount} Edificios`;
-            }
+            updateDirectoryCountBadge(visibleCount);
         });
     }
+
+    window.addEventListener("jaguarLanguageChanged", function () {
+        updateDirectoryCountBadge();
+        if (activeSelectedBuilding && bldgPopover && !bldgPopover.classList.contains("hidden")) {
+            const freshData = CAMPUS_BUILDINGS[activeSelectedBuilding.id] || activeSelectedBuilding;
+            showBuildingPopover(freshData, freshData.anchor || activeSelectedBuilding.anchor);
+        }
+    });
 
     // ----------------------------------------------------------------------------
     // 6. Global Dijkstra Route Visualization (Sidewalk-Hugging Micro-Walkway Routing)

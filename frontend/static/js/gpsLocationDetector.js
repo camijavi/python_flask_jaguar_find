@@ -30,22 +30,21 @@
     });
 
     function getCurrentLang() {
+        if (global.JaguarI18n && typeof global.JaguarI18n.getLang === "function") {
+            return global.JaguarI18n.getLang();
+        }
         if (global.APP_CONFIG && global.APP_CONFIG.currentLang) {
             return String(global.APP_CONFIG.currentLang).toLowerCase().startsWith("sp") ? "spa" : "eng";
         }
-        return "spa";
+        return "eng";
     }
 
-    function tr(keyPath, defaultSpa, defaultEng, params) {
-        const lang = getCurrentLang();
-        const fallback = lang === "spa" ? defaultSpa : (defaultEng || defaultSpa);
-        let text = typeof global.t === "function" ? global.t(keyPath, fallback) : fallback;
-        if (params && typeof text === "string") {
-            for (const [k, v] of Object.entries(params)) {
-                text = text.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
-            }
+    function tr(keyPath, paramsOrUnused, _unusedEng, legacyParams) {
+        const params = (paramsOrUnused && typeof paramsOrUnused === "object") ? paramsOrUnused : legacyParams;
+        if (typeof global.t === "function") {
+            return global.t(keyPath, undefined, params);
         }
-        return text;
+        return keyPath;
     }
 
     function escapeHtml(text) {
@@ -68,84 +67,56 @@
                     code,
                     retryable: true,
                     tone: "rose",
-                    title: tr("map.gps.err_permission_denied_title", "Permiso de ubicación denegado", "Location permission denied"),
-                    description: tr(
-                        "map.gps.err_permission_denied_desc",
-                        "Habilita el acceso a ubicación en los ajustes del navegador (ícono junto a la dirección web) y reintenta, o elige tu ubicación manualmente.",
-                        "Enable location access in your browser site settings (lock/info icon in the address bar) and tap Retry, or pick your location manually."
-                    ),
+                    title: tr("map.gps.err_permission_denied_title"),
+                    description: tr("map.gps.err_permission_denied_desc"),
                 };
             case ERROR_CODES.POSITION_UNAVAILABLE:
                 return {
                     code,
                     retryable: true,
                     tone: "amber",
-                    title: tr("map.gps.err_unavailable_title", "Señal de ubicación no disponible", "Location unavailable"),
-                    description: tr(
-                        "map.gps.err_unavailable_desc",
-                        "No se pudo obtener señal GPS ni de red (frecuente dentro de edificios). Reintenta o elige tu edificio manualmente.",
-                        "Could not acquire a GPS or network position fix (common inside concrete buildings). Retry or select your location manually."
-                    ),
+                    title: tr("map.gps.err_unavailable_title"),
+                    description: tr("map.gps.err_unavailable_desc"),
                 };
             case ERROR_CODES.TIMEOUT:
                 return {
                     code,
                     retryable: true,
                     tone: "amber",
-                    title: tr("map.gps.err_timeout_title", "Tiempo de espera agotado", "Location request timed out"),
-                    description: tr(
-                        "map.gps.err_timeout_desc",
-                        "El GPS tardó demasiado en responder. Reintenta o selecciona tu ubicación manualmente.",
-                        "GPS took too long to respond. Retry or pick your building manually."
-                    ),
+                    title: tr("map.gps.err_timeout_title"),
+                    description: tr("map.gps.err_timeout_desc"),
                 };
             case ERROR_CODES.INSECURE_CONTEXT:
                 return {
                     code,
                     retryable: false,
                     tone: "amber",
-                    title: tr("map.gps.err_insecure_title", "Se requiere conexión HTTPS", "HTTPS connection required"),
-                    description: tr(
-                        "map.gps.err_insecure_desc",
-                        "La geolocalización del navegador requiere HTTPS. Selecciona tu ubicación manualmente.",
-                        "Browser geolocation requires a secure HTTPS context. Select your location manually."
-                    ),
+                    title: tr("map.gps.err_insecure_title"),
+                    description: tr("map.gps.err_insecure_desc"),
                 };
             case ERROR_CODES.UNSUPPORTED:
                 return {
                     code,
                     retryable: false,
                     tone: "slate",
-                    title: tr("map.gps.err_unsupported_title", "Geolocalización no soportada", "Geolocation not supported"),
-                    description: tr(
-                        "map.gps.err_unsupported_desc",
-                        "Este navegador no soporta la API de geolocalización. Selecciona tu edificio manualmente.",
-                        "This browser does not support the Geolocation API. Select your location manually."
-                    ),
+                    title: tr("map.gps.err_unsupported_title"),
+                    description: tr("map.gps.err_unsupported_desc"),
                 };
             case ERROR_CODES.OUTSIDE_CAMPUS:
                 return {
                     code,
                     retryable: true,
                     tone: "amber",
-                    title: tr("map.gps.outside_campus_title", "Fuera del campus UAM", "Outside UAM Campus"),
-                    description: tr(
-                        "map.gps.outside_campus_desc",
-                        "Tu posición GPS aparece fuera del perímetro del campus. Selecciona un acceso o edificio manualmente:",
-                        "Your GPS position appears outside the UAM campus perimeter. Select a campus entrance or building manually:"
-                    ),
+                    title: tr("map.gps.outside_campus_title"),
+                    description: tr("map.gps.outside_campus_desc"),
                 };
             default:
                 return {
                     code: ERROR_CODES.NETWORK_ERROR,
                     retryable: true,
                     tone: "rose",
-                    title: tr("map.gps.err_network_title", "No se pudo consultar el mapa", "Could not reach map service"),
-                    description: tr(
-                        "map.gps.err_network_desc",
-                        "Hubo un error de conexión al identificar tu edificio. Reintenta o elige manualmente.",
-                        "A network error occurred while matching your building. Retry or select manually."
-                    ),
+                    title: tr("map.gps.err_network_title"),
+                    description: tr("map.gps.err_network_desc"),
                 };
         }
     }

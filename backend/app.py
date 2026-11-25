@@ -16,7 +16,7 @@ from jinja2 import ChoiceLoader, FileSystemLoader
 from backend.config import Config
 from backend.database import initDb
 from backend.controllers import registerControllers
-from backend.i18n import init_i18n, I18nManager, t, get_current_language
+from backend.i18n import init_i18n, I18nManager, t, get_current_language, normalize_language
 from backend.auth_guard import login_required, admin_required
 
 
@@ -147,8 +147,7 @@ def createApp(configClass=Config) -> Flask:
         return redirect(url_for("renderMapScreen"))
 
     def _normalizeLang(lang: str) -> str:
-        lower = str(lang or "").strip().lower()
-        return "spa" if (lower.startswith("sp") or lower.startswith("es")) else "eng"
+        return normalize_language(lang)
 
     @app.route("/set-language/<lang>", methods=["GET", "POST"])
     def setLanguage(lang: str):
@@ -173,7 +172,7 @@ def createApp(configClass=Config) -> Flask:
             "success": True,
             "language": cleanLang,
             "translations": i18nMgr.translations.get(cleanLang, {}),
-            "message": f"Language switched to {cleanLang}."
+            "message": i18nMgr.get("app.language_switched", lang=cleanLang).replace("{lang}", cleanLang)
         }), 200
 
     @app.route("/api/i18n/translations/<lang>", methods=["GET"])
@@ -212,7 +211,7 @@ def createApp(configClass=Config) -> Flask:
         if request.path.startswith("/api/"):
             return jsonify({
                 "success": False,
-                "error": "Requested API endpoint not found.",
+                "error": t("api.not_found"),
                 "path": request.path,
             }), 404
         return render_template("mapScreen.html"), 404
@@ -221,7 +220,7 @@ def createApp(configClass=Config) -> Flask:
     def internalServerError(error):
         return jsonify({
             "success": False,
-            "error": "An internal server error occurred.",
+            "error": t("api.internal_error"),
         }), 500
 
     return app

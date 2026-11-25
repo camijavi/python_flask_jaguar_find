@@ -25,50 +25,57 @@ const VisitorValidation = {
         return val.replace(/\D/g, "");
     },
 
-    validateFullName(val, isEs = true) {
+    _t(key) {
+        if (typeof window !== "undefined" && typeof window.t === "function") {
+            return window.t(key);
+        }
+        return key;
+    },
+
+    validateFullName(val) {
         const trimmed = (val || "").trim();
         if (!trimmed) {
-            return { valid: false, error: isEs ? "El nombre completo es obligatorio." : "Full name is required." };
+            return { valid: false, error: this._t("auth.validation.name_required") };
         }
         if (trimmed.length < 2) {
-            return { valid: false, error: isEs ? "El nombre debe tener al menos 2 caracteres." : "Full name must be at least 2 characters." };
+            return { valid: false, error: this._t("auth.validation.name_min") };
         }
         return { valid: true };
     },
 
-    validateCedula(val, isEs = true) {
+    validateCedula(val) {
         const trimmed = (val || "").trim();
         if (trimmed.length < 14 || trimmed.length > 16) {
-            return { valid: false, error: isEs ? "La cédula debe tener entre 14 y 16 caracteres." : "National ID must be between 14 and 16 characters." };
+            return { valid: false, error: this._t("auth.validation.cedula_length") };
         }
         const formatted = this.formatCedula(trimmed);
         if (!formatted) {
-            return { valid: false, error: isEs ? "La cédula de identidad es obligatoria." : "National ID is required." };
+            return { valid: false, error: this._t("auth.validation.cedula_required") };
         }
         if (!this.patterns.cedula.test(formatted)) {
-            return { valid: false, error: isEs ? "Formato de cédula inválido. Debe ser: 001-000000-0000A." : "Invalid National ID format. Expected format: 001-000000-0000A." };
+            return { valid: false, error: this._t("auth.validation.cedula_invalid") };
         }
         return { valid: true, value: formatted };
     },
 
-    validatePhone(val, isEs = true) {
+    validatePhone(val) {
         const digits = this.stripPhone(val);
         if (!digits) {
-            return { valid: false, error: isEs ? "El número de teléfono es obligatorio." : "Phone number is required." };
+            return { valid: false, error: this._t("auth.validation.phone_required") };
         }
         if (!this.patterns.phoneDigits.test(digits)) {
-            return { valid: false, error: isEs ? "El teléfono debe contener solo dígitos (mínimo 8 dígitos)." : "Phone number must contain digits only (minimum 8 digits)." };
+            return { valid: false, error: this._t("auth.validation.phone_min") };
         }
         return { valid: true, value: digits };
     },
 
-    validateEmail(val, isEs = true) {
+    validateEmail(val) {
         const trimmed = (val || "").trim();
         if (!trimmed) {
-            return { valid: false, error: isEs ? "El correo electrónico es obligatorio." : "Email is required." };
+            return { valid: false, error: this._t("auth.validation.email_required") };
         }
         if (!this.patterns.email.test(trimmed)) {
-            return { valid: false, error: isEs ? "Ingresa un correo electrónico válido (ej. usuario@dominio.com)." : "Enter a valid email address (e.g. user@domain.com)." };
+            return { valid: false, error: this._t("auth.validation.email_invalid") };
         }
         return { valid: true, value: trimmed };
     }

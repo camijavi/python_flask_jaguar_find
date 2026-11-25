@@ -1,14 +1,13 @@
 {% extends "screens/base.html" %}
 {% from "components/auth/authMacros.html" import field, roleBadge, passwordVisibilityToggle with context %}
 
-{% set es = current_language == 'spa' %}
 {% set rol = request.args.get('rol', 'estudiante') %}
 {% if rol not in ['estudiante', 'colaborador', 'visitante', 'admin'] %}{% set rol = 'estudiante' %}{% endif %}
 {% set rolMap = {'estudiante': 1, 'colaborador': 2, 'visitante': 3, 'admin': 4} %}
 {% set userTypeId = rolMap.get(rol, 1) %}
 
 {% block title_attrs %} data-i18n="auth.sign_in_page_title"{% endblock %}
-{% block title %}{{ 'Iniciar sesión' if es else 'Sign in' }} · JaguarFind{% endblock %}
+{% block title %}{{ t('auth.sign_in_page_title') }}{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/screens/auth/signInScreen.css') }}">
@@ -22,12 +21,12 @@
         <input type="hidden" name="userTypeId" id="userTypeId" value="{{ userTypeId }}">
 
         <div class="flex flex-col items-center text-center gap-3">
-            <img src="{{ url_for('static', filename='img/jaguarLogo.jpg') }}" alt="Jaguar Find"
+            <img src="{{ url_for('static', filename='img/jaguarLogo.jpg') }}" alt="{{ t('app.logo_alt') }}" data-i18n-alt="app.logo_alt"
                  class="w-16 h-16 object-contain rounded-full bg-ocean-50 ring-4 ring-brand-200 shadow">
             <h1 class="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-ocean-900 to-brand-500 bg-clip-text text-transparent" data-i18n="auth.sign_in_heading">
-                {{ 'Inicia sesión' if es else 'Sign in' }}
+                {{ t('auth.sign_in_heading') }}
             </h1>
-            {{ roleBadge(rol, es) }}
+            {{ roleBadge(rol) }}
         </div>
 
         <!-- Alert Container -->
@@ -35,28 +34,28 @@
 
         {% if rol == 'visitante' %}
             <div>
-                <label for="identifier" data-i18n="auth.visitor_identifier_label" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ 'Cédula o Teléfono registrado' if es else 'Registered ID or Phone' }}</label>
+                <label for="identifier" data-i18n="auth.visitor_identifier_label" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ t('auth.visitor_identifier_label') }}</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
                     </span>
-                    <input type="text" id="identifier" name="identifier" placeholder="{{ 'Cédula o teléfono' if es else 'National ID or Phone' }}" data-i18n-placeholder="auth.visitor_identifier_placeholder" required
+                    <input type="text" id="identifier" name="identifier" placeholder="{{ t('auth.visitor_identifier_placeholder') }}" data-i18n-placeholder="auth.visitor_identifier_placeholder" required
                            class="auth-input w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 transition">
                 </div>
             </div>
         {% elif rol == 'colaborador' %}
             <div>
-                <label for="identifier" data-i18n="auth.collaborator_identifier_label" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ 'Cédula o Correo institucional' if es else 'Government ID or Email' }}</label>
+                <label for="identifier" data-i18n="auth.collaborator_identifier_label" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ t('auth.collaborator_identifier_label') }}</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
                     </span>
-                    <input type="text" id="identifier" name="identifier" placeholder="{{ '001-000000-0000A o correo' if es else 'ID or email' }}" data-i18n-placeholder="auth.collaborator_identifier_placeholder" required
+                    <input type="text" id="identifier" name="identifier" placeholder="{{ t('auth.collaborator_identifier_placeholder') }}" data-i18n-placeholder="auth.collaborator_identifier_placeholder" required
                            class="auth-input w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 transition">
                 </div>
             </div>
             <div>
-                <label for="password" data-i18n="auth.password_label" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ 'Contraseña' if es else 'Password' }}</label>
+                <label for="password" data-i18n="auth.password_label" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ t('auth.password_label') }}</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg>
@@ -68,17 +67,17 @@
             </div>
         {% else %}
             <div>
-                <label for="identifier" data-i18n="auth.student_identifier_label" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ 'Número CIF o Correo institucional' if es else 'CIF number or Email' }}</label>
+                <label for="identifier" data-i18n="auth.student_identifier_label" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ t('auth.student_identifier_label') }}</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
                     </span>
-                    <input type="text" id="identifier" name="identifier" placeholder="{{ '8 dígitos CIF o correo @uamv.edu.ni' if es else '8-digit CIF or email' }}" data-i18n-placeholder="auth.student_identifier_placeholder" required
+                    <input type="text" id="identifier" name="identifier" placeholder="{{ t('auth.student_identifier_placeholder') }}" data-i18n-placeholder="auth.student_identifier_placeholder" required
                            class="auth-input w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 transition">
                 </div>
             </div>
             <div>
-                <label for="password" data-i18n="auth.password_label" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ 'Contraseña' if es else 'Password' }}</label>
+                <label for="password" data-i18n="auth.password_label" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ t('auth.password_label') }}</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg>
@@ -92,17 +91,17 @@
 
         <button id="btnSubmitSignIn" type="submit"
                 class="w-full px-4 py-3 rounded-xl text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 shadow-md shadow-brand-500/30 active:scale-95 transition-all flex items-center justify-center gap-2">
-            <span data-i18n="auth.submit_sign_in">{{ 'Acceder' if es else 'Sign in' }}</span>
+            <span data-i18n="auth.submit_sign_in">{{ t('auth.submit_sign_in') }}</span>
         </button>
 
         <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
-            <a href="/auth/options?mode=signin" class="font-semibold text-slate-500 hover:text-brand-700">← <span data-i18n="auth.change_role">{{ 'Cambiar rol' if es else 'Change role' }}</span></a>
-            <a href="/auth/signup?rol={{ rol }}" class="font-semibold text-ocean-700 hover:text-ocean-900" data-i18n="auth.create_account_link">{{ 'Crear cuenta' if es else 'Create account' }}</a>
+            <a href="/auth/options?mode=signin" class="font-semibold text-slate-500 hover:text-brand-700">← <span data-i18n="auth.change_role">{{ t('auth.change_role') }}</span></a>
+            <a href="/auth/signup?rol={{ rol }}" class="font-semibold text-ocean-700 hover:text-ocean-900" data-i18n="auth.create_account_link">{{ t('auth.create_account_link') }}</a>
         </div>
 
         <div class="pt-3 border-t border-slate-100 text-center">
             <a href="/admin/adminsignin" class="text-xs font-semibold text-slate-400 hover:text-slate-600">
-                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 inline text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg><span data-i18n="auth.cae_admin_access">{{ 'Acceso Administrativo CAE' if es else 'CAE Administrative Access' }}</span></span>
+                <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 inline text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg><span data-i18n="auth.cae_admin_access">{{ t('auth.cae_admin_access') }}</span></span>
             </a>
         </div>
     </form>
@@ -124,20 +123,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
     let activeAlertState = null;
 
-    function tr(key, fallbackEs, fallbackEn) {
-        const isEs = window.JaguarI18n ? window.JaguarI18n.isSpanish() : (window.APP_CONFIG && window.APP_CONFIG.currentLang === "spa");
-        return window.t ? window.t(key, isEs ? fallbackEs : fallbackEn) : (isEs ? fallbackEs : fallbackEn);
+    function tr(key) {
+        return window.t ? window.t(key) : key;
     }
 
     function resetSubmitButton() {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = `<span data-i18n="auth.submit_sign_in">${tr("auth.submit_sign_in", "Acceder", "Sign in")}</span>`;
+        submitBtn.innerHTML = `<span data-i18n="auth.submit_sign_in">${tr("auth.submit_sign_in")}</span>`;
     }
 
-    function showAlert(msg, isSuccess = false, i18nMeta = null) {
+    function showAlert(msg, isSuccess = false, i18nKey = null) {
         if (!alertBox) return;
-        activeAlertState = i18nMeta ? { isSuccess, ...i18nMeta } : null;
-        alertBox.className = "rounded-xl p-3.5 text-xs font-semibold flex items-center gap-2 " + 
+        activeAlertState = i18nKey ? { isSuccess, key: i18nKey } : null;
+        alertBox.className = "rounded-xl p-3.5 text-xs font-semibold flex items-center gap-2 " +
             (isSuccess ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-rose-50 text-rose-800 border border-rose-200");
         alertBox.innerHTML = (isSuccess ? '<svg class="w-4 h-4 text-emerald-600 shrink-0 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>' : '<svg class="w-4 h-4 text-rose-600 shrink-0 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>') + msg;
         alertBox.classList.remove("hidden");
@@ -145,11 +143,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     window.addEventListener("jaguarLanguageChanged", function() {
         if (activeAlertState && alertBox && !alertBox.classList.contains("hidden")) {
-            showAlert(
-                tr(activeAlertState.key, activeAlertState.es, activeAlertState.en),
-                activeAlertState.isSuccess,
-                activeAlertState
-            );
+            showAlert(tr(activeAlertState.key), activeAlertState.isSuccess, activeAlertState.key);
         }
     });
 
@@ -158,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function() {
         alertBox.classList.add("hidden");
         activeAlertState = null;
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `<span class="inline-block animate-spin mr-1">↻</span> ${tr("auth.verifying", "Verificando...", "Verifying...")}`;
+        submitBtn.innerHTML = `<span class="inline-block animate-spin mr-1">↻</span> ${tr("auth.verifying")}`;
 
         const formData = new FormData(form);
         const payload = {
@@ -177,9 +171,9 @@ document.addEventListener("DOMContentLoaded", function() {
             if (data.success) {
                 if (draftHandle) draftHandle.clear();
                 showAlert(
-                    data.message || tr("auth.signin_success", "Inicio de sesión correcto.", "Signed in successfully."),
+                    data.message || tr("auth.signin_success"),
                     true,
-                    data.message ? null : { key: "auth.signin_success", es: "Inicio de sesión correcto.", en: "Signed in successfully." }
+                    data.message ? null : "auth.signin_success"
                 );
                 setTimeout(() => {
                     const params = new URLSearchParams(window.location.search);
@@ -188,18 +182,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 }, 600);
             } else {
                 showAlert(
-                    data.error || tr("auth.invalid_credentials", "Credenciales incorrectas.", "Invalid credentials."),
+                    data.error || tr("auth.invalid_credentials"),
                     false,
-                    data.error ? null : { key: "auth.invalid_credentials", es: "Credenciales incorrectas.", en: "Invalid credentials." }
+                    data.error ? null : "auth.invalid_credentials"
                 );
                 resetSubmitButton();
             }
         } catch (err) {
-            showAlert(
-                tr("auth.network_error", "Error de conexión con el servidor.", "Network connection error."),
-                false,
-                { key: "auth.network_error", es: "Error de conexión con el servidor.", en: "Network connection error." }
-            );
+            showAlert(tr("auth.network_error"), false, "auth.network_error");
             resetSubmitButton();
         }
     });

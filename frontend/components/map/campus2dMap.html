@@ -23,29 +23,29 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
     <!-- Right-Edge Waze Control Stack (Compact Map Controls + Circular Compass) -->
     <div id="mapRightToolbar" class="waze-right-stack absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex flex-col items-center gap-2.5 transition-all duration-300 pointer-events-none">
         <div class="flex flex-col gap-1 bg-white/95 backdrop-blur-md p-1 rounded-2xl border border-slate-200/90 shadow-lg shadow-slate-900/10 pointer-events-auto">
-            <button id="btnMapZoomIn" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer" title="Acercar">
+            <button id="btnMapZoomIn" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.zoom_in') }}" data-i18n-aria-label="map.toolbar.zoom_in">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
             </button>
-            <button id="btnMapZoomOut" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer" title="Alejar">
+            <button id="btnMapZoomOut" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center font-bold text-sm transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.zoom_out') }}" data-i18n-aria-label="map.toolbar.zoom_out">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M20 12H4"></path></svg>
             </button>
-            <button id="btnMapResetView" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center text-xs transition-colors cursor-pointer" title="Centrar Mapa">
+            <button id="btnMapResetView" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 flex items-center justify-center text-xs transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.center_map') }}" data-i18n-aria-label="map.toolbar.center_map">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"></circle><circle cx="12" cy="12" r="2.8" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v3m0 14v3m10-10h-3M5 12H2"></path></svg>
             </button>
-            <button id="btnToggle25dQuick" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-sky-50 hover:text-sky-600 text-slate-700 flex items-center justify-center font-black text-[11px] transition-colors cursor-pointer" title="Alternar Vista 2.5D Perspectiva">
+            <button id="btnToggle25dQuick" type="button" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-sky-50 hover:text-sky-600 text-slate-700 flex items-center justify-center font-black text-[11px] transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_25d') }}" data-i18n-aria-label="map.toolbar.toggle_25d">
                 3D
             </button>
-            <button id="btnToggleEmergencyLayer" type="button" aria-pressed="true" class="w-9 h-9 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 flex items-center justify-center transition-colors cursor-pointer" title="Puntos de Encuentro y Rutas de Evacuación">
+            <button id="btnToggleEmergencyLayer" type="button" aria-pressed="false" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_emergency') }}" data-i18n-aria-label="map.toolbar.toggle_emergency">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
             </button>
             <!-- Lost & Found Waze Alert Layer Toggle (Visible only for authenticated users) -->
             {% if session.get('user') %}
-            <button id="btnToggleLostObjectsLayer" type="button" aria-pressed="true" class="relative w-9 h-9 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 flex items-center justify-center transition-colors cursor-pointer" title="Capa de Objetos Perdidos (Alertas Waze)">
+            <button id="btnToggleLostObjectsLayer" type="button" aria-pressed="true" class="relative w-9 h-9 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-800 flex items-center justify-center transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_lost_pins') }}" data-i18n-aria-label="map.toolbar.toggle_lost_pins">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 <span id="mapLostPinsBadgeCount" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center shadow-xs hidden">0</span>
             </button>
             {% endif %}
-            <button id="btnToggleWalkwaysLayer"  type="button" aria-pressed="true" class="w-9 h-9 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-700 flex items-center justify-center transition-colors cursor-pointer" title="Mostrar / Ocultar Red Peatonal Micro (Pasillos, Puentes y Muros)">
+            <button id="btnToggleWalkwaysLayer"  type="button" aria-pressed="false" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors cursor-pointer" aria-label="{{ t('map.toolbar.toggle_walkways') }}" data-i18n-aria-label="map.toolbar.toggle_walkways">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="4.5" r="2" stroke-width="2.1"></circle>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.1" d="M9.5 10.5l2.5 1.8 3-1.3M12 12.3V16l-2.8 4.5M12 16l3.2 4.2M7.5 13.5l2-3"></path>
@@ -59,10 +59,10 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
 
     <!-- Compact Light-Theme Micro-Walkways Legend Pill (Visible on Desktop when Walkways Layer is ON) -->
     <div id="walkwaysLegendPill" class="hidden lg:flex items-center gap-2.5 absolute top-[62px] left-4 z-20 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-pink-200/90 shadow-md shadow-pink-900/8 text-[10.5px] font-bold text-slate-700 pointer-events-none select-none">
-        <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full bg-pink-500 inline-block"></span>Peatonal P1</span>
-        <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full border-t-2 border-dashed border-violet-600 inline-block"></span>Puente 2P</span>
-        <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-500 inline-block"></span>Puerta</span>
-        <span class="inline-flex items-center gap-1 text-rose-600"><span class="font-black leading-none">&times;</span>Bloqueado</span>
+        <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full bg-pink-500 inline-block"></span><span data-i18n="map.walkways_legend.ground_p1">{{ t('map.walkways_legend.ground_p1') }}</span></span>
+        <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full border-t-2 border-dashed border-violet-600 inline-block"></span><span data-i18n="map.walkways_legend.bridge_2p">{{ t('map.walkways_legend.bridge_2p') }}</span></span>
+        <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-500 inline-block"></span><span data-i18n="map.walkways_legend.door">{{ t('map.walkways_legend.door') }}</span></span>
+        <span class="inline-flex items-center gap-1 text-rose-600"><span class="font-black leading-none">&times;</span><span data-i18n="map.walkways_legend.blocked">{{ t('map.walkways_legend.blocked') }}</span></span>
     </div>
 
     
@@ -78,21 +78,21 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
                     <span id="lostPinCountSubtitle" class="text-[10px] text-slate-400 font-semibold"></span>
                 </div>
             </div>
-            <button id="btnCloseLostPinPopover" type="button" class="text-slate-400 hover:text-slate-600 cursor-pointer p-1">
+            <button id="btnCloseLostPinPopover" type="button" class="text-slate-400 hover:text-slate-600 cursor-pointer p-1" title="{{ t('map.popover.close_title') }}" data-i18n-title="map.popover.close_title" aria-label="{{ t('map.popover.close_title') }}" data-i18n-aria-label="map.popover.close_title">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
         <div id="lostPinItemsList" class="space-y-2 mb-3 max-h-48 overflow-y-auto pr-1"></div>
         <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
-            <button id="btnFocus25dPin" type="button" class="py-2 px-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-800 font-bold text-[11px] flex items-center justify-center gap-1 transition cursor-pointer" title="Ver en perspectiva 2.5D">
+            <button id="btnFocus25dPin" type="button" class="py-2 px-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-800 font-bold text-[11px] flex items-center justify-center gap-1 transition cursor-pointer" title="{{ t('map.popover.focus_25d_title') }}" data-i18n-title="map.popover.focus_25d_title">
                 <svg class="w-3.5 h-3.5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
                 <span>2.5D</span>
             </button>
             <a id="btnViewInCatalog" href="/lost-found-object/catalogo" data-i18n="lost_found.view_in_catalog" class="flex-1 py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[11px] text-center transition">
-                {{ t('lost_found.view_in_catalog', default='Ver en Catálogo') }}
+                {{ t('lost_found.view_in_catalog') }}
             </a>
             <button id="btnReportHere" type="button" data-i18n="lost_found.report_here" class="flex-1 py-2 px-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-[11px] text-center transition shadow-xs cursor-pointer">
-                {{ t('lost_found.report_here', default='+ Reportar Aquí') }}
+                {{ t('lost_found.report_here') }}
             </button>
         </div>
     </div>
@@ -104,7 +104,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
                 <span id="popoverBadge" class="w-6 h-6 rounded-md flex items-center justify-center text-white font-extrabold text-xs"></span>
                 <span id="popoverName" class="font-bold text-slate-900 text-sm leading-tight"></span>
             </div>
-            <button id="btnCloseBldgPopover" type="button" class="text-slate-400 hover:text-slate-600 p-1.5 -m-1 rounded-lg cursor-pointer shrink-0">
+            <button id="btnCloseBldgPopover" type="button" class="text-slate-400 hover:text-slate-600 p-1.5 -m-1 rounded-lg cursor-pointer shrink-0" title="{{ t('map.popover.close_title') }}" data-i18n-title="map.popover.close_title" aria-label="{{ t('map.popover.close_title') }}" data-i18n-aria-label="map.popover.close_title">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
@@ -112,22 +112,22 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
         <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
             <button id="btnSetBldgOrigin" type="button" class="flex-1 py-2 px-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-[11px] text-center transition-colors inline-flex items-center justify-center gap-1 cursor-pointer">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
-                <span>Origen</span>
+                <span data-i18n="map.popover.set_origin">{{ t('map.popover.set_origin') }}</span>
             </button>
             <button id="btnSetBldgDestination" type="button" class="flex-1 py-2 px-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold text-[11px] text-center transition-colors inline-flex items-center justify-center gap-1 cursor-pointer">
                 <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                <span>Ir aquí</span>
+                <span data-i18n="map.popover.go_here">{{ t('map.popover.go_here') }}</span>
             </button>
-            <button id="btnBldgReportLost" type="button" class="py-2 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200/80 text-amber-800 font-bold text-[11px] text-center transition-colors inline-flex items-center justify-center gap-1 cursor-pointer" title="Reportar objeto extraviado en este edificio">
+            <button id="btnBldgReportLost" type="button" class="py-2 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200/80 text-amber-800 font-bold text-[11px] text-center transition-colors inline-flex items-center justify-center gap-1 cursor-pointer" title="{{ t('map.popover.report_item_title') }}" data-i18n-title="map.popover.report_item_title">
                 <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                <span>Reportar</span>
+                <span data-i18n="map.popover.report_item">{{ t('map.popover.report_item') }}</span>
             </button>
         </div>
         {% if session.get('user') %}
         <div class="mt-2 pt-2 border-t border-slate-100">
             <a id="btnBldgViewCatalog" href="/lost-found-object/catalogo" class="w-full py-1.5 px-2.5 rounded-xl bg-brand-50 hover:bg-brand-100 border border-brand-200/80 text-brand-800 font-bold text-[11px] inline-flex items-center justify-center gap-1.5 transition-colors">
                 <svg class="w-3.5 h-3.5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                <span data-i18n="lost_found.view_building_catalog">{{ t('lost_found.view_building_catalog', default='Ver objetos en este edificio') }}</span>
+                <span data-i18n="lost_found.view_building_catalog">{{ t('lost_found.view_building_catalog') }}</span>
             </a>
         </div>
         {% endif %}
@@ -201,7 +201,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
                 <g id="landscapingLayer" pointer-events="none"></g>
 
                 <!-- 7. Emergency Layer: Safe Areas, Meeting Points & Evacuation Routes -->
-                <g id="emergencyEvacuationLayer" pointer-events="none"></g>
+                <g id="emergencyEvacuationLayer" class="hidden" pointer-events="none"></g>
 
                 <!-- 7B. Toggleable Micro-Level Pedestrian Walkways Layer (Sidewalks, Doors, 2F Bridges & Wall Barriers) -->
                 <g id="pedestrianWalkwaysLayer" pointer-events="none"></g>
@@ -260,7 +260,7 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
                 </svg>
             </div>
             <!-- JaguarFind Light-Themed White & Sky-Blue Active Location Pill Badge -->
-            <div id="wazeActiveRoadPill" class="waze-road-pill hidden">Campus UAM</div>
+            <div id="wazeActiveRoadPill" class="waze-road-pill hidden">{{ t('map.campus_pill') }}</div>
         </div>
         <div id="wazeBadgesContainer" class="absolute inset-0 pointer-events-none"></div>
         <div id="wazeLostPinsContainer" class="absolute inset-0 pointer-events-none z-20"></div>

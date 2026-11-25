@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ current_language }}">
 <head>
   <meta charset="UTF-8">
-  <title>navbard_admins</title>
-  <link rel="stylesheet" href="../../static/css/screens/admin/navbardforadmins.css">
+  <title data-i18n="admin.panel_title">{{ t('admin.panel_title') }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/screens/admin/navbardforadmins.css') }}">
 </head>
 <body>
   <aside class="sidebar" id="sidebar">
-    <button class="toggle-btn" id="toggleBtn" aria-label="Abrir o cerrar menú">☰</button>
+    <button class="toggle-btn" id="toggleBtn" aria-label="{{ t('nav.admin_nav_toggle') }}" data-i18n-aria-label="nav.admin_nav_toggle">☰</button>
 
     <nav>
-      <a href="/admin" class="nav-item">
-        <span class="icon">🏠</span><span class="label">Inicio</span>
+      <a href="/admin/dashboard" class="nav-item">
+        <span class="icon">🏠</span><span class="label" data-i18n="nav.admin_nav_home">{{ t('nav.admin_nav_home') }}</span>
       </a>
-      <a href="#" class="nav-item">
-        <span class="icon">👥</span><span class="label">Usuarios</span>
+      <a href="/admin/users" class="nav-item">
+        <span class="icon">👥</span><span class="label" data-i18n="nav.admin_nav_users">{{ t('nav.admin_nav_users') }}</span>
       </a>
-      <a href="#" class="nav-item">
-        <span class="icon">🗺️</span><span class="label">Mapas</span>
+      <a href="/map" class="nav-item">
+        <span class="icon">🗺️</span><span class="label" data-i18n="nav.admin_nav_maps">{{ t('nav.admin_nav_maps') }}</span>
       </a>
     </nav>
   </aside>
@@ -26,6 +26,6 @@
     
   </main>
 
-  <script src="/static/js/navbardforadmins.js"></script>
+  <script src="{{ url_for('static', filename='js/navbardforadmins.js') }}"></script>
 </body>
 </html>

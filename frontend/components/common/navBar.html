@@ -9,10 +9,10 @@
                 <button id="navSidebarToggle" 
                         type="button" 
                         class="p-2 -ml-2 rounded-xl text-slate-600 hover:text-brand-700 hover:bg-slate-100 active:scale-95 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20 transition-all cursor-pointer" 
-                        aria-label="{{ t('nav.toggle_menu', default='Alternar menú de navegación') }}" 
+                        aria-label="{{ t('nav.toggle_menu') }}" 
                         data-i18n-aria-label="nav.toggle_menu"
                         aria-expanded="false" 
-                        title="{{ t('nav.toggle_menu', default='Alternar menú de navegación') }}"
+                        title="{{ t('nav.toggle_menu') }}"
                         data-i18n-title="nav.toggle_menu">
                     <svg id="navSidebarHamburgerIcon" class="w-6 h-6 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -20,9 +20,9 @@
                 </button>
 
                 <a href="{{ url_for('renderMapScreen') }}" class="flex items-center gap-2.5 group">
-                    <img src="{{ url_for('static', filename='img/jaguarLogo.jpg') }}" alt="JaguarFind Logo" class="w-8 h-8 rounded-full ring-2 ring-brand-300 object-contain">
-                    <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-ocean-900 to-brand-500 bg-clip-text text-transparent">
-                        JaguarFind
+                    <img src="{{ url_for('static', filename='img/jaguarLogo.jpg') }}" alt="{{ t('app.logo_alt') }}" data-i18n-alt="app.logo_alt" class="w-8 h-8 rounded-full ring-2 ring-brand-300 object-contain">
+                    <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-ocean-900 to-brand-500 bg-clip-text text-transparent" data-i18n="app.name">
+                        {{ t('app.name') }}
                     </span>
                 </a>
             </div>
@@ -32,20 +32,20 @@
                 <!-- Campus Map -->
                 <a href="{{ url_for('renderMapScreen') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors {% if request.path in ['/', '/map', '/mapa'] %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:text-brand-700 hover:bg-slate-50{% endif %}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                    <span data-i18n="nav.map">{{ t('nav.map', default='Campus Map') }}</span>
+                    <span data-i18n="nav.map">{{ t('nav.map') }}</span>
                 </a>
 
                 <!-- Lost & Found: if authenticated goes to catalog, otherwise to /auth -->
                 {% set lostFoundTarget = '/lost-found-object/catalogo' if session.get('user') else '/auth' %}
                 <a href="{{ lostFoundTarget }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors {% if request.path.startswith('/lost-found') or request.path.startswith('/catalog') or request.path.startswith('/auth') %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:text-brand-700 hover:bg-slate-50{% endif %}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                    <span data-i18n="nav.lost_found">{{ t('nav.lost_found', default='Lost & Found') }}</span>
+                    <span data-i18n="nav.lost_found">{{ t('nav.lost_found') }}</span>
                 </a>
 
                 <!-- Admin Dashboard link if user is admin -->
                 {% if session.get('user') and session['user'].get('UserTypeId') == 4 %}
                 <a href="/admin/dashboard" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-xs">
-                    <span data-i18n="nav.admin_panel_short">{{ t('nav.admin_panel_short', default='Panel Admin') }}</span>
+                    <span data-i18n="nav.admin_panel_short">{{ t('nav.admin_panel_short') }}</span>
                 </a>
                 {% endif %}
             </nav>
@@ -54,13 +54,13 @@
             <div class="flex items-center gap-2.5">
                 
                 <!-- Reactive Language Switcher Toggle (updates session + DOM without full reload) -->
-                <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200" role="group" aria-label="{{ t('nav.language', default='Language') }}" data-i18n-aria-label="nav.language">
+                <div class="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200" role="group" aria-label="{{ t('nav.language') }}" data-i18n-aria-label="nav.language">
                     <a href="{{ url_for('setLanguage', lang='spa') }}" 
                        data-lang-switch="spa"
                        aria-pressed="{{ 'true' if current_language == 'spa' else 'false' }}"
                        {% if current_language == 'spa' %}aria-current="true"{% endif %}
                        class="px-2.5 py-1 text-xs font-bold rounded-md transition-all {% if current_language == 'spa' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}"
-                       title="{{ t('nav.switch_to_es', default='Cambiar a Español') }}"
+                       title="{{ t('nav.switch_to_es') }}"
                        data-i18n-title="nav.switch_to_es">
                         ES
                     </a>
@@ -69,7 +69,7 @@
                        aria-pressed="{{ 'true' if current_language == 'eng' else 'false' }}"
                        {% if current_language == 'eng' %}aria-current="true"{% endif %}
                        class="px-2.5 py-1 text-xs font-bold rounded-md transition-all {% if current_language == 'eng' %}bg-white text-slate-900 shadow-xs{% else %}text-slate-500 hover:text-slate-800{% endif %}"
-                       title="{{ t('nav.switch_to_en', default='Switch to English') }}"
+                       title="{{ t('nav.switch_to_en') }}"
                        data-i18n-title="nav.switch_to_en">
                         EN
                     </a>
@@ -77,19 +77,21 @@
 
                 <!-- User Session & Sign Out Button (when authenticated) -->
                 {% if session.get('user') %}
+                    {% set navRoleMap = {1: 'auth.role_student', 2: 'auth.role_collaborator', 3: 'auth.role_visitor_short', 4: 'auth.role_admin'} %}
+                    {% set navRoleKey = navRoleMap.get(session['user'].get('UserTypeId'), 'auth.role_student') %}
                     <div class="flex items-center gap-2 pl-2 border-l border-slate-200">
                         <div class="hidden sm:flex flex-col text-right">
                             <span class="text-xs font-bold text-slate-800 leading-tight">
-                                {{ session['user'].get('FullName', 'User') }}
+                                {{ session['user'].get('FullName', '') }}
                             </span>
-                            <span class="text-[10px] font-bold text-brand-600">
-                                {{ session['user'].get('UserTypeName', 'Student') }}
+                            <span class="text-[10px] font-bold text-brand-600" data-i18n="{{ navRoleKey }}">
+                                {{ t(navRoleKey) }}
                             </span>
                         </div>
                         <form action="/logout" method="POST" class="inline">
-                            <button type="submit" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 transition-colors flex items-center gap-1" title="{{ t('nav.logout', default='Cerrar sesión') }}" data-i18n-title="nav.logout">
+                            <button type="submit" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 transition-colors flex items-center gap-1" title="{{ t('nav.logout') }}" data-i18n-title="nav.logout">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                                <span class="hidden sm:inline" data-i18n="nav.exit">{{ t('nav.exit', default='Salir') }}</span>
+                                <span class="hidden sm:inline" data-i18n="nav.exit">{{ t('nav.exit') }}</span>
                             </button>
                         </form>
                     </div>
@@ -100,11 +102,11 @@
 
         <!-- Mobile navigation links (desktop nav is hidden below md) -->
         <nav class="md:hidden flex items-center gap-1 pb-2 -mt-1 overflow-x-auto">
-            <a href="{{ url_for('renderMapScreen') }}" data-i18n="nav.map" class="flex-1 text-center px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap {% if request.path in ['/', '/map', '/mapa'] %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">{{ t('nav.map', default='Campus Map') }}</a>
+            <a href="{{ url_for('renderMapScreen') }}" data-i18n="nav.map" class="flex-1 text-center px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap {% if request.path in ['/', '/map', '/mapa'] %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">{{ t('nav.map') }}</a>
             {% set lostFoundTargetMobile = '/lost-found-object/catalogo' if session.get('user') else '/auth' %}
-            <a href="{{ lostFoundTargetMobile }}" data-i18n="nav.lost_found" class="flex-1 text-center px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap {% if request.path.startswith('/lost-found') or request.path.startswith('/catalog') or request.path.startswith('/auth') %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">{{ t('nav.lost_found', default='Lost & Found') }}</a>
+            <a href="{{ lostFoundTargetMobile }}" data-i18n="nav.lost_found" class="flex-1 text-center px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap {% if request.path.startswith('/lost-found') or request.path.startswith('/catalog') or request.path.startswith('/auth') %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">{{ t('nav.lost_found') }}</a>
             {% if session.get('user') and session['user'].get('UserTypeId') == 4 %}
-            <a href="/admin/dashboard" data-i18n="nav.admin_short" class="flex-1 text-center px-2 py-1.5 text-xs font-bold rounded-lg whitespace-nowrap bg-slate-900 text-white">{{ t('nav.admin_short', default='Admin') }}</a>
+            <a href="/admin/dashboard" data-i18n="nav.admin_short" class="flex-1 text-center px-2 py-1.5 text-xs font-bold rounded-lg whitespace-nowrap bg-slate-900 text-white">{{ t('nav.admin_short') }}</a>
             {% endif %}
         </nav>
     </div>

@@ -9,11 +9,10 @@ request form, map focus action, and optional admin custody state editor).
 Used by both catalogScreen.html and mapScreen.html.
 ================================================================================
 -->
-{% set es = current_language == 'spa' %}
 {% set user = session.get('user') %}
 {% set isAdmin = user and user.get('UserTypeId') == 4 %}
 
-<!-- ITEM DETAIL MODAL (PINTEREST-STYLE PIN DETAIL VIEW) -->
+<!-- ITEM DETAIL MODAL -->
 <div id="itemDetailModal"
      role="dialog"
      aria-modal="true"
@@ -24,7 +23,7 @@ Used by both catalogScreen.html and mapScreen.html.
         <!-- Loading State -->
         <div id="itemDetailLoading" class="hidden py-20 px-6 text-center">
             <div class="inline-block w-9 h-9 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-            <p class="text-sm font-semibold text-slate-500" data-i18n="lost_found.detail_loading">{{ 'Cargando detalle del objeto...' if es else 'Loading item details...' }}</p>
+            <p class="text-sm font-semibold text-slate-500" data-i18n="lost_found.detail_loading">{{ t('lost_found.detail_loading') }}</p>
         </div>
 
         <!-- Not Found / Error State -->
@@ -32,11 +31,11 @@ Used by both catalogScreen.html and mapScreen.html.
             <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-3">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
-            <h3 class="text-base font-extrabold text-slate-900" data-i18n="lost_found.detail_not_found_title">{{ 'Objeto no encontrado' if es else 'Item not found' }}</h3>
-            <p class="text-xs text-slate-500 mt-1" data-i18n="lost_found.detail_not_found_desc">{{ 'No pudimos encontrar el reporte solicitado o fue eliminado.' if es else "We couldn't find the requested report or it was removed." }}</p>
+            <h3 class="text-base font-extrabold text-slate-900" data-i18n="lost_found.detail_not_found_title">{{ t('lost_found.detail_not_found_title') }}</h3>
+            <p class="text-xs text-slate-500 mt-1" data-i18n="lost_found.detail_not_found_desc">{{ t('lost_found.detail_not_found_desc') }}</p>
             <button id="btnCloseItemDetailError" type="button"
                     class="mt-5 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition cursor-pointer">
-                <span data-i18n="lost_found.detail_back_to_catalog">{{ 'Volver al catálogo' if es else 'Back to catalog' }}</span>
+                <span data-i18n="lost_found.detail_back_to_catalog">{{ t('lost_found.detail_back_to_catalog') }}</span>
             </button>
         </div>
 
@@ -50,7 +49,7 @@ Used by both catalogScreen.html and mapScreen.html.
                     <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-3xl bg-white/90 border border-slate-200 flex items-center justify-center text-slate-400 shadow-xs">
                         <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                     </div>
-                    <span class="text-[11px] font-semibold text-slate-400" data-i18n="lost_found.detail_no_photo">{{ 'Sin fotografía adjunta' if es else 'No photo attached' }}</span>
+                    <span class="text-[11px] font-semibold text-slate-400" data-i18n="lost_found.detail_no_photo">{{ t('lost_found.detail_no_photo') }}</span>
                 </div>
                 <div id="detailStateBadge" class="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 max-w-[calc(100%-64px)]"></div>
                 <span id="detailCategoryBadge" class="absolute bottom-3 left-3 md:bottom-auto md:left-auto md:top-3.5 md:right-3.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-white/95 backdrop-blur-xs text-slate-800 shadow-xs"></span>
@@ -66,11 +65,11 @@ Used by both catalogScreen.html and mapScreen.html.
                             <button id="btnDetailCopyLink" type="button"
                                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] font-bold text-slate-600 transition cursor-pointer">
                                 <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                                <span id="detailCopyLinkLabel" data-i18n="lost_found.detail_copy_link">{{ 'Copiar enlace' if es else 'Copy link' }}</span>
+                                <span id="detailCopyLinkLabel" data-i18n="lost_found.detail_copy_link">{{ t('lost_found.detail_copy_link') }}</span>
                             </button>
                         </div>
                         <button id="btnCloseItemDetailModal" type="button"
-                                aria-label="{{ 'Cerrar' if es else 'Close' }}"
+                                aria-label="{{ t('lost_found.close') }}"
                                 data-i18n-aria-label="lost_found.close"
                                 class="absolute top-3 right-3 z-20 md:static w-8 h-8 rounded-full bg-white/95 md:bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 shadow-md md:shadow-none border border-slate-200/80 md:border-transparent flex items-center justify-center transition cursor-pointer shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -89,22 +88,22 @@ Used by both catalogScreen.html and mapScreen.html.
 
                     <!-- Description -->
                     <div>
-                        <h3 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1" data-i18n="lost_found.detail_description">{{ 'Descripción' if es else 'Description' }}</h3>
+                        <h3 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1" data-i18n="lost_found.detail_description">{{ t('lost_found.detail_description') }}</h3>
                         <p id="detailItemDescription" class="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line break-words"></p>
                     </div>
 
                     <!-- Metadata Grid -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                         <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400" data-i18n="lost_found.detail_reported_on">{{ 'Reportado el' if es else 'Reported on' }}</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400" data-i18n="lost_found.detail_reported_on">{{ t('lost_found.detail_reported_on') }}</span>
                             <span id="detailItemDate" class="font-bold text-slate-800"></span>
                         </div>
                         <div id="detailItemReporterWrap" class="hidden p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400" data-i18n="lost_found.detail_reported_by">{{ 'Reportado por' if es else 'Reported by' }}</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400" data-i18n="lost_found.detail_reported_by">{{ t('lost_found.detail_reported_by') }}</span>
                             <span id="detailItemReporter" class="font-bold text-slate-800"></span>
                         </div>
                         <div id="detailItemResolvedWrap" class="hidden sm:col-span-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-100">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-emerald-600" data-i18n="lost_found.detail_resolved_on">{{ 'Entregado el' if es else 'Delivered on' }}</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-emerald-600" data-i18n="lost_found.detail_resolved_on">{{ t('lost_found.detail_resolved_on') }}</span>
                             <span id="detailItemResolvedDate" class="font-bold text-emerald-900"></span>
                         </div>
                     </div>
@@ -119,7 +118,7 @@ Used by both catalogScreen.html and mapScreen.html.
                     <div id="detailSecretBox" class="hidden rounded-2xl p-3.5 bg-amber-50 border border-amber-200 text-xs">
                         <div class="flex items-center gap-1.5 font-extrabold text-amber-900 mb-1">
                             <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg>
-                            <span data-i18n="lost_found.detail_secret_title">{{ 'Detalle Secreto (Verificación Antifraude)' if es else 'Secret Detail (Anti-Fraud Verification)' }}</span>
+                            <span data-i18n="lost_found.detail_secret_title">{{ t('lost_found.detail_secret_title') }}</span>
                         </div>
                         <p id="detailSecretText" class="text-amber-800 leading-snug"></p>
                     </div>
@@ -129,22 +128,22 @@ Used by both catalogScreen.html and mapScreen.html.
                         <form id="detailClaimForm" class="space-y-3">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                 <div>
-                                    <label for="claimantNameInput" class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.detail_claim_name">{{ 'Nombre completo' if es else 'Full name' }}</label>
+                                    <label for="claimantNameInput" class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.detail_claim_name">{{ t('lost_found.detail_claim_name') }}</label>
                                     <input type="text" id="claimantNameInput" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:border-brand-500 focus:outline-hidden">
                                 </div>
                                 <div>
-                                    <label for="claimantContactInput" class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.detail_claim_contact">{{ 'Correo o teléfono de contacto' if es else 'Contact email or phone' }}</label>
+                                    <label for="claimantContactInput" class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.detail_claim_contact">{{ t('lost_found.detail_claim_contact') }}</label>
                                     <input type="text" id="claimantContactInput" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:border-brand-500 focus:outline-hidden">
                                 </div>
                             </div>
                             <div>
-                                <label for="claimSecretInput" class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.detail_claim_secret">{{ 'Describe un detalle identificador (opcional)' if es else 'Describe an identifying detail (optional)' }}</label>
+                                <label for="claimSecretInput" class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.detail_claim_secret">{{ t('lost_found.detail_claim_secret') }}</label>
                                 <input type="text" id="claimSecretInput" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:border-brand-500 focus:outline-hidden">
                             </div>
                             <div id="detailClaimAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
                             <div class="flex items-center justify-end gap-2 flex-wrap">
-                                <button id="btnCancelClaimForm" type="button" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 cursor-pointer" data-i18n="lost_found.detail_claim_cancel">{{ 'Cancelar' if es else 'Cancel' }}</button>
-                                <button id="btnSubmitClaimForm" type="submit" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition cursor-pointer" data-i18n="lost_found.detail_claim_submit">{{ 'Enviar solicitud de reclamo' if es else 'Submit claim request' }}</button>
+                                <button id="btnCancelClaimForm" type="button" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 cursor-pointer" data-i18n="lost_found.detail_claim_cancel">{{ t('lost_found.detail_claim_cancel') }}</button>
+                                <button id="btnSubmitClaimForm" type="submit" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition cursor-pointer" data-i18n="lost_found.detail_claim_submit">{{ t('lost_found.detail_claim_submit') }}</button>
                             </div>
                         </form>
                     </div>
@@ -155,23 +154,23 @@ Used by both catalogScreen.html and mapScreen.html.
                     <a id="btnDetailViewOnMap" href="/mapa"
                        class="flex-1 min-w-[140px] py-2.5 px-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-xs">
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                        <span data-i18n="lost_found.view_on_map_25d">{{ 'Ver en Mapa 2.5D' if es else 'View on 2.5D Map' }}</span>
+                        <span data-i18n="lost_found.view_on_map_25d">{{ t('lost_found.view_on_map_25d') }}</span>
                     </a>
                     <button id="btnDetailMoreInBuilding" type="button"
                             class="flex-1 sm:flex-none py-2.5 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
                         <svg class="w-3.5 h-3.5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
-                        <span data-i18n="lost_found.detail_filter_building">{{ 'Ver más en este edificio' if es else 'More from this building' }}</span>
+                        <span data-i18n="lost_found.detail_filter_building">{{ t('lost_found.detail_filter_building') }}</span>
                     </button>
                     <button id="btnToggleClaimForm" type="button"
                             class="flex-1 sm:flex-none py-2.5 px-3.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
                         <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span data-i18n="lost_found.detail_claim_button">{{ 'Reclamar este objeto' if es else 'Claim this item' }}</span>
+                        <span data-i18n="lost_found.detail_claim_button">{{ t('lost_found.detail_claim_button') }}</span>
                     </button>
                     {% if isAdmin %}
                     <button id="btnDetailAdminEditState" type="button"
                             class="flex-1 sm:flex-none py-2.5 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
                         <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        <span data-i18n="lost_found.edit_ticket_state">{{ 'Editar Estado Ticket' if es else 'Edit Ticket Status' }}</span>
+                        <span data-i18n="lost_found.edit_ticket_state">{{ t('lost_found.edit_ticket_state') }}</span>
                     </button>
                     {% endif %}
                 </div>
@@ -185,27 +184,27 @@ Used by both catalogScreen.html and mapScreen.html.
 <div id="adminStateModal" role="dialog" aria-modal="true" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div class="w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-amber-50">
-            <h3 class="text-sm font-black text-slate-900" data-i18n="lost_found.admin_update_state_title">{{ 'Actualizar Estado de Custodia' if es else 'Update Custody Status' }}</h3>
-            <button id="btnCloseAdminStateModal" type="button" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs cursor-pointer" aria-label="{{ 'Cerrar' if es else 'Close' }}" data-i18n-aria-label="lost_found.close">&times;</button>
+            <h3 class="text-sm font-black text-slate-900" data-i18n="lost_found.admin_update_state_title">{{ t('lost_found.admin_update_state_title') }}</h3>
+            <button id="btnCloseAdminStateModal" type="button" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs cursor-pointer" aria-label="{{ t('lost_found.close') }}" data-i18n-aria-label="lost_found.close">&times;</button>
         </div>
         <form id="adminStateForm" class="p-6 space-y-4">
             <input type="hidden" id="adminStateItemId" value="">
             <div>
-                <p class="text-xs text-slate-500" data-i18n="lost_found.admin_item_label">{{ 'Objeto:' if es else 'Item:' }}</p>
+                <p class="text-xs text-slate-500" data-i18n="lost_found.admin_item_label">{{ t('lost_found.admin_item_label') }}</p>
                 <p id="adminStateItemTitle" class="text-sm font-bold text-slate-900"></p>
             </div>
             <div>
-                <label for="adminStateSelect" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.admin_new_state_label">{{ 'Nuevo Estado *' if es else 'New Status *' }}</label>
+                <label for="adminStateSelect" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.admin_new_state_label">{{ t('lost_found.admin_new_state_label') }}</label>
                 <select id="adminStateSelect" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold">
-                    <option value="1" data-i18n="lost_found.admin_state_opt_1">{{ '1: Reportado (Hallazgo en campus)' if es else '1: Reported (Found on campus)' }}</option>
-                    <option value="2" data-i18n="lost_found.admin_state_opt_2">{{ '2: En Custodia (Almacenado en Edificio A - CAE)' if es else '2: In Custody (Stored at Building A - CAE)' }}</option>
-                    <option value="3" data-i18n="lost_found.admin_state_opt_3">{{ '3: Entregado / Reclamado por dueño' if es else '3: Claimed / Returned to owner' }}</option>
+                    <option value="1" data-i18n="lost_found.admin_state_opt_1">{{ t('lost_found.admin_state_opt_1') }}</option>
+                    <option value="2" data-i18n="lost_found.admin_state_opt_2">{{ t('lost_found.admin_state_opt_2') }}</option>
+                    <option value="3" data-i18n="lost_found.admin_state_opt_3">{{ t('lost_found.admin_state_opt_3') }}</option>
                 </select>
             </div>
             <div id="adminStateAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
             <div class="pt-2 flex justify-end gap-2">
-                <button id="btnCancelAdminState" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 cursor-pointer" data-i18n="lost_found.detail_claim_cancel">{{ 'Cancelar' if es else 'Cancel' }}</button>
-                <button type="submit" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold cursor-pointer" data-i18n="lost_found.admin_save_state">{{ 'Guardar Estado' if es else 'Save Status' }}</button>
+                <button id="btnCancelAdminState" type="button" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 cursor-pointer" data-i18n="lost_found.detail_claim_cancel">{{ t('lost_found.detail_claim_cancel') }}</button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold cursor-pointer" data-i18n="lost_found.admin_save_state">{{ t('lost_found.admin_save_state') }}</button>
             </div>
         </form>
     </div>

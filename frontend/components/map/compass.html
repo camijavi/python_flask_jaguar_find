@@ -12,8 +12,10 @@ JaguarFind Circular Campus Orientation Compass:
 
 <div id="campusCompass"
      class="campus-compass w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/95 backdrop-blur-md border border-brand-200/80 shadow-lg shadow-brand-900/12 flex items-center justify-center transition-transform duration-200 pointer-events-auto select-none cursor-pointer"
-     title="{{ t('map.compass_orientation', default='Orientación del campus • Clic para centrar y reorientar') }}"
-     aria-label="{{ t('map.compass_orientation', default='Orientación del campus') }}"
+     title="{{ t('map.compass_orientation') }}"
+     data-i18n-title="map.compass_orientation"
+     aria-label="{{ t('map.compass_aria') }}"
+     data-i18n-aria-label="map.compass_aria"
      role="button"
      tabindex="0">
     <svg id="compassRose" class="w-9 h-9 sm:w-10 sm:h-10 compass-rose overflow-visible" viewBox="-34 -34 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">

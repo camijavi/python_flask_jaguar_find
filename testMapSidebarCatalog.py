@@ -3,11 +3,10 @@ testMapSidebarCatalog.py
 ================================================================================
 Automated test suite verifying the Map Sidebar Lost & Found Objects Catalog tab
 and Item Detail Dialog:
-1. Map routes (/, /map, /mapa) render the 3-tab responsive sidebar switcher
-   (#sidebarTabNav, #sidebarTabDir, #sidebarTabCatalog), catalog panel
-   (#sidebarPanelCatalog), shared detail dialog (#itemDetailModal), and
-   mapSidebarCatalog.js for visitors, students, and admins (with admin-only
-   controls gated to UserTypeId == 4)
+1. Map routes (/, /map, /mapa) render a responsive sidebar switcher, with the
+   catalog tab and panel available only to authenticated users, plus the shared
+   detail dialog (#itemDetailModal) and mapSidebarCatalog.js (admin-only controls
+   are gated to UserTypeId == 4)
 2. Bilingual dictionary symmetry and presence of new sidebar catalog keys
 3. Client-side JS behavior (via Node.js) for mapSidebarCatalog.js:
    - Fetches and renders catalog cards with XSS escaping & safe PhotoUrl checks
@@ -104,7 +103,7 @@ class TestMapSidebarCatalogBackend(unittest.TestCase):
             self.assertIn(required_key, spa_keys)
 
     def test_map_screen_renders_sidebar_catalog_tab_and_detail_dialog(self):
-        # Unauthenticated visitor on /, /map, /mapa
+        # Unauthenticated visitors do not see the lost & found catalog in the sidebar.
         for route in ("/", "/map", "/mapa"):
             res = self.client.get(route)
             self.assertEqual(res.status_code, 200)
@@ -112,10 +111,10 @@ class TestMapSidebarCatalogBackend(unittest.TestCase):
             self.assertIn('id="sidebarSwitcher"', html)
             self.assertIn('id="sidebarTabNav"', html)
             self.assertIn('id="sidebarTabDir"', html)
-            self.assertIn('id="sidebarTabCatalog"', html)
-            self.assertIn('id="sidebarPanelCatalog"', html)
-            self.assertIn('id="sidebarLostFoundComponent"', html)
-            self.assertIn('id="sidebarCatalogList"', html)
+            self.assertNotIn('id="sidebarTabCatalog"', html)
+            self.assertNotIn('id="sidebarPanelCatalog"', html)
+            self.assertNotIn('id="sidebarLostFoundComponent"', html)
+            self.assertNotIn('id="sidebarCatalogList"', html)
             self.assertIn('id="itemDetailModal"', html)
             self.assertIn("mapSidebarCatalog.js", html)
             # Non-admin must NOT receive admin state modal
@@ -129,6 +128,9 @@ class TestMapSidebarCatalogBackend(unittest.TestCase):
         student_html = res_student.get_data(as_text=True)
         self.assertIn('data-is-admin="false"', student_html)
         self.assertIn('data-user-name="Camila Navarro"', student_html)
+        self.assertIn('id="sidebarTabCatalog"', student_html)
+        self.assertIn('id="sidebarPanelCatalog"', student_html)
+        self.assertIn('id="sidebarLostFoundComponent"', student_html)
         self.assertNotIn('id="adminStateModal"', student_html)
 
         # Authenticated admin gets admin state modal & button

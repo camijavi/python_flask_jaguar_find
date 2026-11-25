@@ -22,18 +22,18 @@ import math
 from typing import Dict, List, Optional, Tuple, Any
 from .directedGraph import DirectedGraph, DirectedEdge, Node
 from .geoUtils import CampusGeoUtils
+from .i18n import t, normalize_language
 
 
 def formatHumanWalkingTime(totalDistanceMeters: float, lang: str = "spa") -> str:
     """Converts Dijkstra metric weight sum into human-readable walking duration."""
+    activeLang = normalize_language(lang)
     if totalDistanceMeters <= 0:
-        return "Ya estás aquí" if lang == "spa" else "You are already here"
+        return t("navigation.time_already_here", lang=activeLang)
     if totalDistanceMeters < 45.0:
-        return "Muy cerca (menos de 1 min)" if lang == "spa" else "Very close (< 1 min)"
+        return t("navigation.time_very_close", lang=activeLang)
     mins = max(1, math.ceil(totalDistanceMeters / 72.0))
-    if lang == "spa":
-        return f"~{mins} min caminando"
-    return f"~{mins} min walk"
+    return t("navigation.time_walking_min", lang=activeLang, minutes=mins)
 
 
 def _computeRelativeTurn(
@@ -126,49 +126,20 @@ def _formatPassedList(landmarks: List[str], lang: str) -> str:
     picked = unique[:2]
     if len(picked) == 1:
         return picked[0]
-    conj = " y " if lang == "spa" else " and "
+    conj = t("navigation.conjunction_and", lang=normalize_language(lang))
     return f"{picked[0]}{conj}{picked[1]}"
 
 
 def _headlineForManeuver(maneuver: str, lang: str) -> str:
-    spa = {
-        "start": "Inicia el recorrido",
-        "straight": "Sigue recto",
-        "slight_right": "Mantente a la derecha",
-        "right": "Gira a la derecha",
-        "slight_left": "Mantente a la izquierda",
-        "left": "Gira a la izquierda",
-        "uturn": "Da media vuelta",
-        "crosswalk": "Cruza el paso peatonal",
-        "skybridge": "Puente del 2.º piso",
-        "stairs_up": "Sube las gradas",
-        "stairs_down": "Baja las gradas",
-        "stairs": "Usa las gradas",
-        "ramp": "Toma la rampa accesible",
-        "enter": "Entra al edificio",
-        "exit": "Sal al exterior",
-        "arrive": "Has llegado",
+    activeLang = normalize_language(lang)
+    validKeys = {
+        "start", "straight", "slight_right", "right", "slight_left", "left",
+        "uturn", "crosswalk", "skybridge", "stairs_up", "stairs_down",
+        "stairs", "ramp", "enter", "exit", "arrive",
+        "indoor_location", "access_notice",
     }
-    eng = {
-        "start": "Start route",
-        "straight": "Continue straight",
-        "slight_right": "Keep right",
-        "right": "Turn right",
-        "slight_left": "Keep left",
-        "left": "Turn left",
-        "uturn": "Turn around",
-        "crosswalk": "Cross the crosswalk",
-        "skybridge": "2nd-floor skybridge",
-        "stairs_up": "Go up the stairs",
-        "stairs_down": "Go down the stairs",
-        "stairs": "Use the stairs",
-        "ramp": "Take the accessible ramp",
-        "enter": "Enter building",
-        "exit": "Exit outside",
-        "arrive": "You arrived",
-    }
-    table = spa if lang == "spa" else eng
-    return table.get(maneuver, table["straight"])
+    key = maneuver if maneuver in validKeys else "straight"
+    return t(f"navigation.headlines.{key}", lang=activeLang)
 
 
 def _polishSentence(text: str, lang: str) -> str:
@@ -208,13 +179,10 @@ def buildHumanWalkwaySteps(
         return []
 
     nodes = [walkwayGraph.nodes[nid] for nid in pathNodeIds if nid in walkwayGraph.nodes]
+    activeLang = normalize_language(lang)
     if len(nodes) < 2:
         n0 = nodes[0]
-        arrText = (
-            f"Ya te encuentras en {destDisplayName}."
-            if lang == "spa"
-            else f"You are already at {destDisplayName}."
-        )
+        arrText = t("navigation.steps.already_at_place", lang=activeLang, dest=destDisplayName)
         return [{
             "index": 0,
             "instruction": arrText,
@@ -447,11 +415,7 @@ def buildHumanWalkwaySteps(
 
     if includeArrivalStep:
         finalNode = nodes[-1]
-        arrText = (
-            f"Has llegado a tu destino: {destDisplayName}."
-            if lang == "spa"
-            else f"You have arrived at your destination: {destDisplayName}."
-        )
+        arrText = t("navigation.arrived_at_destination", lang=activeLang, destNode=destDisplayName)
         steps.append({
             "index": len(steps),
             "instruction": arrText,
@@ -488,85 +452,42 @@ def _composeWalkwaySentence(
     isFirst: bool,
     lang: str,
 ) -> str:
-    if lang == "spa":
-        passTail = f", pasando {passedClause}," if passedClause else ""
-        viaTail = " por el pasillo interior" if env == "indoor" else ""
-
-        if maneuver == "skybridge":
-            return f"Sube y cruza el puente techado del 2.º piso hacia {targetLabel}."
-        if maneuver == "crosswalk":
-            return f"Cruza el paso peatonal (cebra) hacia {targetLabel}."
-        if maneuver == "stairs":
-            return f"Usa las gradas y avanza hacia {targetLabel}."
-        if maneuver == "ramp":
-            return f"Toma la rampa accesible{passTail} hacia {targetLabel}."
-        if maneuver == "enter":
-            if turnAnchor:
-                return f"Entra por {turnAnchor} y avanza por el pasillo{passTail} hacia {targetLabel}."
-            return f"Entra al edificio y sigue por el pasillo{passTail} hacia {targetLabel}."
-        if maneuver == "exit":
-            if turnAnchor:
-                return f"Sal por {turnAnchor} y dirígete{passTail} hacia {targetLabel}."
-            return f"Sal al camino exterior{passTail} hacia {targetLabel}."
-
-        if isFirst:
-            originRef = originName or "tu punto de partida"
-            if env == "indoor":
-                return f"Desde {originRef}, avanza por el pasillo{passTail} hacia {targetLabel}."
-            return f"Desde {originRef}, avanza por el camino peatonal{passTail} hacia {targetLabel}."
-
-        anchorPrefix = f"Al llegar a {turnAnchor}, " if turnAnchor else ""
-        if maneuver == "right":
-            return f"{anchorPrefix}gira a la derecha{viaTail}{passTail} hacia {targetLabel}."
-        if maneuver == "slight_right":
-            return f"{anchorPrefix}mantente ligeramente a la derecha{viaTail}{passTail} hacia {targetLabel}."
-        if maneuver == "left":
-            return f"{anchorPrefix}gira a la izquierda{viaTail}{passTail} hacia {targetLabel}."
-        if maneuver == "slight_left":
-            return f"{anchorPrefix}mantente ligeramente a la izquierda{viaTail}{passTail} hacia {targetLabel}."
-        if maneuver == "uturn":
-            return f"{anchorPrefix}da media vuelta y dirígete{passTail} hacia {targetLabel}."
-        return f"{anchorPrefix}sigue recto{viaTail}{passTail} hacia {targetLabel}."
-
-    # English phrasing
-    passTail = f", passing {passedClause}," if passedClause else ""
-    viaTail = " through the indoor corridor" if env == "indoor" else ""
+    activeLang = normalize_language(lang)
+    passTail = t("navigation.steps.pass_clause", lang=activeLang, passed=passedClause) if passedClause else ""
+    viaTail = t("navigation.steps.via_indoor", lang=activeLang) if env == "indoor" else ""
 
     if maneuver == "skybridge":
-        return f"Cross the 2nd-floor covered skybridge toward {targetLabel}."
+        return t("navigation.steps.skybridge", lang=activeLang, target=targetLabel)
     if maneuver == "crosswalk":
-        return f"Cross the pedestrian crosswalk toward {targetLabel}."
+        return t("navigation.steps.crosswalk", lang=activeLang, target=targetLabel)
     if maneuver == "stairs":
-        return f"Take the stairs and continue toward {targetLabel}."
+        return t("navigation.steps.stairs", lang=activeLang, target=targetLabel)
     if maneuver == "ramp":
-        return f"Follow the accessible ramp{passTail} toward {targetLabel}."
+        return t("navigation.steps.ramp", lang=activeLang, pass_tail=passTail, target=targetLabel)
     if maneuver == "enter":
         if turnAnchor:
-            return f"Enter through {turnAnchor} and follow the corridor{passTail} toward {targetLabel}."
-        return f"Enter the building and follow the hallway{passTail} toward {targetLabel}."
+            return t("navigation.steps.enter_anchor", lang=activeLang, anchor=turnAnchor, pass_tail=passTail, target=targetLabel)
+        return t("navigation.steps.enter_generic", lang=activeLang, pass_tail=passTail, target=targetLabel)
     if maneuver == "exit":
         if turnAnchor:
-            return f"Exit through {turnAnchor} and head{passTail} toward {targetLabel}."
-        return f"Exit onto the outdoor walkway{passTail} toward {targetLabel}."
+            return t("navigation.steps.exit_anchor", lang=activeLang, anchor=turnAnchor, pass_tail=passTail, target=targetLabel)
+        return t("navigation.steps.exit_generic", lang=activeLang, pass_tail=passTail, target=targetLabel)
 
     if isFirst:
-        originRef = originName or "your starting point"
-        if env == "indoor":
-            return f"From {originRef}, follow the corridor{passTail} toward {targetLabel}."
-        return f"From {originRef}, follow the pedestrian walkway{passTail} toward {targetLabel}."
+        originRef = originName or t("navigation.steps.starting_point_default", lang=activeLang)
+        key = "navigation.steps.first_indoor" if env == "indoor" else "navigation.steps.first_outdoor"
+        return t(key, lang=activeLang, origin=originRef, pass_tail=passTail, target=targetLabel)
 
-    anchorPrefix = f"At {turnAnchor}, " if turnAnchor else ""
-    if maneuver == "right":
-        return f"{anchorPrefix}turn right{viaTail}{passTail} toward {targetLabel}."
-    if maneuver == "slight_right":
-        return f"{anchorPrefix}keep slightly right{viaTail}{passTail} toward {targetLabel}."
-    if maneuver == "left":
-        return f"{anchorPrefix}turn left{viaTail}{passTail} toward {targetLabel}."
-    if maneuver == "slight_left":
-        return f"{anchorPrefix}keep slightly left{viaTail}{passTail} toward {targetLabel}."
-    if maneuver == "uturn":
-        return f"{anchorPrefix}turn around and head{passTail} toward {targetLabel}."
-    return f"{anchorPrefix}continue straight{viaTail}{passTail} toward {targetLabel}."
+    anchorPrefix = t("navigation.steps.anchor_prefix", lang=activeLang, anchor=turnAnchor) if turnAnchor else ""
+    maneuverKeyMap = {
+        "right": "navigation.steps.turn_right",
+        "slight_right": "navigation.steps.turn_slight_right",
+        "left": "navigation.steps.turn_left",
+        "slight_left": "navigation.steps.turn_slight_left",
+        "uturn": "navigation.steps.turn_uturn",
+    }
+    stepKey = maneuverKeyMap.get(maneuver, "navigation.steps.continue_straight")
+    return t(stepKey, lang=activeLang, anchor_prefix=anchorPrefix, via_tail=viaTail, pass_tail=passTail, target=targetLabel)
 
 
 def buildHumanIndoorSteps(
@@ -595,21 +516,26 @@ def buildHumanIndoorSteps(
             return CampusGeoUtils.gpsToSvg(n.latitude, n.longitude)
         return (n.xSvg, n.ySvg)
 
+    activeLang = normalize_language(lang)
+    buildingDisplay = t(f"nodes.{subgraph.macroNodeId}", lang=activeLang, default=subgraph.name)
+
     if len(nodes) == 1:
         n0 = nodes[0]
         sx, sy = _nodeSvg(n0)
         if mode == "enter_destination":
-            txt = (
-                f"Al ingresar a {subgraph.name}, encontrarás {n0.name} justo en el acceso (Piso {n0.floorLevel})."
-                if lang == "spa"
-                else f"Upon entering {subgraph.name}, you will find {n0.name} right by the entrance (Floor {n0.floorLevel})."
+            txt = t(
+                "navigation.steps.indoor_enter_at_door",
+                lang=activeLang,
+                building=buildingDisplay,
+                room=n0.getName(activeLang),
+                floor=n0.floorLevel,
             )
             return [{
                 "index": 0,
                 "instruction": txt,
-                "headline": _headlineForManeuver("arrive", lang),
+                "headline": _headlineForManeuver("arrive", activeLang),
                 "maneuver": "arrive",
-                "landmark": _shortPlaceName(n0.name),
+                "landmark": _shortPlaceName(n0.getName(activeLang)),
                 "passedLandmarks": [],
                 "environment": "indoor",
                 "floorLevel": n0.floorLevel,
@@ -622,17 +548,18 @@ def buildHumanIndoorSteps(
             }]
         if mode == "exit_origin":
             return []
-        txt = (
-            f"Ya te encuentras en {n0.name} (Piso {n0.floorLevel})."
-            if lang == "spa"
-            else f"You are already at {n0.name} (Floor {n0.floorLevel})."
+        txt = t(
+            "navigation.steps.indoor_already_here",
+            lang=activeLang,
+            room=n0.getName(activeLang),
+            floor=n0.floorLevel,
         )
         return [{
             "index": 0,
             "instruction": txt,
-            "headline": _headlineForManeuver("arrive", lang),
+            "headline": _headlineForManeuver("arrive", activeLang),
             "maneuver": "arrive",
-            "landmark": _shortPlaceName(n0.name),
+            "landmark": _shortPlaceName(n0.getName(activeLang)),
             "passedLandmarks": [],
             "environment": "indoor",
             "floorLevel": n0.floorLevel,
@@ -689,18 +616,14 @@ def buildHumanIndoorSteps(
             isUp = seg["kind"] == "stairs_up"
             maneuver = "stairs_up" if isUp else "stairs_down"
             toFloor = seg["toFloor"]
-            if lang == "spa":
-                verb = "Sube" if isUp else "Baja"
-                txt = f"{verb} por las escaleras de {subgraph.name} hasta el Piso {toFloor}."
-            else:
-                verb = "Go up" if isUp else "Go down"
-                txt = f"{verb} the stairs in {subgraph.name} to Floor {toFloor}."
+            stepKey = "navigation.steps.indoor_stairs_up" if isUp else "navigation.steps.indoor_stairs_down"
+            txt = t(stepKey, lang=activeLang, building=buildingDisplay, floor=toFloor)
             steps.append({
                 "index": len(steps),
                 "instruction": txt,
-                "headline": _headlineForManeuver(maneuver, lang),
+                "headline": _headlineForManeuver(maneuver, activeLang),
                 "maneuver": maneuver,
-                "landmark": f"Piso {toFloor}" if lang == "spa" else f"Floor {toFloor}",
+                "landmark": t("navigation.floor_label", lang=activeLang, floor=toFloor),
                 "passedLandmarks": [],
                 "environment": "stairs",
                 "floorLevel": toFloor,
@@ -716,7 +639,7 @@ def buildHumanIndoorSteps(
 
         # Horizontal corridor run on floor
         floor = seg["floor"]
-        interNames = [_shortPlaceName(n.name) for n in segNodes[1:-1]]
+        interNames = [_shortPlaceName(n.getName(activeLang)) for n in segNodes[1:-1]]
         # Check if this corridor uses an accessible ramp
         usesRamp = any("rampa" in n.name.lower() or "ramp" in n.nodeId.lower() for n in segNodes)
         isExitRun = (mode == "exit_origin" and segIdx == len(segments) - 1)
@@ -724,49 +647,67 @@ def buildHumanIndoorSteps(
 
         if isExitRun:
             maneuver = "exit"
-            if lang == "spa":
-                txt = f"En {subgraph.name} (Piso {floor}), avanza desde {startN.name} hacia la salida ({endN.name})."
-            else:
-                txt = f"Inside {subgraph.name} (Floor {floor}), head from {startN.name} toward the exit ({endN.name})."
+            txt = t(
+                "navigation.steps.indoor_exit_run",
+                lang=activeLang,
+                building=buildingDisplay,
+                floor=floor,
+                start=startN.getName(activeLang),
+                end=endN.getName(activeLang),
+            )
         elif usesRamp:
             maneuver = "ramp"
-            if lang == "spa":
-                txt = f"Usa la rampa accesible en {subgraph.name} (Piso {floor}) hacia {endN.name}."
-            else:
-                txt = f"Use the accessible ramp in {subgraph.name} (Floor {floor}) toward {endN.name}."
+            txt = t(
+                "navigation.steps.indoor_ramp",
+                lang=activeLang,
+                building=buildingDisplay,
+                floor=floor,
+                end=endN.getName(activeLang),
+            )
         else:
             maneuver = "enter" if isEntryRun else "straight"
             if len(interNames) == 0:
-                if lang == "spa":
-                    if isEntryRun:
-                        txt = f"Dentro de {subgraph.name} (Piso {floor}), dirígete desde {startN.name} hacia {endN.name}."
-                    else:
-                        txt = f"En el Piso {floor}, dirígete hacia {endN.name}."
+                if isEntryRun:
+                    txt = t(
+                        "navigation.steps.indoor_entry_direct",
+                        lang=activeLang,
+                        building=buildingDisplay,
+                        floor=floor,
+                        start=startN.getName(activeLang),
+                        end=endN.getName(activeLang),
+                    )
                 else:
-                    if isEntryRun:
-                        txt = f"Inside {subgraph.name} (Floor {floor}), head from {startN.name} toward {endN.name}."
-                    else:
-                        txt = f"On Floor {floor}, head toward {endN.name}."
+                    txt = t(
+                        "navigation.steps.indoor_floor_direct",
+                        lang=activeLang,
+                        floor=floor,
+                        end=endN.getName(activeLang),
+                    )
             elif len(interNames) <= 2:
-                joined = _formatPassedList(interNames, lang)
-                if lang == "spa":
-                    txt = f"Avanza por el pasillo del Piso {floor} pasando {joined} hasta llegar a {endN.name}."
-                else:
-                    txt = f"Follow the Floor {floor} hallway passing {joined} until you reach {endN.name}."
+                joined = _formatPassedList(interNames, activeLang)
+                txt = t(
+                    "navigation.steps.indoor_hallway_pass",
+                    lang=activeLang,
+                    floor=floor,
+                    passed=joined,
+                    end=endN.getName(activeLang),
+                )
             else:
-                firstPass = interNames[0]
-                lastPass = interNames[-1]
-                if lang == "spa":
-                    txt = f"Recorre el pasillo del Piso {floor} pasando desde {firstPass} hasta {lastPass} para llegar a {endN.name}."
-                else:
-                    txt = f"Follow the Floor {floor} hallway past {firstPass} through {lastPass} to reach {endN.name}."
+                txt = t(
+                    "navigation.steps.indoor_hallway_range",
+                    lang=activeLang,
+                    floor=floor,
+                    first=interNames[0],
+                    last=interNames[-1],
+                    end=endN.getName(activeLang),
+                )
 
         steps.append({
             "index": len(steps),
             "instruction": txt,
-            "headline": _headlineForManeuver(maneuver, lang),
+            "headline": _headlineForManeuver(maneuver, activeLang),
             "maneuver": maneuver,
-            "landmark": _shortPlaceName(endN.name),
+            "landmark": _shortPlaceName(endN.getName(activeLang)),
             "passedLandmarks": interNames[:2],
             "environment": "ramp" if usesRamp else "indoor",
             "floorLevel": floor,
@@ -783,17 +724,18 @@ def buildHumanIndoorSteps(
     if mode in ("standalone", "enter_destination"):
         finalN = nodes[-1]
         fx, fy = _nodeSvg(finalN)
-        arrText = (
-            f"Has llegado a {finalN.name} (Piso {finalN.floorLevel})."
-            if lang == "spa"
-            else f"You have arrived at {finalN.name} (Floor {finalN.floorLevel})."
+        arrText = t(
+            "navigation.steps.indoor_arrived",
+            lang=activeLang,
+            room=finalN.getName(activeLang),
+            floor=finalN.floorLevel,
         )
         steps.append({
             "index": len(steps),
             "instruction": arrText,
-            "headline": _headlineForManeuver("arrive", lang),
+            "headline": _headlineForManeuver("arrive", activeLang),
             "maneuver": "arrive",
-            "landmark": _shortPlaceName(finalN.name),
+            "landmark": _shortPlaceName(finalN.getName(activeLang)),
             "passedLandmarks": [],
             "environment": "indoor",
             "floorLevel": finalN.floorLevel,
@@ -807,14 +749,14 @@ def buildHumanIndoorSteps(
         })
 
         # Append Gateway Pattern biosecurity / restricted notice if present
-        notice = finalN.getAccessNotice(lang)
+        notice = finalN.getAccessNotice(activeLang)
         if notice:
             steps.append({
                 "index": len(steps),
-                "instruction": f"Aviso de acceso: {notice}" if lang == "spa" else f"Access notice: {notice}",
-                "headline": "Aviso de acceso" if lang == "spa" else "Access notice",
+                "instruction": t("navigation.access_notice", lang=activeLang, notice=notice),
+                "headline": _headlineForManeuver("access_notice", activeLang),
                 "maneuver": "arrive",
-                "landmark": _shortPlaceName(finalN.name),
+                "landmark": _shortPlaceName(finalN.getName(activeLang)),
                 "passedLandmarks": [],
                 "environment": "indoor",
                 "floorLevel": finalN.floorLevel,
