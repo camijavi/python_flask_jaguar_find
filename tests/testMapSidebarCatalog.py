@@ -37,7 +37,7 @@ from backend.config import Config
 from backend.database import initDb
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class TestMapSidebarCatalogBackend(unittest.TestCase):

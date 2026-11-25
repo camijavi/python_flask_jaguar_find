@@ -261,7 +261,7 @@ All changes were designed to stay **simple, modular, and strictly non-breaking**
    - Added read-only endpoint `GET /api/map/graphs-summary` and enriched `/api/map/subgraphs` with `totalDirectedEdges`, `density`, and `isComplete` metrics in [`backend/controllers/mapController.py`](../backend/controllers/mapController.py).
 6. **Live Graphic Generator & Comprehensive Verification:**
    - Added [`scripts/generateGraphDiagram.py`](../scripts/generateGraphDiagram.py) to generate [`docs/campus_graphs_diagram.svg`](campus_graphs_diagram.svg) directly from live graph data with zero third-party dependencies.
-   - Added automated verification tests in [`testCampusGraph.py`](../testCampusGraph.py) covering `graphCombined.py` standalone invariants, inheritance across all 20 graphs, `neigh`/`outgoingEdges` sync, `DijkstraRouter` on raw `Graph`, `buildingId` ownership, and Flask API endpoints.
+   - Added automated verification tests in [`tests/testCampusGraph.py`](../tests/testCampusGraph.py) covering `graphCombined.py` standalone invariants, inheritance across all 20 graphs, `neigh`/`outgoingEdges` sync, `DijkstraRouter` on raw `Graph`, `buildingId` ownership, and Flask API endpoints.
 
 ---
 

@@ -568,11 +568,21 @@ def runGraphTestSuite():
     # -------------------------------------------------------------------------
     print("\n[TEST 15] Reference File Alignment (Nomenclature, Ordering & Floor Mappings):")
     from backend.data.placesCatalog import PLACES_CATALOG
+    from backend.data.campusLocalization import PLACE_TRANSLATIONS, INDOOR_NODE_TRANSLATIONS, SUBGRAPH_TRANSLATIONS
     from backend.services.placeSearchService import buildIndexedPlaces, searchPlaces
 
     hyphenRoomRe = re.compile(r"\b[A-Z]-[1-5]\d{2}\b")
     for p in PLACES_CATALOG:
         assert not hyphenRoomRe.search(p["name"]), f"Hyphenated room code in PLACES_CATALOG name: {p['name']}"
+    for pid, tr in PLACE_TRANSLATIONS.items():
+        for field, val in tr.items():
+            assert not hyphenRoomRe.search(val), f"Hyphenated room code in PLACE_TRANSLATIONS[{pid}].{field}: {val}"
+    for nid, (spaName, engName) in INDOOR_NODE_TRANSLATIONS.items():
+        assert not hyphenRoomRe.search(spaName), f"Hyphenated room code in INDOOR_NODE_TRANSLATIONS[{nid}] spa: {spaName}"
+        assert not hyphenRoomRe.search(engName), f"Hyphenated room code in INDOOR_NODE_TRANSLATIONS[{nid}] eng: {engName}"
+    for bid, tr in SUBGRAPH_TRANSLATIONS.items():
+        for field, val in tr.items():
+            assert not hyphenRoomRe.search(val), f"Hyphenated room code in SUBGRAPH_TRANSLATIONS[{bid}].{field}: {val}"
     for bid, sg in allSubgraphs.items():
         for node in sg.getAllNodes():
             assert not hyphenRoomRe.search(node.name), f"Hyphenated room code in {bid}.{node.nodeId}: {node.name}"

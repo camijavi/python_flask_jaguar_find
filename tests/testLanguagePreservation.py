@@ -34,7 +34,7 @@ from backend.config import Config
 from backend.database import initDb
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class TestLanguagePreservationBackend(unittest.TestCase):
@@ -405,6 +405,191 @@ class TestLanguagePreservationBackend(unittest.TestCase):
         res_nf_en = self.client.get("/api/lost-found-object/items/999999")
         self.assertEqual(res_nf_en.status_code, 404)
         self.assertIn("not found", res_nf_en.get_json()["error"].lower())
+
+    def test_campus_localization_complete_coverage_and_zero_spanish_leaks(self):
+        from backend.data.placesCatalog import PLACES_CATALOG
+        from backend.data.campusLocalization import (
+            PLACE_TRANSLATIONS,
+            SUBGRAPH_TRANSLATIONS,
+            INDOOR_NODE_TRANSLATIONS,
+        )
+        from backend.subgraphs import getAllBuildingSubgraphs
+
+        # 1. 100% dictionary coverage of PLACES_CATALOG, all 18 subgraphs, and all indoor nodes
+        missing_places = [p["placeId"] for p in PLACES_CATALOG if p["placeId"] not in PLACE_TRANSLATIONS]
+        self.assertEqual(missing_places, [], f"Missing PLACE_TRANSLATIONS entries: {missing_places}")
+
+        subgraphs = getAllBuildingSubgraphs()
+        missing_subgraphs = [k for k in subgraphs if k not in SUBGRAPH_TRANSLATIONS]
+        self.assertEqual(missing_subgraphs, [], f"Missing SUBGRAPH_TRANSLATIONS entries: {missing_subgraphs}")
+
+        missing_indoor = [
+            f"{sg_id}:{node.nodeId}"
+            for sg_id, sg in subgraphs.items()
+            for node in sg.getAllNodes()
+            if node.nodeId not in INDOOR_NODE_TRANSLATIONS
+        ]
+        self.assertEqual(missing_indoor, [], f"Missing INDOOR_NODE_TRANSLATIONS entries: {missing_indoor}")
+
+        # 2. Verify zero Spanish leaks in English API payloads
+        spanish_leak_re = re.compile(
+            r"\b(Edificio|Aula|Aulas|Piso|Pisos|Planta|Servicios Sanitarios|Baños|Baño|"
+            r"Bebedero|Bebederos|Escaleras|Rampa|Contabilidad|Dirección|Facultad|"
+            r"Laboratorio|Clínica|Odontología|Biblioteca|Auditorio|Parqueo|Estacionamiento|"
+            r"Área de Mesas|Lab Digital|Módulo|Pasillo|Puerta|Salida|Entrada|Junto a|"
+            r"Frente a|Hombres|Mujeres|Mixtos|Discapacitados|Colaboradores|Estudiantes|"
+            r"Oficina|Sala de|Salón|Cancha|Gimnasio|Comedor|Cafetería|Farmacia|Rectoría)\b",
+            re.IGNORECASE,
+        )
+        english_leak_re = re.compile(
+            r"\b(Building|Classroom|Classrooms|Floor|Restrooms|Restroom|Drinking Fountain|"
+            r"Water Fountain|Stairs|Ramp|Accounting|Faculty|Laboratory|Dental Clinic|"
+            r"Library|Auditorium|Parking|Outdoor Tables|Hallway|Entrance|Exit|Next to|"
+            r"Across from|Ground Floor|Second Floor|Third Floor|First Floor|Men's|Women's)\b",
+            re.IGNORECASE,
+        )
+
+        # /api/map/places?lang=eng
+        places_en = self.client.get("/api/map/places?lang=eng").get_json()["places"]
+        places_es = self.client.get("/api/map/places?lang=spa").get_json()["places"]
+        self.assertEqual(len(places_en), len(places_es))
+        self.assertGreaterEqual(len(places_en), len(PLACES_CATALOG))
+
+        en_leaks = []
+        for p in places_en:
+            for field in ("name", "locationNotes", "buildingName"):
+                val = p.get(field) or ""
+                if spanish_leak_re.search(val):
+                    en_leaks.append(("places", p["placeId"], field, val))
+
+        # /api/map/nodes?lang=eng
+        nodes_en = self.client.get("/api/map/nodes?lang=eng").get_json()["nodes"]
+        for n in nodes_en:
+            if spanish_leak_re.search(n.get("name") or ""):
+                en_leaks.append(("nodes", n["nodeId"], "name", n["name"]))
+
+        # /api/map/subgraphs?lang=eng and /api/map/buildings/<id>/locations?lang=eng
+        subgraphs_en = self.client.get("/api/map/subgraphs?lang=eng").get_json()["buildings"]
+        for sg_item in subgraphs_en:
+            for field in ("name", "description"):
+                val = sg_item.get(field) or ""
+                if spanish_leak_re.search(val):
+                    en_leaks.append(("subgraphs", sg_item["macroNodeId"], field, val))
+            locs_res = self.client.get(f"/api/map/buildings/{sg_item['macroNodeId']}/locations?lang=eng").get_json()
+            self.assertTrue(locs_res["success"])
+            if spanish_leak_re.search(locs_res.get("buildingName") or ""):
+                en_leaks.append(("locations", sg_item["macroNodeId"], "buildingName", locs_res["buildingName"]))
+            for loc in locs_res.get("locations", []):
+                if spanish_leak_re.search(loc.get("name") or ""):
+                    en_leaks.append(("locations", loc["nodeId"], "name", loc["name"]))
+
+        self.assertEqual(en_leaks, [], f"Spanish text leaked into English map endpoints: {en_leaks[:10]}")
+
+        # /api/map/places?lang=spa must not leak English in locationNotes or names
+        es_leaks = []
+        for p in places_es:
+            for field in ("name", "locationNotes", "buildingName"):
+                val = p.get(field) or ""
+                if english_leak_re.search(val):
+                    es_leaks.append((p["placeId"], field, val))
+        self.assertEqual(es_leaks, [], f"English text leaked into Spanish places payload: {es_leaks[:10]}")
+
+        # 3. Full bilingual searchability in both English and Spanish UI modes
+        bilingual_queries = [
+            ("eng", "Baños", "restroomsMenB1", "Restrooms"),
+            ("eng", "bathroom", "restroomsMenB1", "Restrooms"),
+            ("eng", "Aula B-210", "classroomB210", "Classroom B210"),
+            ("eng", "Classroom B-210", "classroomB210", "Classroom B210"),
+            ("eng", "Contabilidad", "accountingOfficeA", "Accounting"),
+            ("eng", "Water Fountain", "drinkingFountainB1", "Fountain"),
+            ("spa", "Restrooms", "restroomsMenB1", "Sanitarios"),
+            ("spa", "Classroom B-210", "classroomB210", "Aula B210"),
+            ("spa", "Accounting", "accountingOfficeA", "Contabilidad"),
+            ("spa", "Water Fountain", "drinkingFountainB1", "Bebedero"),
+        ]
+        for lang, q, expected_id, expected_substr in bilingual_queries:
+            res = self.client.get("/api/map/places", query_string={"q": q, "lang": lang})
+            self.assertEqual(res.status_code, 200)
+            results = res.get_json()["places"]
+            matched = next((p for p in results if p["placeId"] == expected_id), None)
+            self.assertIsNotNone(
+                matched,
+                f"Bilingual search failed for lang={lang!r} q={q!r}: expected {expected_id}, got {[p['placeId'] for p in results[:6]]}",
+            )
+            self.assertIn(expected_substr, matched["name"])
+
+    def test_indoor_and_macro_route_navigation_localized_in_english(self):
+        spanish_route_re = re.compile(
+            r"\b(Edificio|Aula|Piso|Área de Mesas|Lab Digital FIA|Contabilidad|Escaleras|Rampa|Sanitarios)\b",
+            re.IGNORECASE,
+        )
+        scenarios = [
+            {"origin": "mainParking", "destination": "Classroom B101", "expect_dest": "Classroom B101"},
+            {"origin": "mainParking", "destination": "Accounting & Finance", "expect_dest": "Accounting"},
+            {"origin": "areaDeMesas", "destination": "labDigitalFia", "expect_dest": "FIA Digital"},
+        ]
+        for sc in scenarios:
+            res = self.client.post(
+                "/api/map/route",
+                json={"origin": sc["origin"], "destination": sc["destination"], "lang": "eng"},
+            )
+            self.assertEqual(res.status_code, 200)
+            payload = res.get_json()
+            self.assertTrue(payload["success"], f"Route failed for {sc}: {payload}")
+            self.assertIn(sc["expect_dest"], payload["destination"])
+            self.assertIsNone(spanish_route_re.search(payload["origin"]), f"Spanish in origin: {payload['origin']}")
+            self.assertIsNone(spanish_route_re.search(payload["destination"]), f"Spanish in destination: {payload['destination']}")
+            for step in payload.get("steps", []):
+                instr = step.get("instruction") or ""
+                lm = step.get("landmarkName") or ""
+                self.assertIsNone(spanish_route_re.search(instr), f"Spanish in step instruction: {instr}")
+                self.assertIsNone(spanish_route_re.search(lm), f"Spanish in step landmark: {lm}")
+
+    def test_navigation_html_fields_wired_for_dynamic_i18n_and_clean_in_english(self):
+        self.client.post("/api/i18n/set-language/eng")
+        html_en = self.client.get("/").get_data(as_text=True)
+
+        required_i18n_attrs = [
+            'data-i18n-placeholder="map.where_am_i_placeholder"',
+            'data-i18n-placeholder="map.where_to_go_placeholder"',
+            'data-i18n-placeholder="map.directory_search_placeholder"',
+            'data-i18n-placeholder="map.gps.filter_locations_placeholder"',
+            'data-i18n="map.initial_duration"',
+            'data-i18n="map.initial_refs"',
+            'data-i18n="map.campus_pill"',
+            'data-i18n="map.hud25d.default_headline"',
+            'data-i18n="map.hud25d.default_instruction"',
+            'data-i18n="map.hud25d.default_next_step"',
+            'data-i18n="map.hud25d.dock_prompt"',
+            'data-i18n="map.hud25d.mode_live"',
+            'data-i18n="map.hud25d.gps_label"',
+            'data-i18n="map.hud25d.btn_arrived_next"',
+            'data-i18n="map.hud25d.tray_simulate"',
+            'data-i18n="map.hud25d.speed_label_map"',
+            'data-i18n-title="map.toolbar.zoom_in"',
+            'data-i18n-title="map.toolbar.zoom_out"',
+            'data-i18n-title="map.toolbar.center_map"',
+        ]
+        for attr in required_i18n_attrs:
+            self.assertIn(attr, html_en, f"Missing reactive i18n attribute on /: {attr}")
+
+        # Verify zero Spanish leaks in visible navigation text and attributes on / in English
+        no_script = re.sub(r"<script\b[^>]*>.*?</script>", " ", html_en, flags=re.S | re.I)
+        no_style = re.sub(r"<style\b[^>]*>.*?</style>", " ", no_script, flags=re.S | re.I)
+        visible = html_lib.unescape(re.sub(r"<[^>]+>", " ", no_style))
+        attrs_text = " ".join(
+            html_lib.unescape(m.group(1))
+            for m in re.finditer(r'(?:placeholder|title|aria-label)="([^"]+)"', no_style)
+        )
+        spanish_nav_re = re.compile(
+            r"\b(Edificio|Aula|Aulas|Piso|Pisos|Dónde|Cómo|Buscar|Ruta|Escaleras|Rampa|"
+            r"Baños|Bebederos|Sanitarios|Parqueo|Facultades|Comida|Deportes|Laboratorios|"
+            r"Calcular|Intercambiar|Ubicación|Destino|Origen|Accesible|Directorio|"
+            r"Indicaciones|Área de Mesas|Lab Digital)\b",
+            re.IGNORECASE,
+        )
+        self.assertIsNone(spanish_nav_re.search(visible), f"Spanish visible text on / in EN: {spanish_nav_re.findall(visible)[:10]}")
+        self.assertIsNone(spanish_nav_re.search(attrs_text), f"Spanish attribute text on / in EN: {spanish_nav_re.findall(attrs_text)[:10]}")
 
 
 class TestClientSideI18nAndFormDraftsJS(unittest.TestCase):
@@ -790,6 +975,297 @@ function createSandbox(sharedStorage, fetchImpl) {
             f"JS tests failed:\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}",
         )
         self.assertIn("ALL_JS_I18N_AND_DRAFT_TESTS_PASSED", proc.stdout)
+
+    def test_js_navigation_fields_and_selected_places_retranslate_dynamically(self):
+        node_bin = shutil.which("node")
+        if not node_bin:
+            self.skipTest("Node.js not available in test environment")
+
+        app = createApp()
+        client = app.test_client()
+        spa_dict = json.loads((PROJECT_ROOT / "backend" / "languages" / "spa.json").read_text(encoding="utf-8"))
+        eng_dict = json.loads((PROJECT_ROOT / "backend" / "languages" / "eng.json").read_text(encoding="utf-8"))
+        places_spa = client.get("/api/map/places?lang=spa").get_json()["places"]
+        places_eng = client.get("/api/map/places?lang=eng").get_json()["places"]
+        nodes_spa = client.get("/api/map/nodes?lang=spa").get_json()["nodes"]
+        nodes_eng = client.get("/api/map/nodes?lang=eng").get_json()["nodes"]
+
+        test_script = r"""
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+
+const spaDict = JSON.parse(process.env.TEST_SPA_DICT);
+const engDict = JSON.parse(process.env.TEST_ENG_DICT);
+const placesSpa = JSON.parse(process.env.TEST_PLACES_SPA);
+const placesEng = JSON.parse(process.env.TEST_PLACES_ENG);
+const nodesSpa = JSON.parse(process.env.TEST_NODES_SPA);
+const nodesEng = JSON.parse(process.env.TEST_NODES_ENG);
+
+function createEl(tag, attrs = {}) {
+    const classSet = new Set((attrs.class || "").split(/\s+/).filter(Boolean));
+    const attrMap = new Map(Object.entries(attrs).filter(([k]) => k !== "class" && k !== "children"));
+    const el = {
+        tagName: tag.toUpperCase(),
+        id: attrs.id || "",
+        value: attrs.value || "",
+        placeholder: attrs.placeholder || "",
+        title: attrs.title || "",
+        textContent: attrs.textContent || "",
+        children: attrs.children || [],
+        classList: {
+            add(...cls) { cls.forEach(c => classSet.add(c)); },
+            remove(...cls) { cls.forEach(c => classSet.delete(c)); },
+            contains(c) { return classSet.has(c); },
+        },
+        getAttribute(k) { return attrMap.has(k) ? attrMap.get(k) : null; },
+        setAttribute(k, v) {
+            attrMap.set(k, String(v));
+            if (k === "placeholder") el.placeholder = String(v);
+            if (k === "title") el.title = String(v);
+        },
+        removeAttribute(k) { attrMap.delete(k); },
+        querySelectorAll(sel) {
+            const out = [];
+            const walk = (n) => {
+                for (const ch of (n.children || [])) {
+                    if (matches(ch, sel)) out.push(ch);
+                    walk(ch);
+                }
+            };
+            walk(el);
+            return out;
+        },
+        querySelector(sel) { return el.querySelectorAll(sel)[0] || null; },
+    };
+    return el;
+}
+
+function matches(el, selector) {
+    return selector.split(",").map(s => s.trim()).some((part) => {
+        if (part === "title[data-i18n]") return el.tagName === "TITLE" && el.getAttribute("data-i18n") !== null;
+        const m = part.match(/^\[([a-z0-9-]+)\]$/i);
+        if (m) return el.getAttribute(m[1]) !== null;
+        return false;
+    });
+}
+
+const originLabel = createEl("label", { "data-i18n": "map.where_am_i", textContent: "¿Dónde te encuentras?" });
+const originInput = createEl("input", {
+    id: "originInput",
+    "data-i18n-placeholder": "map.where_am_i_placeholder",
+    placeholder: "Usa GPS o selecciona tu ubicación...",
+    value: "Aula B204 (Piso 2)",
+});
+const destLabel = createEl("label", { "data-i18n": "map.where_to_go", textContent: "¿A dónde quieres ir?" });
+const destinationInput = createEl("input", {
+    id: "destinationInput",
+    "data-i18n-placeholder": "map.where_to_go_placeholder",
+    placeholder: "Escribe aula, baño, laboratorio, facultad o servicio...",
+    value: "Edificio A (Rectoría y Administración)",
+});
+const dirSearchInput = createEl("input", {
+    id: "directorySearchInput",
+    "data-i18n-placeholder": "map.directory_search_placeholder",
+    placeholder: "Filtrar edificio, aula, oficina o piso...",
+});
+const gpsFilterInput = createEl("input", {
+    id: "gpsLocationFilterInput",
+    "data-i18n-placeholder": "map.gps.filter_locations_placeholder",
+    placeholder: "Filtrar aula, baño, oficina...",
+});
+const btnSwap = createEl("button", {
+    id: "btnSwapLocations",
+    "data-i18n-title": "map.swap",
+    title: "Intercambiar ubicaciones",
+});
+const btnGps = createEl("button", {
+    id: "btnGetGps",
+    "data-i18n-title": "map.use_gps",
+    title: "Usar mi ubicación actual",
+});
+const btnZoomIn = createEl("button", {
+    id: "btnMapZoomIn",
+    "data-i18n-title": "map.toolbar.zoom_in",
+    "data-i18n-aria-label": "map.toolbar.zoom_in",
+    title: "Acercar",
+});
+const routeDist = createEl("span", { id: "routeDistanceText", "data-i18n": "map.initial_duration", textContent: "~1 min" });
+const routeRefs = createEl("span", { id: "routeMinutesText", "data-i18n": "map.initial_refs", textContent: "0 referencias" });
+const campusPill = createEl("span", { id: "wazeActiveRoadPill", "data-i18n": "map.campus_pill", textContent: "Campus UAM" });
+const tbtDist = createEl("div", { id: "tbtStepDistance", "data-i18n": "map.hud25d.default_headline", textContent: "Sigue recto" });
+const tbtInstr = createEl("div", { id: "tbtStepInstruction", "data-i18n": "map.hud25d.default_instruction", textContent: "Inicia tu recorrido hacia el destino." });
+const wazeEta = createEl("div", { id: "wazeEtaTime", "data-i18n": "map.campus_pill", textContent: "Campus UAM" });
+const wazeMeta = createEl("div", { id: "wazeTripMeta", "data-i18n": "map.hud25d.dock_prompt", textContent: "¿A dónde vas? • Toca para buscar" });
+
+const root = createEl("div", {
+    children: [
+        originLabel, originInput, destLabel, destinationInput, dirSearchInput,
+        gpsFilterInput, btnSwap, btnGps, btnZoomIn, routeDist, routeRefs,
+        campusPill, tbtDist, tbtInstr, wazeEta, wazeMeta,
+    ],
+});
+const head = createEl("head", { children: [] });
+const winListeners = new Map();
+
+const document = {
+    documentElement: { lang: "spa" },
+    head,
+    title: "JaguarFind",
+    querySelectorAll(sel) { return root.querySelectorAll(sel); },
+    querySelector(sel) { return root.querySelector(sel); },
+    addEventListener() {},
+};
+
+const windowObj = {
+    document,
+    location: { pathname: "/" },
+    APP_CONFIG: { currentLang: "spa" },
+    APP_TRANSLATIONS: spaDict,
+    fetch: async (url) => {
+        if (url.includes("/api/i18n/set-language/eng")) {
+            return { ok: true, status: 200, async json() { return { success: true, language: "eng", translations: engDict }; } };
+        }
+        return { ok: true, status: 200, async json() { return { success: true, language: "spa", translations: spaDict }; } };
+    },
+    console,
+    CustomEvent: function(type, init) { this.type = type; this.detail = init && init.detail; },
+    addEventListener(evt, fn) {
+        if (!winListeners.has(evt)) winListeners.set(evt, []);
+        winListeners.get(evt).push(fn);
+    },
+    dispatchEvent(evt) {
+        (winListeners.get(evt.type) || []).forEach(fn => fn(evt));
+    },
+};
+windowObj.window = windowObj;
+windowObj.globalThis = windowObj;
+
+const i18nSrc = fs.readFileSync(path.join(process.cwd(), "frontend/static/js/i18nManager.js"), "utf8");
+const ctx = vm.createContext(windowObj);
+vm.runInContext(i18nSrc, ctx);
+
+// Mirror navigateMap.html's reactive selected-input retranslation helpers
+const navState = {
+    allPlaces: placesSpa,
+    allNodes: nodesSpa,
+    originPlaceId: "classroomB204",
+    originNodeId: "buildingB",
+    originQuery: "Aula B-204",
+    originFloorLevel: 2,
+    originShowFloor: true,
+    destinationPlaceId: "buildingA",
+    destinationNodeId: "buildingA",
+    destinationQuery: "Edificio A (Rectoría y Administración)",
+};
+
+function resolveLocalizedSelectionTitle(placeId, nodeId, fallbackTitle) {
+    if (placeId) {
+        const p = navState.allPlaces.find(x => x && x.placeId === placeId);
+        if (p && p.name) return p.name;
+    }
+    const lookup = placeId || nodeId;
+    if (lookup) {
+        const n = navState.allNodes.find(x => x && x.nodeId === lookup);
+        if (n && n.name) return n.name;
+        const trVal = windowObj.t(`nodes.${lookup}`);
+        if (trVal && trVal !== `nodes.${lookup}`) return trVal;
+    }
+    return fallbackTitle || "";
+}
+
+function formatOriginDisplayValue(baseName, floorLevel, showFloor) {
+    const floorWord = windowObj.t("map.floor");
+    if (!baseName) return "";
+    if (!showFloor || !floorLevel) return baseName;
+    if (new RegExp(`\\b${floorWord}\\s+${floorLevel}\\b`, "i").test(baseName)) return baseName;
+    return `${baseName} (${floorWord} ${floorLevel})`;
+}
+
+function retranslateSelectedNavInputs() {
+    if (navState.originPlaceId || navState.originNodeId) {
+        const locOrigin = resolveLocalizedSelectionTitle(navState.originPlaceId, navState.originNodeId, navState.originQuery);
+        originInput.value = formatOriginDisplayValue(locOrigin, navState.originFloorLevel, navState.originShowFloor);
+        navState.originQuery = locOrigin;
+    }
+    if (navState.destinationPlaceId || navState.destinationNodeId) {
+        const locDest = resolveLocalizedSelectionTitle(navState.destinationPlaceId, navState.destinationNodeId, navState.destinationQuery);
+        destinationInput.value = locDest;
+        navState.destinationQuery = locDest;
+    }
+}
+
+windowObj.addEventListener("jaguarLanguageChanged", (e) => {
+    const isEng = e.detail.lang === "eng";
+    navState.allPlaces = isEng ? placesEng : placesSpa;
+    navState.allNodes = isEng ? nodesEng : nodesSpa;
+    retranslateSelectedNavInputs();
+});
+
+(async () => {
+    await windowObj.JaguarI18n.setLanguage("eng");
+
+    // 1. All navigation labels, placeholders, titles, aria-labels, and HUD prompts translated to English
+    assert.equal(originLabel.textContent, "Where are you?");
+    assert.equal(originInput.placeholder, "Use GPS or pick a location...");
+    assert.equal(destLabel.textContent, "Where do you want to go?");
+    assert.equal(destinationInput.placeholder, "Type a classroom, restroom, lab, faculty, or service...");
+    assert.equal(dirSearchInput.placeholder, "Filter building, room, office, or floor...");
+    assert.equal(gpsFilterInput.placeholder, "Filter room, restroom, office...");
+    assert.equal(btnSwap.getAttribute("title"), "Swap locations");
+    assert.equal(btnGps.getAttribute("title"), "Use my current location");
+    assert.equal(btnZoomIn.getAttribute("title"), "Zoom In");
+    assert.equal(btnZoomIn.getAttribute("aria-label"), "Zoom In");
+    assert.equal(routeDist.textContent, "~1 min");
+    assert.equal(routeRefs.textContent, "0 landmarks");
+    assert.equal(campusPill.textContent, "UAM Campus");
+    assert.equal(tbtDist.textContent, "Continue straight");
+    assert.equal(tbtInstr.textContent, "Start your route toward the destination.");
+    assert.equal(wazeEta.textContent, "UAM Campus");
+    assert.equal(wazeMeta.textContent, "Where to? • Tap to search");
+
+    // 2. Selected origin (with GPS floor suffix) & selected destination dynamically re-translated!
+    assert.equal(originInput.value, "Classroom B204 (Floor 2)");
+    assert.equal(destinationInput.value, "Building A (Student Services & Lost and Found)");
+
+    // 3. Unbound raw free-text draft input is preserved intact on language switch
+    navState.originPlaceId = null;
+    navState.originNodeId = null;
+    originInput.value = "my custom search text";
+    await windowObj.JaguarI18n.setLanguage("spa");
+    assert.equal(originInput.value, "my custom search text");
+    assert.equal(destinationInput.value, "Edificio A (Atención al Estudiante & Objetos Perdidos)");
+
+    console.log("ALL_JS_NAV_I18N_TESTS_PASSED");
+})().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});
+"""
+
+        env = os.environ.copy()
+        env["TEST_SPA_DICT"] = json.dumps(spa_dict)
+        env["TEST_ENG_DICT"] = json.dumps(eng_dict)
+        env["TEST_PLACES_SPA"] = json.dumps(places_spa)
+        env["TEST_PLACES_ENG"] = json.dumps(places_eng)
+        env["TEST_NODES_SPA"] = json.dumps(nodes_spa)
+        env["TEST_NODES_ENG"] = json.dumps(nodes_eng)
+
+        proc = subprocess.run(
+            [node_bin, "-e", test_script],
+            cwd=str(PROJECT_ROOT),
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        self.assertEqual(
+            proc.returncode,
+            0,
+            f"JS nav i18n tests failed:\nSTDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}",
+        )
+        self.assertIn("ALL_JS_NAV_I18N_TESTS_PASSED", proc.stdout)
 
 
 if __name__ == "__main__":

@@ -1245,6 +1245,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     state.originQuery = selected.title;
                     state.originNodeId = selected.targetNodeId;
                     state.originPlaceId = selected.id;
+                    state.originFloorLevel = null;
+                    state.originShowFloor = false;
                     state.usedGpsOrigin = false;
                     btnClearOrigin.classList.remove("hidden");
                     saveNavDraft();
@@ -1396,6 +1398,8 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originQuery = val;
         state.originNodeId = null;
         state.originPlaceId = null;
+        state.originFloorLevel = null;
+        state.originShowFloor = false;
         state.usedGpsOrigin = false;
         saveNavDraft();
 
@@ -1406,6 +1410,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 state.originQuery = selected.title;
                 state.originNodeId = selected.targetNodeId;
                 state.originPlaceId = selected.id;
+                state.originFloorLevel = null;
+                state.originShowFloor = false;
                 state.usedGpsOrigin = false;
                 btnClearOrigin.classList.remove("hidden");
                 saveNavDraft();
@@ -2064,6 +2070,8 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originQuery = "";
         state.originNodeId = null;
         state.originPlaceId = null;
+        state.originFloorLevel = null;
+        state.originShowFloor = false;
         state.usedGpsOrigin = false;
         btnClearOrigin.classList.add("hidden");
         originSuggestions.classList.add("hidden");
@@ -2267,7 +2275,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 7. Swap Locations
     function swapLocations() {
-        const tempVal = originInput.value;
+        const tempVal = (state.originShowFloor && state.originQuery) ? state.originQuery : originInput.value;
         const tempId = state.originNodeId;
         const tempPlaceId = state.originPlaceId;
 
@@ -2275,6 +2283,8 @@ document.addEventListener("DOMContentLoaded", function() {
         state.originQuery = destinationInput.value;
         state.originNodeId = state.destinationNodeId;
         state.originPlaceId = state.destinationPlaceId;
+        state.originFloorLevel = null;
+        state.originShowFloor = false;
         state.usedGpsOrigin = false;
 
         destinationInput.value = tempVal;

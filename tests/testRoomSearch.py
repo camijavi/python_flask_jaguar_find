@@ -35,7 +35,7 @@ from backend.services.placeSearchService import (
     searchPlaces,
 )
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _extractAllRoomCodesFromBuildingsTxt():
@@ -126,7 +126,7 @@ class TestRoomSearchBackend(unittest.TestCase):
                 "classroomB210",
                 f"Query {query!r} expected classroomB210 at #1, got {[p['placeId'] for p in places[:5]]}",
             )
-            self.assertEqual(places[0]["name"], "Aula B-210")
+            self.assertEqual(places[0]["name"], "Aula B210")
             self.assertEqual(places[0]["parentBuildingId"], "buildingB")
             self.assertEqual(places[0]["floorLevel"], 2)
 
@@ -193,8 +193,8 @@ class TestRoomSearchBackend(unittest.TestCase):
     def test_accent_insensitivity_and_non_collision_word_boundaries(self):
         # Accent-insensitive queries
         for q, expectedSub in [
-            ("computacion", "Cómputo"),
-            ("COMPUTACIÓN", "Cómputo"),
+            ("computacion", "Computación"),
+            ("COMPUTACIÓN", "Computación"),
             ("odontologia", "Odontología"),
             ("ruben dario", "Rubén Darío"),
             ("copernico", "Copérnico"),
@@ -299,7 +299,7 @@ for (const q of ["B210", "b210", "B-210", "B 210", "  b   210  ", "aula b 210", 
     const matches = S.searchCampus(q, "", places, nodes);
     assert.ok(matches.length >= 1, `Expected match for ${JSON.stringify(q)}`);
     assert.equal(matches[0].id, "classroomB210", `Expected classroomB210 first for ${JSON.stringify(q)}, got ${matches[0].id}`);
-    assert.equal(matches[0].title, "Aula B-210");
+    assert.equal(matches[0].title, "Aula B210");
 }
 
 // Exact B210 does not return unrelated B101/stairs
@@ -334,11 +334,11 @@ assert.ok(matches210.includes("classroomC210"));
 const compMatches = S.searchCampus("computacion", "", places, nodes);
 assert.ok(compMatches.some(m => m.id === "computerLabC201"));
 
-// 6. GPS manual floor filter matches hyphenated room names ("Aulas B-209 y B-210") on "B210" / "b 210"
+// 6. GPS manual floor filter matches individual room node ("Aula B210") on "B210" / "b 210" / "b-210"
 for (const q of ["B210", "b210", "B 210", "b-210"]) {
     const filtered = S.filterLocationsList(b2Locations, q);
     assert.ok(
-        filtered.some(loc => loc.nodeId === "b_room_209_210"),
+        filtered.some(loc => loc.nodeId === "b_room_210"),
         `GPS floor filter failed for ${JSON.stringify(q)}`
     );
 }

@@ -137,7 +137,7 @@ SUBGRAPH_TRANSLATIONS: Dict[str, Dict[str, str]] = {
 
 
 # =============================================================================
-# 2. PLACES_CATALOG LOCALIZATION (ALL 217 CATALOG ENTRIES — NAME & NOTES)
+# 2. PLACES_CATALOG LOCALIZATION (ALL 276 CATALOG ENTRIES — NAME & NOTES)
 # =============================================================================
 PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
     # --- BUILDING A ---
@@ -182,27 +182,27 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Building A, Floor 1.",
     },
     "adminDirectorateA": {
-        "name_eng": "Administrative & Academic Logistics Directorate (A-201)",
+        "name_eng": "Administrative & Academic Logistics Directorate (A201)",
         "notes_spa": "Edificio A, Piso 2.",
         "notes_eng": "Building A, Floor 2.",
     },
     "ticDirectorateA": {
-        "name_eng": "Information & Communications Technology Directorate - IT/TIC (A-203)",
+        "name_eng": "Information & Communications Technology Directorate - IT/TIC (A203)",
         "notes_spa": "Edificio A, Piso 2.",
         "notes_eng": "Building A, Floor 2.",
     },
     "marketingAdvertisingA": {
-        "name_eng": "Marketing & Advertising (A-204)",
+        "name_eng": "Marketing & Advertising (A204)",
         "notes_spa": "Edificio A, Piso 2.",
         "notes_eng": "Building A, Floor 2.",
     },
     "hrTalentA": {
-        "name_eng": "Talent Management / Human Resources Directorate (A-205)",
+        "name_eng": "Talent Management / Human Resources Directorate (A205)",
         "notes_spa": "Edificio A, Piso 2.",
         "notes_eng": "Building A, Floor 2.",
     },
     "dpaAudiovisualA": {
-        "name_eng": "Audiovisual Production Directorate - DPA (Studio A-301, Cyclorama, Sound & Radio)",
+        "name_eng": "Audiovisual Production Directorate - DPA (Studio A301, Cyclorama, Sound & Radio)",
         "notes_spa": "Edificio A, Piso 3: DPA, Set de grabación ciclograma, estudio de sonido, oficinas auxiliares DPA, control máster y set de radio.",
         "notes_eng": "Building A, Floor 3: DPA, Cyclorama recording set, sound studio, DPA auxiliary offices, master control, and radio set.",
     },
@@ -214,47 +214,47 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Floor 1 entrance.",
     },
     "classroomB101": {
-        "name_eng": "Classroom B-101",
+        "name_eng": "Classroom B101",
         "notes_spa": "Edificio B, Piso 1, pasillo este junto a Farmacia.",
         "notes_eng": "Building B, Floor 1, east hallway next to Pharmacy.",
     },
     "classroomB102": {
-        "name_eng": "Classroom B-102",
+        "name_eng": "Classroom B102",
         "notes_spa": "Edificio B, Piso 1, pasillo este.",
         "notes_eng": "Building B, Floor 1, east hallway.",
     },
     "classroomB103": {
-        "name_eng": "Classroom B-103",
+        "name_eng": "Classroom B103",
         "notes_spa": "Edificio B, Piso 1, pasillo central.",
         "notes_eng": "Building B, Floor 1, central hallway.",
     },
     "classroomB104": {
-        "name_eng": "Classroom B-104",
+        "name_eng": "Classroom B104",
         "notes_spa": "Edificio B, Piso 1, pasillo central.",
         "notes_eng": "Building B, Floor 1, central hallway.",
     },
     "classroomB105": {
-        "name_eng": "Classroom B-105",
+        "name_eng": "Classroom B105",
         "notes_spa": "Edificio B, Piso 1, pasillo central.",
         "notes_eng": "Building B, Floor 1, central hallway.",
     },
     "classroomB106": {
-        "name_eng": "Classroom B-106",
+        "name_eng": "Classroom B106",
         "notes_spa": "Edificio B, Piso 1, pasillo central.",
         "notes_eng": "Building B, Floor 1, central hallway.",
     },
     "classroomB107": {
-        "name_eng": "Classroom B-107",
+        "name_eng": "Classroom B107",
         "notes_spa": "Edificio B, Piso 1, pasillo oeste.",
         "notes_eng": "Building B, Floor 1, west hallway.",
     },
     "classroomB108": {
-        "name_eng": "Classroom B-108",
+        "name_eng": "Classroom B108",
         "notes_spa": "Edificio B, Piso 1, pasillo oeste.",
         "notes_eng": "Building B, Floor 1, west hallway.",
     },
     "classroomB109": {
-        "name_eng": "Classroom B-109",
+        "name_eng": "Classroom B109",
         "notes_spa": "Edificio B, Piso 1, extremo oeste del pasillo.",
         "notes_eng": "Building B, Floor 1, west end of hallway.",
     },
@@ -279,52 +279,52 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "End of ground floor hallway.",
     },
     "classroomB201": {
-        "name_eng": "Classroom B-201",
+        "name_eng": "Classroom B201",
         "notes_spa": "Edificio B, Piso 2, extremo este.",
         "notes_eng": "Building B, Floor 2, east end.",
     },
     "classroomB202": {
-        "name_eng": "Classroom B-202",
+        "name_eng": "Classroom B202",
         "notes_spa": "Edificio B, Piso 2, pasillo este.",
         "notes_eng": "Building B, Floor 2, east hallway.",
     },
     "classroomB203": {
-        "name_eng": "Classroom B-203",
+        "name_eng": "Classroom B203",
         "notes_spa": "Edificio B, Piso 2, pasillo este.",
         "notes_eng": "Building B, Floor 2, east hallway.",
     },
     "classroomB204": {
-        "name_eng": "Classroom B-204",
+        "name_eng": "Classroom B204",
         "notes_spa": "Edificio B, Piso 2, pasillo central.",
         "notes_eng": "Building B, Floor 2, central hallway.",
     },
     "classroomB205": {
-        "name_eng": "Classroom B-205",
+        "name_eng": "Classroom B205",
         "notes_spa": "Edificio B, Piso 2, pasillo central.",
         "notes_eng": "Building B, Floor 2, central hallway.",
     },
     "classroomB206": {
-        "name_eng": "Classroom B-206",
+        "name_eng": "Classroom B206",
         "notes_spa": "Edificio B, Piso 2, pasillo central.",
         "notes_eng": "Building B, Floor 2, central hallway.",
     },
     "classroomB207": {
-        "name_eng": "Classroom B-207",
+        "name_eng": "Classroom B207",
         "notes_spa": "Edificio B, Piso 2, pasillo oeste.",
         "notes_eng": "Building B, Floor 2, west hallway.",
     },
     "classroomB208": {
-        "name_eng": "Classroom B-208",
+        "name_eng": "Classroom B208",
         "notes_spa": "Edificio B, Piso 2, pasillo oeste.",
         "notes_eng": "Building B, Floor 2, west hallway.",
     },
     "classroomB209": {
-        "name_eng": "Classroom B-209",
+        "name_eng": "Classroom B209",
         "notes_spa": "Edificio B, Piso 2, extremo oeste junto a las escaleras.",
         "notes_eng": "Building B, Floor 2, west end next to the stairs.",
     },
     "classroomB210": {
-        "name_eng": "Classroom B-210",
+        "name_eng": "Classroom B210",
         "notes_spa": "Edificio B, Piso 2, extremo oeste junto a las escaleras.",
         "notes_eng": "Building B, Floor 2, west end next to the stairs.",
     },
@@ -336,32 +336,32 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
 
     # --- BUILDING C ---
     "auditoriumC101": {
-        "name_eng": "Auditorium C-101",
+        "name_eng": "Auditorium C101",
         "notes_spa": "Planta baja, ala este cerca de las escaleras izquierda.",
         "notes_eng": "Ground floor, east wing near left stairs.",
     },
     "classroomC102": {
-        "name_eng": "Classroom C-102",
+        "name_eng": "Classroom C102",
         "notes_spa": "Planta baja, pasillo central este.",
         "notes_eng": "Ground floor, east-central hallway.",
     },
     "classroomC103": {
-        "name_eng": "Classroom C-103",
+        "name_eng": "Classroom C103",
         "notes_spa": "Planta baja, pasillo central.",
         "notes_eng": "Ground floor, central hallway.",
     },
     "classroomC104": {
-        "name_eng": "Classroom C-104",
+        "name_eng": "Classroom C104",
         "notes_spa": "Planta baja, pasillo central.",
         "notes_eng": "Ground floor, central hallway.",
     },
     "drinkingFountainC1": {
         "name_eng": "Drinking Fountain (Building C - Floor 1)",
-        "notes_spa": "Planta baja, junto al Aula C-103.",
-        "notes_eng": "Ground floor, next to Classroom C-103.",
+        "notes_spa": "Planta baja, junto al Aula C103.",
+        "notes_eng": "Ground floor, next to Classroom C103.",
     },
     "treasuryC105": {
-        "name_eng": "UAM Treasury (C-105)",
+        "name_eng": "UAM Treasury (C105)",
         "notes_spa": "Planta baja, oficina de tesorería institucional.",
         "notes_eng": "Ground floor, institutional treasury office.",
     },
@@ -381,57 +381,57 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Outdoor accessible ramp in front of Cashier lobby.",
     },
     "classroomC106": {
-        "name_eng": "Classroom C-106",
+        "name_eng": "Classroom C106",
         "notes_spa": "Planta baja, pasillo oeste.",
         "notes_eng": "Ground floor, west hallway.",
     },
     "macLabC107": {
-        "name_eng": "MAC Lab (C-107)",
+        "name_eng": "MAC Lab (C107)",
         "notes_spa": "Planta baja, ala oeste de cómputo.",
         "notes_eng": "Ground floor, west computing wing.",
     },
     "erasmusLabC108": {
-        "name_eng": "ACAI-Erasmus+ Lab (C-108)",
+        "name_eng": "ACAI-Erasmus+ Lab (C108)",
         "notes_spa": "Planta baja, ala oeste de cómputo.",
         "notes_eng": "Ground floor, west computing wing.",
     },
     "auditoriumC109": {
-        "name_eng": "Auditorium C-109",
+        "name_eng": "Auditorium C109",
         "notes_spa": "Planta baja, extremo oeste junto a escaleras derecha.",
         "notes_eng": "Ground floor, west end next to right stairs.",
     },
     "computerLabC201": {
-        "name_eng": "Computer Lab (C-201)",
+        "name_eng": "Computer Lab (C201)",
         "notes_spa": "Segundo piso, ala este de laboratorios.",
         "notes_eng": "Floor 2, east labs wing.",
     },
     "computerLabC202": {
-        "name_eng": "Computer Lab (C-202)",
+        "name_eng": "Computer Lab (C202)",
         "notes_spa": "Segundo piso, junto a escaleras izquierda.",
         "notes_eng": "Floor 2, next to left stairs.",
     },
     "macLabC203": {
-        "name_eng": "MAC Lab (C-203)",
+        "name_eng": "MAC Lab (C203)",
         "notes_spa": "Segundo piso, laboratorio de diseño y MAC.",
         "notes_eng": "Floor 2, design and MAC laboratory.",
     },
     "computerLabC204": {
-        "name_eng": "Computer Lab (C-204)",
+        "name_eng": "Computer Lab (C204)",
         "notes_spa": "Segundo piso, pasillo central.",
         "notes_eng": "Floor 2, central hallway.",
     },
     "drinkingFountainC2": {
         "name_eng": "Drinking Fountain (Building C - Floor 2)",
-        "notes_spa": "Segundo piso, junto al Lab C-204.",
-        "notes_eng": "Floor 2, next to Lab C-204.",
+        "notes_spa": "Segundo piso, junto al Lab C204.",
+        "notes_eng": "Floor 2, next to Lab C204.",
     },
     "computerLabC205": {
-        "name_eng": "Computer Lab (C-205)",
+        "name_eng": "Computer Lab (C205)",
         "notes_spa": "Segundo piso, pasillo central.",
         "notes_eng": "Floor 2, central hallway.",
     },
     "warehouseC206": {
-        "name_eng": "Academic Logistics Storage (C-206)",
+        "name_eng": "Academic Logistics Storage (C206)",
         "notes_spa": "Segundo piso, almacén y logística.",
         "notes_eng": "Floor 2, storage and logistics.",
     },
@@ -446,72 +446,67 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Floor 2, central block.",
     },
     "classroomC209": {
-        "name_eng": "Classroom C-209",
+        "name_eng": "Classroom C209",
         "notes_spa": "Segundo piso, pasillo oeste.",
         "notes_eng": "Floor 2, west hallway.",
     },
     "classroomC210": {
-        "name_eng": "Classroom C-210",
+        "name_eng": "Classroom C210",
         "notes_spa": "Segundo piso, pasillo oeste.",
         "notes_eng": "Floor 2, west hallway.",
     },
     "classroomC211": {
-        "name_eng": "Classroom C-211",
+        "name_eng": "Classroom C211",
         "notes_spa": "Segundo piso, extremo oeste junto a escaleras derecha.",
         "notes_eng": "Floor 2, west end next to right stairs.",
     },
-    "studioA301": {
-        "name_eng": "Audiovisual Studio A-301 (Floor 3)",
-        "notes_spa": "Tercer piso, extremo este sobre conexión A y C.",
-        "notes_eng": "Floor 3, east end above Building A & C connection.",
-    },
     "classroomC301": {
-        "name_eng": "Classroom C-301",
+        "name_eng": "Classroom C301",
         "notes_spa": "Tercer piso, pasillo este.",
         "notes_eng": "Floor 3, east hallway.",
     },
     "classroomC302": {
-        "name_eng": "Classroom C-302",
+        "name_eng": "Classroom C302",
         "notes_spa": "Tercer piso, pasillo este.",
         "notes_eng": "Floor 3, east hallway.",
     },
     "classroomC303": {
-        "name_eng": "Classroom C-303",
+        "name_eng": "Classroom C303",
         "notes_spa": "Tercer piso, pasillo central este.",
         "notes_eng": "Floor 3, east-central hallway.",
     },
     "classroomC304": {
-        "name_eng": "Classroom C-304",
+        "name_eng": "Classroom C304",
         "notes_spa": "Tercer piso, pasillo central.",
         "notes_eng": "Floor 3, central hallway.",
     },
     "classroomC305": {
-        "name_eng": "Classroom C-305",
-        "notes_spa": "Tercer piso, pasillo central entre C-304 y Coordinación de Compras.",
-        "notes_eng": "Floor 3, central hallway between C-304 and Procurement Coordination.",
+        "name_eng": "Classroom C305",
+        "notes_spa": "Tercer piso, pasillo central entre C304 y Coordinación de Compras.",
+        "notes_eng": "Floor 3, central hallway between C304 and Procurement Coordination.",
     },
     "procurementCoordC306": {
-        "name_eng": "Procurement Coordination (C-306)",
+        "name_eng": "Procurement Coordination (C306)",
         "notes_spa": "Tercer piso, departamento administrativo de compras.",
         "notes_eng": "Floor 3, administrative procurement office.",
     },
     "classroomC307": {
-        "name_eng": "Classroom C-307",
+        "name_eng": "Classroom C307",
         "notes_spa": "Tercer piso, pasillo central oeste.",
         "notes_eng": "Floor 3, west-central hallway.",
     },
     "classroomC308": {
-        "name_eng": "Classroom C-308",
+        "name_eng": "Classroom C308",
         "notes_spa": "Tercer piso, pasillo central oeste.",
         "notes_eng": "Floor 3, west-central hallway.",
     },
     "classroomC309": {
-        "name_eng": "Classroom C-309",
+        "name_eng": "Classroom C309",
         "notes_spa": "Tercer piso, pasillo oeste.",
         "notes_eng": "Floor 3, west hallway.",
     },
     "classroomC310": {
-        "name_eng": "Classroom C-310",
+        "name_eng": "Classroom C310",
         "notes_spa": "Tercer piso, extremo oeste junto a escaleras derecha.",
         "notes_eng": "Floor 3, west end next to right stairs.",
     },
@@ -523,7 +518,7 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Building D, Floor 1, east dental laboratory.",
     },
     "classroomD102": {
-        "name_eng": "Classroom D-102",
+        "name_eng": "Classroom D102",
         "notes_spa": "Edificio D, Planta Única, aula central sur.",
         "notes_eng": "Building D, Floor 1, south-central classroom.",
     },
@@ -575,19 +570,19 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "North annex.",
     },
     "medicalSimulatorsE2": {
-        "name_eng": "Medical Clinical Skills Simulators Lab",
-        "notes_spa": "Segundo piso, sala de habilidades clínicas (E-201).",
-        "notes_eng": "Floor 2, medical skills ward (E-201).",
+        "name_eng": "Medical Clinical Skills Simulators Lab (E201)",
+        "notes_spa": "Segundo piso, sala de habilidades clínicas (E201).",
+        "notes_eng": "Floor 2, medical skills ward (E201).",
     },
     "psychologyOfficeE": {
         "name_eng": "Psychology Office (Building E)",
-        "notes_spa": "Edificio E, atención psicológica.",
-        "notes_eng": "Building E, psychological care office.",
+        "notes_spa": "Edificio E, Piso 2, atención psicológica.",
+        "notes_eng": "Building E, Floor 2, psychological care office.",
     },
     "clinicalMedicineLabE": {
         "name_eng": "Clinical Medicine Lab (Building E)",
-        "notes_spa": "Edificio E, laboratorio clínico.",
-        "notes_eng": "Building E, clinical laboratory.",
+        "notes_spa": "Edificio E, Piso 2, laboratorio clínico.",
+        "notes_eng": "Building E, Floor 2, clinical laboratory.",
     },
 
     # --- BUILDING F ---
@@ -651,77 +646,77 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
 
     # --- BUILDING H ---
     "medicalLabH101": {
-        "name_eng": "Medical Lab H-101",
+        "name_eng": "Medical Lab H101",
         "notes_spa": "Edificio H, Piso 1.",
         "notes_eng": "Building H, Floor 1.",
     },
     "medicalLabH102": {
-        "name_eng": "Medical Lab H-102",
+        "name_eng": "Medical Lab H102",
         "notes_spa": "Edificio H, Piso 1.",
         "notes_eng": "Building H, Floor 1.",
     },
     "medicalLabH103": {
-        "name_eng": "Medical Lab H-103",
+        "name_eng": "Medical Lab H103",
         "notes_spa": "Edificio H, Piso 1.",
         "notes_eng": "Building H, Floor 1.",
     },
     "medicalLabH104": {
-        "name_eng": "Medical Lab H-104 (Quality Management Coordination)",
+        "name_eng": "Medical Lab H104 (Quality Management Coordination)",
         "notes_spa": "Edificio H, Piso 1.",
         "notes_eng": "Building H, Floor 1.",
     },
     "medicalLabH105": {
-        "name_eng": "Medical Lab H-105",
+        "name_eng": "Medical Lab H105",
         "notes_spa": "Edificio H, Piso 1.",
         "notes_eng": "Building H, Floor 1.",
     },
     "medicalLabH106": {
-        "name_eng": "Medical Lab H-106",
+        "name_eng": "Medical Lab H106",
         "notes_spa": "Edificio H, Piso 1.",
         "notes_eng": "Building H, Floor 1.",
     },
     "medicalLabH107": {
-        "name_eng": "Medical Lab H-107",
+        "name_eng": "Medical Lab H107",
         "notes_spa": "Edificio H, Piso 1.",
         "notes_eng": "Building H, Floor 1.",
     },
     "labSupervisionOfficeH": {
         "name_eng": "Medical Labs Supervision Office",
-        "notes_spa": "Edificio H, Supervisión de Laboratorios y acceso Necroteca.",
-        "notes_eng": "Building H, Lab Supervision Office and Anatomy Lab access.",
+        "notes_spa": "Edificio H, Piso 1, Supervisión de Laboratorios y acceso Necroteca.",
+        "notes_eng": "Building H, Floor 1, Lab Supervision Office and Anatomy Lab access.",
     },
     "medicalLabH201": {
-        "name_eng": "Medical Lab H-201",
+        "name_eng": "Medical Lab H201",
         "notes_spa": "Edificio H, Piso 2.",
         "notes_eng": "Building H, Floor 2.",
     },
     "medicalLabH202": {
-        "name_eng": "Medical Lab H-202",
+        "name_eng": "Medical Lab H202",
         "notes_spa": "Edificio H, Piso 2.",
         "notes_eng": "Building H, Floor 2.",
     },
     "medicalLabH203": {
-        "name_eng": "Medical Lab H-203",
+        "name_eng": "Medical Lab H203",
         "notes_spa": "Edificio H, Piso 2.",
         "notes_eng": "Building H, Floor 2.",
     },
     "medicalLabH204": {
-        "name_eng": "Medical Lab H-204",
+        "name_eng": "Medical Lab H204",
         "notes_spa": "Edificio H, Piso 2.",
         "notes_eng": "Building H, Floor 2.",
     },
     "medicalLabH205": {
-        "name_eng": "Medical Lab H-205",
+        "name_eng": "Medical Lab H205",
         "notes_spa": "Edificio H, Piso 2.",
         "notes_eng": "Building H, Floor 2.",
     },
     "medicalLabH206": {
-        "name_eng": "Medical Lab H-206",
+        "name_eng": "Medical Lab H206",
         "notes_spa": "Edificio H, Piso 2.",
         "notes_eng": "Building H, Floor 2.",
     },
     "medicalLabH207": {
-        "name_eng": "Medical Lab H-207",
+        "name_eng": "Medical Lab H207",
         "notes_spa": "Edificio H, Piso 2.",
         "notes_eng": "Building H, Floor 2.",
     },
@@ -740,12 +735,12 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
 
     # --- BUILDING J ---
     "dentalLabJ101": {
-        "name_eng": "Dental Lab J-101",
+        "name_eng": "Dental Lab J101",
         "notes_spa": "Edificio J, Planta Única, laboratorio norte.",
         "notes_eng": "Building J, Floor 1, north laboratory.",
     },
     "dentalLabJ102": {
-        "name_eng": "Dental Lab J-102",
+        "name_eng": "Dental Lab J102",
         "notes_spa": "Edificio J, Planta Única, laboratorio sureste.",
         "notes_eng": "Building J, Floor 1, southeast laboratory.",
     },
@@ -788,20 +783,15 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_spa": "Edificio L, Planta Baja.",
         "notes_eng": "Building L, Ground floor.",
     },
-    "showersTeamsL": {
-        "name_eng": "Home & Visiting Team Showers (Building L)",
-        "notes_spa": "Edificio L, vestidores y duchas de equipos.",
-        "notes_eng": "Building L, team locker rooms and showers.",
-    },
 
     # --- BUILDING M ---
     "auditoriumM101": {
-        "name_eng": "Auditorium M-101",
+        "name_eng": "Auditorium M101",
         "notes_spa": "Edificio M, Piso 1, ala norte.",
         "notes_eng": "Building M, Floor 1, north wing.",
     },
     "auditoriumM102": {
-        "name_eng": "Auditorium M-102",
+        "name_eng": "Auditorium M102",
         "notes_spa": "Edificio M, Piso 1, ala norte.",
         "notes_eng": "Building M, Floor 1, north wing.",
     },
@@ -821,42 +811,42 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Ground floor corridor near restrooms.",
     },
     "classroomM201": {
-        "name_eng": "Classroom M-201",
+        "name_eng": "Classroom M201",
         "notes_spa": "Edificio M, Piso 2, ala norte.",
         "notes_eng": "Building M, Floor 2, north wing.",
     },
     "classroomM202": {
-        "name_eng": "Classroom M-202",
+        "name_eng": "Classroom M202",
         "notes_spa": "Edificio M, Piso 2, ala norte.",
         "notes_eng": "Building M, Floor 2, north wing.",
     },
     "classroomM203": {
-        "name_eng": "Classroom M-203",
+        "name_eng": "Classroom M203",
         "notes_spa": "Edificio M, Piso 2, ala sur.",
         "notes_eng": "Building M, Floor 2, south wing.",
     },
     "classroomM204": {
-        "name_eng": "Classroom M-204",
+        "name_eng": "Classroom M204",
         "notes_spa": "Edificio M, Piso 2, ala sur.",
         "notes_eng": "Building M, Floor 2, south wing.",
     },
     "classroomM301": {
-        "name_eng": "Classroom M-301",
+        "name_eng": "Classroom M301",
         "notes_spa": "Edificio M, Piso 3, ala norte.",
         "notes_eng": "Building M, Floor 3, north wing.",
     },
     "classroomM302": {
-        "name_eng": "Classroom M-302",
+        "name_eng": "Classroom M302",
         "notes_spa": "Edificio M, Piso 3, ala norte.",
         "notes_eng": "Building M, Floor 3, north wing.",
     },
     "classroomM303": {
-        "name_eng": "Classroom M-303",
+        "name_eng": "Classroom M303",
         "notes_spa": "Edificio M, Piso 3, ala sur.",
         "notes_eng": "Building M, Floor 3, south wing.",
     },
     "classroomM304": {
-        "name_eng": "Classroom M-304",
+        "name_eng": "Classroom M304",
         "notes_spa": "Edificio M, Piso 3, ala sur.",
         "notes_eng": "Building M, Floor 3, south wing.",
     },
@@ -875,12 +865,12 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
 
     # --- BUILDING O ---
     "facultyEngineeringO": {
-        "name_eng": "Faculty of Engineering & Architecture (O-101)",
+        "name_eng": "Faculty of Engineering & Architecture (O101)",
         "notes_spa": "Planta baja, Decanatura FIA.",
         "notes_eng": "Ground floor, FIA Deanery.",
     },
     "soilMechanicsLabO": {
-        "name_eng": "Soil Mechanics Lab (O-102)",
+        "name_eng": "Soil Mechanics Lab (O102)",
         "notes_spa": "Planta baja, ala de laboratorios pesados.",
         "notes_eng": "Ground floor, heavy labs wing.",
     },
@@ -890,7 +880,7 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Ground floor, central project exhibition area.",
     },
     "materialsLabO": {
-        "name_eng": "Materials Testing Lab (O-104)",
+        "name_eng": "Materials Testing Lab (O104)",
         "notes_spa": "Planta baja, laboratorio de ensaye de materiales.",
         "notes_eng": "Ground floor, materials testing laboratory.",
     },
@@ -915,7 +905,7 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Ground floor, hydraulics and fluids laboratory.",
     },
     "disasterRiskCoordO": {
-        "name_eng": "Comprehensive Disaster Risk Management Coordination (O-105)",
+        "name_eng": "Comprehensive Disaster Risk Management Coordination (O105)",
         "notes_spa": "Planta baja, oficina de gestión de riesgos.",
         "notes_eng": "Ground floor, disaster risk management office.",
     },
@@ -945,7 +935,7 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Accessible connection between Building O and parking sidewalk.",
     },
     "networksLabO": {
-        "name_eng": "Networks Lab (O-201)",
+        "name_eng": "Networks Lab (O201)",
         "notes_spa": "Segundo piso, laboratorio de redes y conectividad.",
         "notes_eng": "Floor 2, networking and connectivity laboratory.",
     },
@@ -975,71 +965,66 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Floor 2, FIA academic tutoring room.",
     },
     "classroomO202": {
-        "name_eng": "Classroom O-202",
-        "notes_spa": "Segundo piso, aula teórica O-202.",
-        "notes_eng": "Floor 2, lecture classroom O-202.",
+        "name_eng": "Classroom O202",
+        "notes_spa": "Segundo piso, aula teórica O202.",
+        "notes_eng": "Floor 2, lecture classroom O202.",
     },
 
     # --- BUILDING P ---
     "copernicusObservatoryP": {
-        "name_eng": "Copernicus Astronomical Observatory",
+        "name_eng": "Copernicus Astronomical Observatory (P501)",
         "notes_spa": "Quinto piso, cúpula y azotea.",
         "notes_eng": "Floor 5, dome / rooftop.",
     },
     "classroomP401": {
-        "name_eng": "Hall P-401 (Upper Annex)",
+        "name_eng": "Classroom P401 (Upper Annex)",
         "notes_spa": "Edificio P, Piso 4 (Anexo Superior).",
         "notes_eng": "Building P, Floor 4 (Upper Annex).",
     },
     "classroomP101": {
-        "name_eng": "Classroom P-101",
+        "name_eng": "Classroom P101",
         "notes_spa": "Edificio P, Planta Baja, pasillo este.",
         "notes_eng": "Building P, Ground floor, east hallway.",
     },
     "drinkingFountainP1": {
         "name_eng": "Drinking Fountain (Building P - Floor 1)",
-        "notes_spa": "Edificio P, Planta Baja, junto a Salón P-101.",
-        "notes_eng": "Building P, Ground floor, next to Classroom P-101.",
+        "notes_spa": "Edificio P, Planta Baja, junto al Aula P101.",
+        "notes_eng": "Building P, Ground floor, next to Classroom P101.",
     },
     "classroomP102": {
-        "name_eng": "Classroom P-102",
+        "name_eng": "Classroom P102",
         "notes_spa": "Edificio P, Planta Baja.",
         "notes_eng": "Building P, Ground floor.",
     },
     "classroomP103": {
-        "name_eng": "Classroom P-103",
+        "name_eng": "Classroom P103",
         "notes_spa": "Edificio P, Planta Baja.",
         "notes_eng": "Building P, Ground floor.",
     },
     "classroomP104": {
-        "name_eng": "Classroom P-104",
+        "name_eng": "Classroom P104",
         "notes_spa": "Edificio P, Planta Baja.",
         "notes_eng": "Building P, Ground floor.",
     },
     "classroomP105": {
-        "name_eng": "Classroom P-105",
+        "name_eng": "Classroom P105",
         "notes_spa": "Edificio P, Planta Baja central.",
         "notes_eng": "Building P, Ground floor, central hallway.",
     },
     "classroomP106": {
-        "name_eng": "Classroom P-106",
+        "name_eng": "Classroom P106",
         "notes_spa": "Edificio P, Planta Baja.",
         "notes_eng": "Building P, Ground floor.",
     },
     "classroomP107": {
-        "name_eng": "Classroom P-107",
+        "name_eng": "Classroom P107",
         "notes_spa": "Edificio P, Planta Baja.",
         "notes_eng": "Building P, Ground floor.",
     },
     "classroomP108": {
-        "name_eng": "Classroom P-108",
+        "name_eng": "Classroom P108",
         "notes_spa": "Edificio P, Planta Baja oeste.",
         "notes_eng": "Building P, Ground floor, west hallway.",
-    },
-    "restroomsP1": {
-        "name_eng": "Restrooms (Building P - Floor 1)",
-        "notes_spa": "Edificio P, Planta Baja, extremo oeste.",
-        "notes_eng": "Building P, Ground floor, west end.",
     },
     "rampParkingP": {
         "name_eng": "Accessible Ramp from Parking to Building P",
@@ -1047,112 +1032,97 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "notes_eng": "Ramp from the parking lot toward Building P, across from Building O.",
     },
     "classroomP201": {
-        "name_eng": "Classroom P-201",
+        "name_eng": "Classroom P201",
         "notes_spa": "Edificio P, Piso 2 este.",
         "notes_eng": "Building P, Floor 2, east hallway.",
     },
     "drinkingFountainP2East": {
-        "name_eng": "2nd Drinking Fountain (Building P - Floor 2 East)",
+        "name_eng": "Drinking Fountain (Building P - Floor 2 East)",
         "notes_spa": "Edificio P, Piso 2, pasillo este.",
         "notes_eng": "Building P, Floor 2, east hallway.",
     },
     "classroomP202": {
-        "name_eng": "Classroom P-202",
+        "name_eng": "Classroom P202",
         "notes_spa": "Edificio P, Piso 2.",
         "notes_eng": "Building P, Floor 2.",
     },
     "classroomP203": {
-        "name_eng": "Classroom P-203",
+        "name_eng": "Classroom P203",
         "notes_spa": "Edificio P, Piso 2.",
         "notes_eng": "Building P, Floor 2.",
     },
     "classroomP204": {
-        "name_eng": "Classroom P-204",
+        "name_eng": "Classroom P204",
         "notes_spa": "Edificio P, Piso 2 central.",
         "notes_eng": "Building P, Floor 2, central hallway.",
     },
     "classroomP205": {
-        "name_eng": "Classroom P-205",
+        "name_eng": "Classroom P205",
         "notes_spa": "Edificio P, Piso 2 central.",
         "notes_eng": "Building P, Floor 2, central hallway.",
     },
     "classroomP206": {
-        "name_eng": "Classroom P-206",
+        "name_eng": "Classroom P206",
         "notes_spa": "Edificio P, Piso 2.",
         "notes_eng": "Building P, Floor 2.",
     },
     "classroomP207": {
-        "name_eng": "Classroom P-207",
+        "name_eng": "Classroom P207",
         "notes_spa": "Edificio P, Piso 2.",
         "notes_eng": "Building P, Floor 2.",
     },
     "classroomP208": {
-        "name_eng": "Classroom P-208",
+        "name_eng": "Classroom P208",
         "notes_spa": "Edificio P, Piso 2 oeste.",
         "notes_eng": "Building P, Floor 2, west hallway.",
     },
     "drinkingFountainP2West": {
         "name_eng": "Drinking Fountain (Building P - Floor 2 West)",
-        "notes_spa": "Edificio P, Piso 2 junto a Salón P-208.",
-        "notes_eng": "Building P, Floor 2, next to Classroom P-208.",
-    },
-    "restroomsP2": {
-        "name_eng": "Restrooms (Building P - Floor 2)",
-        "notes_spa": "Edificio P, Piso 2 oeste.",
-        "notes_eng": "Building P, Floor 2, west end.",
+        "notes_spa": "Edificio P, Piso 2 junto al Aula P208.",
+        "notes_eng": "Building P, Floor 2, next to Classroom P208.",
     },
     "classroomP301": {
-        "name_eng": "Classroom P-301",
+        "name_eng": "Classroom P301",
         "notes_spa": "Edificio P, Piso 3 este.",
         "notes_eng": "Building P, Floor 3, east hallway.",
     },
     "drinkingFountainP3": {
-        "name_eng": "1st Drinking Fountain (Building P - Floor 3)",
+        "name_eng": "Drinking Fountain (Building P - Floor 3 East)",
         "notes_spa": "Edificio P, Piso 3 este.",
         "notes_eng": "Building P, Floor 3, east hallway.",
     },
-    "classroomP301B": {
-        "name_eng": "Classroom P-301 (Access 2)",
-        "notes_spa": "Edificio P, Piso 3.",
-        "notes_eng": "Building P, Floor 3.",
-    },
     "classroomP302": {
-        "name_eng": "Classroom P-302",
+        "name_eng": "Classroom P302",
         "notes_spa": "Edificio P, Piso 3.",
         "notes_eng": "Building P, Floor 3.",
     },
     "classroomP303": {
-        "name_eng": "Classroom P-303",
+        "name_eng": "Classroom P303",
         "notes_spa": "Edificio P, Piso 3.",
         "notes_eng": "Building P, Floor 3.",
     },
     "classroomP304": {
-        "name_eng": "Classroom P-304",
+        "name_eng": "Classroom P304",
         "notes_spa": "Edificio P, Piso 3.",
         "notes_eng": "Building P, Floor 3.",
     },
     "classroomP305": {
-        "name_eng": "Classroom P-305",
+        "name_eng": "Classroom P305",
         "notes_spa": "Edificio P, Piso 3 central.",
         "notes_eng": "Building P, Floor 3, central hallway.",
     },
     "classroomP306": {
-        "name_eng": "Classroom P-306",
-        "notes_spa": "Edificio P, Piso 3.",
-        "notes_eng": "Building P, Floor 3.",
-    },
-    "classroomP306B": {
-        "name_eng": "Classroom P-306 (Access 2)",
+        "name_eng": "Classroom P306",
         "notes_spa": "Edificio P, Piso 3.",
         "notes_eng": "Building P, Floor 3.",
     },
     "classroomP307": {
-        "name_eng": "Classroom P-307",
+        "name_eng": "Classroom P307",
         "notes_spa": "Edificio P, Piso 3 oeste.",
         "notes_eng": "Building P, Floor 3, west hallway.",
     },
     "classroomP308": {
-        "name_eng": "Classroom P-308",
+        "name_eng": "Classroom P308",
         "notes_spa": "Edificio P, Piso 3 oeste.",
         "notes_eng": "Building P, Floor 3, west hallway.",
     },
@@ -1160,11 +1130,6 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "name_eng": "Weather Station (Building P)",
         "notes_spa": "Edificio P, Planta Baja, acceso este.",
         "notes_eng": "Building P, Ground floor, east entrance.",
-    },
-    "restroomsP3": {
-        "name_eng": "Restrooms (Building P - Floor 3)",
-        "notes_spa": "Edificio P, Piso 3 oeste.",
-        "notes_eng": "Building P, Floor 3, west end.",
     },
 
     # --- SPORTS, OUTDOOR, GATES & RAMPS ---
@@ -1192,11 +1157,6 @@ PLACE_TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "name_eng": "Multipurpose & Beach Volleyball Court (Jaguar Center)",
         "notes_spa": "Complejo Deportivo Jaguar Center.",
         "notes_eng": "Jaguar Center Sports Complex.",
-    },
-    "generalWarehouseSZ": {
-        "name_eng": "General Warehouse & Staff Dining Hall",
-        "notes_spa": "Zona de bodega general, contenedores, oficinas deportivas 1-3 y comedor de colaboradores.",
-        "notes_eng": "General warehouse, containers, Sports Offices 1-3, and staff dining hall.",
     },
     "chilamatesDining": {
         "name_eng": "Chilamates Plaza (Kiosks & Fast Point)",

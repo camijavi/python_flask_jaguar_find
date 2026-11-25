@@ -47,6 +47,22 @@ _ROOM_LIKE_CATEGORIES = {
     CampusCategory.AUDITORIUM,
 }
 
+_CATEGORY_BILINGUAL_KEYWORDS: Dict[str, List[str]] = {
+    CampusCategory.CLASSROOM: ["aula", "aulas", "classroom", "classrooms"],
+    CampusCategory.DRINKING_FOUNTAIN: ["bebedero", "bebederos", "water fountain", "drinking fountain"],
+    CampusCategory.MEDICAL_LAB: ["laboratorio", "medicina", "medical lab", "laboratory"],
+    CampusCategory.DENTAL_LAB: ["odontologia", "dental lab", "dental clinic"],
+    CampusCategory.FACULTY: ["facultad", "decanatura", "faculty", "deanery"],
+    CampusCategory.FOOD_AREA: ["comida", "cafeteria", "food", "dining"],
+    CampusCategory.PARKING_LOT: ["parqueo", "estacionamiento", "parking"],
+    CampusCategory.RESTROOM: ["bano", "banos", "sanitarios", "restroom", "restrooms", "bathroom", "bathrooms"],
+    CampusCategory.ACCESSIBLE_RAMP: ["rampa", "accesible", "ramp", "accessible", "wheelchair"],
+    CampusCategory.ADMINISTRATIVE: ["oficina", "administracion", "administrative", "office"],
+    CampusCategory.SPORTS: ["deportes", "cancha", "sports"],
+    CampusCategory.AUDITORIUM: ["auditorio", "auditorium"],
+    CampusCategory.STAIRS: ["escaleras", "stairs", "staircase"],
+}
+
 
 def stripAccents(text: str) -> str:
     """Decomposes Unicode text and removes combining diacritical marks."""
@@ -175,6 +191,7 @@ def buildIndexedPlaces(lang: str = "spa") -> List[Dict[str, Any]]:
 
         keywords = list(place.get("keywords", []))
         keywords.extend(bilingualNames)
+        keywords.extend(_CATEGORY_BILINGUAL_KEYWORDS.get(place.get("category", ""), []))
         keywords.extend(_expandRoomCodeKeywords(ownCodes))
         for bLabel in (shortBldg, shortBldgSpa, shortBldgEng):
             if bLabel:
@@ -236,6 +253,7 @@ def buildIndexedPlaces(lang: str = "spa") -> List[Dict[str, Any]]:
 
             nodeKeywords = [node.nodeId, spaName, engName]
             nodeKeywords.extend(nodeAliases)
+            nodeKeywords.extend(_CATEGORY_BILINGUAL_KEYWORDS.get(node.category, []))
             nodeKeywords.extend(_expandRoomCodeKeywords(nodeCodes))
             for bLabel in (shortBldg, shortBldgSpa, shortBldgEng):
                 if bLabel:

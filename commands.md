@@ -79,10 +79,10 @@ Run the full campus graph test suite (Dijkstra algorithm, wheelchair accessibili
 
 ```bash
 # Windows (PowerShell with UTF-8 support)
-$env:PYTHONUTF8 = "1"; python testCampusGraph.py
+$env:PYTHONUTF8 = "1"; python -m tests.testCampusGraph
 
 # macOS / Linux
-python3 testCampusGraph.py
+python3 -m tests.testCampusGraph
 ```
 
 ---
