@@ -1050,6 +1050,10 @@ def buildBuildingCSubgraph() -> BuildingSubgraph:
         "c-304": "c_room_304",
         "c304": "c_room_304",
 
+        "c-305": "c_room_304",
+        "c305": "c_room_304",
+        "classroomC305": "c_room_304",
+
         "c-306": "c_compras_306",
         "c306": "c_compras_306",
         "compras": "c_compras_306",

@@ -185,15 +185,22 @@ def buildBuildingMSubgraph() -> BuildingSubgraph:
         subgraph.addBidirectionalCorridor(u, v, _calcDist(nU.latitude, nU.longitude, nV.latitude, nV.longitude), isAccessible=True)
 
     aliases = {
-        "m101": "m_auditorium_101", "auditorio m101": "m_auditorium_101",
-        "m102": "m_auditorium_102", "auditorio m102": "m_auditorium_102",
-        "gestion ambiental": "m_research_env_office", "investigacion": "m_research_env_office",
+        "m101": "m_auditorium_101", "auditorio m101": "m_auditorium_101", "auditoriumM101": "m_auditorium_101",
+        "m102": "m_auditorium_102", "auditorio m102": "m_auditorium_102", "auditoriumM102": "m_auditorium_102",
+        "gestion ambiental": "m_research_env_office", "environmentalDirectorateM": "m_research_env_office",
+        "direccion de gestion ambiental y energetica": "m_research_env_office",
+        "investigacion": "m_research_env_office", "researchExtensionM": "m_research_env_office",
         "extension universitaria": "m_research_env_office",
-        "baños m": "m_restrooms_f1", "bebedero m": "m_fountain_f1",
-        "m201": "m_room_201_202", "m202": "m_room_201_202",
-        "m203": "m_room_203_204", "m204": "m_room_203_204",
-        "m301": "m_room_301_302", "m302": "m_room_301_302",
-        "m303": "m_room_303_304", "m304": "m_room_303_304",
+        "direccion investigacion y extension universitaria": "m_research_env_office",
+        "baños m": "m_restrooms_f1", "bebedero m": "m_fountain_f1", "drinkingFountainM1": "m_fountain_f1",
+        "m201": "m_room_201_202", "classroomM201": "m_room_201_202",
+        "m202": "m_room_201_202", "classroomM202": "m_room_201_202",
+        "m203": "m_room_203_204", "classroomM203": "m_room_203_204",
+        "m204": "m_room_203_204", "classroomM204": "m_room_203_204",
+        "m301": "m_room_301_302", "classroomM301": "m_room_301_302",
+        "m302": "m_room_301_302", "classroomM302": "m_room_301_302",
+        "m303": "m_room_303_304", "classroomM303": "m_room_303_304",
+        "m304": "m_room_303_304", "classroomM304": "m_room_303_304",
     }
     for alias, nid in aliases.items():
         subgraph.registerRoomAlias(alias, nid)

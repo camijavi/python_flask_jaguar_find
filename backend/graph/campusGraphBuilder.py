@@ -24,7 +24,7 @@ def buildUamCampusGraph() -> DirectedGraph:
     g.addNode(Node("buildingK", "Building K (Central Cafeteria & Terraces)", CampusCategory.FOOD_AREA, 30.2, 61.9, 12.108775, -86.256755))
     g.addNode(Node("chilamatesPlaza", "Chilamates Plaza (Kiosks & Fast Point)", CampusCategory.FOOD_AREA, 24.5, 34.4, 12.108027, -86.256705))
     g.addNode(Node("buildingA", "Building A (Student Services & Lost and Found)", CampusCategory.ADMINISTRATIVE, 26.9, 51.2, 12.108503, -86.256678))
-    g.addNode(Node("buildingB", "Building B (Classrooms B101-B106 & Pharmacy)", CampusCategory.CLASSROOM, 37.0, 54.0, 12.108568, -86.256991))
+    g.addNode(Node("buildingB", "Building B (Classrooms B101-B210 & Pharmacy)", CampusCategory.CLASSROOM, 37.0, 54.0, 12.108568, -86.256991))
     g.addNode(Node("buildingC", "Building C (Computer Labs & Cashier Office)", CampusCategory.CLASSROOM, 37.0, 48.4, 12.108446, -86.257021))
     g.addNode(Node("buildingD", "Building D (Digital Dentistry CAM-CAM)", CampusCategory.DENTAL_LAB, 34.2, 37.2, 12.108128, -86.256945))
     g.addNode(Node("buildingJ", "Building J (Dentistry Labs)", CampusCategory.DENTAL_LAB, 30.1, 37.2, 12.108126, -86.256780, accessLevel="restricted"))

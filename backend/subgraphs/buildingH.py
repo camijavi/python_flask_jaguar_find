@@ -196,13 +196,25 @@ def buildBuildingHSubgraph() -> BuildingSubgraph:
         subgraph.addBidirectionalCorridor(u, v, _calcDist(nU.latitude, nU.longitude, nV.latitude, nV.longitude), isAccessible=True)
 
     aliases = {
-        "h101": "h_lab_101", "h102": "h_lab_102_103", "h103": "h_lab_102_103", "i108": "h_lab_102_103",
-        "h104": "h_lab_104", "gestion de calidad": "h_lab_104",
-        "h105": "h_lab_105", "h106": "h_lab_106_107", "h107": "h_lab_106_107",
+        "h101": "h_lab_101", "medicalLabH101": "h_lab_101",
+        "h102": "h_lab_102_103", "medicalLabH102": "h_lab_102_103",
+        "h103": "h_lab_102_103", "medicalLabH103": "h_lab_102_103", "i108": "h_lab_102_103",
+        "h104": "h_lab_104", "medicalLabH104": "h_lab_104",
+        "gestion de calidad": "h_lab_104", "coordinacion de gestion de calidad": "h_lab_104",
+        "h105": "h_lab_105", "medicalLabH105": "h_lab_105",
+        "h106": "h_lab_106_107", "medicalLabH106": "h_lab_106_107",
+        "h107": "h_lab_106_107", "medicalLabH107": "h_lab_106_107",
         "ciencias de los alimentos": "h_food_science_lab", "baños h": "h_restrooms_f1",
-        "h201": "h_lab_201", "h202": "h_lab_202", "h203": "h_lab_203_204", "h204": "h_lab_203_204",
-        "h205": "h_lab_205_206", "h206": "h_lab_205_206", "h207": "h_lab_205_206",
+        "h201": "h_lab_201", "medicalLabH201": "h_lab_201",
+        "h202": "h_lab_202", "medicalLabH202": "h_lab_202",
+        "h203": "h_lab_203_204", "medicalLabH203": "h_lab_203_204",
+        "h204": "h_lab_203_204", "medicalLabH204": "h_lab_203_204",
+        "h205": "h_lab_205_206", "medicalLabH205": "h_lab_205_206",
+        "h206": "h_lab_205_206", "medicalLabH206": "h_lab_205_206",
+        "h207": "h_lab_205_206", "medicalLabH207": "h_lab_205_206",
         "necroteca": "h_lab_coord_necroteca", "supervision laboratorios": "h_lab_coord_necroteca",
+        "labSupervisionOfficeH": "h_lab_coord_necroteca",
+        "oficina de supervision de laboratorios de medicina": "h_lab_coord_necroteca",
     }
     for alias, nid in aliases.items():
         subgraph.registerRoomAlias(alias, nid)

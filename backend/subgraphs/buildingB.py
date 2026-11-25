@@ -232,8 +232,10 @@ def buildBuildingBSubgraph() -> BuildingSubgraph:
         "b204": "b_room_204_205", "classroomB204": "b_room_204_205",
         "b205": "b_room_204_205", "classroomB205": "b_room_204_205",
         "b206": "b_room_206", "classroomB206": "b_room_206",
-        "b207": "b_room_207_208", "b208": "b_room_207_208",
-        "b209": "b_room_209_210", "b210": "b_room_209_210",
+        "b207": "b_room_207_208", "classroomB207": "b_room_207_208",
+        "b208": "b_room_207_208", "classroomB208": "b_room_207_208",
+        "b209": "b_room_209_210", "classroomB209": "b_room_209_210",
+        "b210": "b_room_209_210", "classroomB210": "b_room_209_210",
     }
     for alias, nid in aliases.items():
         subgraph.registerRoomAlias(alias, nid)

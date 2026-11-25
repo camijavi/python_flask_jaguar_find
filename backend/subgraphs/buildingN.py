@@ -121,13 +121,22 @@ def buildBuildingNSubgraph() -> BuildingSubgraph:
     # Gateway Pattern Aliases: all clinical / restricted terms route cleanly to Reception
     aliases = {
         "recepcion n": "n_reception", "clinicas odontologicas": "n_reception", "clinica odontologica": "n_reception",
+        "dentistryReceptionN": "n_reception",
         "quirofano": "n_reception", "quirofano 1": "n_reception", "quirofano 2": "n_reception",
-        "esterilizacion": "n_reception", "radiologia": "n_reception", "tomografia": "n_reception",
+        "esterilizacion": "n_reception", "radiologia": "n_reception", "radiologia 1": "n_reception",
+        "radiologia 2": "n_reception", "radiologia 3": "n_reception", "interpretacion radiografica": "n_reception",
+        "tomografia": "n_reception", "lavado de instrumentos": "n_reception", "preparacion y empaque": "n_reception",
+        "clinicas post grado": "n_reception", "clinicas post grado c-d": "n_reception",
         "clinica medica a": "n_reception", "clinica medica b": "n_reception", "clinica medica e": "n_reception",
-        "proveeduria": "n_reception", "archivo caja": "n_reception", "oficina idea": "n_reception",
-        "fabricacion digital": "n_reception", "baños n": "n_restrooms_chilamate",
-        "banos chilamate": "n_restrooms_chilamate", "fodo": "n_fodo_f2_reception",
+        "proveeduria": "n_reception", "archivo caja": "n_reception", "oficina archivo y expedientes": "n_reception",
+        "coordinacion de clinicas": "n_reception", "bodega archivo": "n_reception",
+        "oficina idea": "n_reception", "oficina de supervision clinicas odontologicas": "n_reception",
+        "fabricacion digital": "n_reception", "laboratorio de fabricacion digital": "n_reception",
+        "baños n": "n_restrooms_chilamate", "banos chilamate": "n_restrooms_chilamate",
+        "fodo": "n_fodo_f2_reception", "facultyDentistryN": "n_fodo_f2_reception",
         "facultad de odontologia": "n_fodo_f2_reception", "revelado digital": "n_fodo_f2_reception",
+        "tecnicos odontologicos": "n_fodo_f2_reception", "lab simuladores": "n_fodo_f2_reception",
+        "lab de grado": "n_fodo_f2_reception", "lab post grado": "n_fodo_f2_reception",
     }
     for alias, nid in aliases.items():
         subgraph.registerRoomAlias(alias, nid)
