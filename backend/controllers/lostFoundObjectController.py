@@ -20,6 +20,7 @@ from backend.database import (
 )
 from backend.graph.navigationService import globalNavigationService
 from backend.graph.geoUtils import CampusGeoUtils
+from backend.i18n import get_current_language
 
 lostFoundObjectController = Blueprint(
     "lostFoundObjectController",
@@ -34,6 +35,22 @@ STATE_BADGES = {
 }
 
 
+def _resolveLocationName(locationId: str, lang: Optional[str] = None) -> str:
+    """Resolves a campus node ID (e.g. 'buildingB') to its localized display name."""
+    loc = (locationId or "").strip()
+    if not loc:
+        return ""
+    activeLang = lang or get_current_language()
+    node = globalNavigationService.graph.getNode(loc)
+    if node:
+        return node.getName(activeLang)
+    locLower = loc.lower()
+    for nodeId, candidate in globalNavigationService.graph.nodes.items():
+        if nodeId.lower() == locLower:
+            return candidate.getName(activeLang)
+    return loc
+
+
 def _maskSecretDetail(item: Dict[str, Any], currentUserId: Optional[int], isAdmin: bool) -> Dict[str, Any]:
     """
     Hides private identification details (e.g., sticker, serial number, screen photo)
@@ -43,6 +60,7 @@ def _maskSecretDetail(item: Dict[str, Any], currentUserId: Optional[int], isAdmi
     hasSecret = bool(sanitized.get("SecretDetail"))
     sanitized["hasSecretDetail"] = hasSecret
     sanitized["hasSignature"] = bool(sanitized.get("Signature"))
+    sanitized["locationName"] = _resolveLocationName(sanitized.get("Location", ""))
 
     # Attach badge color and label metadata
     stateId = sanitized.get("LostObjectStateId", 1)
@@ -62,12 +80,13 @@ def listItems():
     """
     GET /api/lost-found-object/items
     Retrieves lost & found items with optional filtering by custody state,
-    category, search keyword, and campus location node.
+    category, search keyword, and campus building/location node.
     """
     stateIdRaw = request.args.get("stateId")
     category = request.args.get("category")
     searchKeyword = (request.args.get("search") or request.args.get("q") or "").strip().lower()
-    locationFilter = (request.args.get("location") or "").strip().lower()
+    rawBuildingFilter = (request.args.get("building") or request.args.get("location") or "").strip()
+    locationFilter = rawBuildingFilter.lower()
 
     stateId = None
     if stateIdRaw:
@@ -84,17 +103,21 @@ def listItems():
 
     filtered = []
     for rawItem in items:
-        # Filter by search keyword
+        rawLoc = (rawItem.get("Location") or "").strip()
+
+        # Filter by campus node / building ID (exact case-insensitive match)
+        if locationFilter and locationFilter != rawLoc.lower():
+            continue
+
+        # Filter by search keyword (matches name, description, node ID, or localized building name)
         if searchKeyword:
             nameMatch = searchKeyword in rawItem.get("ItemName", "").lower()
             descMatch = searchKeyword in rawItem.get("Description", "").lower()
-            locMatch = searchKeyword in rawItem.get("Location", "").lower()
-            if not (nameMatch or descMatch or locMatch):
+            locIdMatch = searchKeyword in rawLoc.lower()
+            locSpaMatch = searchKeyword in _resolveLocationName(rawLoc, "spa").lower()
+            locEngMatch = searchKeyword in _resolveLocationName(rawLoc, "eng").lower()
+            if not (nameMatch or descMatch or locIdMatch or locSpaMatch or locEngMatch):
                 continue
-
-        # Filter by campus node location
-        if locationFilter and locationFilter != rawItem.get("Location", "").lower():
-            continue
 
         sanitizedItem = _maskSecretDetail(rawItem, currentUserId=currentUserId, isAdmin=isAdmin)
         filtered.append(sanitizedItem)
@@ -102,6 +125,7 @@ def listItems():
     return jsonify({
         "success": True,
         "count": len(filtered),
+        "building": rawBuildingFilter or None,
         "items": filtered,
     }), 200
 
@@ -291,6 +315,7 @@ def getMapPins():
     # Filter only Reported (1) or In Custody (2)
     activeItems = [i for i in activeItems if i.get("LostObjectStateId") in (1, 2)]
 
+    lang = get_current_language()
     groupedByNode: Dict[str, List[Dict[str, Any]]] = {}
     for item in activeItems:
         loc = (item.get("Location") or "unknown").strip()
@@ -301,6 +326,7 @@ def getMapPins():
             "lostObjectStateId": item["LostObjectStateId"],
             "stateName": item["StateName"],
             "dateTimeReported": item["DateTimeReported"],
+            "hasPhoto": bool(item.get("PhotoUrl")),
         })
 
     pins = []
@@ -308,7 +334,7 @@ def getMapPins():
         node = globalNavigationService.graph.getNode(nodeId)
         pins.append({
             "locationNodeId": nodeId,
-            "locationName": node.name if node else nodeId,
+            "locationName": node.getName(lang) if node else _resolveLocationName(nodeId, lang),
             "xPercent": node.xPercent if node else None,
             "yPercent": node.yPercent if node else None,
             "latitude": node.latitude if node else None,

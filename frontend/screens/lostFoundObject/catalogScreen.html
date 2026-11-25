@@ -3,6 +3,7 @@
 {% set es = current_language == 'spa' %}
 {% set user = session.get('user') %}
 {% set isAdmin = user and user.get('UserTypeId') == 4 %}
+{% set routeItemId = initial_item_id if (initial_item_id is defined and initial_item_id is not none) else '' %}
 
 {% block title_attrs %} data-i18n="lost_found.catalog_page_title"{% endblock %}
 {% block title %}{{ 'Catálogo de Objetos Perdidos' if es else 'Lost & Found Catalog' }} · JaguarFind{% endblock %}
@@ -19,7 +20,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="flex-1 bg-slate-50 flex flex-col min-h-0">
+<div id="catalogAppRoot"
+     data-is-admin="{{ 'true' if isAdmin else 'false' }}"
+     data-initial-item-id="{{ routeItemId }}"
+     data-user-name="{{ (user.get('FullName') or '') if user else '' }}"
+     data-user-contact="{{ (user.get('Email') or user.get('PhoneNumber') or '') if user else '' }}"
+     class="flex-1 bg-slate-50 flex flex-col min-h-0">
 
     <!-- Top Hero Banner -->
     <div class="bg-gradient-to-r from-ocean-900 via-brand-800 to-brand-600 text-white px-4 sm:px-6 lg:px-8 py-6 shadow-md shrink-0">
@@ -69,6 +75,45 @@
 
             <!-- Filters Group -->
             <div class="flex flex-wrap items-center gap-2">
+
+                <!-- Building / Campus Location Filter -->
+                <select id="filterBuilding"
+                        aria-label="{{ t('lost_found.all_buildings', default='Todos los edificios' if es else 'All buildings') }}"
+                        class="max-w-[230px] px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-hidden focus:border-brand-500 transition cursor-pointer">
+                    <option value="" data-i18n="lost_found.all_buildings">{{ 'Todos los edificios' if es else 'All buildings' }}</option>
+                    <optgroup label="{{ 'Edificios Principales' if es else 'Main Buildings' }}">
+                        <option value="buildingA" data-i18n="nodes.buildingA">{{ t('nodes.buildingA', default='Edificio A') }}</option>
+                        <option value="buildingB" data-i18n="nodes.buildingB">{{ t('nodes.buildingB', default='Edificio B') }}</option>
+                        <option value="buildingC" data-i18n="nodes.buildingC">{{ t('nodes.buildingC', default='Edificio C') }}</option>
+                        <option value="buildingD" data-i18n="nodes.buildingD">{{ t('nodes.buildingD', default='Edificio D') }}</option>
+                        <option value="buildingE" data-i18n="nodes.buildingE">{{ t('nodes.buildingE', default='Edificio E') }}</option>
+                        <option value="buildingF" data-i18n="nodes.buildingF">{{ t('nodes.buildingF', default='Edificio F') }}</option>
+                        <option value="buildingG" data-i18n="nodes.buildingG">{{ t('nodes.buildingG', default='Edificio G') }}</option>
+                        <option value="buildingH" data-i18n="nodes.buildingH">{{ t('nodes.buildingH', default='Edificio H') }}</option>
+                        <option value="buildingI" data-i18n="nodes.buildingI">{{ t('nodes.buildingI', default='Edificio I') }}</option>
+                        <option value="buildingJ" data-i18n="nodes.buildingJ">{{ t('nodes.buildingJ', default='Edificio J') }}</option>
+                        <option value="buildingK" data-i18n="nodes.buildingK">{{ t('nodes.buildingK', default='Edificio K') }}</option>
+                        <option value="buildingL" data-i18n="nodes.buildingL">{{ t('nodes.buildingL', default='Edificio L') }}</option>
+                        <option value="buildingM" data-i18n="nodes.buildingM">{{ t('nodes.buildingM', default='Edificio M') }}</option>
+                        <option value="buildingN" data-i18n="nodes.buildingN">{{ t('nodes.buildingN', default='Edificio N') }}</option>
+                        <option value="buildingO" data-i18n="nodes.buildingO">{{ t('nodes.buildingO', default='Edificio O') }}</option>
+                        <option value="buildingP" data-i18n="nodes.buildingP">{{ t('nodes.buildingP', default='Edificio P') }}</option>
+                    </optgroup>
+                    <optgroup label="{{ 'Áreas Deportivas y Exteriores' if es else 'Sports & Outdoor Areas' }}">
+                        <option value="jaguarCenter" data-i18n="nodes.jaguarCenter">{{ t('nodes.jaguarCenter', default='Jaguar Center') }}</option>
+                        <option value="jaguarGym" data-i18n="nodes.jaguarGym">{{ t('nodes.jaguarGym', default='Jaguar Gym') }}</option>
+                        <option value="physiotherapy" data-i18n="nodes.physiotherapy">{{ t('nodes.physiotherapy', default='Fisioterapia') }}</option>
+                        <option value="sportsZone" data-i18n="nodes.sportsZone">{{ t('nodes.sportsZone', default='Campos Deportivos') }}</option>
+                        <option value="chilamatesPlaza" data-i18n="nodes.chilamatesPlaza">{{ t('nodes.chilamatesPlaza', default='Plaza Chilamates') }}</option>
+                        <option value="jaguarJungle" data-i18n="nodes.jaguarJungle">{{ t('nodes.jaguarJungle', default='Jaguar Jungle') }}</option>
+                        <option value="miRanchito" data-i18n="nodes.miRanchito">{{ t('nodes.miRanchito', default='Mi Ranchito') }}</option>
+                        <option value="labDigitalFia" data-i18n="nodes.labDigitalFia">{{ t('nodes.labDigitalFia', default='Lab Digital FIA') }}</option>
+                        <option value="areaDeMesas" data-i18n="nodes.areaDeMesas">{{ t('nodes.areaDeMesas', default='Área de Mesas') }}</option>
+                        <option value="mainParking" data-i18n="nodes.mainParking">{{ t('nodes.mainParking', default='Parqueo Principal') }}</option>
+                        <option value="northeastGate" data-i18n="nodes.northeastGate">{{ t('nodes.northeastGate', default='Segundo Acceso') }}</option>
+                        <option value="northGate" data-i18n="nodes.northGate">{{ t('nodes.northGate', default='Tercer Acceso') }}</option>
+                    </optgroup>
+                </select>
                 
                 <!-- Category Filter -->
                 <select id="filterCategory" class="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-hidden focus:border-brand-500 transition cursor-pointer">
@@ -89,7 +134,7 @@
                 </select>
 
                 <!-- Refresh button -->
-                <button id="btnRefreshCatalog" type="button" class="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition" title="Actualizar">
+                <button id="btnRefreshCatalog" type="button" class="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition cursor-pointer" title="{{ 'Actualizar' if es else 'Refresh' }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                 </button>
             </div>
@@ -99,6 +144,24 @@
     <!-- Main Content Grid -->
     <div class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="max-w-7xl mx-auto space-y-4">
+
+            <!-- Active Building Filter Banner (shown when filtered by ?building=<id> or building selector) -->
+            <div id="activeBuildingFilterBanner" class="hidden flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-2xl bg-brand-50 border border-brand-200/90 text-xs shadow-2xs">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <span class="w-7 h-7 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </span>
+                    <div class="min-w-0 flex flex-wrap items-center gap-1.5">
+                        <span class="text-slate-600 font-semibold" data-i18n="lost_found.filtered_by_building">{{ 'Filtrando por edificio:' if es else 'Filtered by building:' }}</span>
+                        <span id="activeBuildingFilterLabel" class="font-extrabold text-brand-900 truncate"></span>
+                    </div>
+                </div>
+                <button id="btnClearBuildingFilter" type="button"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-brand-600 text-brand-800 hover:text-white border border-brand-200 hover:border-brand-600 font-bold text-xs transition-all cursor-pointer shrink-0 shadow-2xs">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <span data-i18n="lost_found.clear_building_filter">{{ 'Ver todos los objetos' if es else 'View all items' }}</span>
+                </button>
+            </div>
 
             <!-- Summary counter -->
             <div class="flex items-center justify-between text-xs font-semibold text-slate-500">
@@ -119,6 +182,11 @@
                 </div>
                 <h3 class="text-base font-extrabold text-slate-800" data-i18n="lost_found.no_items_found">{{ 'No se encontraron objetos' if es else 'No items found' }}</h3>
                 <p class="text-xs text-slate-500 mt-1" data-i18n="lost_found.no_items_hint">{{ 'Intenta ajustar los filtros de búsqueda o reporta un nuevo objeto extraviado.' if es else 'Try adjusting your filters or report a new lost object.' }}</p>
+                <button id="btnClearFiltersEmpty" type="button"
+                        class="hidden mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm transition cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <span data-i18n="lost_found.clear_filters">{{ 'Limpiar filtros' if es else 'Clear filters' }}</span>
+                </button>
             </div>
 
             <!-- Cards Grid Container -->
@@ -129,9 +197,176 @@
 
 </div>
 
+<!-- ITEM DETAIL MODAL (PINTEREST-STYLE PIN DETAIL VIEW) -->
+<div id="itemDetailModal"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="detailItemTitle"
+     class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-5 bg-slate-900/65 backdrop-blur-xs transition-opacity">
+    <div id="itemDetailDialog" class="relative w-full max-w-3xl max-h-[90vh] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
+
+        <!-- Loading State -->
+        <div id="itemDetailLoading" class="hidden py-20 px-6 text-center">
+            <div class="inline-block w-9 h-9 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+            <p class="text-sm font-semibold text-slate-500" data-i18n="lost_found.detail_loading">{{ 'Cargando detalle del objeto...' if es else 'Loading item details...' }}</p>
+        </div>
+
+        <!-- Not Found / Error State -->
+        <div id="itemDetailError" class="hidden py-16 px-6 text-center max-w-md mx-auto">
+            <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-3">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <h3 class="text-base font-extrabold text-slate-900" data-i18n="lost_found.detail_not_found_title">{{ 'Objeto no encontrado' if es else 'Item not found' }}</h3>
+            <p class="text-xs text-slate-500 mt-1" data-i18n="lost_found.detail_not_found_desc">{{ 'No pudimos encontrar el reporte solicitado o fue eliminado.' if es else "We couldn't find the requested report or it was removed." }}</p>
+            <button id="btnCloseItemDetailError" type="button"
+                    class="mt-5 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition cursor-pointer">
+                <span data-i18n="lost_found.detail_back_to_catalog">{{ 'Volver al catálogo' if es else 'Back to catalog' }}</span>
+            </button>
+        </div>
+
+        <!-- Loaded Item Content -->
+        <div id="itemDetailContent" class="hidden grid grid-cols-1 md:grid-cols-12 min-h-0 flex-1 overflow-y-auto md:overflow-hidden">
+
+            <!-- Left / Top Media Panel -->
+            <div class="md:col-span-5 bg-slate-100 relative flex items-center justify-center min-h-[220px] md:min-h-[380px] overflow-hidden">
+                <img id="detailItemPhoto" src="" alt="" class="hidden w-full h-full object-cover max-h-[360px] md:max-h-full">
+                <div id="detailItemNoPhoto" class="flex flex-col items-center justify-center gap-2 p-8 text-center">
+                    <div class="w-16 h-16 rounded-3xl bg-white/90 border border-slate-200 flex items-center justify-center text-slate-400 shadow-xs">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    </div>
+                    <span class="text-[11px] font-semibold text-slate-400" data-i18n="lost_found.detail_no_photo">{{ 'Sin fotografía adjunta' if es else 'No photo attached' }}</span>
+                </div>
+                <div id="detailStateBadge" class="absolute top-3.5 left-3.5"></div>
+                <span id="detailCategoryBadge" class="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-white/95 backdrop-blur-xs text-slate-800 shadow-xs"></span>
+            </div>
+
+            <!-- Right / Bottom Details Panel -->
+            <div class="md:col-span-7 p-5 sm:p-6 flex flex-col justify-between gap-4 md:overflow-y-auto">
+                <div class="space-y-4">
+                    <!-- Top Action Strip -->
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span id="detailTicketId" class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-slate-100 text-slate-700 border border-slate-200"></span>
+                            <button id="btnDetailCopyLink" type="button"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] font-bold text-slate-600 transition cursor-pointer">
+                                <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                <span id="detailCopyLinkLabel" data-i18n="lost_found.detail_copy_link">{{ 'Copiar enlace' if es else 'Copy link' }}</span>
+                            </button>
+                        </div>
+                        <button id="btnCloseItemDetailModal" type="button"
+                                aria-label="{{ 'Cerrar' if es else 'Close' }}"
+                                data-i18n-aria-label="lost_found.close"
+                                class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Title & Clickable Building Badge -->
+                    <div>
+                        <h2 id="detailItemTitle" class="text-xl sm:text-2xl font-black text-slate-900 leading-tight"></h2>
+                        <button id="btnDetailFilterBuilding" type="button"
+                                class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-brand-50 hover:bg-brand-100 border border-brand-200/80 text-brand-800 text-xs font-bold transition cursor-pointer max-w-full">
+                            <svg class="w-3.5 h-3.5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span id="detailItemLocation" class="truncate"></span>
+                        </button>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <h3 class="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1" data-i18n="lost_found.detail_description">{{ 'Descripción' if es else 'Description' }}</h3>
+                        <p id="detailItemDescription" class="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line"></p>
+                    </div>
+
+                    <!-- Metadata Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400" data-i18n="lost_found.detail_reported_on">{{ 'Reportado el' if es else 'Reported on' }}</span>
+                            <span id="detailItemDate" class="font-bold text-slate-800"></span>
+                        </div>
+                        <div id="detailItemReporterWrap" class="hidden p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400" data-i18n="lost_found.detail_reported_by">{{ 'Reportado por' if es else 'Reported by' }}</span>
+                            <span id="detailItemReporter" class="font-bold text-slate-800"></span>
+                        </div>
+                        <div id="detailItemResolvedWrap" class="hidden sm:col-span-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-100">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-emerald-600" data-i18n="lost_found.detail_resolved_on">{{ 'Entregado el' if es else 'Delivered on' }}</span>
+                            <span id="detailItemResolvedDate" class="font-bold text-emerald-900"></span>
+                        </div>
+                    </div>
+
+                    <!-- Custody Info Banner -->
+                    <div id="detailCustodyBox" class="rounded-2xl p-3.5 text-xs font-semibold border bg-sky-50 text-sky-900 border-sky-200 flex items-start gap-2.5">
+                        <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span id="detailCustodyText"></span>
+                    </div>
+
+                    <!-- Anti-Fraud Secret Detail Box -->
+                    <div id="detailSecretBox" class="hidden rounded-2xl p-3.5 bg-amber-50 border border-amber-200 text-xs">
+                        <div class="flex items-center gap-1.5 font-extrabold text-amber-900 mb-1">
+                            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg>
+                            <span data-i18n="lost_found.detail_secret_title">{{ 'Detalle Secreto (Verificación Antifraude)' if es else 'Secret Detail (Anti-Fraud Verification)' }}</span>
+                        </div>
+                        <p id="detailSecretText" class="text-amber-800 leading-snug"></p>
+                    </div>
+
+                    <!-- Collapsible Claim Form -->
+                    <div id="detailClaimSection" class="hidden rounded-2xl p-4 bg-slate-50 border border-slate-200 space-y-3">
+                        <form id="detailClaimForm" class="space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <div>
+                                    <label for="claimantNameInput" class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.detail_claim_name">{{ 'Nombre completo' if es else 'Full name' }}</label>
+                                    <input type="text" id="claimantNameInput" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:border-brand-500 focus:outline-hidden">
+                                </div>
+                                <div>
+                                    <label for="claimantContactInput" class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.detail_claim_contact">{{ 'Correo o teléfono de contacto' if es else 'Contact email or phone' }}</label>
+                                    <input type="text" id="claimantContactInput" required class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:border-brand-500 focus:outline-hidden">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="claimSecretInput" class="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1" data-i18n="lost_found.detail_claim_secret">{{ 'Describe un detalle identificador (opcional)' if es else 'Describe an identifying detail (optional)' }}</label>
+                                <input type="text" id="claimSecretInput" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs focus:border-brand-500 focus:outline-hidden">
+                            </div>
+                            <div id="detailClaimAlert" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
+                            <div class="flex items-center justify-end gap-2">
+                                <button id="btnCancelClaimForm" type="button" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 cursor-pointer" data-i18n="lost_found.detail_claim_cancel">{{ 'Cancelar' if es else 'Cancel' }}</button>
+                                <button id="btnSubmitClaimForm" type="submit" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition cursor-pointer" data-i18n="lost_found.detail_claim_submit">{{ 'Enviar solicitud de reclamo' if es else 'Submit claim request' }}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Action Footer Buttons -->
+                <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
+                    <a id="btnDetailViewOnMap" href="/mapa"
+                       class="flex-1 min-w-[140px] py-2.5 px-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-xs">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                        <span data-i18n="lost_found.view_on_map_25d">{{ 'Ver en Mapa 2.5D' if es else 'View on 2.5D Map' }}</span>
+                    </a>
+                    <button id="btnDetailMoreInBuilding" type="button"
+                            class="py-2.5 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
+                        <span data-i18n="lost_found.detail_filter_building">{{ 'Ver más en este edificio' if es else 'More from this building' }}</span>
+                    </button>
+                    <button id="btnToggleClaimForm" type="button"
+                            class="py-2.5 px-3.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span data-i18n="lost_found.detail_claim_button">{{ 'Reclamar este objeto' if es else 'Claim this item' }}</span>
+                    </button>
+                    {% if isAdmin %}
+                    <button id="btnDetailAdminEditState" type="button"
+                            class="py-2.5 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        <span data-i18n="lost_found.edit_ticket_state">{{ 'Editar Estado Ticket' if es else 'Edit Ticket Status' }}</span>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ADMIN STATE UPDATE MODAL (FOR ADMINS ONLY) -->
 {% if isAdmin %}
-<div id="adminStateModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+<div id="adminStateModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div class="w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95">
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-amber-50">
             <h3 class="text-sm font-black text-slate-900">Actualizar Estado de Custodia</h3>
@@ -167,247 +402,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const isAdmin = {{ 'true' if isAdmin else 'false' }};
-    let allItems = [];
-
-    const grid = document.getElementById("catalogGrid");
-    const loading = document.getElementById("catalogLoading");
-    const emptyState = document.getElementById("catalogEmpty");
-    const itemsCountText = document.getElementById("catalogItemsCount");
-    const searchInput = document.getElementById("catalogSearchInput");
-    const filterCategory = document.getElementById("filterCategory");
-    const filterState = document.getElementById("filterState");
-    const btnRefresh = document.getElementById("btnRefreshCatalog");
-    const btnOpenReport = document.getElementById("btnOpenReportDialog");
-
-    // Open reporting dialog
-    if (btnOpenReport) {
-        btnOpenReport.addEventListener("click", () => {
-            if (typeof window.openReportObjectDialog === "function") {
-                window.openReportObjectDialog();
-            }
-        });
-    }
-
-    // Fetch items from API
-    async function loadCatalog() {
-        loading.classList.remove("hidden");
-        grid.classList.add("hidden");
-        emptyState.classList.add("hidden");
-
-        const cat = filterCategory.value;
-        const state = filterState.value;
-        const q = searchInput.value.trim();
-
-        let url = "/api/lost-found-object/items?";
-        if (cat) url += `category=${encodeURIComponent(cat)}&`;
-        if (state) url += `stateId=${encodeURIComponent(state)}&`;
-        if (q) url += `q=${encodeURIComponent(q)}&`;
-
-        try {
-            const res = await fetch(url);
-            const data = await res.json();
-            loading.classList.add("hidden");
-
-            if (data.success && data.items) {
-                allItems = data.items;
-                renderCards(allItems);
-            } else {
-                renderCards([]);
-            }
-        } catch (e) {
-            loading.classList.add("hidden");
-            renderCards([]);
-        }
-    }
-
-    function getStateBadge(stateId, stateName) {
-        if (stateId === 1) {
-            return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Reportado
-            </span>`;
-        } else if (stateId === 2) {
-            return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-50 text-sky-800 border border-sky-200">
-                <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>En Custodia (Edif. A)
-            </span>`;
-        } else if (stateId === 3) {
-            return `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Entregado
-            </span>`;
-        }
-        return `<span class="px-2 py-0.5 rounded-full text-xs bg-slate-100 text-slate-700">${stateName || 'Desconocido'}</span>`;
-    }
-
-    function getCategoryBadge(cat) {
-        const map = {
-            electronics: { label: "Electrónica", icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>' },
-            documents: { label: "Documentos", icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>' },
-            personalItems: { label: "Personal", icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>' },
-            clothing: { label: "Ropa", icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l6-3 3 3 3-3 6 3v13H3V7z"/></svg>' },
-            other: { label: "Objeto", icon: '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>' }
-        };
-        const c = map[cat] || map.other;
-        return `<span class="inline-flex items-center gap-1">${c.icon}<span>${c.label}</span></span>`;
-    }
-
-    function renderCards(items) {
-        const countKey = items.length === 1 ? "lost_found.items_found_singular" : "lost_found.items_found_plural";
-        const countFallback = items.length === 1 ? `${items.length} objeto encontrado` : `${items.length} objetos encontrados`;
-        itemsCountText.textContent = window.t ? window.t(countKey, countFallback, { count: items.length }) : countFallback;
-        grid.innerHTML = "";
-
-        if (items.length === 0) {
-            emptyState.classList.remove("hidden");
-            grid.classList.add("hidden");
-            return;
-        }
-
-        emptyState.classList.add("hidden");
-        grid.classList.remove("hidden");
-
-        items.forEach(item => {
-            const card = document.createElement("div");
-            card.className = "bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 overflow-hidden flex flex-col";
-
-            const photoHtml = item.PhotoUrl 
-                ? `<div class="w-full h-44 bg-slate-100 relative overflow-hidden">
-                     <img src="${item.PhotoUrl}" alt="${item.ItemName}" class="w-full h-full object-cover">
-                     <div class="absolute top-3 left-3">${getStateBadge(item.LostObjectStateId, item.StateName)}</div>
-                     <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-white/90 backdrop-blur-xs text-slate-800 shadow-xs">${getCategoryBadge(item.Category)}</span>
-                   </div>`
-                : `<div class="w-full h-32 bg-gradient-to-br from-slate-100 to-slate-200 relative flex items-center justify-center">
-                     <div class="w-12 h-12 rounded-2xl bg-white/80 border border-slate-200/80 flex items-center justify-center text-slate-400"><svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>
-                     <div class="absolute top-3 left-3">${getStateBadge(item.LostObjectStateId, item.StateName)}</div>
-                     <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-white/90 backdrop-blur-xs text-slate-800 shadow-xs">${getCategoryBadge(item.Category)}</span>
-                   </div>`;
-
-            const actionBtn = isAdmin 
-                ? `<div class="flex flex-col gap-1.5">
-                     <button onclick="window.openAdminStateModal(${item.Id}, '${item.ItemName.replace(/'/g, "\\'")}', ${item.LostObjectStateId})" 
-                             type="button" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
-                       <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                       <span>Editar Estado Ticket</span>
-                     </button>
-                     <a href="/mapa?focus=${encodeURIComponent(item.Location)}&mode=25d" 
-                        class="w-full py-1.5 px-3 rounded-xl bg-slate-100 hover:bg-brand-50 border border-slate-200 text-slate-700 hover:text-brand-800 font-bold text-[11px] flex items-center justify-center gap-1.5 transition">
-                       <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                       <span>Ver en Mapa 2.5D</span>
-                     </a>
-                   </div>`
-                : `<div class="space-y-1.5">
-                     ${item.LostObjectStateId === 2 ? '<p class="text-[10px] text-sky-700 font-semibold bg-sky-50 px-2 py-1 rounded-lg border border-sky-100 flex items-center gap-1"><svg class="w-3 h-3 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Custodia en Edificio A (CAE). Presenta tu carnet o cédula.</p>' : ''}
-                     <a href="/mapa?focus=${encodeURIComponent(item.Location)}&mode=25d" 
-                        class="w-full py-2 px-3 rounded-xl bg-brand-50 hover:bg-brand-100 border border-brand-200/90 text-brand-800 font-bold text-xs flex items-center justify-center gap-1.5 transition">
-                       <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                       <span>Ver en Mapa 2.5D</span>
-                     </a>
-                   </div>`;
-
-            card.innerHTML = `
-                ${photoHtml}
-                <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
-                    <div>
-                        <h3 class="font-extrabold text-base text-slate-900 leading-snug line-clamp-2">${item.ItemName}</h3>
-                        <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-1">
-                            <svg class="w-3.5 h-3.5 text-brand-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            <span class="truncate">${item.Location}</span>
-                        </div>
-                        <p class="text-xs text-slate-600 mt-2 line-clamp-2">${item.Description}</p>
-                    </div>
-
-                    <div class="pt-3 border-t border-slate-100 space-y-2.5">
-                        <div class="flex items-center justify-between text-[11px] text-slate-400">
-                            <span>${item.DateTimeReported ? item.DateTimeReported.split(' ')[0] : ''}</span>
-                            ${item.hasSecretDetail ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200"><svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg><span>Antifraude</span></span>' : ''}
-                        </div>
-                        ${actionBtn}
-                    </div>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    }
-
-    // Filter Listeners
-    searchInput.addEventListener("input", debounce(loadCatalog, 300));
-    filterCategory.addEventListener("change", loadCatalog);
-    filterState.addEventListener("change", loadCatalog);
-    btnRefresh.addEventListener("click", loadCatalog);
-
-    window.addEventListener("lostObjectReported", loadCatalog);
-    window.addEventListener("jaguarLanguageChanged", () => {
-        if (allItems) renderCards(allItems);
-    });
-
-    // Initial load
-    loadCatalog();
-
-    function debounce(func, wait) {
-        let timeout;
-        return function(...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-    }
-
-    // ADMIN STATE UPDATE MODAL LOGIC
-    {% if isAdmin %}
-    const adminStateModal = document.getElementById("adminStateModal");
-    const btnCloseAdminState = document.getElementById("btnCloseAdminStateModal");
-    const btnCancelAdminState = document.getElementById("btnCancelAdminState");
-    const adminStateForm = document.getElementById("adminStateForm");
-    const adminStateAlert = document.getElementById("adminStateAlert");
-
-    window.openAdminStateModal = function(id, name, currentStateId) {
-        document.getElementById("adminStateItemId").value = id;
-        document.getElementById("adminStateItemTitle").textContent = `#${id} - ${name}`;
-        document.getElementById("adminStateSelect").value = currentStateId || 1;
-        adminStateAlert.classList.add("hidden");
-        adminStateModal.classList.remove("hidden");
-    };
-
-    function closeAdminStateModal() {
-        adminStateModal.classList.add("hidden");
-    }
-    if (btnCloseAdminState) btnCloseAdminState.addEventListener("click", closeAdminStateModal);
-    if (btnCancelAdminState) btnCancelAdminState.addEventListener("click", closeAdminStateModal);
-
-    if (adminStateForm) {
-        adminStateForm.addEventListener("submit", async function(e) {
-            e.preventDefault();
-            const itemId = document.getElementById("adminStateItemId").value;
-            const stateId = parseInt(document.getElementById("adminStateSelect").value);
-
-            try {
-                const res = await fetch(`/api/admin/items/${itemId}/state`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ stateId: stateId })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    adminStateAlert.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                    adminStateAlert.textContent = data.message;
-                    adminStateAlert.classList.remove("hidden");
-                    setTimeout(() => {
-                        closeAdminStateModal();
-                        loadCatalog();
-                    }, 800);
-                } else {
-                    adminStateAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                    adminStateAlert.textContent = (data.error || "Error al actualizar estado.");
-                    adminStateAlert.classList.remove("hidden");
-                }
-            } catch (err) {
-                adminStateAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                adminStateAlert.textContent = "Error de conexión.";
-                adminStateAlert.classList.remove("hidden");
-            }
-        });
-    }
-    {% endif %}
-});
-</script>
+<script src="{{ url_for('static', filename='js/catalogScreen.js') }}"></script>
 {% endblock %}

@@ -88,11 +88,11 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
                 <svg class="w-3.5 h-3.5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
                 <span>2.5D</span>
             </button>
-            <a id="btnViewInCatalog" href="/lost-found-object/catalogo" class="flex-1 py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[11px] text-center transition">
-                Ver en Catálogo
+            <a id="btnViewInCatalog" href="/lost-found-object/catalogo" data-i18n="lost_found.view_in_catalog" class="flex-1 py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[11px] text-center transition">
+                {{ t('lost_found.view_in_catalog', default='Ver en Catálogo') }}
             </a>
-            <button id="btnReportHere" type="button" class="flex-1 py-2 px-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-[11px] text-center transition shadow-xs cursor-pointer">
-                + Reportar Aquí
+            <button id="btnReportHere" type="button" data-i18n="lost_found.report_here" class="flex-1 py-2 px-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-[11px] text-center transition shadow-xs cursor-pointer">
+                {{ t('lost_found.report_here', default='+ Reportar Aquí') }}
             </button>
         </div>
     </div>
@@ -123,6 +123,14 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
                 <span>Reportar</span>
             </button>
         </div>
+        {% if session.get('user') %}
+        <div class="mt-2 pt-2 border-t border-slate-100">
+            <a id="btnBldgViewCatalog" href="/lost-found-object/catalogo" class="w-full py-1.5 px-2.5 rounded-xl bg-brand-50 hover:bg-brand-100 border border-brand-200/80 text-brand-800 font-bold text-[11px] inline-flex items-center justify-center gap-1.5 transition-colors">
+                <svg class="w-3.5 h-3.5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                <span data-i18n="lost_found.view_building_catalog">{{ t('lost_found.view_building_catalog', default='Ver objetos en este edificio') }}</span>
+            </a>
+        </div>
+        {% endif %}
     </div>
 
     <!-- 3D Transformable Stage (CSS 3D perspective plane with lower-third anchor) -->

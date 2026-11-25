@@ -598,7 +598,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Desktop Mouse Drag handlers: Pan (left drag) and Rotate (Shift/Alt/Right drag)
     wrapper.addEventListener("mousedown", (e) => {
         if (window.campus25dController && window.campus25dController.is25dActive) return;
-        if (e.target.closest("#bldgPopover") || e.target.closest("button") || e.target.closest("#campusCompass")) return;
+        if (e.target.closest("#bldgPopover") || e.target.closest("#lostFoundPinPopover") || e.target.closest("button") || e.target.closest("a") || e.target.closest("#campusCompass")) return;
 
         if (e.shiftKey || e.altKey || e.button === 2) {
             // View rotation mode
@@ -647,7 +647,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     wrapper.addEventListener("touchstart", (e) => {
         if (window.campus25dController && window.campus25dController.is25dActive) return;
-        if (e.target.closest("#bldgPopover") || e.target.closest("button") || e.target.closest("#campusCompass")) return;
+        if (e.target.closest("#bldgPopover") || e.target.closest("#lostFoundPinPopover") || e.target.closest("button") || e.target.closest("a") || e.target.closest("#campusCompass")) return;
 
         if (e.touches.length === 1) {
             isDragging = true;
@@ -710,6 +710,18 @@ document.addEventListener("DOMContentLoaded", function () {
     function showBuildingPopover(bldgData, anchorCoords) {
         activeSelectedBuilding = bldgData;
         if (!bldgPopover) return;
+
+        // Dismiss the Lost & Found popover so both cards never overlap
+        const lostPopover = document.getElementById("lostFoundPinPopover");
+        if (lostPopover) {
+            lostPopover.classList.add("hidden");
+        }
+
+        // Update building-scoped catalog link when user is authenticated
+        const btnBldgCatalog = document.getElementById("btnBldgViewCatalog");
+        if (btnBldgCatalog && bldgData && bldgData.id) {
+            btnBldgCatalog.href = `/lost-found-object/catalogo?building=${encodeURIComponent(bldgData.id)}`;
+        }
 
         // Populate popover
         if (popoverBadge) {

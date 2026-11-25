@@ -13,6 +13,7 @@ Provides route decorators and utilities to protect private endpoints:
 
 from functools import wraps
 from typing import Any, Callable, Dict, Optional
+from urllib.parse import quote
 from flask import session, request, redirect, url_for, jsonify
 from backend.i18n import get_current_language
 
@@ -51,7 +52,8 @@ def login_required(view_func: Callable) -> Callable:
                     "success": False,
                     "error": L("Se requiere iniciar sesión.", "Authentication required.")
                 }), 401
-            return redirect("/auth?next=" + request.path)
+            nextTarget = request.full_path.rstrip("?")
+            return redirect("/auth?next=" + quote(nextTarget, safe="/"))
         return view_func(*args, **kwargs)
     return decorated_view
 
@@ -70,6 +72,7 @@ def admin_required(view_func: Callable) -> Callable:
                     "success": False,
                     "error": L("Se requieren privilegios de administrador.", "Administrator privileges required.")
                 }), 403
-            return redirect("/admin/adminsignin?next=" + request.path)
+            nextTarget = request.full_path.rstrip("?")
+            return redirect("/admin/adminsignin?next=" + quote(nextTarget, safe="/"))
         return view_func(*args, **kwargs)
     return decorated_view

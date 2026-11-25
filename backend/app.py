@@ -109,10 +109,18 @@ def createApp(configClass=Config) -> Flask:
     # ==========================================================================
 
     @app.route("/lost-found-object/catalogo", methods=["GET"])
+    @app.route("/catalog", methods=["GET"])
     @login_required
     def renderLostFoundCatalog():
         """Renders the Lost & Found objects catalog for authenticated campus users."""
-        return render_template("screens/lostFoundObject/catalogScreen.html")
+        return render_template("screens/lostFoundObject/catalogScreen.html", initial_item_id=None)
+
+    @app.route("/lost-found-object/catalogo/<int:itemId>", methods=["GET"])
+    @app.route("/catalog/<int:itemId>", methods=["GET"])
+    @login_required
+    def renderLostFoundItemDetail(itemId: int):
+        """Renders the Lost & Found catalog and auto-opens the requested item's detail modal."""
+        return render_template("screens/lostFoundObject/catalogScreen.html", initial_item_id=itemId)
 
     @app.route("/admin/dashboard", methods=["GET"])
     @admin_required

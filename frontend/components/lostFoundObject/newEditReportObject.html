@@ -701,7 +701,7 @@ Features:
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = originalHtml;
                         // Reload if on catalog screen
-                        if (window.location.pathname.includes("/catalogo") || window.location.pathname.includes("/items")) {
+                        if (window.location.pathname.includes("/catalogo") || window.location.pathname.includes("/catalog") || window.location.pathname.includes("/items")) {
                             window.location.reload();
                         }
                     }, 1000);

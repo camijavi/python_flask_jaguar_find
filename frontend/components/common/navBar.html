@@ -37,7 +37,7 @@
 
                 <!-- Lost & Found: if authenticated goes to catalog, otherwise to /auth -->
                 {% set lostFoundTarget = '/lost-found-object/catalogo' if session.get('user') else '/auth' %}
-                <a href="{{ lostFoundTarget }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors {% if request.path.startswith('/lost-found') or request.path.startswith('/auth') %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:text-brand-700 hover:bg-slate-50{% endif %}">
+                <a href="{{ lostFoundTarget }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors {% if request.path.startswith('/lost-found') or request.path.startswith('/catalog') or request.path.startswith('/auth') %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:text-brand-700 hover:bg-slate-50{% endif %}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                     <span data-i18n="nav.lost_found">{{ t('nav.lost_found', default='Lost & Found') }}</span>
                 </a>
@@ -102,7 +102,7 @@
         <nav class="md:hidden flex items-center gap-1 pb-2 -mt-1 overflow-x-auto">
             <a href="{{ url_for('renderMapScreen') }}" data-i18n="nav.map" class="flex-1 text-center px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap {% if request.path in ['/', '/map', '/mapa'] %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">{{ t('nav.map', default='Campus Map') }}</a>
             {% set lostFoundTargetMobile = '/lost-found-object/catalogo' if session.get('user') else '/auth' %}
-            <a href="{{ lostFoundTargetMobile }}" data-i18n="nav.lost_found" class="flex-1 text-center px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap {% if request.path.startswith('/lost-found') or request.path.startswith('/auth') %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">{{ t('nav.lost_found', default='Lost & Found') }}</a>
+            <a href="{{ lostFoundTargetMobile }}" data-i18n="nav.lost_found" class="flex-1 text-center px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap {% if request.path.startswith('/lost-found') or request.path.startswith('/catalog') or request.path.startswith('/auth') %}bg-brand-50 text-brand-700 font-bold{% else %}text-slate-600 hover:bg-slate-50{% endif %}">{{ t('nav.lost_found', default='Lost & Found') }}</a>
             {% if session.get('user') and session['user'].get('UserTypeId') == 4 %}
             <a href="/admin/dashboard" data-i18n="nav.admin_short" class="flex-1 text-center px-2 py-1.5 text-xs font-bold rounded-lg whitespace-nowrap bg-slate-900 text-white">{{ t('nav.admin_short', default='Admin') }}</a>
             {% endif %}
