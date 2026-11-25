@@ -304,7 +304,33 @@ class NavigationService:
                 path, dist, _, edges = self.walkwayRouter.findShortestPathWithEdges(
                     uPortal, vPortal, accessibleOnly=accessibleOnly
                 )
-                if path and dist < bestDist:
+                pathCost = sum(
+                    edges[(source, target)].distanceMeters
+                    * (
+                        edges[(source, target)].routingCostFactor
+                        if accessibleOnly
+                        and edges[(source, target)].accessibilityZone == "recommended"
+                        else 1.0
+                    )
+                    for source, target in zip(path, path[1:])
+                    if (source, target) in edges
+                )
+                bestCost = (
+                    sum(
+                        bestEdges[(source, target)].distanceMeters
+                        * (
+                            bestEdges[(source, target)].routingCostFactor
+                            if accessibleOnly
+                            and bestEdges[(source, target)].accessibilityZone == "recommended"
+                            else 1.0
+                        )
+                        for source, target in zip(bestPath, bestPath[1:])
+                        if (source, target) in bestEdges
+                    )
+                    if bestPath
+                    else float("inf")
+                )
+                if path and pathCost < bestCost:
                     bestDist = dist
                     bestPath = path
                     bestEdges = edges
@@ -447,6 +473,15 @@ class NavigationService:
         walkwayPathIds, walkwayDist, walkwayEdges = self._findBestWalkwayPath(
             originDest, targetDest, accessibleOnly=accessibleOnly
         )
+
+        if (
+            accessibleOnly
+            and originDest.get("walkwayNodeId")
+            and targetDest.get("walkwayNodeId")
+            and not walkwayPathIds
+        ):
+            err = t("navigation.no_route_found", lang=lang)
+            return {"success": False, "error": err}
 
         if not walkwayPathIds and not macroPathNodes:
             err = t("navigation.no_route_found", lang=lang)

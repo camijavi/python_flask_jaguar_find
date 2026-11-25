@@ -36,6 +36,8 @@ class DirectedEdge:
         edgeKey: Optional[str] = None,
         walkwayType: str = "ground",
         landmarkRef: str = "",
+        accessibilityZone: str = "neutral",
+        routingCostFactor: float = 1.0,
         targetVertex: Optional[Vertex] = None,
     ):
         self.targetNodeId = targetNodeId
@@ -46,6 +48,8 @@ class DirectedEdge:
         self.edgeKey = edgeKey
         self.walkwayType = walkwayType      # "ground" | "indoor" | "level2" | "stairs" | "ramp" | "crosswalk"
         self.landmarkRef = landmarkRef
+        self.accessibilityZone = accessibilityZone
+        self.routingCostFactor = max(0.01, float(routingCostFactor))
 
     def getInstruction(self, lang: str = "eng") -> str:
         """Returns localized step instruction, falling back to English/default stepInstruction."""
@@ -62,6 +66,8 @@ class DirectedEdge:
             "edgeKey": self.edgeKey,
             "walkwayType": self.walkwayType,
             "landmarkRef": self.landmarkRef,
+            "accessibilityZone": self.accessibilityZone,
+            "routingCostFactor": self.routingCostFactor,
         }
 
 
@@ -203,6 +209,8 @@ class DirectedGraph(Graph):
         edgeKey: Optional[str] = None,
         walkwayType: str = "ground",
         landmarkRef: str = "",
+        accessibilityZone: str = "neutral",
+        routingCostFactor: float = 1.0,
     ) -> bool:
         """
         Adds a single directed weighted edge (origin -> destination) enforcing
@@ -219,6 +227,9 @@ class DirectedGraph(Graph):
             return False
 
         key = edgeKey or f"{v_origin.nodeId}_{v_destination.nodeId}"
+        effectiveAccessibilityZone = (
+            "inaccessible" if not isAccessible else accessibilityZone
+        )
         edge = DirectedEdge(
             targetNodeId=v_destination.nodeId,
             distanceMeters=distance,
@@ -227,6 +238,8 @@ class DirectedGraph(Graph):
             edgeKey=key,
             walkwayType=walkwayType,
             landmarkRef=landmarkRef,
+            accessibilityZone=effectiveAccessibilityZone,
+            routingCostFactor=routingCostFactor,
             targetVertex=v_destination,
         )
         if isinstance(v_origin, Node):
@@ -243,6 +256,8 @@ class DirectedGraph(Graph):
         edgeKey: Optional[str] = None,
         walkwayType: str = "ground",
         landmarkRef: str = "",
+        accessibilityZone: str = "neutral",
+        routingCostFactor: float = 1.0,
     ) -> bool:
         """Adds a single directed edge from source to target (u -> v)."""
         return self.addEdge(
@@ -254,6 +269,8 @@ class DirectedGraph(Graph):
             edgeKey=edgeKey,
             walkwayType=walkwayType,
             landmarkRef=landmarkRef,
+            accessibilityZone=accessibilityZone,
+            routingCostFactor=routingCostFactor,
         )
 
     def addBidirectionalWalkway(
@@ -268,6 +285,8 @@ class DirectedGraph(Graph):
         backwardEdgeKey: Optional[str] = None,
         walkwayType: str = "ground",
         landmarkRef: str = "",
+        accessibilityZone: str = "neutral",
+        routingCostFactor: float = 1.0,
     ) -> None:
         """
         Creates two opposite directed edges (u -> v) and (v -> u)
@@ -278,10 +297,12 @@ class DirectedGraph(Graph):
         self.addDirectedEdge(
             nodeAId, nodeBId, distanceMeters, isAccessible, forwardInstruction,
             edgeKey=fwdKey, walkwayType=walkwayType, landmarkRef=landmarkRef,
+            accessibilityZone=accessibilityZone, routingCostFactor=routingCostFactor,
         )
         self.addDirectedEdge(
             nodeBId, nodeAId, distanceMeters, isAccessible, backwardInstruction,
             edgeKey=bwdKey, walkwayType=walkwayType, landmarkRef=landmarkRef,
+            accessibilityZone=accessibilityZone, routingCostFactor=routingCostFactor,
         )
 
     def deleteEdge(

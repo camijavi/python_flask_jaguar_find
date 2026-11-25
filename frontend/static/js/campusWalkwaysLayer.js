@@ -644,6 +644,66 @@
         northeastGate:   "gate_second"
     };
 
+    const RECOMMENDED_SEGMENT_KEYS = new Set([
+        ["west_side_k_south", "k_south_walk"],
+        ["west_side_k_north", "k_west_apron"],
+        ["k_west_apron", "a_south_exit"],
+        ["plaza_south_mid", "plaza_south_e"],
+        ["plaza_south_e", "e_mid"],
+        ["a_north_exit", "crosswalk_bot"],
+        ["crosswalk_bot", "crosswalk_mid"],
+        ["crosswalk_mid", "jd_cross_turn"],
+        ["jd_cross_turn", "jd_alley_bot"],
+        ["jd_alley_bot", "jd_walk_d"],
+        ["jd_walk_d", "n_south_stairs"],
+        ["n_south_stairs", "n_se_corner"],
+        ["n_se_corner", "mesas_top_right"],
+        ["mesas_top_right", "mesas_corridor"],
+        ["mesas_corridor", "mesas_pad"],
+        ["mesas_corridor", "mesas_south_turn"],
+        ["mesas_south_turn", "mesas_cm_corner"],
+        ["mesas_cm_corner", "m_nw_top"],
+        ["m_nw_top", "h_south_walk"],
+        ["pon_bot_left", "pon_bot_mid"],
+        ["pon_bot_mid", "pon_bot_east"],
+        ["pon_bot_east", "o_west_curb_bot"],
+        ["p_front_east", "o_nw_corner"],
+        ["o_nw_corner", "o_terrace_top"],
+        ["o_terrace_top", "o_terrace_mid"],
+        ["o_terrace_mid", "o_terrace_bot"],
+        ["o_terrace_bot", "jj_north_curve"],
+        ["jj_north_curve", "jj_center"],
+        ["jj_center", "jj_south_curve"],
+        ["eg_corridor_gf", "eg_corridor_mid"],
+        ["eg_corridor_mid", "eg_corridor_f_south"],
+        ["gf_plaza_top", "gf_plaza_mid"],
+        ["gf_plaza_mid", "spine_gf_south"],
+        ["spine_se_low", "spine_gf_south"],
+        ["spine_gf_south", "spine_i_north"],
+        ["spine_i_north", "i_nw_drop"],
+        ["i_nw_drop", "soccer_south_west"],
+        ["soccer_south_west", "jc_top_left"],
+        ["jc_top_left", "jc_top_right"],
+        ["jc_top_right", "jc_ne_hub"]
+    ].map(([from, to]) => `${from}|${to}`));
+    const INACCESSIBLE_SEGMENT_KEYS = new Set([
+        ["n_west_mid", "chil_east_mid"],
+        ["n_west_mid", "n_west_nw"],
+        ["n_west_nw", "chil_east_top"]
+    ].map(([from, to]) => `${from}|${to}`));
+    for (const seg of SEGMENTS) {
+        const key = `${seg.from}|${seg.to}`;
+        const reverseKey = `${seg.to}|${seg.from}`;
+        if (INACCESSIBLE_SEGMENT_KEYS.has(key) || INACCESSIBLE_SEGMENT_KEYS.has(reverseKey)) {
+            seg.accessible = false;
+        }
+        seg.accessibilityZone = seg.accessible === false
+            ? "inaccessible"
+            : RECOMMENDED_SEGMENT_KEYS.has(key) || RECOMMENDED_SEGMENT_KEYS.has(reverseKey)
+                ? "recommended"
+                : "neutral";
+    }
+
     // ----------------------------------------------------------------------------
     // 4. Micro-Walkway Dijkstra Router (Produces Real Sidewalk-Hugging Routes)
     // ----------------------------------------------------------------------------
@@ -654,8 +714,18 @@
         const b = NODES[seg.to];
         if (!a || !b) continue;
         const weight = Math.hypot(b.x - a.x, b.y - a.y);
-        ADJACENCY[seg.from].push({ to: seg.to, weight, accessible: seg.accessible !== false });
-        ADJACENCY[seg.to].push({ to: seg.from, weight, accessible: seg.accessible !== false });
+        ADJACENCY[seg.from].push({
+            to: seg.to,
+            weight,
+            accessible: seg.accessible !== false,
+            accessibilityZone: seg.accessibilityZone
+        });
+        ADJACENCY[seg.to].push({
+            to: seg.from,
+            weight,
+            accessible: seg.accessible !== false,
+            accessibilityZone: seg.accessibilityZone
+        });
     }
 
     function shortestMicroPath(startId, endId, accessibleOnly = false) {
@@ -681,8 +751,9 @@
             visited.add(u);
 
             for (const edge of ADJACENCY[u]) {
-                if (accessibleOnly && !edge.accessible) continue;
-                const alt = dist[u] + edge.weight;
+                if (accessibleOnly && (!edge.accessible || edge.accessibilityZone === "inaccessible")) continue;
+                const costFactor = accessibleOnly && edge.accessibilityZone === "recommended" ? 0.8 : 1;
+                const alt = dist[u] + edge.weight * costFactor;
                 if (alt < dist[edge.to]) {
                     dist[edge.to] = alt;
                     prev[edge.to] = u;
@@ -691,8 +762,7 @@
         }
 
         if (dist[endId] === Infinity) {
-            // Fallback without accessibility restriction if micro-graph lacked accessible bypass
-            return accessibleOnly ? shortestMicroPath(startId, endId, false) : null;
+            return null;
         }
 
         const ids = [];
@@ -774,33 +844,6 @@
             opacity: 0.9
         }, layer);
 
-        const groundGroup = el("g", {
-            id: "walkwaysGroundGroup",
-            fill: "none",
-            stroke: "#ec4899", // Vibrant light-theme rose-pink (distinct from green evac & blue route)
-            "stroke-width": 2.4,
-            "stroke-linecap": "round",
-            "stroke-linejoin": "round"
-        }, layer);
-
-        const indoorGroup = el("g", {
-            id: "walkwaysIndoorGroup",
-            fill: "none",
-            stroke: "#db2777",
-            "stroke-width": 2.2,
-            "stroke-dasharray": "3.5,3.5",
-            "stroke-linecap": "round"
-        }, layer);
-
-        const level2Group = el("g", {
-            id: "walkwaysLevel2Group",
-            fill: "none",
-            stroke: "#7c3aed", // Crisp violet for 2nd-floor covered bridges & annexes
-            "stroke-width": 3.0,
-            "stroke-dasharray": "5,3",
-            "stroke-linecap": "round"
-        }, layer);
-
         // Draw all walkable micro-segments
         for (const seg of SEGMENTS) {
             const a = NODES[seg.from];
@@ -809,13 +852,20 @@
             const d = `M ${a.x} ${a.y} L ${b.x} ${b.y}`;
             el("path", { d }, haloGroup);
 
-            if (seg.type === "level2") {
-                el("path", { d }, level2Group);
-            } else if (seg.type === "indoor") {
-                el("path", { d }, indoorGroup);
-            } else {
-                el("path", { d }, groundGroup);
-            }
+            const zoneColor = seg.accessibilityZone === "inaccessible"
+                ? "#2563eb"
+                : seg.accessibilityZone === "recommended"
+                    ? "#f97316"
+                    : "#ec4899";
+            el("path", {
+                d,
+                stroke: zoneColor,
+                "stroke-width": seg.accessibilityZone === "inaccessible" ? 3 : 2.4,
+                "stroke-dasharray": seg.type === "level2" ? "5,3" : seg.type === "indoor" ? "3.5,3.5" : null,
+                "stroke-linecap": "round",
+                "stroke-linejoin": "round",
+                "data-accessibility-zone": seg.accessibilityZone
+            }, layer);
         }
 
         // Draw clean door & corridor portal markers

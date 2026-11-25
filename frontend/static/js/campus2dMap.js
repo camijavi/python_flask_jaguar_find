@@ -769,7 +769,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     accessibleOnly: Boolean(route.isAccessibleRoute)
                 });
             }
-            if (resolvedPts.length < 2) {
+            if (resolvedPts.length < 2 && !route.isAccessibleRoute) {
                 resolvedPts = route.pathCoordinates.map(coord => {
                     const known = CAMPUS_BUILDINGS[coord.nodeId];
                     if (known && known.anchor) return { x: known.anchor.x, y: known.anchor.y };
@@ -789,6 +789,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        if (route.isAccessibleRoute && resolvedPts.length < 2) return;
         const points = resolvedPts.map(pt => `${pt.x},${pt.y}`).join(" ");
 
         const managedBy25d = Boolean(

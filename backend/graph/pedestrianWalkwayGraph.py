@@ -790,6 +790,58 @@ BARRIERS: List[dict] = [
 ]
 
 
+# Orange routes in the campus reference map. Unlisted walkable segments remain
+# neutral; wheelchair-inaccessible segments are identified by isAccessible=False.
+RECOMMENDED_WALKWAY_SEGMENTS = {
+    frozenset(("west_side_k_south", "k_south_walk")),
+    frozenset(("west_side_k_north", "k_west_apron")),
+    frozenset(("k_west_apron", "a_south_exit")),
+    frozenset(("plaza_south_mid", "plaza_south_e")),
+    frozenset(("plaza_south_e", "e_mid")),
+    frozenset(("a_north_exit", "crosswalk_bot")),
+    frozenset(("crosswalk_bot", "crosswalk_mid")),
+    frozenset(("crosswalk_mid", "jd_cross_turn")),
+    frozenset(("jd_cross_turn", "jd_alley_bot")),
+    frozenset(("jd_alley_bot", "jd_walk_d")),
+    frozenset(("jd_walk_d", "n_south_stairs")),
+    frozenset(("n_south_stairs", "n_se_corner")),
+    frozenset(("n_se_corner", "mesas_top_right")),
+    frozenset(("mesas_top_right", "mesas_corridor")),
+    frozenset(("mesas_corridor", "mesas_pad")),
+    frozenset(("mesas_corridor", "mesas_south_turn")),
+    frozenset(("mesas_south_turn", "mesas_cm_corner")),
+    frozenset(("mesas_cm_corner", "m_nw_top")),
+    frozenset(("m_nw_top", "h_south_walk")),
+    frozenset(("pon_bot_left", "pon_bot_mid")),
+    frozenset(("pon_bot_mid", "pon_bot_east")),
+    frozenset(("pon_bot_east", "o_west_curb_bot")),
+    frozenset(("p_front_east", "o_nw_corner")),
+    frozenset(("o_nw_corner", "o_terrace_top")),
+    frozenset(("o_terrace_top", "o_terrace_mid")),
+    frozenset(("o_terrace_mid", "o_terrace_bot")),
+    frozenset(("o_terrace_bot", "jj_north_curve")),
+    frozenset(("jj_north_curve", "jj_center")),
+    frozenset(("jj_center", "jj_south_curve")),
+    frozenset(("eg_corridor_gf", "eg_corridor_mid")),
+    frozenset(("eg_corridor_mid", "eg_corridor_f_south")),
+    frozenset(("gf_plaza_top", "gf_plaza_mid")),
+    frozenset(("gf_plaza_mid", "spine_gf_south")),
+    frozenset(("spine_se_low", "spine_gf_south")),
+    frozenset(("spine_gf_south", "spine_i_north")),
+    frozenset(("spine_i_north", "i_nw_drop")),
+    frozenset(("i_nw_drop", "soccer_south_west")),
+    frozenset(("soccer_south_west", "jc_top_left")),
+    frozenset(("jc_top_left", "jc_top_right")),
+    frozenset(("jc_top_right", "jc_ne_hub")),
+}
+
+INACCESSIBLE_WALKWAY_SEGMENTS = {
+    frozenset(("n_west_mid", "chil_east_mid")),
+    frozenset(("n_west_mid", "n_west_nw")),
+    frozenset(("n_west_nw", "chil_east_top")),
+}
+
+
 def buildPedestrianWalkwayGraph() -> DirectedGraph:
     """
     Constructs the official weighted, directed, non-complete micro-level
@@ -846,13 +898,26 @@ def buildPedestrianWalkwayGraph() -> DirectedGraph:
         # Level-2 skybridges involve vertical climb/descent unless accessed at level 2
         if walkwayType == "level2":
             weightMeters = round(weightMeters + 4.0, 1)
+        wheelchairAccessible = (
+            isAccessible
+            and frozenset((fromId, toId)) not in INACCESSIBLE_WALKWAY_SEGMENTS
+        )
+        accessibilityZone = (
+            "inaccessible"
+            if not wheelchairAccessible
+            else "recommended"
+            if frozenset((fromId, toId)) in RECOMMENDED_WALKWAY_SEGMENTS
+            else "neutral"
+        )
         g.addBidirectionalWalkway(
             fromId,
             toId,
             distanceMeters=weightMeters,
-            isAccessible=isAccessible,
+            isAccessible=wheelchairAccessible,
             walkwayType=walkwayType,
             landmarkRef=nB.landmarkNameSpa or "",
+            accessibilityZone=accessibilityZone,
+            routingCostFactor=0.8 if accessibilityZone == "recommended" else 1.0,
         )
 
     return g

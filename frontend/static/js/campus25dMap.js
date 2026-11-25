@@ -1814,7 +1814,7 @@
                         }));
                     }
                 }
-                if (rawPts.length < 2) {
+                if (rawPts.length < 2 && !routeData.isAccessibleRoute) {
                     rawPts = routeData.pathCoordinates.map(coord => {
                         const pt = this.resolveSvgPoint(coord);
                         return {
