@@ -17,17 +17,15 @@ The system combines both needs into a shared campus graph:
 
 ## Main Features
 
-### Campus navigation
+### JaguarMaps campus navigation
 
-- Public access without account registration
-- Manual origin and destination selection
-- Browser GPS-based nearest-node detection
-- GPS-based current-location detection
-- Shortest pedestrian route calculation with Dijkstra's algorithm
-- Optional accessible-route filtering
-- Turn-by-turn instructions
-- English and Spanish interfaces
-- Browser text-to-speech support
+- Public campus map, building directory, and place search for buildings, rooms, and facilities
+- Responsive 2D map and 2.5D campus view
+- Manual origin and destination selection, plus browser GPS location matching
+- Campus and indoor building routes calculated with Dijkstra's algorithm
+- Optional accessible routing that avoids stairs where accessible alternatives exist
+- Turn-by-turn directions with English and Spanish Azure Speech audio
+- English and Spanish interface and route instructions
 
 ### QR codes for official university adoption
 
@@ -38,14 +36,15 @@ launch. Scanning a campus QR code with a phone should open the public map and se
 the correct, validated campus location as the origin. The university should also
 approve the locations, destination URLs, and physical signage.
 
-### Lost-and-found management
+### JaguarFind lost-and-found
 
-- Student, collaborator, visitor, and administrator roles
-- Lost-object reporting and categorization
-- Three-state custody lifecycle: reported, in custody, and claimed
-- Secret-detail anti-fraud validation
-- Administrator dashboard and user management
-- SQLite-backed persistence
+- Account registration and sign-in for students, collaborators, and visitors, with administrator access
+- Lost-object reports with category, location, description, photo, and private identifying details
+- Searchable catalog with category, custody-state, and building filters
+- Three-state tracking: reported, in custody, and claimed
+- Claim requests with private-detail verification for ownership review
+- Map pins for active lost-and-found reports
+- Administrator dashboard for custody, reports, and user management
 
 ## Graph Structure
 
@@ -79,16 +78,17 @@ The expected complexity is \(O((V+E)\log V)\). Building subgraphs and room-level
 
 | Area | Technology |
 |---|---|
-| Backend | Python 3, Flask |
+| Backend and web framework | Python 3, Flask, Werkzeug |
 | Templates | Jinja2 |
 | Production server | Gunicorn |
-| Database | SQLite3 |
-| Frontend | HTML5, CSS, JavaScript |
+| Database | SQLite (`sqlite3`) |
+| Frontend | HTML5, custom CSS, and vanilla JavaScript |
 | UI styling | Tailwind CSS CDN and custom CSS |
-| Routing algorithm | Python `heapq` implementation of Dijkstra |
-| Geolocation | Browser Geolocation API and Haversine matching |
-| Voice instructions | Browser Web Speech API |
-| Internationalization | JSON dictionaries for English and Spanish |
+| Routing algorithm | Dijkstra's algorithm using Python's `heapq` |
+| Geolocation | Browser Geolocation API, campus GPS matching, and Haversine calculations |
+| Voice instructions | Azure AI Speech REST API, authenticated with Microsoft Entra ID |
+| Internationalization | JSON translation dictionaries for English and Spanish |
+| Azure integration | `azure-identity`, `requests`, and `python-dotenv` |
 | Deployment | Azure App Service for Linux |
 
 ## Project Structure
@@ -177,8 +177,8 @@ SQLite is appropriate for this class project and a single-instance Azure App Ser
 
 ## Authors
 
-- **Camila Javiera Navarro Centeno** - data structures and algorithms
-- **Francis Alejandra Solórzano Morales** - backend and persistence
+- Camila Javiera Navarro Centeno
+- Francis Alejandra Solórzano Morales
 
 ## Institution
 
