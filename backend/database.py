@@ -15,6 +15,9 @@ from pathlib import Path
 from werkzeug.security import generate_password_hash, check_password_hash
 from backend.config import Config
 
+MIN_CEDULA_LENGTH = 14
+MAX_CEDULA_LENGTH = 16
+
 
 def getDbConnection(dbPath: Optional[str] = None) -> sqlite3.Connection:
     """
@@ -39,7 +42,7 @@ CREATE TABLE IF NOT EXISTS UserTypeTbl (
 );
 """
 
-DDL_USER_TBL = """
+DDL_USER_TBL = f"""
 CREATE TABLE IF NOT EXISTS UserTbl (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     UserTypeId INTEGER NOT NULL,
@@ -60,8 +63,29 @@ CREATE TABLE IF NOT EXISTS UserTbl (
         (UserTypeId = 2 AND GovermentId IS NOT NULL) OR
         (UserTypeId = 3 AND GovermentId IS NOT NULL AND PhoneNumber IS NOT NULL) OR
         (UserTypeId = 4 AND Email IS NOT NULL AND PasswordHash IS NOT NULL)
+    ),
+    CONSTRAINT chk_user_government_id_length CHECK (
+        GovermentId IS NULL OR length(GovermentId) BETWEEN {MIN_CEDULA_LENGTH} AND {MAX_CEDULA_LENGTH}
     )
 );
+"""
+
+DDL_USER_GOVERNMENT_ID_LENGTH_TRIGGERS = f"""
+CREATE TRIGGER IF NOT EXISTS trg_user_government_id_length_insert
+BEFORE INSERT ON UserTbl
+WHEN NEW.GovermentId IS NOT NULL
+    AND length(NEW.GovermentId) NOT BETWEEN {MIN_CEDULA_LENGTH} AND {MAX_CEDULA_LENGTH}
+BEGIN
+    SELECT RAISE(ABORT, 'GovermentId length must be between {MIN_CEDULA_LENGTH} and {MAX_CEDULA_LENGTH}');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_user_government_id_length_update
+BEFORE UPDATE OF GovermentId ON UserTbl
+WHEN NEW.GovermentId IS NOT NULL
+    AND length(NEW.GovermentId) NOT BETWEEN {MIN_CEDULA_LENGTH} AND {MAX_CEDULA_LENGTH}
+BEGIN
+    SELECT RAISE(ABORT, 'GovermentId length must be between {MIN_CEDULA_LENGTH} and {MAX_CEDULA_LENGTH}');
+END;
 """
 
 DDL_USER_INDEXES = """
@@ -117,6 +141,7 @@ def initDb(dbPath: Optional[str] = None, seedSampleData: bool = True) -> None:
         # 1. Execute DDL Schema
         cursor.execute(DDL_USER_TYPE_TBL)
         cursor.execute(DDL_USER_TBL)
+        cursor.executescript(DDL_USER_GOVERNMENT_ID_LENGTH_TRIGGERS)
         # Ensure UserName column exists if table pre-existed
         cursor.execute("PRAGMA table_info(UserTbl);")
         existingCols = [col[1] for col in cursor.fetchall()]

@@ -37,7 +37,7 @@
             {{ field('nombre', 'Nombre completo' if es else 'Full name', 'user', 'text', 'Juan Pérez' if es else 'John Doe', full=true, label_key='auth.full_name_label', placeholder_key='auth.full_name_placeholder') }}
 
             {% if rol == 'visitante' %}
-                {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', 'text', '001-000000-0000A', 'maxlength="16"', label_key='auth.national_id_label') }}
+                {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', 'text', '001-000000-0000A', 'minlength="14" maxlength="16"', label_key='auth.national_id_label') }}
                 {{ field('telefono', 'Número de Teléfono' if es else 'Phone Number', 'phone', 'tel', '88881234', 'inputmode="numeric"', label_key='auth.phone_label') }}
                 {{ field('correoPersonal', 'Correo electrónico' if es else 'Email', 'mail', 'email', 'correo@ejemplo.com', full=true, label_key='auth.personal_email_label') }}
             {% else %}
@@ -48,7 +48,7 @@
                     {{ studentCareerSelect(es) }}
                     {{ studentFacultyField(es) }}
                 {% else %}
-                    {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', full=true, label_key='auth.national_id_label') }}
+                    {{ field('cedula', 'Cédula de identidad' if es else 'National ID', 'id', full=true, extra='minlength="14" maxlength="16"', label_key='auth.national_id_label') }}
                 {% endif %}
             {% endif %}
         </div>
@@ -185,6 +185,10 @@ document.addEventListener("DOMContentLoaded", function() {
             let val = (input.value || "").trim().toUpperCase();
             if (!val) {
                 setFieldError("cedula", tr("auth.validation.cedula_required", "La cédula de identidad es obligatoria.", "National ID is required."), "auth.validation.cedula_required");
+                return false;
+            }
+            if (val.length < 14 || val.length > 16) {
+                setFieldError("cedula", tr("auth.validation.cedula_length", "La cédula debe tener entre 14 y 16 caracteres.", "National ID must be between 14 and 16 characters."), "auth.validation.cedula_length");
                 return false;
             }
             // If entered without hyphens (14 chars), normalize format: 0012003920045B -> 001-200392-0045B

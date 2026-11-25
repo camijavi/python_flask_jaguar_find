@@ -18,6 +18,8 @@ from werkzeug.security import check_password_hash
 
 from backend.auth_guard import L, getSessionUser, sanitizeUser
 from backend.database import (
+    MAX_CEDULA_LENGTH,
+    MIN_CEDULA_LENGTH,
     createUser,
     getUserById,
     getUserByIdentifier,
@@ -193,7 +195,7 @@ def signup():
         if not govermentId:
             return jsonify({"success": False, "field": "cedula", "error": L("La cédula es obligatoria para colaboradores.",
                                                          "Government ID is required for collaborators.")}), 400
-        if not CEDULA_REGEX.fullmatch(govermentId):
+        if not MIN_CEDULA_LENGTH <= len(govermentId) <= MAX_CEDULA_LENGTH or not CEDULA_REGEX.fullmatch(govermentId):
             return jsonify({"success": False, "field": "cedula", "error": L("Formato de cédula inválido. Debe ser: 001-000000-0000A.",
                                                          "Invalid National ID format. Expected format: 001-000000-0000A.")}), 400
         cleanGov = govermentId.replace("-", "").upper()
@@ -206,7 +208,7 @@ def signup():
         if not govermentId:
             return jsonify({"success": False, "field": "cedula", "error": L("La cédula de identidad es obligatoria para visitantes.",
                                                          "National ID is required for visitors.")}), 400
-        if not CEDULA_REGEX.fullmatch(govermentId):
+        if not MIN_CEDULA_LENGTH <= len(govermentId) <= MAX_CEDULA_LENGTH or not CEDULA_REGEX.fullmatch(govermentId):
             return jsonify({"success": False, "field": "cedula", "error": L("Formato de cédula inválido. Debe ser: 001-000000-0000A.",
                                                          "Invalid National ID format. Expected format: 001-000000-0000A.")}), 400
         cleanGov = govermentId.replace("-", "").upper()

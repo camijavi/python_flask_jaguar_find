@@ -15,6 +15,8 @@ import sqlite3
 import re
 
 from backend.database import (
+    MAX_CEDULA_LENGTH,
+    MIN_CEDULA_LENGTH,
     getSystemStats,
     updateLostObjectState,
     getAllUsers,
@@ -158,14 +160,14 @@ def createNewUser():
     if userTypeId == 2:
         if not govermentId:
             return jsonify({"success": False, "error": "La cédula de identidad es obligatoria para colaboradores."}), 400
-        if not re.fullmatch(r"^\d{3}-?\d{6}-?\d{4}[A-Za-z]$", govermentId):
+        if not MIN_CEDULA_LENGTH <= len(govermentId) <= MAX_CEDULA_LENGTH or not re.fullmatch(r"^\d{3}-?\d{6}-?\d{4}[A-Za-z]$", govermentId):
             return jsonify({"success": False, "error": "Formato de cédula inválido. Debe ser: 001-000000-0000A."}), 400
         cleanGov = govermentId.replace("-", "").upper()
         govermentId = f"{cleanGov[:3]}-{cleanGov[3:9]}-{cleanGov[9:13]}{cleanGov[13]}"
     if userTypeId == 3:
         if not govermentId:
             return jsonify({"success": False, "error": "La cédula de identidad es obligatoria para visitantes."}), 400
-        if not re.fullmatch(r"^\d{3}-?\d{6}-?\d{4}[A-Za-z]$", govermentId):
+        if not MIN_CEDULA_LENGTH <= len(govermentId) <= MAX_CEDULA_LENGTH or not re.fullmatch(r"^\d{3}-?\d{6}-?\d{4}[A-Za-z]$", govermentId):
             return jsonify({"success": False, "error": "Formato de cédula inválido. Debe ser: 001-000000-0000A."}), 400
         cleanGov = govermentId.replace("-", "").upper()
         govermentId = f"{cleanGov[:3]}-{cleanGov[3:9]}-{cleanGov[9:13]}{cleanGov[13]}"

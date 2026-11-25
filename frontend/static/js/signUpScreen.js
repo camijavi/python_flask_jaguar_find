@@ -37,7 +37,11 @@ const VisitorValidation = {
     },
 
     validateCedula(val, isEs = true) {
-        const formatted = this.formatCedula(val);
+        const trimmed = (val || "").trim();
+        if (trimmed.length < 14 || trimmed.length > 16) {
+            return { valid: false, error: isEs ? "La cédula debe tener entre 14 y 16 caracteres." : "National ID must be between 14 and 16 characters." };
+        }
+        const formatted = this.formatCedula(trimmed);
         if (!formatted) {
             return { valid: false, error: isEs ? "La cédula de identidad es obligatoria." : "National ID is required." };
         }

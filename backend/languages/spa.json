@@ -223,6 +223,7 @@
       "name_required": "El nombre completo es obligatorio.",
       "name_min": "El nombre debe tener al menos 2 caracteres.",
       "cedula_required": "La cédula de identidad es obligatoria.",
+      "cedula_length": "La cédula debe tener entre 14 y 16 caracteres.",
       "cedula_invalid": "Formato de cédula inválido. Debe ser: 001-000000-0000A.",
       "phone_required": "El número de teléfono es obligatorio.",
       "phone_min": "El teléfono debe contener solo dígitos (mínimo 8 dígitos).",

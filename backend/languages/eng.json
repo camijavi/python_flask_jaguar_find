@@ -223,6 +223,7 @@
       "name_required": "Full name is required.",
       "name_min": "Full name must be at least 2 characters.",
       "cedula_required": "National ID is required.",
+      "cedula_length": "National ID must be between 14 and 16 characters.",
       "cedula_invalid": "Invalid National ID format. Expected format: 001-000000-0000A.",
       "phone_required": "Phone number is required.",
       "phone_min": "Phone number must contain digits only (minimum 8 digits).",
