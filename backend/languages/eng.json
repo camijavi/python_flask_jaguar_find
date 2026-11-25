@@ -82,7 +82,8 @@
     "directory_search_placeholder": "Filter building, room, office, or floor...",
     "tabs": {
       "navigation": "Navigation",
-      "directory": "UAM Directory"
+      "directory": "UAM Directory",
+      "lost_found": "Lost & Found"
     },
     "gps": {
       "where_i_think_you_are": "Where I think you are",
@@ -310,7 +311,26 @@
     "detail_no_photo": "No photo attached",
     "close": "Close",
     "map_pin_items_singular": "{count} lost or in-custody item",
-    "map_pin_items_plural": "{count} lost or in-custody items"
+    "map_pin_items_plural": "{count} lost or in-custody items",
+    "sidebar_catalog_title": "Lost & Found Catalog",
+    "sidebar_search_placeholder": "Search item, description, or building...",
+    "sidebar_open_full_catalog": "Open full catalog",
+    "sidebar_locate_on_map": "Locate on map",
+    "sidebar_load_error": "Could not load items.",
+    "sidebar_retry": "Retry",
+    "sidebar_refresh": "Refresh catalog",
+    "sidebar_items_short_singular": "{count} item",
+    "sidebar_items_short_plural": "{count} items",
+    "sidebar_building_all_short": "All buildings",
+    "sidebar_cat_all_short": "Category",
+    "sidebar_state_all_short": "Status",
+    "admin_update_state_title": "Update Custody Status",
+    "admin_item_label": "Item:",
+    "admin_new_state_label": "New Status *",
+    "admin_save_state": "Save Status",
+    "admin_state_opt_1": "1: Reported (Found on campus)",
+    "admin_state_opt_2": "2: In Custody (Stored at Building A - CAE)",
+    "admin_state_opt_3": "3: Claimed / Returned to owner"
   },
   "nodes": {
     "mainParking": "Main Parking & South Gate",

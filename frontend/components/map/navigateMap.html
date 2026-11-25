@@ -2513,22 +2513,29 @@ document.addEventListener("DOMContentLoaded", function() {
                     navComponent.classList.remove("hidden", "navmap-animated-exit");
                     navComponent.classList.add("navmap-animated-enter");
                 }
+                const savedTab = sessionStorage.getItem("jaguar_map_active_tab") || "nav";
                 if (typeof window.setSidebarActiveTab === "function") {
-                    window.setSidebarActiveTab("nav");
+                    window.setSidebarActiveTab(savedTab);
                 } else {
                     const tabNav = document.getElementById("sidebarTabNav");
                     const tabDir = document.getElementById("sidebarTabDir");
+                    const tabCatalog = document.getElementById("sidebarTabCatalog");
                     const panelNav = document.getElementById("sidebarPanelNav");
                     const panelDir = document.getElementById("sidebarPanelDir");
+                    const panelCatalog = document.getElementById("sidebarPanelCatalog");
                     if (tabNav && tabDir && panelNav && panelDir) {
                         panelNav.classList.remove("hidden");
                         panelDir.classList.add("hidden");
-                        tabNav.className = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer";
-                        tabDir.className = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all cursor-pointer";
+                        if (panelCatalog) panelCatalog.classList.add("hidden");
+                        tabNav.className = "min-w-0 py-1.5 px-1 sm:px-2 rounded-lg bg-white text-slate-900 shadow-xs flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer";
+                        tabDir.className = "min-w-0 py-1.5 px-1 sm:px-2 rounded-lg text-slate-600 hover:text-slate-900 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer";
+                        if (tabCatalog) {
+                            tabCatalog.className = "min-w-0 py-1.5 px-1 sm:px-2 rounded-lg text-slate-600 hover:text-slate-900 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer";
+                        }
                     }
                 }
             } else {
-                // On mobile, include navigateMap in the sidebar drawer alongside Directorio UAM
+                // On mobile, include navigateMap in the sidebar drawer alongside Directorio UAM and Objetos Perdidos
                 const savedTab = sessionStorage.getItem("jaguar_map_active_tab") || "nav";
                 if (typeof window.setSidebarActiveTab === "function") {
                     window.setSidebarActiveTab(savedTab);
@@ -2584,9 +2591,16 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Close sidebar on Escape key
+    // Close sidebar on Escape key (only when no modal dialog is open on top)
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
+            const openDialogIds = ["adminStateModal", "reportObjectModal", "itemDetailModal"];
+            const hasOpenDialog = openDialogIds.some((id) => {
+                const modalEl = document.getElementById(id);
+                return Boolean(modalEl && !modalEl.classList.contains("hidden"));
+            });
+            if (hasOpenDialog) return;
+
             const sidebarCol = document.getElementById("mapSidebarColumn");
             const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
             if (sidebarCol) {

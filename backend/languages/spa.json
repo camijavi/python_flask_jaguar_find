@@ -82,7 +82,8 @@
     "directory_search_placeholder": "Filtrar edificio, aula, oficina o piso...",
     "tabs": {
       "navigation": "Navegación",
-      "directory": "Directorio UAM"
+      "directory": "Directorio UAM",
+      "lost_found": "Objetos Perdidos"
     },
     "gps": {
       "where_i_think_you_are": "Dónde creo que estás",
@@ -310,7 +311,26 @@
     "detail_no_photo": "Sin fotografía adjunta",
     "close": "Cerrar",
     "map_pin_items_singular": "{count} objeto extraviado o en custodia",
-    "map_pin_items_plural": "{count} objetos extraviados o en custodia"
+    "map_pin_items_plural": "{count} objetos extraviados o en custodia",
+    "sidebar_catalog_title": "Catálogo de Objetos",
+    "sidebar_search_placeholder": "Buscar objeto, descripción o edificio...",
+    "sidebar_open_full_catalog": "Ver catálogo completo",
+    "sidebar_locate_on_map": "Ubicar en mapa",
+    "sidebar_load_error": "No se pudieron cargar los objetos.",
+    "sidebar_retry": "Reintentar",
+    "sidebar_refresh": "Actualizar catálogo",
+    "sidebar_items_short_singular": "{count} objeto",
+    "sidebar_items_short_plural": "{count} objetos",
+    "sidebar_building_all_short": "Todos los edificios",
+    "sidebar_cat_all_short": "Categoría",
+    "sidebar_state_all_short": "Estado",
+    "admin_update_state_title": "Actualizar Estado de Custodia",
+    "admin_item_label": "Objeto:",
+    "admin_new_state_label": "Nuevo Estado *",
+    "admin_save_state": "Guardar Estado",
+    "admin_state_opt_1": "1: Reportado (Hallazgo en campus)",
+    "admin_state_opt_2": "2: En Custodia (Almacenado en Edificio A - CAE)",
+    "admin_state_opt_3": "3: Entregado / Reclamado por dueño"
   },
   "nodes": {
     "mainParking": "Parqueo Principal & Caseta Sur",

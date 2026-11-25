@@ -13,7 +13,7 @@ Features:
 ================================================================================
 -->
 
-<div id="reportObjectModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-200">
+<div id="reportObjectModal" class="fixed inset-0 z-[65] hidden flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-200">
     <div class="relative w-full max-w-xl max-h-[92vh] flex flex-col bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         <!-- Header -->
@@ -368,6 +368,16 @@ Features:
 
     if (btnClose) btnClose.addEventListener("click", window.closeReportObjectDialog);
     if (btnCancel) btnCancel.addEventListener("click", window.closeReportObjectDialog);
+    if (modal) {
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) window.closeReportObjectDialog();
+        });
+    }
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal && !modal.classList.contains("hidden")) {
+            window.closeReportObjectDialog();
+        }
+    });
 
     function renderReportBuildingFloorFallback(nearest) {
         if (!reportGpsFloorAndRooms || !reportGpsFloorButtons || !reportGpsRoomsList) return;

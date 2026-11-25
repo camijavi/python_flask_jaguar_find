@@ -140,12 +140,6 @@ def createApp(configClass=Config) -> Flask:
         """Renders the user identity and credential control screen."""
         return render_template("screens/admin/userManagementScreen.html")
 
-    @app.route("/admin/configuracion", methods=["GET"])
-    @admin_required
-    def renderAdminConfiguration():
-        """Renders system custody configuration and parameters."""
-        return render_template("screens/admin/configScreen.html")
-
     @app.route("/logout", methods=["GET", "POST"])
     def webLogout():
         """Clears user session and redirects to Module 1 (Interactive Campus Map)."""

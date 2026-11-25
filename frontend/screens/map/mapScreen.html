@@ -25,34 +25,47 @@
     <!-- MAIN TWO-COLUMN RESPONSIVE LAYOUT (FLUID FLEX TRANSITION) -->
     <div id="mapLayoutWrapper" class="flex flex-row w-full h-full overflow-hidden relative">
         
-        <!-- LEFT COLUMN: Navigation & Directory Sidebar (Switchable Tabs on Both Desktop & Mobile) -->
+        <!-- LEFT COLUMN: Navigation, Directory & Lost & Found Sidebar (Switchable Tabs on Both Desktop & Mobile) -->
         <div id="mapSidebarColumn" class="fixed inset-y-0 left-0 z-50 w-[90vw] max-w-sm sm:max-w-md lg:w-auto bg-white p-3 shadow-2xl overflow-y-auto sidebar-mobile-closed lg:static lg:z-20 lg:p-3 lg:bg-white lg:shadow-md lg:overflow-y-auto lg:shrink-0 lg:border-r lg:border-slate-200/80 sidebar-desktop-open space-y-2">
             
             <div class="w-full min-w-0 lg:min-w-[300px] max-w-full space-y-2 pb-4">
-                <!-- Sleek Segmented Switcher (Visible on both desktop & mobile sidebar menu) -->
-                <div id="sidebarSwitcher" class="flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200 text-xs font-semibold">
-                    <button id="sidebarTabNav" type="button" class="flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                <!-- Sleek Responsive 3-Tab Segmented Switcher (Visible on both desktop & mobile sidebar menu) -->
+                <div id="sidebarSwitcher" role="tablist" aria-label="{{ t('nav.toggle_menu', default='Menú de navegación') }}" data-i18n-aria-label="nav.toggle_menu" class="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 text-[10.5px] sm:text-[11px] font-semibold">
+                    <button id="sidebarTabNav" type="button" role="tab" aria-selected="true" aria-controls="sidebarPanelNav" class="min-w-0 py-1.5 px-1 sm:px-2 rounded-lg bg-white text-slate-900 shadow-xs flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer">
                         <!-- Directions Waypoint SVG -->
-                        <svg class="w-3.5 h-3.5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                        <span data-i18n="map.tabs.navigation">{{ t('map.tabs.navigation', default='Navegación') }}</span>
+                        <svg class="sidebar-tab-icon w-3.5 h-3.5 text-brand-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                        <span class="truncate max-w-full" data-i18n="map.tabs.navigation">{{ t('map.tabs.navigation', default='Navegación') }}</span>
                     </button>
-                    <button id="sidebarTabDir" type="button" class="flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                    <button id="sidebarTabDir" type="button" role="tab" aria-selected="false" aria-controls="sidebarPanelDir" class="min-w-0 py-1.5 px-1 sm:px-2 rounded-lg text-slate-600 hover:text-slate-900 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer">
                         <!-- Directory Office SVG -->
-                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        <span data-i18n="map.tabs.directory">{{ t('map.tabs.directory', default='Directorio UAM') }}</span>
+                        <svg class="sidebar-tab-icon w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        <span class="truncate max-w-full" data-i18n="map.tabs.directory">{{ t('map.tabs.directory', default='Directorio UAM') }}</span>
+                    </button>
+                    <button id="sidebarTabCatalog" type="button" role="tab" aria-selected="false" aria-controls="sidebarPanelCatalog" class="min-w-0 py-1.5 px-1 sm:px-2 rounded-lg text-slate-600 hover:text-slate-900 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer">
+                        <!-- Lost & Found Catalog SVG + live count badge -->
+                        <span class="relative inline-flex items-center justify-center shrink-0">
+                            <svg class="sidebar-tab-icon w-3.5 h-3.5 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            <span id="sidebarTabCatalogBadge" class="hidden absolute -top-1.5 -right-2 min-w-[14px] h-[14px] px-0.5 rounded-full bg-amber-500 text-white text-[8.5px] font-black leading-none flex items-center justify-center ring-1 ring-white">0</span>
+                        </span>
+                        <span class="truncate max-w-full" data-i18n="map.tabs.lost_found">{{ t('map.tabs.lost_found', default='Objetos Perdidos') }}</span>
                     </button>
                 </div>
 
                 <!-- Desktop Slot: Tab Panel 1: navigateMap Component -->
                 <div id="desktopNavSlot" class="w-full">
-                    <div id="sidebarPanelNav" class="w-full">
+                    <div id="sidebarPanelNav" role="tabpanel" aria-labelledby="sidebarTabNav" class="w-full">
                         {% include "components/map/navigateMap.html" %}
                     </div>
                 </div>
 
                 <!-- Tab Panel 2: buildingDirectory Component (Official Signage Directory) -->
-                <div id="sidebarPanelDir" class="w-full hidden">
+                <div id="sidebarPanelDir" role="tabpanel" aria-labelledby="sidebarTabDir" class="w-full hidden">
                     {% include "components/map/buildingDirectory.html" %}
+                </div>
+
+                <!-- Tab Panel 3: sidebarLostFoundCatalog Component (Lost & Found Objects Catalog Cards) -->
+                <div id="sidebarPanelCatalog" role="tabpanel" aria-labelledby="sidebarTabCatalog" class="w-full hidden">
+                    {% include "components/map/sidebarLostFoundCatalog.html" %}
                 </div>
             </div>
 
@@ -69,6 +82,8 @@
     </div>
 
 </div>
+<!-- Include Shared Item Detail & Admin State Dialogs -->
+{% include "components/lostFoundObject/itemDetailDialog.html" %}
 <!-- Include Report Object Dialog -->
 {% include "components/lostFoundObject/newEditReportObject.html" %}
 
@@ -85,21 +100,25 @@
 <script src="{{ url_for('static', filename='js/campus25dMap.js') }}"></script>
 <!-- Waze-style Lost & Found Alert Pins Layer -->
 <script src="{{ url_for('static', filename='js/lostFoundMapLayer.js') }}"></script>
+<!-- Map Sidebar Lost & Found Objects Catalog Cards & Detail Dialog Controller -->
+<script src="{{ url_for('static', filename='js/mapSidebarCatalog.js') }}"></script>
 
 <script>
 // Sidebar Tab Switching & Responsive Navigation Slot Docking (Desktop Sidebar + Mobile Sidebar & Bottom Sheet)
 document.addEventListener("DOMContentLoaded", function() {
     const tabNav = document.getElementById("sidebarTabNav");
     const tabDir = document.getElementById("sidebarTabDir");
+    const tabCatalog = document.getElementById("sidebarTabCatalog");
     const panelDir = document.getElementById("sidebarPanelDir");
+    const panelCatalog = document.getElementById("sidebarPanelCatalog");
     const btnCloseDir = document.getElementById("btnCloseDirectorySidebar");
     const desktopSlot = document.getElementById("desktopNavSlot");
     const mobileSlot = document.getElementById("mobileNavSlot");
     const sidebarSwitcher = document.getElementById("sidebarSwitcher");
     const sidebarCol = document.getElementById("mapSidebarColumn");
 
-    const ACTIVE_TAB_CLS = "flex-1 py-1.5 px-2.5 rounded-md bg-white text-slate-900 shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer";
-    const INACTIVE_TAB_CLS = "flex-1 py-1.5 px-2.5 rounded-md text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition-all cursor-pointer";
+    const ACTIVE_TAB_CLS = "min-w-0 py-1.5 px-1 sm:px-2 rounded-lg bg-white text-slate-900 shadow-xs flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer";
+    const INACTIVE_TAB_CLS = "min-w-0 py-1.5 px-1 sm:px-2 rounded-lg text-slate-600 hover:text-slate-900 flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 text-center leading-tight transition-all cursor-pointer";
 
     let navUndockTimer = null;
 
@@ -107,6 +126,17 @@ document.addEventListener("DOMContentLoaded", function() {
         if (navUndockTimer !== null) {
             clearTimeout(navUndockTimer);
             navUndockTimer = null;
+        }
+    }
+
+    function updateTabButtonStyle(btn, isActive) {
+        if (!btn) return;
+        btn.className = isActive ? ACTIVE_TAB_CLS : INACTIVE_TAB_CLS;
+        btn.setAttribute("aria-selected", isActive ? "true" : "false");
+        const icon = btn.querySelector(".sidebar-tab-icon");
+        if (icon) {
+            icon.classList.toggle("text-brand-600", isActive);
+            icon.classList.toggle("text-slate-500", !isActive);
         }
     }
 
@@ -167,23 +197,27 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function setSidebarActiveTab(tabName) {
-        const activeTab = (tabName === "dir") ? "dir" : "nav";
+        const activeTab = (tabName === "dir" || tabName === "catalog") ? tabName : "nav";
         const isNavActive = (activeTab === "nav");
+        const isDirActive = (activeTab === "dir");
+        const isCatalogActive = (activeTab === "catalog");
         const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
         const currentPanelNav = document.getElementById("sidebarPanelNav");
 
         sessionStorage.setItem("jaguar_map_active_tab", activeTab);
 
-        if (tabNav && tabDir) {
-            tabNav.className = isNavActive ? ACTIVE_TAB_CLS : INACTIVE_TAB_CLS;
-            tabDir.className = isNavActive ? INACTIVE_TAB_CLS : ACTIVE_TAB_CLS;
-        }
+        updateTabButtonStyle(tabNav, isNavActive);
+        updateTabButtonStyle(tabDir, isDirActive);
+        updateTabButtonStyle(tabCatalog, isCatalogActive);
 
         if (isDesktop || (sidebarCol && sidebarCol.classList.contains("sidebar-mobile-open"))) {
             dockNavPanel("sidebar");
             if (currentPanelNav) currentPanelNav.classList.toggle("hidden", !isNavActive);
-            if (panelDir) panelDir.classList.toggle("hidden", isNavActive);
+            if (panelDir) panelDir.classList.toggle("hidden", !isDirActive);
+            if (panelCatalog) panelCatalog.classList.toggle("hidden", !isCatalogActive);
         }
+
+        window.dispatchEvent(new CustomEvent("jaguarSidebarTabChanged", { detail: { tab: activeTab } }));
     }
 
     window.dockNavPanel = dockNavPanel;
@@ -200,8 +234,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Responsive navigation slot manager:
-    // - Desktop (>= 1024px): Sidebar holds both Navegación and Directorio UAM tabs.
-    // - Mobile (< 1024px): Sidebar ALSO includes Navegación + Directorio UAM tabs when opened;
+    // - Desktop (>= 1024px): Sidebar holds Navegación, Directorio UAM, and Objetos Perdidos tabs.
+    // - Mobile (< 1024px): Sidebar drawer holds all 3 tabs when opened;
     //   when sidebar is closed, navigateMap docks cleanly in #mobileNavSlot for the bottom sheet.
     function adaptNavPlacement() {
         const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
@@ -231,15 +265,22 @@ document.addEventListener("DOMContentLoaded", function() {
     window.addEventListener("resize", adaptNavPlacement);
     adaptNavPlacement();
 
-    if (tabNav && tabDir && panelDir) {
+    if (tabNav) {
         tabNav.addEventListener("click", () => {
             tabNav.blur();
             setSidebarActiveTab("nav");
         });
-
+    }
+    if (tabDir) {
         tabDir.addEventListener("click", () => {
             tabDir.blur();
             setSidebarActiveTab("dir");
+        });
+    }
+    if (tabCatalog) {
+        tabCatalog.addEventListener("click", () => {
+            tabCatalog.blur();
+            setSidebarActiveTab("catalog");
         });
     }
 });

@@ -836,6 +836,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.openMobileBottomSheet();
             } else if (typeof window.toggleNavigateMapSidebar === "function") {
                 window.toggleNavigateMapSidebar(true);
+                if (typeof window.setSidebarActiveTab === "function") {
+                    window.setSidebarActiveTab("nav");
+                }
             }
             bldgPopover.classList.add("hidden");
         });
@@ -853,6 +856,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.openMobileBottomSheet();
             } else if (typeof window.toggleNavigateMapSidebar === "function") {
                 window.toggleNavigateMapSidebar(true);
+                if (typeof window.setSidebarActiveTab === "function") {
+                    window.setSidebarActiveTab("nav");
+                }
             }
             bldgPopover.classList.add("hidden");
         });
