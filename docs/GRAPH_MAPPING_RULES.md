@@ -59,6 +59,7 @@ Este documento establece las **reglas normativas y criterios de ingeniería** qu
 ### Regla 4: Propiedades Formales del Grafo ($G = (V, E, W)$)
 1. **Grafo Ponderado ($W: E \to \mathbb{R}^+$):**
  * Cada arista almacena un peso no negativo $w > 0$ correspondiente a la **distancia caminada real en metros** sobre el pavimento o acera (prohibido usar distancia aérea euclidiana entre nodos que no tengan camino físico).
+ * La capa de accesibilidad clasifica las aristas como `inaccessible` (azul), `recommended` (naranja) o `neutral` (rosa). En modo silla de ruedas se excluyen las aristas azules y se aplica un factor de costo menor a las naranjas; la distancia real en metros permanece intacta para mostrar distancia y tiempo.
 2. **Grafo Dirigido ($E \subseteq V \times V$):**
  * Toda conexión peatonal ordinaria se implementa mediante **dos aristas dirigidas opuestas**: $(u \to v)$ y $(v \to u)$ con el mismo peso métrico.
  * Permite incorporar restricciones direccionales reales (ej. torniquetes unidireccionales de entrada o salidas de emergencia exclusivas).
@@ -125,7 +126,7 @@ This document sets forth the **formal architectural and engineering rules** gove
  * Driven by relative Cartesian coordinates ($x\%, y\%$ on SVG canvas), discrete vertical levels (`floorLevel`), and step-by-step corridor speech instructions, mitigating satellite attenuation and vertical drift.
 
 ### Rule 4: Formal Graph Theory Specifications ($G = (V, E, W)$)
-* **Weighted ($W: E \to \mathbb{R}^+$):** Weights denote real physical walking distance in meters.
+* **Weighted ($W: E \to \mathbb{R}^+$):** Edge distances denote real physical walking distance in meters. Accessibility zones are `inaccessible` (blue), `recommended` (orange), and `neutral` (pink); wheelchair routing excludes blue edges and applies a lower routing cost to orange edges without changing reported physical distance or ETA.
 * **Directed ($E \subseteq V \times V$):** Bidirectional walkways are modeled as pairs of antiparallel directed edges: $(u \to v)$ and $(v \to u)$.
 * **Non-Complete ($|E| \ll |V|^2$):** Sparse adjacency structure representing solely authentic, walkable ground pathways.
 

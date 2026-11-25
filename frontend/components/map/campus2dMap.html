@@ -60,8 +60,10 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
     </div>
 
     <!-- Compact Light-Theme Micro-Walkways Legend Pill (Visible on Desktop when Walkways Layer is ON) -->
-    <div id="walkwaysLegendPill" class="hidden lg:flex items-center gap-2.5 absolute top-[62px] left-4 z-20 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-pink-200/90 shadow-md shadow-pink-900/8 text-[10.5px] font-bold text-slate-700 pointer-events-none select-none">
-        <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full bg-pink-500 inline-block"></span><span data-i18n="map.walkways_legend.ground_p1">{{ t('map.walkways_legend.ground_p1') }}</span></span>
+    <div id="walkwaysLegendPill" class="hidden lg:flex items-center gap-2.5 absolute top-[62px] left-4 z-20 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200/90 shadow-md text-[10.5px] font-bold text-slate-700 pointer-events-none select-none">
+        <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full bg-orange-500 inline-block"></span><span data-i18n="map.walkways_legend.recommended">{{ t('map.walkways_legend.recommended') }}</span></span>
+        <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full bg-pink-500 inline-block"></span><span data-i18n="map.walkways_legend.neutral">{{ t('map.walkways_legend.neutral') }}</span></span>
+        <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full bg-blue-600 inline-block"></span><span data-i18n="map.walkways_legend.inaccessible">{{ t('map.walkways_legend.inaccessible') }}</span></span>
         <span class="inline-flex items-center gap-1"><span class="w-3.5 h-0.5 rounded-full border-t-2 border-dashed border-violet-600 inline-block"></span><span data-i18n="map.walkways_legend.bridge_2p">{{ t('map.walkways_legend.bridge_2p') }}</span></span>
         <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-sky-500 inline-block"></span><span data-i18n="map.walkways_legend.door">{{ t('map.walkways_legend.door') }}</span></span>
         <span class="inline-flex items-center gap-1 text-rose-600"><span class="font-black leading-none">&times;</span><span data-i18n="map.walkways_legend.blocked">{{ t('map.walkways_legend.blocked') }}</span></span>

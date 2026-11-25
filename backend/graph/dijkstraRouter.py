@@ -35,7 +35,9 @@ class DijkstraRouter:
         """
         if isinstance(vertex, Node) and vertex.outgoingEdges:
             for edge in vertex.outgoingEdges:
-                if accessibleOnly and not edge.isAccessible:
+                if accessibleOnly and (
+                    not edge.isAccessible or edge.accessibilityZone == "inaccessible"
+                ):
                     continue
                 yield edge.targetNodeId, edge.distanceMeters, edge
             return
@@ -62,17 +64,19 @@ class DijkstraRouter:
         srcId = sourceVertex.nodeId
         dstId = targetVertex.nodeId
 
-        shortestDistances: Dict[str, float] = {v.nodeId: float("inf") for v in self.graph.vertices}
+        shortestCosts: Dict[str, float] = {v.nodeId: float("inf") for v in self.graph.vertices}
+        pathDistances: Dict[str, float] = {v.nodeId: float("inf") for v in self.graph.vertices}
         previousNodes: Dict[str, Optional[str]] = {v.nodeId: None for v in self.graph.vertices}
         edgeTraversed: Dict[Tuple[str, str], DirectedEdge] = {}
 
-        shortestDistances[srcId] = 0.0
+        shortestCosts[srcId] = 0.0
+        pathDistances[srcId] = 0.0
         priorityQueue: List[Tuple[float, str]] = [(0.0, srcId)]
 
         while priorityQueue:
             currentDistance, currentNodeId = heapq.heappop(priorityQueue)
 
-            if currentDistance > shortestDistances[currentNodeId]:
+            if currentDistance > shortestCosts[currentNodeId]:
                 continue
 
             if currentNodeId == dstId:
@@ -83,13 +87,19 @@ class DijkstraRouter:
                 continue
 
             for targetId, weight, edge in self._iterOutgoing(currentVertex, accessibleOnly):
-                newDistance = currentDistance + weight
-                if newDistance < shortestDistances[targetId]:
-                    shortestDistances[targetId] = newDistance
+                costFactor = (
+                    edge.routingCostFactor
+                    if accessibleOnly and edge and edge.accessibilityZone == "recommended"
+                    else 1.0
+                )
+                newCost = currentDistance + weight * costFactor
+                if newCost < shortestCosts[targetId]:
+                    shortestCosts[targetId] = newCost
+                    pathDistances[targetId] = pathDistances[currentNodeId] + weight
                     previousNodes[targetId] = currentNodeId
                     if edge is not None:
                         edgeTraversed[(currentNodeId, targetId)] = edge
-                    heapq.heappush(priorityQueue, (newDistance, targetId))
+                    heapq.heappush(priorityQueue, (newCost, targetId))
 
         path: List[str] = []
         currId: Optional[str] = dstId
@@ -101,7 +111,7 @@ class DijkstraRouter:
         if not path or path[0] != srcId:
             return [], float("inf"), 0, {}
 
-        totalDistance = shortestDistances[dstId]
+        totalDistance = pathDistances[dstId]
         estimatedMinutes = math.ceil(totalDistance / self.walkingSpeed) if totalDistance > 0 else 0
         return path, round(totalDistance, 1), estimatedMinutes, edgeTraversed
 

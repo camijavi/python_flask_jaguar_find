@@ -159,6 +159,9 @@
     },
     "walkways_legend": {
       "ground_p1": "Walkway F1",
+      "recommended": "Recommended",
+      "neutral": "Neutral",
+      "inaccessible": "Inaccessible",
       "bridge_2p": "Bridge 2F",
       "door": "Door",
       "blocked": "Blocked",
