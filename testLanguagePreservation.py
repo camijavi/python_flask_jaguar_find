@@ -19,8 +19,10 @@ Automated test suite verifying:
 ================================================================================
 """
 
+import html as html_lib
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -164,7 +166,8 @@ class TestLanguagePreservationBackend(unittest.TestCase):
         self.assertIn("JaguarFormDrafts.registerForm", signup_html)
         self.assertIn("draftHandle.clear()", signup_html)
         self.assertIn('data-i18n="auth.sign_up_heading"', signup_html)
-        self.assertIn('data-i18n="auth.faculties.FIA"', signup_html)
+        self.assertIn('data-i18n="auth.majors.systems_engineering"', signup_html)
+        self.assertIn('data-faculty-key="auth.faculties_full.FIA"', signup_html)
 
         signin_html = self.client.get("/auth/signin?rol=colaborador").get_data(as_text=True)
         self.assertIn("JaguarFormDrafts.registerForm", signin_html)
@@ -180,6 +183,228 @@ class TestLanguagePreservationBackend(unittest.TestCase):
         self.assertIn("clearNavDraft()", map_html)
         self.assertIn('data-i18n="map.where_am_i"', map_html)
         self.assertIn('data-i18n-placeholder="map.where_to_go_placeholder"', map_html)
+
+    def test_all_dictionary_copies_synced_and_non_empty(self):
+        b_eng = json.loads((PROJECT_ROOT / "backend" / "languages" / "eng.json").read_text(encoding="utf-8"))
+        b_spa = json.loads((PROJECT_ROOT / "backend" / "languages" / "spa.json").read_text(encoding="utf-8"))
+        r_eng = json.loads((PROJECT_ROOT / "languages" / "eng.json").read_text(encoding="utf-8"))
+        r_spa = json.loads((PROJECT_ROOT / "languages" / "spa.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(b_eng, r_eng, "languages/eng.json is out of sync with backend/languages/eng.json")
+        self.assertEqual(b_spa, r_spa, "languages/spa.json is out of sync with backend/languages/spa.json")
+
+        def collect_leaves(d, prefix=""):
+            out = {}
+            for k, v in d.items():
+                if k.startswith("_"):
+                    continue
+                full = f"{prefix}.{k}" if prefix else k
+                if isinstance(v, dict):
+                    out.update(collect_leaves(v, full))
+                else:
+                    out[full] = v
+            return out
+
+        eng_leaves = collect_leaves(b_eng)
+        spa_leaves = collect_leaves(b_spa)
+        self.assertEqual(set(eng_leaves.keys()), set(spa_leaves.keys()))
+        for k, v in eng_leaves.items():
+            if isinstance(v, str):
+                self.assertTrue(v.strip(), f"Empty English translation for key {k}")
+        for k, v in spa_leaves.items():
+            if isinstance(v, str):
+                self.assertTrue(v.strip(), f"Empty Spanish translation for key {k}")
+
+    def test_no_missing_i18n_keys_or_legacy_hardcoded_patterns(self):
+        eng = json.loads((PROJECT_ROOT / "backend" / "languages" / "eng.json").read_text(encoding="utf-8"))
+
+        def flatten_keys(d, prefix=""):
+            keys = set()
+            for k, v in d.items():
+                if k.startswith("_"):
+                    continue
+                full = f"{prefix}.{k}" if prefix else k
+                if isinstance(v, dict):
+                    keys |= flatten_keys(v, full)
+                else:
+                    keys.add(full)
+            return keys
+
+        valid_keys = flatten_keys(eng)
+        key_patterns = [
+            re.compile(r'data-i18n(?:-[a-z-]+)?="([a-zA-Z0-9_.-]+)"'),
+            re.compile(r'data-faculty-key="([a-zA-Z0-9_.-]+)"'),
+            re.compile(r"""(?:^|[^a-zA-Z0-9_])(?:window\.|global\.|self\.)?(?:t|t_raw|tr|t25d|_t)\(\s*['"]([a-zA-Z0-9_.-]+)['"]"""),
+        ]
+
+        missing = []
+        forbidden = []
+        for root_name in ("frontend", "backend"):
+            for dp, _, fns in os.walk(PROJECT_ROOT / root_name):
+                if "__pycache__" in dp or "languages" in dp:
+                    continue
+                for fn in fns:
+                    if not fn.endswith((".html", ".js", ".py")):
+                        continue
+                    fp = Path(dp) / fn
+                    rel = fp.relative_to(PROJECT_ROOT).as_posix()
+                    text = fp.read_text(encoding="utf-8")
+                    lines = text.splitlines()
+
+                    for pat in key_patterns:
+                        for m in pat.finditer(text):
+                            k = m.group(1)
+                            if "." not in k or k.endswith(".") or k == "some.key":
+                                continue
+                            if k not in valid_keys:
+                                line_no = text[:m.start()].count("\n") + 1
+                                missing.append((rel, line_no, k))
+
+                    if fn.endswith(".html"):
+                        for idx, line in enumerate(lines, 1):
+                            if "data-i18n-es=" in line or "data-i18n-en=" in line:
+                                forbidden.append((rel, idx, "legacy data-i18n-es/en"))
+                            if re.search(r"""\bt\([^)]*default\s*=\s*['"]""", line):
+                                forbidden.append((rel, idx, "hardcoded t(..., default='...')"))
+                            if re.search(r"\bif\s+es\s+else\b", line):
+                                forbidden.append((rel, idx, "hardcoded Jinja if es else"))
+                    elif fn.endswith(".py") and "controllers/" in rel:
+                        for idx, line in enumerate(lines, 1):
+                            if re.search(r"\bdef\s+_?L\b|\bL\(", line):
+                                forbidden.append((rel, idx, "legacy L() helper"))
+
+        self.assertEqual(missing, [], f"Missing i18n keys referenced in code: {missing}")
+        self.assertEqual(forbidden, [], f"Legacy hardcoded patterns found: {forbidden}")
+
+    def test_every_page_renders_correctly_in_both_spanish_and_english(self):
+        spa = json.loads((PROJECT_ROOT / "backend" / "languages" / "spa.json").read_text(encoding="utf-8"))
+        eng = json.loads((PROJECT_ROOT / "backend" / "languages" / "eng.json").read_text(encoding="utf-8"))
+
+        def get_val(d, key):
+            cur = d
+            for part in key.split("."):
+                cur = cur[part]
+            return cur
+
+        public_key_checks = [
+            ("/", "map.directory_title"),
+            ("/", "map.plan_route"),
+            ("/", "map.buildings.buildingA.name"),
+            ("/auth", "auth.login_subtitle"),
+            ("/auth/options?mode=signup", "auth.choose_signup"),
+            ("/auth/options?mode=signin", "auth.choose_signin"),
+            ("/auth/signup?rol=estudiante", "auth.majors.systems_engineering"),
+            ("/auth/signup?rol=colaborador", "auth.national_id_label"),
+            ("/auth/signup?rol=visitante", "auth.phone_label"),
+            ("/auth/signin?rol=estudiante", "auth.student_identifier_label"),
+            ("/auth/signin?rol=colaborador", "auth.collaborator_identifier_label"),
+            ("/auth/signin?rol=visitante", "auth.visitor_identifier_label"),
+            ("/admin/adminsignin", "auth.admin_portal_heading"),
+        ]
+
+        def visible_text(raw_html):
+            no_script = re.sub(r"<script\b[^>]*>.*?</script>", " ", raw_html, flags=re.S | re.I)
+            no_style = re.sub(r"<style\b[^>]*>.*?</style>", " ", no_script, flags=re.S | re.I)
+            return html_lib.unescape(re.sub(r"<[^>]+>", " ", no_style))
+
+        # Test all public routes in Spanish and English
+        for lang, cur_dict, opp_dict in (("spa", spa, eng), ("eng", eng, spa)):
+            self.client.post(f"/api/i18n/set-language/{lang}")
+            for route, key in public_key_checks:
+                res = self.client.get(route)
+                self.assertEqual(res.status_code, 200, f"{route} failed in {lang}")
+                html = res.get_data(as_text=True)
+                self.assertIn(f'lang="{lang}"', html, f"{route} missing lang='{lang}'")
+                vis = visible_text(html)
+                expected = get_val(cur_dict, key)
+                opposite = get_val(opp_dict, key)
+                self.assertIn(expected, vis, f"{route} ({lang}) missing {key}='{expected}'")
+                if expected != opposite:
+                    self.assertNotIn(opposite, vis, f"{route} ({lang}) leaked opposite {key}='{opposite}'")
+
+        # Test authenticated user catalog route + authenticated admin routes in both languages
+        admin_session_user = {
+            "Id": 1,
+            "FullName": "Admin CAE",
+            "UserTypeId": 4,
+            "UserTypeName": "Admin",
+            "Email": "admin@uamv.edu.ni",
+        }
+        protected_key_checks = [
+            ("/lost-found-object/catalogo", "lost_found.catalog_subtitle"),
+            ("/lost-found-object/catalogo", "lost_found.all_categories"),
+            ("/admin/dashboard", "admin.dashboard_title"),
+            ("/admin/dashboard", "admin.cae_notice_title"),
+            ("/admin/items", "lost_found.all_statuses"),
+            ("/admin/users", "admin.btn_new_user"),
+            ("/admin/users", "admin.btn_create_user"),
+        ]
+
+        for lang, cur_dict, opp_dict in (("spa", spa, eng), ("eng", eng, spa)):
+            with self.client.session_transaction() as sess:
+                sess["user"] = admin_session_user
+                sess["idioma"] = lang
+                sess["lang"] = lang
+            for route, key in protected_key_checks:
+                res = self.client.get(route)
+                self.assertEqual(res.status_code, 200, f"{route} failed in {lang}")
+                html = res.get_data(as_text=True)
+                self.assertIn(f'lang="{lang}"', html, f"{route} missing lang='{lang}'")
+                vis = visible_text(html)
+                expected = get_val(cur_dict, key)
+                opposite = get_val(opp_dict, key)
+                self.assertIn(expected, vis, f"{route} ({lang}) missing {key}='{expected}'")
+                if expected != opposite:
+                    self.assertNotIn(opposite, vis, f"{route} ({lang}) leaked opposite {key}='{opposite}'")
+
+    def test_backend_api_endpoints_follow_active_language(self):
+        # 1. /api/map/route respects both query lang and session lang
+        res_route_es = self.client.post("/api/map/route", json={
+            "origin": "mainParking",
+            "destination": "buildingA",
+            "lang": "spa",
+        })
+        self.assertEqual(res_route_es.status_code, 200)
+        d_es = res_route_es.get_json()
+        self.assertTrue(d_es["success"])
+        self.assertIn("Edificio A", d_es["destination"])
+
+        res_route_en = self.client.post("/api/map/route", json={
+            "origin": "mainParking",
+            "destination": "buildingA",
+            "lang": "eng",
+        })
+        self.assertEqual(res_route_en.status_code, 200)
+        d_en = res_route_en.get_json()
+        self.assertTrue(d_en["success"])
+        self.assertIn("Building A", d_en["destination"])
+
+        # 2. /api/admin/stats unauthorized error respects session language
+        self.client.post("/api/i18n/set-language/spa")
+        res_adm_es = self.client.get("/api/admin/stats")
+        self.assertEqual(res_adm_es.status_code, 403)
+        self.assertIn("administrador", res_adm_es.get_json()["error"].lower())
+
+        self.client.post("/api/i18n/set-language/eng")
+        res_adm_en = self.client.get("/api/admin/stats")
+        self.assertEqual(res_adm_en.status_code, 403)
+        self.assertIn("administrator", res_adm_en.get_json()["error"].lower())
+
+        # 3. /api/lost-found-object/items missing route 404 respects session language
+        with self.client.session_transaction() as sess:
+            sess["user"] = {"Id": 1, "FullName": "Test User", "UserTypeId": 1, "Email": "test@uamv.edu.ni"}
+            sess["idioma"] = "spa"
+            sess["lang"] = "spa"
+        res_nf_es = self.client.get("/api/lost-found-object/items/999999")
+        self.assertEqual(res_nf_es.status_code, 404)
+        self.assertIn("no encontrado", res_nf_es.get_json()["error"].lower())
+
+        with self.client.session_transaction() as sess:
+            sess["idioma"] = "eng"
+            sess["lang"] = "eng"
+        res_nf_en = self.client.get("/api/lost-found-object/items/999999")
+        self.assertEqual(res_nf_en.status_code, 404)
+        self.assertIn("not found", res_nf_en.get_json()["error"].lower())
 
 
 class TestClientSideI18nAndFormDraftsJS(unittest.TestCase):

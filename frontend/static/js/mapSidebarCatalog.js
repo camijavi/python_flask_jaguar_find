@@ -40,22 +40,11 @@
         return "";
     }
 
-    function tr(key, fallbackEs, fallbackEn, params) {
-        const isEs = global.JaguarI18n
-            ? global.JaguarI18n.isSpanish()
-            : !(global.APP_CONFIG && String(global.APP_CONFIG.currentLang || "").toLowerCase().startsWith("en"));
-        const fallback = isEs ? fallbackEs : fallbackEn;
+    function tr(key, params) {
         if (typeof global.t === "function") {
-            return global.t(key, fallback, params);
+            return global.t(key, undefined, params);
         }
-        if (params && typeof fallback === "string") {
-            let out = fallback;
-            for (const [k, v] of Object.entries(params)) {
-                out = out.replace(new RegExp(`\\{${k}\\}`, "g"), String(v));
-            }
-            return out;
-        }
-        return fallback;
+        return key;
     }
 
     function parsePositiveInt(raw) {
@@ -204,6 +193,7 @@
             const dynOpt = doc.createElement("option");
             dynOpt.value = clean;
             dynOpt.textContent = resolveBuildingLabel(clean, clean);
+            dynOpt.setAttribute("data-dynamic-building", "true");
             buildingSelect.appendChild(dynOpt);
             buildingSelect.value = clean;
             return clean;
@@ -247,10 +237,10 @@
         }
 
         function getStateShortLabel(stateId, stateName) {
-            if (stateId === 1) return tr("lost_found.state_reported", "Reportado", "Reported");
-            if (stateId === 2) return tr("lost_found.state_custody", "En Custodia (Edif. A)", "In Custody (Bldg. A)");
-            if (stateId === 3) return tr("lost_found.state_claimed", "Entregado / Reclamado", "Claimed / Delivered");
-            return stateName || tr("lost_found.state_reported", "Reportado", "Reported");
+            if (stateId === 1) return tr("lost_found.state_reported");
+            if (stateId === 2) return tr("lost_found.state_custody");
+            if (stateId === 3) return tr("lost_found.state_claimed");
+            return stateName || tr("lost_found.state_reported");
         }
 
         function getStateBadge(stateId, stateName, compact) {
@@ -277,27 +267,27 @@
         function getCategoryMeta(cat) {
             const map = {
                 electronics: {
-                    label: tr("lost_found.cat_electronics", "Electrónica", "Electronics"),
+                    label: tr("lost_found.cat_electronics"),
                     icon: '<svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>',
                     thumbIcon: '<svg class="w-6 h-6 text-brand-600/80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>',
                 },
                 documents: {
-                    label: tr("lost_found.cat_documents", "Documentos", "Documents"),
+                    label: tr("lost_found.cat_documents"),
                     icon: '<svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>',
                     thumbIcon: '<svg class="w-6 h-6 text-brand-600/80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0"/></svg>',
                 },
                 personalItems: {
-                    label: tr("lost_found.cat_personal", "Personal", "Personal"),
+                    label: tr("lost_found.cat_personal"),
                     icon: '<svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>',
                     thumbIcon: '<svg class="w-6 h-6 text-brand-600/80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>',
                 },
                 clothing: {
-                    label: tr("lost_found.cat_clothing", "Ropa", "Clothing"),
+                    label: tr("lost_found.cat_clothing"),
                     icon: '<svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l6-3 3 3 3-3 6 3v13H3V7z"/></svg>',
                     thumbIcon: '<svg class="w-6 h-6 text-brand-600/80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 7l6-3 3 3 3-3 6 3v13H3V7z"/></svg>',
                 },
                 other: {
-                    label: tr("lost_found.cat_other", "Otros", "Other"),
+                    label: tr("lost_found.cat_other"),
                     icon: '<svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>',
                     thumbIcon: '<svg class="w-6 h-6 text-brand-600/80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>',
                 },
@@ -312,10 +302,8 @@
 
         function updateCountBadges(count) {
             const key = count === 1 ? "lost_found.sidebar_items_short_singular" : "lost_found.sidebar_items_short_plural";
-            const fbEs = count === 1 ? `${count} objeto` : `${count} objetos`;
-            const fbEn = count === 1 ? `${count} item` : `${count} items`;
             if (countBadge) {
-                countBadge.textContent = tr(key, fbEs, fbEn, { count });
+                countBadge.textContent = tr(key, { count });
             }
             if (tabBadge && !hasAnyActiveFilter()) {
                 tabBadge.textContent = count > 99 ? "99+" : String(count);
@@ -403,9 +391,9 @@
             if (emptyEl) emptyEl.classList.add("hidden");
             listEl.classList.remove("hidden");
 
-            const viewDetailsLabel = escapeHtml(tr("lost_found.view_details", "Ver detalle", "View details"));
-            const locateLabel = escapeHtml(tr("lost_found.sidebar_locate_on_map", "Ubicar en mapa", "Locate on map"));
-            const antifraudLabel = escapeHtml(tr("lost_found.antifraud_badge", "Antifraude", "Anti-fraud"));
+            const viewDetailsLabel = escapeHtml(tr("lost_found.view_details"));
+            const locateLabel = escapeHtml(tr("lost_found.sidebar_locate_on_map"));
+            const antifraudLabel = escapeHtml(tr("lost_found.antifraud_badge"));
 
             items.forEach((item) => {
                 const card = doc.createElement("article");
@@ -543,7 +531,7 @@
             if (claimSecretInput) claimSecretInput.value = "";
             if (btnSubmitClaimForm) {
                 btnSubmitClaimForm.disabled = false;
-                btnSubmitClaimForm.textContent = tr("lost_found.detail_claim_submit", "Enviar solicitud de reclamo", "Submit claim request");
+                btnSubmitClaimForm.textContent = tr("lost_found.detail_claim_submit");
             }
         }
 
@@ -602,25 +590,13 @@
             if (detailCustodyBox && detailCustodyText) {
                 if (item.LostObjectStateId === 2) {
                     detailCustodyBox.className = "rounded-2xl p-3.5 text-xs font-semibold border bg-sky-50 text-sky-900 border-sky-200 flex items-start gap-2.5";
-                    detailCustodyText.textContent = tr(
-                        "lost_found.detail_custody_in_custody",
-                        "En custodia segura en Edificio A (Oficina CAE - Planta Baja). Presenta tu carnet UAM o cédula para retirarlo.",
-                        "Safely held in custody at Building A (CAE Office - Ground Floor). Present your UAM ID or national ID to collect it."
-                    );
+                    detailCustodyText.textContent = tr("lost_found.detail_custody_in_custody");
                 } else if (item.LostObjectStateId === 3) {
                     detailCustodyBox.className = "rounded-2xl p-3.5 text-xs font-semibold border bg-emerald-50 text-emerald-900 border-emerald-200 flex items-start gap-2.5";
-                    detailCustodyText.textContent = tr(
-                        "lost_found.detail_custody_claimed",
-                        "Este objeto ya fue verificado y entregado a su propietario.",
-                        "This item has already been verified and returned to its owner."
-                    );
+                    detailCustodyText.textContent = tr("lost_found.detail_custody_claimed");
                 } else {
                     detailCustodyBox.className = "rounded-2xl p-3.5 text-xs font-semibold border bg-amber-50 text-amber-900 border-amber-200 flex items-start gap-2.5";
-                    detailCustodyText.textContent = tr(
-                        "lost_found.detail_custody_reported",
-                        "Objeto reportado recientemente en el campus. Si es tuyo, solicita reclamo o acude al Edificio A (CAE).",
-                        "Recently reported on campus. If it belongs to you, submit a claim or visit Building A (CAE)."
-                    );
+                    detailCustodyText.textContent = tr("lost_found.detail_custody_reported");
                 }
             }
 
@@ -629,11 +605,7 @@
                     detailSecretText.textContent = item.SecretDetail;
                     detailSecretBox.classList.remove("hidden");
                 } else if (item.hasSecretDetail) {
-                    detailSecretText.textContent = tr(
-                        "lost_found.detail_secret_protected",
-                        "Este objeto cuenta con un detalle privado de verificación que se validará presencialmente en CAE (Edificio A).",
-                        "This item has a private verification detail that will be checked in person at CAE (Building A)."
-                    );
+                    detailSecretText.textContent = tr("lost_found.detail_secret_protected");
                     detailSecretBox.classList.remove("hidden");
                 } else {
                     detailSecretBox.classList.add("hidden");
@@ -652,7 +624,7 @@
                 btnToggleClaimForm.classList.toggle("hidden", !canClaim);
             }
             if (detailCopyLabel) {
-                detailCopyLabel.textContent = tr("lost_found.detail_copy_link", "Copiar enlace", "Copy link");
+                detailCopyLabel.textContent = tr("lost_found.detail_copy_link");
             }
         }
 
@@ -868,10 +840,10 @@
                         await global.navigator.clipboard.writeText(shareUrl);
                     }
                     if (detailCopyLabel) {
-                        detailCopyLabel.textContent = tr("lost_found.detail_link_copied", "¡Enlace copiado!", "Link copied!");
+                        detailCopyLabel.textContent = tr("lost_found.detail_link_copied");
                         clearTimeout(copyTimer);
                         copyTimer = setTimeout(() => {
-                            detailCopyLabel.textContent = tr("lost_found.detail_copy_link", "Copiar enlace", "Copy link");
+                            detailCopyLabel.textContent = tr("lost_found.detail_copy_link");
                         }, 1800);
                     }
                 } catch (_) {
@@ -904,7 +876,7 @@
                 if (detailClaimAlert) detailClaimAlert.classList.add("hidden");
                 if (btnSubmitClaimForm) {
                     btnSubmitClaimForm.disabled = true;
-                    btnSubmitClaimForm.textContent = tr("lost_found.detail_claim_submitting", "Enviando...", "Submitting...");
+                    btnSubmitClaimForm.textContent = tr("lost_found.detail_claim_submitting");
                 }
 
                 const payload = {
@@ -923,29 +895,25 @@
                     if (res.ok && data && data.success) {
                         if (detailClaimAlert) {
                             detailClaimAlert.className = "rounded-xl p-3 text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200";
-                            detailClaimAlert.textContent = data.message || tr(
-                                "lost_found.detail_custody_in_custody",
-                                "Solicitud registrada. Acude al Edificio A (CAE) con tu identificación.",
-                                "Claim registered. Visit Building A (CAE) with your ID."
-                            );
+                            detailClaimAlert.textContent = data.message || tr("lost_found.detail_custody_in_custody");
                             detailClaimAlert.classList.remove("hidden");
                         }
                         if (claimSecretInput) claimSecretInput.value = "";
                     } else if (detailClaimAlert) {
                         detailClaimAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                        detailClaimAlert.textContent = (data && data.error) || tr("auth.connection_error", "Error de conexión.", "Connection error.");
+                        detailClaimAlert.textContent = (data && data.error) || tr("auth.connection_error");
                         detailClaimAlert.classList.remove("hidden");
                     }
                 } catch (_) {
                     if (detailClaimAlert) {
                         detailClaimAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                        detailClaimAlert.textContent = tr("auth.connection_error", "Error de conexión.", "Connection error.");
+                        detailClaimAlert.textContent = tr("auth.connection_error");
                         detailClaimAlert.classList.remove("hidden");
                     }
                 } finally {
                     if (btnSubmitClaimForm) {
                         btnSubmitClaimForm.disabled = false;
-                        btnSubmitClaimForm.textContent = tr("lost_found.detail_claim_submit", "Enviar solicitud de reclamo", "Submit claim request");
+                        btnSubmitClaimForm.textContent = tr("lost_found.detail_claim_submit");
                     }
                 }
             });
@@ -1023,13 +991,13 @@
                             }, 550);
                         } else if (adminStateAlert) {
                             adminStateAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                            adminStateAlert.textContent = (data && data.error) || tr("auth.connection_error", "Error al actualizar estado.", "Error updating status.");
+                            adminStateAlert.textContent = (data && data.error) || tr("lost_found.state_update_error");
                             adminStateAlert.classList.remove("hidden");
                         }
                     } catch (_) {
                         if (adminStateAlert) {
                             adminStateAlert.className = "rounded-xl p-3 text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200";
-                            adminStateAlert.textContent = tr("auth.connection_error", "Error de conexión.", "Connection error.");
+                            adminStateAlert.textContent = tr("auth.connection_error");
                             adminStateAlert.classList.remove("hidden");
                         }
                     }
@@ -1058,8 +1026,18 @@
             }
         });
         global.addEventListener("jaguarLanguageChanged", () => {
+            if (buildingSelect && buildingSelect.options) {
+                Array.from(buildingSelect.options).forEach((opt) => {
+                    if (opt.getAttribute && opt.getAttribute("data-dynamic-building") === "true") {
+                        opt.textContent = resolveBuildingLabel(opt.value, opt.value);
+                    }
+                });
+            }
             if (hasLoadedOnce && !lastFetchFailed) {
                 renderCards(allItems);
+            } else {
+                updateCountBadges(allItems.length);
+                updateFilterIndicators();
             }
             if (activeDetailItem && detailModal && !detailModal.classList.contains("hidden")) {
                 renderItemDetail(activeDetailItem);
