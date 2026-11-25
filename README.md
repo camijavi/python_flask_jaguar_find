@@ -179,8 +179,6 @@ SQLite is appropriate for this class project and a single-instance Azure App Ser
 
 - **Camila Javiera Navarro Centeno** - data structures and algorithms
 - **Francis Alejandra Solórzano Morales** - backend and persistence
-- **James Santiago Fernandez Obregon** - frontend and user experience
-- **Elias Abraham Solis Guevara** - administrator panel, QR codes, and integration
 
 ## Institution
 
