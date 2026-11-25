@@ -300,7 +300,7 @@
           },
           "f3": {
             "label": "Piso 3",
-            "rooms": "Estudio Audiovisual A-301, Aulas C301-C304, Coordinación de Compras C306, Aulas C307-C310."
+            "rooms": "Estudio Audiovisual A-301, Aulas C301-C305, Coordinación de Compras C306, Aulas C307-C310."
           }
         }
       },
@@ -408,15 +408,19 @@
       },
       "buildingM": {
         "name": "Edificio M • Aulas & Postgrados",
-        "badge": "2 Pisos",
+        "badge": "3 Pisos",
         "floors": {
           "f1": {
             "label": "Piso 1",
-            "rooms": "Aulas de Grado M101 - M108, Coordinación de Maestrías y Especialidades."
+            "rooms": "Auditorios M101 y M102, Dirección de Gestión Ambiental y Energética, Investigación y Extensión Universitaria, Baños y Bebedero."
           },
           "f2": {
             "label": "Piso 2",
-            "rooms": "Aulas Ejecutivas M201 - M208, Sala de Coworking para Investigadores."
+            "rooms": "Aulas M201 - M204."
+          },
+          "f3": {
+            "label": "Piso 3",
+            "rooms": "Aulas M301 - M304."
           }
         }
       },
@@ -462,7 +466,7 @@
           },
           "f3": {
             "label": "Pisos 3–5",
-            "rooms": "Aulas P-301 a P-306, Salón P-401 (P4), Observatorio Astronómico Copérnico (P5)."
+            "rooms": "Aulas P-301 a P-308, Salón P-401 (P4), Observatorio Astronómico Copérnico (P5)."
           }
         }
       },
@@ -994,7 +998,7 @@
     "buildingK": "Edificio K (Cafetería Central & Terrazas)",
     "chilamatesPlaza": "Plaza Chilamates (Kioskos & Fast Point)",
     "buildingA": "Edificio A (Atención al Estudiante & Objetos Perdidos)",
-    "buildingB": "Edificio B (Aulas B101-B106 & Farmacia)",
+    "buildingB": "Edificio B (Aulas B101-B210 & Farmacia)",
     "buildingC": "Edificio C (Laboratorios de Cómputo & Caja UAM)",
     "buildingD": "Edificio D (Odontología Digital CAM-CAM)",
     "buildingJ": "Edificio J (Laboratorios de Odontología)",

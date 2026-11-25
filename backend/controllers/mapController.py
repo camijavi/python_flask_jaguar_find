@@ -22,6 +22,7 @@ from backend.data.campusCategories import CampusCategory, CATEGORY_METADATA
 from backend.data.placesCatalog import PLACES_CATALOG
 from backend.subgraphs import getBuildingSubgraph, getAllBuildingSubgraphs
 from backend.services.azureSpeechService import AzureSpeechService
+from backend.services.placeSearchService import buildIndexedPlaces, searchPlaces
 from backend.i18n import get_current_language, normalize_language, t
 
 mapController = Blueprint("mapController", __name__, url_prefix="/api/map")
@@ -101,9 +102,10 @@ def getCampusNodeDetail(nodeId: str):
             "error": t("api.map_node_not_found", lang=lang, nodeId=nodeId)
         }), 404
 
-    # Collect internal sub-rooms from catalog
+    # Collect all indexed internal sub-rooms (catalog + building subgraph)
+    indexedPlaces = buildIndexedPlaces(lang=lang)
     subPlaces = [
-        place for place in PLACES_CATALOG
+        place for place in indexedPlaces
         if place.get("parentBuildingId", "").lower() == nodeId.lower()
     ]
 
@@ -136,9 +138,10 @@ def getCategories():
     and the number of registered places in each category.
     """
     lang = _getPreferredLanguage()
+    indexedPlaces = buildIndexedPlaces(lang=lang)
     categoriesList = []
     for catKey, meta in CATEGORY_METADATA.items():
-        matchingCount = sum(1 for p in PLACES_CATALOG if p.get("category") == catKey)
+        matchingCount = sum(1 for p in indexedPlaces if p.get("category") == catKey)
         categoriesList.append({
             "key": catKey,
             "label": t(f"map.category_labels.{catKey}", lang=lang),
@@ -169,59 +172,21 @@ def getPlaces():
     and all 18 indoor building subgraphs (buildings.txt + coordenadas.txt).
     Query Params:
       - category: filter by CampusCategory (e.g., 'drinkingFountain', 'medicalLab')
-      - q: free-text search across name, keywords, and location notes
+      - q: free-text search across name, room codes, keywords, and location notes
       - floor: integer floor filter (e.g. 1, 2)
     """
     lang = _getPreferredLanguage()
     categoryFilter = request.args.get("category")
-    searchQuery = _normalizeText(request.args.get("q") or "")
+    rawQuery = request.args.get("q") or ""
     floorFilter = request.args.get("floor")
 
-    combinedPlaces = list(PLACES_CATALOG)
-    seenKeys = {
-        (_normalizeText(p.get("parentBuildingId", "")), _normalizeText(p.get("name", "")))
-        for p in combinedPlaces
-    }
-    for buildingId, sg in getAllBuildingSubgraphs().items():
-        macroNode = globalNavigationService.graph.getNode(sg.macroNodeId)
-        localizedBuilding = macroNode.getName(lang) if macroNode else sg.name
-        for node in sg.getAllNodes():
-            key = (_normalizeText(sg.macroNodeId), _normalizeText(node.name))
-            if key in seenKeys:
-                continue
-            seenKeys.add(key)
-            combinedPlaces.append({
-                "placeId": node.nodeId,
-                "name": node.getName(lang),
-                "category": node.category,
-                "parentBuildingId": sg.macroNodeId,
-                "floorLevel": node.floorLevel,
-                "isAccessible": node.category != CampusCategory.STAIRS,
-                "latitude": node.latitude,
-                "longitude": node.longitude,
-                "locationNotes": t("api.map_floor_note", lang=lang, floor=node.floorLevel, building=localizedBuilding),
-                "keywords": [node.nodeId, sg.code, sg.name, localizedBuilding],
-            })
-
-    results = []
-    for place in combinedPlaces:
-        if categoryFilter and place.get("category") != categoryFilter:
-            continue
-        if floorFilter is not None:
-            try:
-                if place.get("floorLevel") != int(floorFilter):
-                    continue
-            except ValueError:
-                pass
-
-        if searchQuery:
-            nameMatch = searchQuery in _normalizeText(place.get("name", ""))
-            notesMatch = searchQuery in _normalizeText(place.get("locationNotes", ""))
-            keywordMatch = any(searchQuery in _normalizeText(kw) for kw in place.get("keywords", []))
-            if not (nameMatch or notesMatch or keywordMatch):
-                continue
-
-        results.append(place)
+    combinedPlaces = buildIndexedPlaces(lang=lang)
+    results = searchPlaces(
+        combinedPlaces,
+        query=rawQuery,
+        category=categoryFilter,
+        floor=floorFilter,
+    )
 
     return jsonify({
         "success": True,

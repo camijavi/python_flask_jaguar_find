@@ -300,7 +300,7 @@
           },
           "f3": {
             "label": "Floor 3",
-            "rooms": "Audiovisual Studio A-301, Classrooms C301-C304, Procurement Coordination C306, Classrooms C307-C310."
+            "rooms": "Audiovisual Studio A-301, Classrooms C301-C305, Procurement Coordination C306, Classrooms C307-C310."
           }
         }
       },
@@ -408,15 +408,19 @@
       },
       "buildingM": {
         "name": "Building M • Classrooms & Graduate Studies",
-        "badge": "2 Floors",
+        "badge": "3 Floors",
         "floors": {
           "f1": {
             "label": "Floor 1",
-            "rooms": "Undergraduate Classrooms M101 - M108, Master's & Specialties Coordination."
+            "rooms": "Auditoriums M101 & M102, Environmental & Energy Management Directorate, Research & University Extension, Restrooms & Fountain."
           },
           "f2": {
             "label": "Floor 2",
-            "rooms": "Executive Classrooms M201 - M208, Researchers Coworking Room."
+            "rooms": "Classrooms M201 - M204."
+          },
+          "f3": {
+            "label": "Floor 3",
+            "rooms": "Classrooms M301 - M304."
           }
         }
       },
@@ -462,7 +466,7 @@
           },
           "f3": {
             "label": "Floors 3–5",
-            "rooms": "Classrooms P-301 to P-306, Hall P-401 (F4), Copernicus Astronomical Observatory (F5)."
+            "rooms": "Classrooms P-301 to P-308, Hall P-401 (F4), Copernicus Astronomical Observatory (F5)."
           }
         }
       },
@@ -994,7 +998,7 @@
     "buildingK": "Building K (Central Cafeteria & Terraces)",
     "chilamatesPlaza": "Chilamates Plaza (Kiosks & Fast Point)",
     "buildingA": "Building A (Student Services & Lost and Found)",
-    "buildingB": "Building B (Classrooms B101-B106 & Pharmacy)",
+    "buildingB": "Building B (Classrooms B101-B210 & Pharmacy)",
     "buildingC": "Building C (Computer Labs & Cashier Office)",
     "buildingD": "Building D (Digital Dentistry CAM-CAM)",
     "buildingJ": "Building J (Dentistry Labs)",

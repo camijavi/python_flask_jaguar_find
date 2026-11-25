@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
         { id: "buildingJ",       letter: "J",   badgeClass: "badge-cyan",    badgeBg: "#0284c7", anchor: { x: 297, y: 287 }, floorKeys: ["f1"] },
         { id: "buildingK",       letter: "K",   badgeClass: "badge-amber",   badgeBg: "#b45309", anchor: { x: 293, y: 598 }, floorKeys: ["f1"] },
         { id: "buildingL",       letter: "L",   badgeClass: "badge-cyan",    badgeBg: "#0284c7", anchor: { x: 842, y: 502 }, floorKeys: ["f1"] },
-        { id: "buildingM",       letter: "M",   badgeClass: "badge-teal",    badgeBg: "#0f766e", anchor: { x: 597, y: 460 }, floorKeys: ["f1", "f2"] },
+        { id: "buildingM",       letter: "M",   badgeClass: "badge-teal",    badgeBg: "#0f766e", anchor: { x: 597, y: 460 }, floorKeys: ["f1", "f2", "f3"] },
         { id: "buildingN",       letter: "N",   badgeClass: "badge-magenta", badgeBg: "#be185d", anchor: { x: 350, y: 217 }, floorKeys: ["f1", "f2"] },
         { id: "buildingO",       letter: "O",   badgeClass: "badge-amber",   badgeBg: "#b45309", anchor: { x: 510, y: 200 }, floorKeys: ["f1", "f2"] },
         { id: "buildingP",       letter: "P",   badgeClass: "badge-maroon",  badgeBg: "#881337", anchor: { x: 360, y: 104 }, floorKeys: ["f1", "f2", "f3"] },
@@ -694,28 +694,47 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    if (dirSearchInput) {
-        dirSearchInput.addEventListener("input", () => {
-            const q = dirSearchInput.value.toLowerCase().trim();
-            const cards = document.querySelectorAll(".directory-card");
-            let visibleCount = 0;
+    function filterDirectoryCards() {
+        if (!dirSearchInput) return;
+        const rawQuery = dirSearchInput.value || "";
+        const q = rawQuery.toLowerCase().trim();
+        const cards = document.querySelectorAll(".directory-card");
+        const indexedPlaces = Array.isArray(window.jaguarCampusPlaces) ? window.jaguarCampusPlaces : [];
+        let visibleCount = 0;
 
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                if (!q || text.includes(q)) {
-                    card.style.display = "block";
-                    visibleCount++;
-                } else {
-                    card.style.display = "none";
-                }
-            });
-
-            updateDirectoryCountBadge(visibleCount);
+        cards.forEach(card => {
+            const text = card.textContent || "";
+            const bldgId = card.getAttribute("data-bldg") || "";
+            const matched = (window.JaguarCampusSearch && typeof window.JaguarCampusSearch.matchesDirectoryCard === "function")
+                ? window.JaguarCampusSearch.matchesDirectoryCard(text, bldgId, rawQuery, indexedPlaces)
+                : (!q || text.toLowerCase().includes(q));
+            if (matched) {
+                card.style.display = "block";
+                visibleCount++;
+            } else {
+                card.style.display = "none";
+            }
         });
+
+        updateDirectoryCountBadge(visibleCount);
     }
 
+    if (dirSearchInput) {
+        dirSearchInput.addEventListener("input", filterDirectoryCards);
+    }
+
+    window.addEventListener("jaguarCatalogLoaded", function () {
+        if (dirSearchInput && dirSearchInput.value.trim()) {
+            filterDirectoryCards();
+        }
+    });
+
     window.addEventListener("jaguarLanguageChanged", function () {
-        updateDirectoryCountBadge();
+        if (dirSearchInput && dirSearchInput.value.trim()) {
+            filterDirectoryCards();
+        } else {
+            updateDirectoryCountBadge();
+        }
         if (activeSelectedBuilding && bldgPopover && !bldgPopover.classList.contains("hidden")) {
             const freshData = CAMPUS_BUILDINGS[activeSelectedBuilding.id] || activeSelectedBuilding;
             showBuildingPopover(freshData, freshData.anchor || activeSelectedBuilding.anchor);

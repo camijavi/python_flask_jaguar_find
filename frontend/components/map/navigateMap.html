@@ -1109,6 +1109,38 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             if (placesRes.success) {
                 state.allPlaces = placesRes.places || [];
+                window.jaguarCampusPlaces = state.allPlaces;
+            }
+            window.dispatchEvent(new CustomEvent("jaguarCatalogLoaded", {
+                detail: { nodes: state.allNodes, places: state.allPlaces }
+            }));
+
+            // Refresh open suggestions if the user started typing before prefetch completed
+            if (originInput && originInput.value.trim() && document.activeElement === originInput) {
+                renderSuggestionsList(originSuggestions, getMatches(originInput.value), (selected) => {
+                    originInput.value = selected.title;
+                    state.originQuery = selected.title;
+                    state.originNodeId = selected.targetNodeId;
+                    state.originPlaceId = selected.id;
+                    state.usedGpsOrigin = false;
+                    btnClearOrigin.classList.remove("hidden");
+                    saveNavDraft();
+                });
+            }
+            if (destinationInput && (destinationInput.value.trim() || state.selectedCategory) && document.activeElement === destinationInput) {
+                renderSuggestionsList(destinationSuggestions, getMatches(destinationInput.value, state.selectedCategory), (selected) => {
+                    destinationInput.value = selected.title;
+                    state.destinationQuery = selected.title;
+                    state.destinationNodeId = selected.targetNodeId;
+                    state.destinationPlaceId = selected.id;
+                    window.currentSelectedDestination = {
+                        placeId: selected.id,
+                        title: selected.title,
+                        nodeId: selected.targetNodeId
+                    };
+                    btnClearDestination.classList.remove("hidden");
+                    saveNavDraft();
+                });
             }
         } catch (err) {
             console.warn("Failed to prefetch map nodes/places:", err);
@@ -1116,21 +1148,38 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     loadCampusCatalog();
 
-    // 2. Filter & Render Autocomplete Matches
-    function getMatches(queryText, categoryFilter = "") {
-        const clean = (queryText || "").trim().toLowerCase();
-        const results = [];
+    // 2. Filter & Render Autocomplete Matches (Zero Dropped Results, Relevance Ranked)
+    const BUILDING_SUGGESTION_ICON = `<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>`;
 
-        // 1. Match sub-places (classrooms, labs, fountains)
+    function getMatches(queryText, categoryFilter = "") {
+        const floorWord = tr('map.floor');
+        const bldgSubtitle = tr('map.building_entry_subtitle');
+
+        if (window.JaguarCampusSearch && typeof window.JaguarCampusSearch.searchCampus === "function") {
+            return window.JaguarCampusSearch.searchCampus(
+                queryText,
+                categoryFilter,
+                state.allPlaces,
+                state.allNodes,
+                {
+                    floorWord,
+                    bldgSubtitle,
+                    resolveParentLabel: (parentId, place) => resolveNodeShortName(parentId) || (place && place.buildingName) || parentId,
+                    getCategorySvg,
+                    buildingIconSvg: BUILDING_SUGGESTION_ICON,
+                }
+            );
+        }
+
+        // Safe fallback if helper script is unavailable
+        const clean = (queryText || "").trim().toLowerCase().replace(/\s+/g, " ");
+        const results = [];
         for (const place of state.allPlaces) {
             if (categoryFilter && place.category !== categoryFilter) continue;
-            
-            const matchName = place.name.toLowerCase().includes(clean);
+            const matchName = (place.name || "").toLowerCase().includes(clean);
             const matchNotes = (place.locationNotes || "").toLowerCase().includes(clean);
-            const matchKw = (place.keywords || []).some(k => k.toLowerCase().includes(clean));
-
+            const matchKw = (place.keywords || []).some(k => String(k).toLowerCase().includes(clean));
             if (!clean || matchName || matchNotes || matchKw) {
-                const floorWord = tr('map.floor');
                 const parentLabel = resolveNodeShortName(place.parentBuildingId);
                 results.push({
                     type: "place",
@@ -1143,11 +1192,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             }
         }
-
-        // 2. Match macro nodes (buildings, gates, parking)
         if (!categoryFilter) {
-            const floorWord = tr('map.floor');
-            const bldgSubtitle = tr('map.building_entry_subtitle');
             for (const node of state.allNodes) {
                 const matchNodeName = (node.name || "").toLowerCase().includes(clean);
                 const matchNodeId = (node.nodeId || "").toLowerCase().includes(clean);
@@ -1159,13 +1204,12 @@ document.addEventListener("DOMContentLoaded", function() {
                         title: node.name,
                         subtitle: `${bldgSubtitle} (${floorWord} ${node.floorLevel})`,
                         category: node.category,
-                        iconSvg: `<svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>`
+                        iconSvg: BUILDING_SUGGESTION_ICON
                     });
                 }
             }
         }
-
-        return results.slice(0, 8); // Top 8 matches
+        return results;
     }
 
     // Clean SVG Icons for All Categories (Zero Emojis)
@@ -1474,10 +1518,14 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
 
-        const q = (gpsUiState.filterText || "").trim().toLowerCase();
-        const filtered = q
-            ? rawList.filter(loc => (loc.name || "").toLowerCase().includes(q) || (loc.category || "").toLowerCase().includes(q))
-            : rawList;
+        const filtered = (window.JaguarCampusSearch && typeof window.JaguarCampusSearch.filterLocationsList === "function")
+            ? window.JaguarCampusSearch.filterLocationsList(rawList, gpsUiState.filterText)
+            : (() => {
+                const q = (gpsUiState.filterText || "").trim().toLowerCase();
+                return q
+                    ? rawList.filter(loc => (loc.name || "").toLowerCase().includes(q) || (loc.category || "").toLowerCase().includes(q))
+                    : rawList;
+            })();
 
         if (gpsFallbackListCount) {
             gpsFallbackListCount.textContent = `${filtered.length}`;

@@ -522,7 +522,7 @@ PLACES_CATALOG = [
         "latitude": 12.108453,
         "longitude": -86.256760,
         "locationNotes": "Segundo piso, ala este de laboratorios.",
-        "keywords": ["c201", "c-201", "lab computo 201"]
+        "keywords": ["c201", "c-201", "lab computo 201", "laboratorio de computacion"]
     },
     {
         "placeId": "computerLabC202",
@@ -534,7 +534,7 @@ PLACES_CATALOG = [
         "latitude": 12.108415,
         "longitude": -86.256742,
         "locationNotes": "Segundo piso, junto a escaleras izquierda.",
-        "keywords": ["c202", "c-202", "lab computo 202"]
+        "keywords": ["c202", "c-202", "lab computo 202", "laboratorio de computacion"]
     },
     {
         "placeId": "macLabC203",
@@ -546,7 +546,7 @@ PLACES_CATALOG = [
         "latitude": 12.108528,
         "longitude": -86.256800,
         "locationNotes": "Segundo piso, laboratorio de diseño y MAC.",
-        "keywords": ["mac 203", "c203", "c-203", "lab mac 203"]
+        "keywords": ["mac 203", "c203", "c-203", "lab mac 203", "laboratorio mac c203"]
     },
     {
         "placeId": "computerLabC204",
@@ -558,7 +558,7 @@ PLACES_CATALOG = [
         "latitude": 12.108510,
         "longitude": -86.256951,
         "locationNotes": "Segundo piso, pasillo central.",
-        "keywords": ["c204", "c-204", "lab computo 204"]
+        "keywords": ["c204", "c-204", "lab computo 204", "laboratorio de computacion"]
     },
     {
         "placeId": "drinkingFountainC2",
@@ -582,7 +582,7 @@ PLACES_CATALOG = [
         "latitude": 12.108433,
         "longitude": -86.257043,
         "locationNotes": "Segundo piso, pasillo central.",
-        "keywords": ["c205", "c-205", "lab computo 205"]
+        "keywords": ["c205", "c-205", "lab computo 205", "laboratorio de computacion"]
     },
     {
         "placeId": "warehouseC206",
@@ -1098,7 +1098,7 @@ PLACES_CATALOG = [
         "placeId": "medicalLabH102", "name": "Laboratorio de Medicina H-102",
         "category": CampusCategory.MEDICAL_LAB, "parentBuildingId": "buildingH", "floorLevel": 1,
         "isAccessible": True, "latitude": 12.108265, "longitude": -86.257549,
-        "locationNotes": "Edificio H, Piso 1.", "keywords": ["h102", "h-102", "h 102", "lab med h102"]
+        "locationNotes": "Edificio H, Piso 1.", "keywords": ["h102", "h-102", "h 102", "lab med h102", "i108", "i-108"]
     },
     {
         "placeId": "medicalLabH103", "name": "Laboratorio de Medicina H-103",

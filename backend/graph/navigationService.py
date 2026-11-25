@@ -35,15 +35,21 @@ from .pedestrianWalkwayGraph import (
     WALKWAY_LANDMARKS,
 )
 from .i18n import t
-from data.placesCatalog import PLACES_CATALOG
+from backend.data.placesCatalog import PLACES_CATALOG
 
 
 def _normalizeQuery(text: str) -> str:
-    """Lowercases and strips diacritics so Spanish/English queries match reliably."""
+    """Lowercases, strips diacritics, and collapses whitespace reliably."""
     if not text:
         return ""
     decomposed = unicodedata.normalize("NFD", str(text).strip().lower())
-    return "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
+    stripped = "".join(ch for ch in decomposed if unicodedata.category(ch) != "Mn")
+    return " ".join(stripped.split())
+
+
+def _compactQuery(text: str) -> str:
+    """Strips spaces, hyphens, and underscores for separator-tolerant matching."""
+    return _normalizeQuery(text).replace(" ", "").replace("-", "").replace("_", "")
 
 
 class NavigationService:
@@ -109,47 +115,15 @@ class NavigationService:
                 "isSubPlace": False,
             }
 
-        # 3. Exact nodeId or registered alias match across all 18 building subgraphs
-        from backend.subgraphs import getAllBuildingSubgraphs
-        subgraphs = getAllBuildingSubgraphs()
-        compactCleaned = cleaned.replace(" ", "").replace("-", "").replace("_", "")
-        for buildingId, sg in subgraphs.items():
-            # Exact node ID
-            if raw in sg.graph.nodes:
-                sNode = sg.graph.nodes[raw]
-                return {
-                    "targetNodeId": sg.macroNodeId,
-                    "placeId": sNode.nodeId,
-                    "subgraphNodeId": sNode.nodeId,
-                    "walkwayNodeId": MACRO_TO_MICRO_NODE.get(sg.macroNodeId),
-                    "displayName": sNode.name,
-                    "category": sNode.category,
-                    "floorLevel": sNode.floorLevel,
-                    "locationNotes": t("navigation.building_floor_note", lang=lang, building=t(f"nodes.{sg.macroNodeId}", lang=lang, default=sg.name), floor=sNode.floorLevel),
-                    "isSubPlace": True,
-                }
-            # Exact registered alias
-            for alias, targetRoomId in sg.roomAliases.items():
-                aliasCompact = _normalizeQuery(alias).replace(" ", "").replace("-", "").replace("_", "")
-                if aliasCompact == compactCleaned and targetRoomId in sg.graph.nodes:
-                    sNode = sg.graph.nodes[targetRoomId]
-                    return {
-                        "targetNodeId": sg.macroNodeId,
-                        "placeId": sNode.nodeId,
-                        "subgraphNodeId": sNode.nodeId,
-                        "walkwayNodeId": MACRO_TO_MICRO_NODE.get(sg.macroNodeId),
-                        "displayName": sNode.name,
-                        "category": sNode.category,
-                        "floorLevel": sNode.floorLevel,
-                        "locationNotes": t("navigation.building_floor_note", lang=lang, building=t(f"nodes.{sg.macroNodeId}", lang=lang, default=sg.name), floor=sNode.floorLevel),
-                        "isSubPlace": True,
-                    }
-
-        # 4. Check PLACES_CATALOG for exact placeId/name first, then best keyword match
-        bestMatch = None
-        bestScore = 0
+        # 3. Exact match in PLACES_CATALOG by placeId or name (preserves individual room display name like 'Aula B-210')
+        compactCleaned = _compactQuery(raw)
         for place in PLACES_CATALOG:
-            if _normalizeQuery(place["placeId"]) == cleaned or _normalizeQuery(place["name"]) == cleaned:
+            if (
+                _normalizeQuery(place["placeId"]) == cleaned
+                or _compactQuery(place["placeId"]) == compactCleaned
+                or _normalizeQuery(place["name"]) == cleaned
+                or _compactQuery(place["name"]) == compactCleaned
+            ):
                 sgNodeId = self._resolveSubgraphNode(
                     place["parentBuildingId"],
                     place["placeId"],
@@ -167,9 +141,58 @@ class NavigationService:
                     "locationNotes": place["locationNotes"],
                     "isSubPlace": True,
                 }
+
+        # 4. Exact nodeId or registered alias match across all 18 building subgraphs
+        from backend.subgraphs import getAllBuildingSubgraphs
+        subgraphs = getAllBuildingSubgraphs()
+        for buildingId, sg in subgraphs.items():
+            # Exact node ID
+            if raw in sg.graph.nodes:
+                sNode = sg.graph.nodes[raw]
+                return {
+                    "targetNodeId": sg.macroNodeId,
+                    "placeId": sNode.nodeId,
+                    "subgraphNodeId": sNode.nodeId,
+                    "walkwayNodeId": MACRO_TO_MICRO_NODE.get(sg.macroNodeId),
+                    "displayName": sNode.name,
+                    "category": sNode.category,
+                    "floorLevel": sNode.floorLevel,
+                    "locationNotes": t("navigation.building_floor_note", lang=lang, building=t(f"nodes.{sg.macroNodeId}", lang=lang, default=sg.name), floor=sNode.floorLevel),
+                    "isSubPlace": True,
+                }
+            # Exact registered alias
+            for alias, targetRoomId in sg.roomAliases.items():
+                aliasCompact = _compactQuery(alias)
+                if aliasCompact == compactCleaned and targetRoomId in sg.graph.nodes:
+                    sNode = sg.graph.nodes[targetRoomId]
+                    return {
+                        "targetNodeId": sg.macroNodeId,
+                        "placeId": sNode.nodeId,
+                        "subgraphNodeId": sNode.nodeId,
+                        "walkwayNodeId": MACRO_TO_MICRO_NODE.get(sg.macroNodeId),
+                        "displayName": sNode.name,
+                        "category": sNode.category,
+                        "floorLevel": sNode.floorLevel,
+                        "locationNotes": t("navigation.building_floor_note", lang=lang, building=t(f"nodes.{sg.macroNodeId}", lang=lang, default=sg.name), floor=sNode.floorLevel),
+                        "isSubPlace": True,
+                    }
+
+        # 5. Check PLACES_CATALOG for best keyword match (separator- and whitespace-tolerant)
+        bestMatch = None
+        bestScore = 0
+        for place in PLACES_CATALOG:
             for kw in place["keywords"]:
                 kwNorm = _normalizeQuery(kw)
-                if kwNorm and (kwNorm in cleaned or (len(cleaned) >= 4 and cleaned in kwNorm)) and len(kwNorm) > bestScore:
+                kwCompact = _compactQuery(kw)
+                if (
+                    kwNorm
+                    and (
+                        kwNorm in cleaned
+                        or kwCompact == compactCleaned
+                        or (len(cleaned) >= 4 and cleaned in kwNorm)
+                    )
+                    and len(kwNorm) > bestScore
+                ):
                     bestScore = len(kwNorm)
                     bestMatch = place
 

@@ -78,12 +78,14 @@ class GlobalGpsMatcher:
 
         locations: List[Dict[str, Any]] = []
         seenKeys = set()
+        orderMap: Dict[int, int] = {}
 
         def _appendLocation(entry: Dict[str, Any]) -> None:
             key = (_normKey(entry["name"]), int(entry["floorLevel"]))
             if key in seenKeys:
                 return
             seenKeys.add(key)
+            orderMap[id(entry)] = len(locations)
             locations.append(entry)
 
         # 1. All indoor nodes from the building's subgraph (classrooms, offices, labs, restrooms, etc.)
@@ -200,14 +202,15 @@ class GlobalGpsMatcher:
                 "isRecommended": True,
             })
 
-        # Sort locations by floor, then proximity (or alphabetically when no GPS coords)
+        # Sort locations by floor, then proximity when GPS coordinates are provided,
+        # strictly preserving the building's defined left-to-right order (buildings.txt)
+        # when GPS coordinates are absent or distances tie.
         def _sortKey(item: Dict[str, Any]):
             d = item["distanceMeters"]
-            return (
-                item["floorLevel"],
-                d if d is not None else float("inf"),
-                _normKey(item["name"]),
-            )
+            orderIdx = orderMap.get(id(item), 0)
+            if d is not None:
+                return (item["floorLevel"], d, orderIdx)
+            return (item["floorLevel"], orderIdx)
 
         locations.sort(key=_sortKey)
 
