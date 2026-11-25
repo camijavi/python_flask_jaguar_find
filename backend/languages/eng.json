@@ -177,6 +177,8 @@
     "student_identifier_label": "CIF number or Email",
     "student_identifier_placeholder": "8-digit CIF or email",
     "password_label": "Password",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
     "submit_sign_in": "Sign in",
     "submit_sign_up": "Sign up",
     "change_role": "Change role",

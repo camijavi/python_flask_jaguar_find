@@ -52,6 +52,22 @@ class TestVisitorValidation(unittest.TestCase):
                 self.assertIn('id="cedula"', res.get_data(as_text=True))
                 self.assertIn('minlength="14" maxlength="16"', res.get_data(as_text=True))
 
+    def test_password_visibility_toggle_is_rendered_on_auth_forms(self):
+        for route in (
+            "/auth/signup?rol=colaborador",
+            "/auth/signin?rol=colaborador",
+            "/admin/adminsignin",
+        ):
+            with self.subTest(route=route):
+                res = self.client.get(route)
+                self.assertEqual(res.status_code, 200)
+                html = res.get_data(as_text=True)
+                self.assertIn('type="button" data-password-toggle', html)
+                self.assertIn('aria-controls="password"', html)
+                self.assertIn('data-i18n-aria-label="auth.show_password"', html)
+                self.assertIn('pl-11 pr-12', html)
+                self.assertIn("passwordVisibilityToggle.js", html)
+
     def test_visitor_signup_missing_cedula(self):
         res = self.client.post("/api/auth/signup", json={
             "userTypeId": 3,

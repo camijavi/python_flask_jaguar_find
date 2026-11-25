@@ -31,6 +31,14 @@
   'UAM College': {'major_en': 'UAM College', 'faculty_es': 'UAM College', 'faculty_en': 'UAM College'}
 } %}
 
+{% macro passwordVisibilityToggle(inputId) %}
+<button type="button" data-password-toggle aria-controls="{{ inputId }}" aria-label="{{ t('auth.show_password', default='Mostrar contraseña' if current_language == 'spa' else 'Show password') }}" data-i18n-aria-label="auth.show_password" aria-pressed="false"
+        class="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-700 focus:outline-none focus:text-brand-600 transition-colors">
+    <svg data-password-eye class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M2.25 12s3.5-7 9.75-7 9.75 7 9.75 7-3.5 7-9.75 7-9.75-7-9.75-7Z"/><circle cx="12" cy="12" r="3" stroke-width="1.8"/></svg>
+    <svg data-password-eye-off class="hidden w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c6.25 0 9.75 7 9.75 7a16.8 16.8 0 0 1-3.1 3.9M6.2 6.2C3.6 8 2.25 12 2.25 12s3.5 7 9.75 7c1.2 0 2.3-.25 3.3-.7"/></svg>
+</button>
+{% endmacro %}
+
 {% macro field(id, label, icon, type='text', placeholder='', extra='', full=false, label_key='', placeholder_key='') %}
 <div class="{{ 'sm:col-span-2' if full }} field-container" data-field="{{ id }}">
     <label for="{{ id }}" {% if label_key %}data-i18n="{{ label_key }}"{% endif %} class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5">{{ label }}</label>
@@ -39,7 +47,10 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="{{ ICONS[icon] }}"/></svg>
         </span>
         <input type="{{ type }}" id="{{ id }}" name="{{ id }}" placeholder="{{ placeholder }}" {% if placeholder_key %}data-i18n-placeholder="{{ placeholder_key }}"{% endif %} required {{ extra|safe }}
-               class="auth-input w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 transition">
+               class="auth-input w-full pl-11 {{ 'pr-12' if type == 'password' else 'pr-4' }} py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 transition">
+        {% if type == 'password' %}
+            {{ passwordVisibilityToggle(id) }}
+        {% endif %}
     </div>
     <p id="{{ id }}-error" class="field-error-message hidden mt-1.5 text-xs text-rose-600 font-medium flex items-center gap-1">
         <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>

@@ -177,6 +177,8 @@
     "student_identifier_label": "Número CIF o Correo institucional",
     "student_identifier_placeholder": "8 dígitos CIF o correo @uamv.edu.ni",
     "password_label": "Contraseña",
+    "show_password": "Mostrar contraseña",
+    "hide_password": "Ocultar contraseña",
     "submit_sign_in": "Acceder",
     "submit_sign_up": "Registrarme",
     "change_role": "Cambiar rol",
