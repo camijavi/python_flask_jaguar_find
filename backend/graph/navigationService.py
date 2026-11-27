@@ -271,6 +271,225 @@ class NavigationService:
 
         return None
 
+    def _getCandidatePortals(self, dest: dict) -> List[str]:
+        """Returns valid outdoor walkway portals for a destination or exact walkway node."""
+        if not dest.get("subgraphNodeId") and dest.get("placeId") in self.walkwayGraph.nodes:
+            return [dest["placeId"]]
+
+        portals: List[str] = []
+        if dest.get("walkwayNodeId") and dest["walkwayNodeId"] in self.walkwayGraph.nodes:
+            portals.append(dest["walkwayNodeId"])
+        for p in BUILDING_PORTALS.get(dest["targetNodeId"], []):
+            if p not in portals and p in self.walkwayGraph.nodes:
+                portals.append(p)
+        return portals
+
+    def _computeWalkwayRoutingCost(
+        self,
+        path: List[str],
+        edges: Dict[Tuple[str, str], Any],
+        accessibleOnly: bool,
+    ) -> float:
+        """Computes effective routing cost over a walkway path, favoring accessible-recommended edges."""
+        if not path:
+            return float("inf")
+        return sum(
+            edges[(source, target)].distanceMeters
+            * (
+                edges[(source, target)].routingCostFactor
+                if accessibleOnly
+                and edges[(source, target)].accessibilityZone == "recommended"
+                else 1.0
+            )
+            for source, target in zip(path, path[1:])
+            if (source, target) in edges
+        )
+
+    def _getAlignedPortalsForEntrance(
+        self,
+        subgraph,
+        entranceId: str,
+        buildingPortals: List[str],
+        toleranceMeters: float = 10.0,
+    ) -> List[Tuple[str, float]]:
+        """
+        Matches an indoor building entrance strictly to its physically adjacent outdoor
+        walkway portal(s) using GPS proximity, preventing teleportation between opposite
+        sides of a building (e.g., east/left 101 side vs west/right 108-109 side).
+        """
+        if not buildingPortals:
+            return []
+
+        entNode = subgraph.graph.nodes.get(entranceId)
+        if not entNode or not (entNode.latitude and entNode.longitude):
+            return [(p, 0.0) for p in buildingPortals]
+
+        portalDists: List[Tuple[str, float]] = []
+        for portalId in buildingPortals:
+            wNode = self.walkwayGraph.nodes.get(portalId)
+            if not wNode:
+                continue
+            if wNode.latitude and wNode.longitude:
+                d = CampusGeoUtils.calculateHaversineDistance(
+                    entNode.latitude, entNode.longitude, wNode.latitude, wNode.longitude
+                )
+            else:
+                d = 0.0
+            portalDists.append((portalId, d))
+
+        if not portalDists:
+            return []
+        if len(portalDists) == 1:
+            return portalDists
+
+        minDist = min(d for _, d in portalDists)
+        return [(p, d) for p, d in portalDists if d <= minDist + toleranceMeters]
+
+    def _buildIndoorPortalCandidates(
+        self,
+        subgraph,
+        roomNodeId: Optional[str],
+        buildingPortals: List[str],
+        isExiting: bool,
+        accessibleOnly: bool,
+    ) -> Tuple[List[Dict[str, Any]], bool]:
+        """
+        Computes shortest indoor paths from/to every reachable building entrance and pairs
+        each entrance with its physically aligned outdoor walkway portal(s).
+        """
+        if not subgraph or not roomNodeId or roomNodeId not in subgraph.graph.nodes:
+            return (
+                [
+                    {
+                        "portalId": p,
+                        "indoorPath": [],
+                        "indoorDist": 0.0,
+                        "handoffMeters": 0.0,
+                    }
+                    for p in buildingPortals
+                ],
+                False,
+            )
+
+        entrances = [eid for eid in subgraph.entranceNodeIds if eid in subgraph.graph.nodes]
+        bestByPortal: Dict[str, Dict[str, Any]] = {}
+
+        for entId in entrances:
+            u, v = (roomNodeId, entId) if isExiting else (entId, roomNodeId)
+            path, dist, _, _ = subgraph.router.findShortestPathWithEdges(
+                u, v, accessibleOnly=accessibleOnly
+            )
+            if not path:
+                continue
+            for portalId, handoffMeters in self._getAlignedPortalsForEntrance(
+                subgraph, entId, buildingPortals
+            ):
+                candScore = (dist + handoffMeters, dist)
+                prev = bestByPortal.get(portalId)
+                if prev is None or candScore < prev["_score"]:
+                    bestByPortal[portalId] = {
+                        "portalId": portalId,
+                        "indoorPath": path,
+                        "indoorDist": dist,
+                        "handoffMeters": handoffMeters,
+                        "_score": candScore,
+                    }
+
+        if not bestByPortal:
+            return [], False
+
+        return list(bestByPortal.values()), True
+
+    def _findOptimalDoorToDoorRoute(
+        self,
+        originDest: dict,
+        targetDest: dict,
+        originSg,
+        targetSg,
+        accessibleOnly: bool,
+    ) -> Dict[str, Any]:
+        """
+        Jointly optimizes origin indoor exit + aligned outdoor walkway + destination indoor
+        entry so room-to-room routes always pick the genuinely fastest, closest side of
+        each building (respecting left-to-right room order: 101 east/left .. 108/109 west/right).
+        """
+        originPortals = self._getCandidatePortals(originDest)
+        destPortals = self._getCandidatePortals(targetDest)
+
+        originRoomId = originDest.get("subgraphNodeId")
+        destRoomId = targetDest.get("subgraphNodeId")
+
+        originCandidates, hasOriginIndoor = self._buildIndoorPortalCandidates(
+            originSg, originRoomId, originPortals, isExiting=True, accessibleOnly=accessibleOnly
+        )
+        destCandidates, hasDestIndoor = self._buildIndoorPortalCandidates(
+            targetSg, destRoomId, destPortals, isExiting=False, accessibleOnly=accessibleOnly
+        )
+
+        # Preserve wheelchair upper-floor stairs-only guard when destination room is unreachable
+        if targetSg and destRoomId and destRoomId in targetSg.graph.nodes and not hasDestIndoor:
+            if accessibleOnly and targetDest.get("floorLevel", 1) > 1:
+                return {"upperFloorBlocked": True}
+            destCandidates = [
+                {"portalId": p, "indoorPath": [], "indoorDist": 0.0, "handoffMeters": 0.0}
+                for p in destPortals
+            ]
+
+        if originSg and originRoomId and originRoomId in originSg.graph.nodes and not hasOriginIndoor:
+            originCandidates = [
+                {"portalId": p, "indoorPath": [], "indoorDist": 0.0, "handoffMeters": 0.0}
+                for p in originPortals
+            ]
+
+        bestResult: Optional[Dict[str, Any]] = None
+        bestRank = (float("inf"), float("inf"))
+
+        for oCand in originCandidates:
+            for dCand in destCandidates:
+                wPath, wDist, _, wEdges = self.walkwayRouter.findShortestPathWithEdges(
+                    oCand["portalId"], dCand["portalId"], accessibleOnly=accessibleOnly
+                )
+                if not wPath:
+                    continue
+                wCost = self._computeWalkwayRoutingCost(wPath, wEdges, accessibleOnly)
+                jointCost = (
+                    oCand["indoorDist"]
+                    + oCand["handoffMeters"]
+                    + wCost
+                    + dCand["handoffMeters"]
+                    + dCand["indoorDist"]
+                )
+                realTotalDist = oCand["indoorDist"] + wDist + dCand["indoorDist"]
+                rank = (jointCost, realTotalDist)
+                if rank < bestRank:
+                    bestRank = rank
+                    bestResult = {
+                        "upperFloorBlocked": False,
+                        "walkwayPathIds": wPath,
+                        "walkwayDist": wDist,
+                        "walkwayEdges": wEdges,
+                        "originIndoorPath": oCand["indoorPath"],
+                        "originIndoorDist": oCand["indoorDist"],
+                        "destIndoorPath": dCand["indoorPath"],
+                        "destIndoorDist": dCand["indoorDist"],
+                        "hasDestIndoor": bool(dCand["indoorPath"]),
+                    }
+
+        if bestResult is not None:
+            return bestResult
+
+        return {
+            "upperFloorBlocked": False,
+            "walkwayPathIds": [],
+            "walkwayDist": float("inf"),
+            "walkwayEdges": {},
+            "originIndoorPath": [],
+            "originIndoorDist": 0.0,
+            "destIndoorPath": [],
+            "destIndoorDist": 0.0,
+            "hasDestIndoor": False,
+        }
+
     def _findBestWalkwayPath(
         self,
         originDest: dict,
@@ -281,22 +500,12 @@ class NavigationService:
         Runs Dijkstra on the Weighted, Directed, Non-Complete Pedestrian Walkway Graph
         evaluating valid building portals to pick the true shortest walkable route.
         """
-        originPortals = []
-        if originDest.get("walkwayNodeId") and originDest["walkwayNodeId"] in self.walkwayGraph.nodes:
-            originPortals.append(originDest["walkwayNodeId"])
-        for p in BUILDING_PORTALS.get(originDest["targetNodeId"], []):
-            if p not in originPortals and p in self.walkwayGraph.nodes:
-                originPortals.append(p)
-
-        destPortals = []
-        if targetDest.get("walkwayNodeId") and targetDest["walkwayNodeId"] in self.walkwayGraph.nodes:
-            destPortals.append(targetDest["walkwayNodeId"])
-        for p in BUILDING_PORTALS.get(targetDest["targetNodeId"], []):
-            if p not in destPortals and p in self.walkwayGraph.nodes:
-                destPortals.append(p)
+        originPortals = self._getCandidatePortals(originDest)
+        destPortals = self._getCandidatePortals(targetDest)
 
         bestPath: List[str] = []
         bestDist = float("inf")
+        bestCost = float("inf")
         bestEdges: Dict[Tuple[str, str], Any] = {}
 
         for uPortal in originPortals:
@@ -304,33 +513,11 @@ class NavigationService:
                 path, dist, _, edges = self.walkwayRouter.findShortestPathWithEdges(
                     uPortal, vPortal, accessibleOnly=accessibleOnly
                 )
-                pathCost = sum(
-                    edges[(source, target)].distanceMeters
-                    * (
-                        edges[(source, target)].routingCostFactor
-                        if accessibleOnly
-                        and edges[(source, target)].accessibilityZone == "recommended"
-                        else 1.0
-                    )
-                    for source, target in zip(path, path[1:])
-                    if (source, target) in edges
-                )
-                bestCost = (
-                    sum(
-                        bestEdges[(source, target)].distanceMeters
-                        * (
-                            bestEdges[(source, target)].routingCostFactor
-                            if accessibleOnly
-                            and bestEdges[(source, target)].accessibilityZone == "recommended"
-                            else 1.0
-                        )
-                        for source, target in zip(bestPath, bestPath[1:])
-                        if (source, target) in bestEdges
-                    )
-                    if bestPath
-                    else float("inf")
-                )
-                if path and pathCost < bestCost:
+                if not path:
+                    continue
+                pathCost = self._computeWalkwayRoutingCost(path, edges, accessibleOnly)
+                if pathCost < bestCost:
+                    bestCost = pathCost
                     bestDist = dist
                     bestPath = path
                     bestEdges = edges
@@ -417,18 +604,36 @@ class NavigationService:
             destRoom = targetDest.get("subgraphNodeId")
 
             if originSg and (originRoom or destRoom):
-                startIndoorId = originRoom or (originSg.entranceNodeIds[0] if originSg.entranceNodeIds else None)
-                endIndoorId = destRoom or (originSg.entranceNodeIds[0] if originSg.entranceNodeIds else None)
-                if startIndoorId and endIndoorId:
-                    indoorPath, indoorDist, indoorMins, _ = originSg.router.findShortestPathWithEdges(
-                        startIndoorId, endIndoorId, accessibleOnly=accessibleOnly
-                    )
+                validEntrances = [eid for eid in originSg.entranceNodeIds if eid in originSg.graph.nodes]
+                startCandidates = [originRoom] if originRoom else validEntrances
+                endCandidates = [destRoom] if destRoom else validEntrances
+                if startCandidates and endCandidates:
+                    indoorPath: List[str] = []
+                    indoorDist = float("inf")
+                    indoorMins = 0
+                    for sId in startCandidates:
+                        for eId in endCandidates:
+                            p, d, mins, _ = originSg.router.findShortestPathWithEdges(
+                                sId, eId, accessibleOnly=accessibleOnly
+                            )
+                            if p and d < indoorDist:
+                                indoorPath = p
+                                indoorDist = d
+                                indoorMins = mins
                     if not indoorPath:
                         err = t("navigation.indoor_no_route", lang=lang)
                         return {"success": False, "error": err}
                     humanSteps = buildHumanIndoorSteps(
                         originSg, indoorPath, lang=lang, mode="standalone", buildingAnchorSvg=macroAnchor
                     )
+                    indoorEntCode = None
+                    if targetNodeId == "buildingP":
+                        if accessibleOnly:
+                            indoorEntCode = "F1-ENT-E"
+                        elif indoorPath[0] in ("p_stairs_f1_west", "p_stairs_to_building_o"):
+                            indoorEntCode = "F1-ENT-O"
+                        else:
+                            indoorEntCode = "F1-ENT-W"
                     return {
                         "success": True,
                         "origin": originDest["displayName"],
@@ -439,7 +644,7 @@ class NavigationService:
                         "destinationPlaceId": targetDest.get("placeId"),
                         "isSubPlace": targetDest.get("isSubPlace", False),
                         "isIndoorOnly": True,
-                        "recommendedIndoorEntrance": "F1-ENT-E" if (targetNodeId == "buildingP" and accessibleOnly) else ("F1-ENT-W" if targetNodeId == "buildingP" else None),
+                        "recommendedIndoorEntrance": indoorEntCode,
                         "category": targetDest["category"],
                         "floorLevel": targetDest["floorLevel"],
                         "pathNodeIds": [sourceNodeId],
@@ -470,9 +675,21 @@ class NavigationService:
         macroPathNodes, macroDist, _, _ = self.router.findShortestPathWithEdges(
             sourceNodeId, targetNodeId, accessibleOnly=accessibleOnly
         )
-        walkwayPathIds, walkwayDist, walkwayEdges = self._findBestWalkwayPath(
-            originDest, targetDest, accessibleOnly=accessibleOnly
+        jointRoute = self._findOptimalDoorToDoorRoute(
+            originDest, targetDest, originSg, targetSg, accessibleOnly=accessibleOnly
         )
+        if jointRoute.get("upperFloorBlocked"):
+            err = t(
+                "navigation.upper_floor_stairs_only",
+                lang=lang,
+                dest=targetDest["displayName"],
+                floor=targetDest["floorLevel"],
+            )
+            return {"success": False, "error": err}
+
+        walkwayPathIds = jointRoute["walkwayPathIds"]
+        walkwayDist = jointRoute["walkwayDist"]
+        walkwayEdges = jointRoute["walkwayEdges"]
 
         if (
             accessibleOnly
@@ -490,18 +707,20 @@ class NavigationService:
         allSteps: List[Dict[str, Any]] = []
         totalDistMeters = 0.0
 
-        # 1. Indoor Exit Leg (if origin is a room inside a building with subgraph)
-        originIndoorPath: List[str] = []
+        # 1. Indoor Exit Leg (jointly aligned with the chosen origin outdoor portal)
+        originIndoorPath: List[str] = jointRoute["originIndoorPath"]
+        exitDist: float = jointRoute["originIndoorDist"]
         if originSg and originDest.get("subgraphNodeId"):
             firstWNode = self.walkwayGraph.nodes[walkwayPathIds[0]] if walkwayPathIds else self.graph.nodes[sourceNodeId]
-            originIndoorPath, exitDist = self._findBestIndoorLeg(
-                originSg,
-                originDest["subgraphNodeId"],
-                firstWNode.latitude,
-                firstWNode.longitude,
-                isExiting=True,
-                accessibleOnly=accessibleOnly,
-            )
+            if not originIndoorPath and not walkwayPathIds:
+                originIndoorPath, exitDist = self._findBestIndoorLeg(
+                    originSg,
+                    originDest["subgraphNodeId"],
+                    firstWNode.latitude,
+                    firstWNode.longitude,
+                    isExiting=True,
+                    accessibleOnly=accessibleOnly,
+                )
             if len(originIndoorPath) >= 2:
                 exitSteps = buildHumanIndoorSteps(
                     originSg,
@@ -514,11 +733,11 @@ class NavigationService:
                 totalDistMeters += exitDist
 
         # 2. Outdoor Pedestrian Walkway Leg (uses user's exact sidewalks, doors, bridges & crosswalks!)
-        hasDestIndoorLeg = False
-        destIndoorPath: List[str] = []
-        destIndoorDist = 0.0
-        if targetSg and targetDest.get("subgraphNodeId"):
-            lastWNode = self.walkwayGraph.nodes[walkwayPathIds[-1]] if walkwayPathIds else self.graph.nodes[targetNodeId]
+        destIndoorPath: List[str] = jointRoute["destIndoorPath"]
+        destIndoorDist: float = jointRoute["destIndoorDist"]
+        hasDestIndoorLeg: bool = jointRoute["hasDestIndoor"]
+        if targetSg and targetDest.get("subgraphNodeId") and not hasDestIndoorLeg and not walkwayPathIds:
+            lastWNode = self.graph.nodes[targetNodeId]
             destIndoorPath, destIndoorDist = self._findBestIndoorLeg(
                 targetSg,
                 targetDest["subgraphNodeId"],
@@ -530,7 +749,6 @@ class NavigationService:
             if destIndoorPath:
                 hasDestIndoorLeg = True
             elif accessibleOnly and targetDest.get("floorLevel", 1) > 1:
-                # Target room is on an upper floor unreachable by wheelchair without elevator
                 err = t(
                     "navigation.upper_floor_stairs_only",
                     lang=lang,
@@ -547,7 +765,7 @@ class NavigationService:
             )
             originOutdoorName = (
                 self.graph.nodes[sourceNodeId].getName(lang)
-                if originIndoorPath
+                if len(originIndoorPath) >= 2
                 else originDest["displayName"]
             )
             outdoorSteps = buildHumanWalkwaySteps(

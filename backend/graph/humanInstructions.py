@@ -340,6 +340,9 @@ def buildHumanWalkwaySteps(
             for lookIdx in range(eIdx, len(nodes)):
                 if nodes[lookIdx].portalKind == "junction":
                     continue
+                if lookIdx == len(nodes) - 1 and destDisplayName:
+                    targetLabel = destDisplayName
+                    break
                 candLabel = _cleanLandmarkLabel(nodes[lookIdx], lang)
                 if candLabel:
                     targetLabel = candLabel
@@ -351,6 +354,8 @@ def buildHumanWalkwaySteps(
         startShortLower = _shortPlaceName(startLabel or originDisplayName).lower()
         for midNode in segNodes[1:-1]:
             if midNode.portalKind == "junction":
+                continue
+            if maneuver in ("ramp", "stairs", "crosswalk", "skybridge") and midNode.portalKind == maneuver:
                 continue
             midLabel = _cleanLandmarkLabel(midNode, lang)
             if not midLabel:

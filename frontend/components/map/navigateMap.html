@@ -645,11 +645,16 @@ Clean iconography (SVG only, zero emojis), fully responsive, internationalized.
         <!-- CALCULATE ROUTE ACTION BUTTON                                      -->
         <!-- ================================================================== -->
         <div class="pt-1.5">
-            <button id="btnCalculateRoute" type="button" 
-                    class="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 hover:from-sky-600 hover:via-blue-600 hover:to-sky-700 text-white font-bold text-xs shadow-md shadow-sky-500/25 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer">
+            <button id="btnCalculateRoute" type="button" aria-busy="false"
+                    class="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 hover:from-sky-600 hover:via-blue-600 hover:to-sky-700 disabled:cursor-wait text-white font-bold text-xs shadow-md shadow-sky-500/25 hover:shadow-lg transition-all active:scale-[0.99] cursor-pointer">
                 <!-- Navigation Route Arrow Icon -->
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                <span data-i18n="map.calculate_route">{{ t('map.calculate_route') }}</span>
+                <svg id="btnCalculateRouteIcon" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                <!-- Spinning Wheel Indicator while Calculating Route -->
+                <svg id="btnCalculateRouteSpinner" class="w-4 h-4 shrink-0 animate-spin hidden" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span id="btnCalculateRouteLabel" data-i18n="map.calculate_route">{{ t('map.calculate_route') }}</span>
             </button>
         </div>
 
@@ -821,6 +826,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const btnSwap = document.getElementById("btnSwapLocations");
     const accessibleToggle = document.getElementById("accessibleToggle");
     const btnCalculate = document.getElementById("btnCalculateRoute");
+    const btnCalculateIcon = document.getElementById("btnCalculateRouteIcon");
+    const btnCalculateSpinner = document.getElementById("btnCalculateRouteSpinner");
+    const btnCalculateLabel = document.getElementById("btnCalculateRouteLabel");
+    const routeCalculatingOverlay = document.getElementById("routeCalculatingOverlay");
+    const routeCalculatingOverlayText = document.getElementById("routeCalculatingOverlayText");
     const btnReset = document.getElementById("btnResetNavigation");
 
     const routeResultsCard = document.getElementById("routeResultsCard");
@@ -2334,7 +2344,35 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // 8. Calculate Route via /api/map/route
+    // 8. Calculate Route via /api/map/route (with spinning wheel loading feedback)
+    let activeRouteRequestId = 0;
+    const MIN_ROUTE_SPINNER_MS = 280;
+
+    function setRouteCalculatingUi(isCalculating) {
+        if (btnCalculate) {
+            btnCalculate.disabled = isCalculating;
+            btnCalculate.setAttribute("aria-busy", isCalculating ? "true" : "false");
+            btnCalculate.classList.toggle("opacity-85", isCalculating);
+        }
+        if (btnCalculateIcon) {
+            btnCalculateIcon.classList.toggle("hidden", isCalculating);
+        }
+        if (btnCalculateSpinner) {
+            btnCalculateSpinner.classList.toggle("hidden", !isCalculating);
+        }
+        if (btnCalculateLabel) {
+            const labelKey = isCalculating ? "map.calculating_route" : "map.calculate_route";
+            btnCalculateLabel.setAttribute("data-i18n", labelKey);
+            btnCalculateLabel.textContent = tr(labelKey);
+        }
+        if (routeCalculatingOverlay) {
+            if (routeCalculatingOverlayText) {
+                routeCalculatingOverlayText.textContent = tr("map.calculating_route");
+            }
+            routeCalculatingOverlay.classList.toggle("hidden", !isCalculating);
+        }
+    }
+
     async function calculateRoute() {
         // Smart fallback: if user typed a building/place name without clicking autocomplete, resolve top match automatically
         let origin = state.originPlaceId || state.originNodeId || originInput.value.trim();
@@ -2359,23 +2397,35 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const accessibleOnly = accessibleToggle.checked;
         const lang = getCurrentLang();
+        const requestId = ++activeRouteRequestId;
 
-        btnCalculate.disabled = true;
-        btnCalculate.classList.add("opacity-75");
+        setRouteCalculatingUi(true);
 
         try {
-            const res = await fetch("/api/map/route", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    origin: origin,
-                    destination: dest,
-                    accessibleOnly: accessibleOnly,
-                    lang: lang
-                })
-            });
+            const minSpinnerDelay = new Promise((resolve) => setTimeout(resolve, MIN_ROUTE_SPINNER_MS));
+            const [res] = await Promise.all([
+                fetch("/api/map/route", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        origin: origin,
+                        destination: dest,
+                        accessibleOnly: accessibleOnly,
+                        lang: lang
+                    })
+                }),
+                minSpinnerDelay
+            ]);
+
+            if (requestId !== activeRouteRequestId) {
+                return;
+            }
 
             const routeData = await res.json();
+            if (requestId !== activeRouteRequestId) {
+                return;
+            }
+
             if (routeData.success) {
                 routeData.usedGpsOrigin = Boolean(state.usedGpsOrigin);
                 state.currentRoute = routeData;
@@ -2401,11 +2451,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert(routeData.error || tr('navigation.no_route_found'));
             }
         } catch (err) {
-            console.error("Route calculation error:", err);
-            alert(tr('map.error'));
+            if (requestId === activeRouteRequestId) {
+                console.error("Route calculation error:", err);
+                alert(tr('map.error'));
+            }
         } finally {
-            btnCalculate.disabled = false;
-            btnCalculate.classList.remove("opacity-75");
+            if (requestId === activeRouteRequestId) {
+                setRouteCalculatingUi(false);
+            }
         }
     }
 
@@ -2617,6 +2670,9 @@ document.addEventListener("DOMContentLoaded", function() {
         if (state.isSpeaking) {
             stopAzureSpeech();
         }
+
+        activeRouteRequestId += 1;
+        setRouteCalculatingUi(false);
 
         clearNavDraft();
 

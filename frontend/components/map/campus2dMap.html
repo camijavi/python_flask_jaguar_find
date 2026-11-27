@@ -17,6 +17,23 @@ Official UAM 2D Vector Campus Map faithfully replicating the physical campus map
     <!-- Atmosphere Horizon Gradient (Visible in 2.5D Mode) -->
     <div id="campusHorizonAtmosphere" class="campus-horizon-atmosphere pointer-events-none"></div>
 
+    <!-- Route Calculation Spinning Wheel Overlay -->
+    <div id="routeCalculatingOverlay"
+         role="status"
+         aria-live="polite"
+         aria-busy="true"
+         class="hidden absolute inset-0 z-40 flex items-center justify-center bg-slate-900/15 backdrop-blur-[2px] pointer-events-auto transition-opacity duration-200">
+        <div class="flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-white/95 backdrop-blur-md border border-sky-200/90 shadow-xl shadow-sky-900/15">
+            <svg class="w-6 h-6 animate-spin text-sky-600 shrink-0" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span id="routeCalculatingOverlayText"
+                  class="text-xs sm:text-sm font-bold text-slate-800 tracking-tight"
+                  data-i18n="map.calculating_route">{{ t('map.calculating_route') }}</span>
+        </div>
+    </div>
+
     <!-- 2.5D Perspective Controls & Turn-by-Turn HUD -->
     {% include "components/map/campus25dMap.html" %}
 
